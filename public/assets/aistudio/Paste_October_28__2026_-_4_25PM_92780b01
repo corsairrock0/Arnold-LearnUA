@@ -1,0 +1,1082 @@
+# MASTER PROMPT — SLOVO UA EDUCATIONAL CONTENT REBUILD
+## Optimized for Google AI Studio Build Mode
+
+### ROLE AND MISSION
+
+You are working inside Google AI Studio Build Mode on my existing application, Slovo UA, an interactive Ukrainian language-learning platform designed for native English speakers.
+
+Act as a multidisciplinary team consisting of:
+
+- Expert native Ukrainian linguists and language educators.
+- English-to-Ukrainian instructional specialists.
+- CEFR curriculum designers.
+- Second-language acquisition researchers.
+- Educational content writers and editors.
+- Spaced-repetition and memory-learning specialists.
+- Senior frontend engineers and software quality-assurance specialists.
+
+Your mission is to directly audit, rewrite, correct, expand, reorganize, and improve the educational content of the EXISTING application.
+
+The primary audience is English-speaking students beginning Ukrainian at the absolute beginner level, with progression toward advanced proficiency.
+
+Transform the learning experience from a dense technical grammar reference into a clear, structured, comprehensive, accurate, engaging, and highly effective Ukrainian language course.
+
+The application should teach students how to understand, speak, read, write, and confidently use contemporary Ukrainian in real-life situations.
+
+**CRITICAL: You must IMPLEMENT these improvements in the existing project files. Do not simply provide a written report, suggest changes, or generate an entirely new application.**
+
+---
+
+# PART 1 — GOOGLE AI STUDIO BUILD MODE IMPLEMENTATION
+
+## 1.1 Work directly within the existing project
+
+You are operating in Google AI Studio Build Mode.
+
+Use the available project-inspection, coding, file-editing, debugging, dependency-management, and verification capabilities.
+
+You are authorized to modify existing application files and supporting logic when necessary to improve the Ukrainian learning experience.
+
+Before making changes:
+
+1. Inspect the existing project structure.
+2. Identify where educational content is stored.
+3. Identify how lessons, quizzes, vocabulary, flashcards, and reading passages are generated.
+4. Identify dependencies between content and rendering logic.
+5. Determine how learning progress is saved.
+6. Identify potentially fragile functionality that must remain compatible.
+7. Determine whether content is static, generated dynamically, or derived from reusable data.
+8. Establish the best implementation strategy for the existing architecture.
+
+This is an existing application improvement project, not a new application development request.
+
+Do not replace its architecture unnecessarily.
+
+If the application uses a single HTML file containing JavaScript and CSS, preserve that structure unless a carefully justified change is necessary.
+
+If the project already uses multiple components or data modules, modify those components directly.
+
+Do not automatically migrate the app to React, rebuild its navigation, or introduce a new framework merely because Build Mode commonly generates React applications.
+
+## 1.2 Implementation efficiency
+
+Work efficiently using incremental, targeted modifications.
+
+- Inspect relevant project files before editing.
+- Avoid repeatedly rewriting unchanged files.
+- Reuse existing data structures where practical.
+- Edit shared instructional components when one change can improve multiple lessons.
+- Separate reusable educational data from presentation logic when doing so meaningfully improves maintainability.
+- Avoid generating duplicate content.
+- Avoid unnecessary dependencies.
+- Avoid rewriting the entire project when targeted changes are sufficient.
+- Verify changes incrementally.
+- Preserve all functioning application features.
+- Do not include large code dumps in chat responses when the actual project files can be edited.
+
+Use the available model context and execution resources efficiently.
+
+Do not impose an arbitrary cumulative token limit or attempt to track an artificial task-wide token budget.
+
+Follow the platform's actual limits, using smaller batches of work when needed.
+
+If a task cannot be completed within the available execution context, preserve verified improvements and clearly identify unfinished work.
+
+Do not claim work was completed if it was not implemented.
+
+## 1.3 Preserve existing functionality
+
+The existing application contains features including:
+
+- A Ukrainian vocabulary catalog targeting 6,000 words.
+- Ukrainian-to-English recognition flashcards.
+- English-to-Ukrainian active-recall flashcards.
+- FSRS-style spaced-repetition scheduling.
+- Ukrainian sentence-correction exercises.
+- Ukrainian pronunciation and phonetic analysis.
+- Cyrillic handwriting and cursive practice.
+- Grammar inspection with seven-case declension information.
+- Verb conjugation explanations.
+- Interactive Ukrainian reading.
+- Speech synthesis and pronunciation playback.
+- Learning modules and quizzes.
+- Student progress and experience points.
+- Light and dark appearance modes.
+- Material 3 Expressive-inspired interface styling.
+- Responsive layouts optimized for the iPhone 16 Pro Max.
+
+Preserve these features and their existing functionality.
+
+Modify supporting logic where necessary to correct educational inaccuracies, broken interactions, or incompatibilities caused by content improvements.
+
+Do not reset saved flashcards, learning histories, course progress, or user preferences.
+
+Preserve existing stable identifiers wherever possible.
+
+If identifiers or storage formats must change, implement compatible migrations rather than discarding user data.
+
+---
+
+# PART 2 — REMOVE ALL TEXTBOOK REFERENCES
+
+## 2.1 Complete removal of textbook-specific citations
+
+Remove all references to the textbook and its bibliographic structure from learner-facing educational content.
+
+Specifically remove:
+
+- Original textbook author names.
+- Book titles.
+- Publisher references.
+- Textbook chapter numbers.
+- Textbook section numbers.
+- Textbook page references.
+- Page ranges.
+- In-text academic citations.
+- References embedded in educational explanations.
+- Source references in quiz questions.
+- Source references in answer feedback.
+- Bibliographic references embedded in vocabulary explanations.
+- Citations within pronunciation and phonetics lessons.
+- References spoken aloud by speech-synthesis features.
+- Source-specific terminology that is not helpful to students.
+
+Audit all relevant content sources, including HTML templates, JavaScript strings, lesson objects, dynamically generated descriptions, metadata, module summaries, tooltips, speech-generation functions, and code comments.
+
+Inspect fields such as `chapterRef` and replace or remove them where appropriate.
+
+If a UI component exists solely to display an obsolete textbook reference, remove that component or replace it with meaningful educational information.
+
+### Before
+
+"Greetings (§0.5): Morning is Genitive..."
+
+### After
+
+"How to Say Good Morning in Ukrainian"
+
+### Before
+
+"Phonology, Chapter 1, pages 18–46"
+
+### After
+
+"Understanding Ukrainian Pronunciation"
+
+### Before
+
+"According to §0.1.2, what is the difference between місто and місце?"
+
+### After
+
+"What is the difference between місто and місце?"
+
+Retain legitimate application lesson numbering, course IDs, grammar terminology, and educational progression labels.
+
+Do not remove numbers that have genuine educational meaning.
+
+Rewrite borrowed instructional language into original, independent explanations instead of simply deleting citations from unchanged source passages.
+
+Do not reproduce substantial copyrighted textbook passages.
+
+If legally required third-party attribution exists, retain it in an appropriate legal notice rather than displaying unnecessary bibliographic references throughout lessons.
+
+The final product should read like an independently authored, cohesive Ukrainian language course.
+
+---
+
+# PART 3 — COMPREHENSIVE EDUCATIONAL CONTENT AUDIT
+
+Before revising the curriculum, inspect all major content sources and generation functions.
+
+Pay particular attention to the following where present:
+
+- `COURSE_MODULES`
+- `CORE_200_UA`
+- `FREQ_6000_DB`
+- Vocabulary generation algorithms.
+- Grammar data tables.
+- `generateGrammarBreakdown()`
+- `generateUkrainianPhonetics()`
+- `generateSentenceCorrection()`
+- Noun declension generation.
+- Verb conjugation generation.
+- Quiz question generation.
+- Exercise grading and feedback.
+- Flashcard front and back content.
+- Reader passages and translations.
+- Audio playback and spoken explanations.
+- Learning progression and module completion logic.
+
+Identify problems involving:
+
+1. Incorrect Ukrainian grammar.
+2. Incorrect English translations.
+3. Unnatural Ukrainian sentences.
+4. Confusing or unnecessarily academic explanations.
+5. Inconsistent grammatical terminology.
+6. Incorrect pronunciation or stress information.
+7. Invalid or fabricated vocabulary.
+8. Incorrect declension or conjugation.
+9. Lessons presented in the wrong order.
+10. Missing foundational concepts.
+11. Exercises testing material not yet taught.
+12. Ambiguous quiz questions.
+13. Incorrect answer keys.
+14. Duplicated lessons.
+15. Misleading CEFR proficiency assignments.
+16. Broken connections between educational data and the UI.
+
+Correct these issues directly.
+
+Verify the actual number of course modules and make sure navigation, counters, and completion indicators reflect the real curriculum.
+
+Do not create filler modules merely to match a hardcoded count.
+
+---
+
+# PART 4 — REWRITE EVERYTHING FOR ENGLISH-SPEAKING BEGINNERS
+
+## 4.1 Target student
+
+Assume the student:
+
+- Speaks fluent English.
+- Has no prior knowledge of Ukrainian.
+- May have never learned Cyrillic.
+- Does not understand grammatical cases.
+- Does not know what verb aspect means.
+- Has little familiarity with grammatical terminology.
+- Wants practical communication skills.
+- Benefits from clear instructions and repeated examples.
+
+Use natural, conversational American English.
+
+The educational writing must be exceptionally clear without sacrificing accuracy.
+
+## 4.2 Writing standards
+
+For every explanation:
+
+- Use short, direct sentences.
+- Teach one main concept at a time.
+- Define unfamiliar terminology.
+- Introduce examples immediately.
+- Explain what changes and why.
+- Prefer everyday examples.
+- Avoid excessive theory.
+- Avoid unnecessary linguistic jargon.
+- Use consistent terminology.
+- Give brief summaries of important rules.
+- Introduce exceptions progressively.
+- Distinguish formal and informal Ukrainian.
+- Avoid overwhelming students with multiple unrelated grammatical concepts simultaneously.
+
+### Example of the desired transformation
+
+BEFORE:
+
+"The Genitive singular masculine paradigm exhibits differentiated allomorphy, including -а/-я and -у/-ю, with distribution conditioned by lexical semantics."
+
+AFTER:
+
+"Some masculine nouns have different endings in the genitive case.
+
+For example:
+
+- стіл → стола — table → of the table
+- чай → чаю — tea → of the tea
+
+The ending depends on the word and its meaning.
+
+You don't need to memorize every rule immediately. Start by learning the most common patterns and practicing them in sentences."
+
+Teach students what they need to know before introducing technical exceptions.
+
+Retain accurate advanced explanations as optional deeper-learning material.
+
+---
+
+# PART 5 — REORGANIZE THE COURSE USING LANGUAGE-LEARNING BEST PRACTICES
+
+Reevaluate the existing lesson sequence.
+
+Organize the curriculum using a pedagogically appropriate progression aligned with CEFR principles.
+
+Treat A0 as a pre-A1 introductory stage, not an official additional CEFR proficiency level.
+
+## A0 — Absolute Beginner
+
+Teach the essential foundations:
+
+- Ukrainian alphabet.
+- Recognizing Cyrillic letters.
+- Letter sounds and pronunciation.
+- Word stress.
+- Reading simple Ukrainian words.
+- Greetings and farewells.
+- Formal and informal address.
+- Introducing yourself.
+- Basic personal pronouns.
+- Simple sentence structures.
+- Essential question words.
+- Yes/no questions.
+- Basic negation.
+- Common nouns and verbs.
+- Numbers.
+- Basic everyday expressions.
+
+Avoid complete seven-case tables in introductory lessons unless they are optional.
+
+## A1 — Beginner
+
+Develop the ability to participate in basic conversations.
+
+Teach:
+
+- Noun gender.
+- Personal pronouns.
+- Simple adjective agreement.
+- Present-tense verb conjugation.
+- Basic past tense.
+- Common question patterns.
+- Expressing wants and needs.
+- Talking about family.
+- Daily routines.
+- Food and drinks.
+- Restaurants and cafés.
+- Shopping.
+- Basic locations.
+- High-utility prepositions.
+- Introductory accusative and locative constructions.
+- Expressing likes and preferences.
+- Short conversations.
+
+Introduce grammatical cases through practical examples, not massive declension charts.
+
+## A2 — Elementary
+
+Expand communication and grammatical understanding.
+
+Teach:
+
+- More complete noun declension.
+- Pronoun declension.
+- Additional verb conjugations.
+- Perfective and imperfective aspect.
+- Future tense.
+- Common motion verbs.
+- Directions and transportation.
+- Travel.
+- Time and schedules.
+- Comparisons.
+- More complex sentence structures.
+- Everyday descriptions and narratives.
+
+## B1 — Intermediate
+
+Develop independent conversational ability.
+
+Teach:
+
+- More complex grammatical case usage.
+- Aspectual distinctions.
+- Expanded motion verbs.
+- Sentence connectors.
+- Conditional and hypothetical expressions.
+- Extended conversations.
+- More natural spoken Ukrainian.
+- Detailed descriptions and narratives.
+
+## B2–C1 — Upper Intermediate and Advanced
+
+Progress into:
+
+- Advanced grammatical structures.
+- Nuanced verb usage.
+- Sophisticated sentence construction.
+- Idiomatic expressions.
+- Register and stylistic variation.
+- Advanced reading comprehension.
+- Abstract discussions.
+- Natural extended discourse.
+- Advanced Ukrainian vocabulary.
+
+Do not misrepresent vocabulary quantities or course module counts as evidence of CEFR mastery.
+
+Assign levels according to communicative demands and linguistic complexity.
+
+Make sure foundational concepts are learned before the more difficult structures that depend on them.
+
+---
+
+# PART 6 — STANDARDIZE EVERY LESSON
+
+Rebuild lesson content around a consistent instructional structure.
+
+Each lesson should contain appropriate versions of the following components.
+
+## 6.1 Lesson title
+
+Use a short, descriptive name.
+
+Example:
+
+"Introducing Yourself in Ukrainian"
+
+Avoid academic textbook-style titles when simpler wording is more useful.
+
+## 6.2 Learning objectives
+
+Explain what students will be able to do after completing the lesson.
+
+Example:
+
+"After this lesson, you will be able to introduce yourself, ask someone's name, and say where you are from."
+
+## 6.3 Essential vocabulary
+
+Introduce a manageable number of relevant words.
+
+For each entry, include when applicable:
+
+- Ukrainian spelling.
+- English translation.
+- Correct stress marking.
+- Part of speech.
+- Relevant gender or aspect.
+- Example sentence.
+- English sentence translation.
+
+## 6.4 Core explanation
+
+Explain the grammar or communication skill simply and accurately.
+
+## 6.5 Worked examples
+
+Provide several examples progressing from simple to moderately challenging.
+
+Every example should have a natural English translation.
+
+## 6.6 Guided practice
+
+Use exercises that help students apply the new material with appropriate support.
+
+## 6.7 Active recall
+
+Ask students to remember or produce language without immediately revealing the answer.
+
+## 6.8 Real-life dialogue
+
+Provide a short, natural conversation using the concepts being taught.
+
+## 6.9 Knowledge check
+
+Include questions focused on the lesson objectives.
+
+## 6.10 Summary and review
+
+Briefly recap the most important rules and expressions.
+
+## 6.11 Mastery assessment
+
+Check whether the student can use the material independently.
+
+Not every lesson needs identical numbers of examples or exercises.
+
+Prioritize appropriate instructional depth over artificial uniformity.
+
+Reuse existing UI stages where practical, adding or adapting components only where necessary.
+
+---
+
+# PART 7 — IMPROVE ALL UKRAINIAN GRAMMAR INSTRUCTION
+
+Revise explanations and examples involving:
+
+- Noun gender.
+- Singular and plural forms.
+- Adjective agreement.
+- Personal and possessive pronouns.
+- Demonstrative pronouns.
+- Verb conjugation.
+- Present, past, and future tense.
+- Perfective and imperfective aspect.
+- Negation.
+- Questions.
+- Prepositions.
+- Word order.
+- Grammatical cases.
+- Motion verbs.
+- Common irregular forms.
+
+Every grammatical concept should explain:
+
+1. What it means.
+2. When it is used.
+3. How it changes a word or sentence.
+4. A simple Ukrainian example.
+5. An accurate English translation.
+6. An appropriate practice question.
+
+## 7.1 Ukrainian grammatical cases
+
+Teach the seven cases progressively.
+
+Introduce their common functions using clear explanations:
+
+- Nominative — commonly identifies the subject.
+- Genitive — often expresses possession, absence, or quantity.
+- Dative — often identifies a recipient.
+- Accusative — commonly identifies a direct object.
+- Instrumental — commonly expresses means, accompaniment, or certain complements.
+- Locative — used with particular prepositions for locations and other meanings.
+- Vocative — used when directly addressing someone.
+
+These are simplified introductions, not exhaustive definitions.
+
+Explain additional functions at appropriate proficiency levels.
+
+Example:
+
+"Я читаю книгу."
+
+"I am reading a book."
+
+Explain why "книга" changes to "книгу" in this sentence.
+
+Do not force noun declension tables onto verbs, particles, conjunctions, or indeclinable words.
+
+Display conjugation information for verbs.
+
+Display declension information only where it is grammatically appropriate.
+
+Check generated forms for accuracy, including gender, animacy, number, irregular patterns, and stress changes.
+
+---
+
+# PART 8 — CRITICAL: VALIDATE THE 6,000-WORD UKRAINIAN VOCABULARY SYSTEM
+
+The app contains a vocabulary catalog targeting 6,000 Ukrainian words.
+
+This area requires particularly careful auditing.
+
+Some entries are generated programmatically through morphological combinations rather than individually verified frequency data.
+
+Do not assume every generated combination is a real Ukrainian word or a natural everyday expression.
+
+## 8.1 Vocabulary verification
+
+Inspect the vocabulary-generation system.
+
+Identify:
+
+- Invalid Ukrainian words.
+- Incorrectly generated derivatives.
+- Unnatural word combinations.
+- Incorrect meanings.
+- Duplicate entries.
+- Incorrect stress marks.
+- Incorrect grammatical metadata.
+- Incorrect frequency claims.
+- Misclassified parts of speech.
+- Misleading CEFR levels.
+
+Where available, use reliable Ukrainian dictionaries, corpus evidence, or validated lexical resources to check uncertain items.
+
+Do not invent source verification or claim that a word was checked against a dictionary unless that check actually occurred.
+
+Do not generate fake vocabulary to reach exactly 6,000 entries.
+
+If verified vocabulary coverage falls below the target, clearly represent the number of trustworthy entries.
+
+## 8.2 Improve vocabulary learning
+
+For each important vocabulary entry, provide appropriate metadata:
+
+- Dictionary form.
+- English meaning.
+- Part of speech.
+- Stress.
+- Gender for nouns.
+- Verb aspect where relevant.
+- Useful grammatical forms.
+- Natural example sentence.
+- English translation.
+- Common collocations where helpful.
+- Register or usage notes where relevant.
+
+Present the most practical meaning first.
+
+Introduce additional meanings in context.
+
+Prioritize everyday words and expressions at beginner levels.
+
+Avoid presenting rare, literary, or highly specialized words as essential beginner vocabulary.
+
+## 8.3 Frequency and CEFR classification
+
+Do not claim exact frequency rankings without reliable supporting data.
+
+Do not assign A1, A2, B1, B2, or C1 mechanically based on rank intervals.
+
+Use appropriate evidence and pedagogical judgment.
+
+If levels are approximate, describe them as instructional estimates rather than official certifications.
+
+---
+
+# PART 9 — IMPROVE UKRAINIAN PRONUNCIATION AND PHONETICS
+
+Audit the phonetics engine, pronunciation explanations, and associated educational content.
+
+Pay special attention to:
+
+- г and ґ.
+- и and і.
+- е and є.
+- ї, й, я, ю.
+- Consonant softness.
+- Palatalization.
+- Apostrophe rules.
+- Ukrainian word stress.
+- Stress-changing inflection.
+- Consonant and vowel alternations.
+- Differences between spelling and pronunciation.
+- Pronunciation differences between Ukrainian and Russian when educationally helpful.
+
+Explain unfamiliar sounds in language understandable to English speakers.
+
+Use phonetic comparisons carefully.
+
+Include IPA where it helps, but do not require beginners to understand phonetic notation before learning basic pronunciation.
+
+Clearly distinguish approximate pronunciation guidance from verified phonetic transcription.
+
+Do not invent stress positions when they are unknown.
+
+Do not treat an automatically generated IPA transcription as authoritative without appropriate validation.
+
+Ensure the words displayed on screen correspond to the audio being played.
+
+Ensure Unicode stress marks do not create unintended speech-synthesis problems.
+
+Preserve existing pronunciation controls.
+
+---
+
+# PART 10 — IMPROVE ALL EXAMPLE SENTENCES AND DIALOGUES
+
+Rewrite sentences that sound unnatural, overly academic, mechanically generated, or unnecessarily complicated.
+
+Use contemporary standard Ukrainian as the default.
+
+Prefer everyday scenarios:
+
+- Meeting someone.
+- Introducing yourself.
+- Ordering coffee.
+- Shopping.
+- Visiting restaurants.
+- Asking for directions.
+- Discussing work.
+- Talking about family.
+- Making plans with friends.
+- Describing hobbies.
+- Traveling.
+- Talking about daily activities.
+- Expressing likes and dislikes.
+- Discussing feelings and opinions.
+
+Clearly distinguish standard, formal, informal, and colloquial usage when necessary.
+
+Introduce regional expressions only with appropriate context.
+
+Ensure dialogues sound like conversations people might genuinely have in Ukraine.
+
+Avoid teaching words students have not encountered unless sufficient context is provided.
+
+Every Ukrainian example must have an accurate English translation.
+
+---
+
+# PART 11 — REBUILD QUIZZES AND INTERACTIVE LEARNING ACTIVITIES
+
+Review every existing question, answer, exercise, and grading rule.
+
+Fix:
+
+- Incorrect answer keys.
+- Ambiguous questions.
+- Invalid grammatical examples.
+- Duplicate answer options.
+- Exercises with multiple valid answers incorrectly marked wrong.
+- Questions using unfamiliar material.
+- Feedback that does not explain errors.
+- Artificially easy distractors.
+- Inconsistent scoring.
+- Broken navigation after exercise completion.
+
+Use appropriate exercise types:
+
+- Vocabulary recognition.
+- English-to-Ukrainian translation.
+- Ukrainian-to-English translation.
+- Fill-in-the-blank.
+- Sentence construction.
+- Grammatical form selection.
+- Error correction.
+- Reading comprehension.
+- Context-based language use.
+- Active recall.
+
+Use existing supported interaction types before introducing new interfaces.
+
+Questions should test what students actually learned.
+
+Incorrect answers should produce useful feedback.
+
+For example:
+
+Question:
+"Which sentence means 'I am reading a book'?"
+
+Correct answer:
+"Я читаю книгу."
+
+Explanation:
+"Книга changes to книгу because it is the direct object of the verb читати."
+
+Where multiple Ukrainian expressions are valid, ensure the grading logic recognizes acceptable answers or makes the question sufficiently specific.
+
+Check that randomizing answer positions does not break answer keys.
+
+Prevent duplicate XP awards or repeated submission exploits.
+
+Preserve existing scoring and progress behavior wherever practical.
+
+---
+
+# PART 12 — IMPROVE FLASHCARDS AND SPACED REPETITION
+
+Preserve the existing spaced-repetition system and stored learning history.
+
+Improve flashcard content using evidence-based memory-learning practices.
+
+For beginner vocabulary cards:
+
+Front:
+Ukrainian word or simple sentence.
+
+Back:
+English meaning, pronunciation guidance, and one useful example.
+
+For active-recall cards:
+
+Front:
+English expression.
+
+Back:
+Natural Ukrainian translation with relevant stress information.
+
+For sentence-correction cards:
+
+Present a clear and purposeful grammatical mistake.
+
+Focus on one main error unless an advanced lesson explicitly requires multiple corrections.
+
+Keep advanced grammatical tables available through the optional inspector instead of overwhelming the basic flashcard interface.
+
+Ensure flashcard data remains compatible with existing review schedules.
+
+Do not reset user progress.
+
+---
+
+# PART 13 — IMPROVE THE COMPREHENSIBLE READING FEATURE
+
+Audit the current interactive reader implementation.
+
+Verify that the displayed Ukrainian text corresponds to the passage used for audio playback.
+
+If the display currently uses a sequence of vocabulary tokens instead of a coherent passage, correct that behavior.
+
+Create graded, coherent reading material.
+
+For A0:
+
+Use extremely short sentences and highly familiar vocabulary.
+
+For A1:
+
+Use short paragraphs and everyday conversations.
+
+For A2:
+
+Introduce longer passages and simple narratives.
+
+For B1 and above:
+
+Introduce increasingly authentic and sophisticated reading.
+
+Example A1 passage:
+
+"Мене звати Анна. Я живу у Львові. Я люблю каву. Щоранку я читаю книгу."
+
+Provide:
+
+- Natural English translations.
+- Tappable words.
+- Appropriate grammar explanations.
+- Audio that matches the displayed text.
+- Reading-comprehension questions where suitable.
+
+Preserve the existing interactive word inspector.
+
+---
+
+# PART 14 — IMPROVE EDUCATIONAL INFORMATION ARCHITECTURE
+
+The application already has an established Material 3 Expressive-inspired visual design.
+
+Preserve the existing design system.
+
+Do not redesign the application unnecessarily.
+
+Improve educational readability and organization through:
+
+- Clear lesson titles.
+- Consistent section hierarchy.
+- Shorter paragraphs.
+- Better explanation spacing.
+- Readable grammar tables.
+- Consistent terminology.
+- Meaningful labels.
+- Clearly separated examples.
+- Optional advanced explanations.
+- Appropriate progress feedback.
+- Simple instructions for first-time users.
+
+The app should feel approachable to someone who has never studied Ukrainian.
+
+Make its educational structure intuitive without introducing unnecessary navigation complexity.
+
+Maintain responsive functionality on iPhone 16 Pro Max and other supported screens.
+
+Preserve the current visual themes and accessibility behavior.
+
+---
+
+# PART 15 — LINGUISTIC QUALITY ASSURANCE
+
+Review all modified Ukrainian content for:
+
+- Spelling.
+- Grammar.
+- Word stress.
+- Translation accuracy.
+- Natural sentence structure.
+- Prepositions.
+- Grammatical case.
+- Gender agreement.
+- Number agreement.
+- Verb conjugation.
+- Verb aspect.
+- Pronoun usage.
+- Register.
+- Authentic everyday usage.
+
+Do not fabricate irregular forms, declensions, conjugations, or pronunciation rules.
+
+Where information is uncertain, avoid unsupported assertions.
+
+Do not claim native-speaker review or external dictionary verification unless such review actually occurred.
+
+If available, use programmatic tests to detect duplicate entries, invalid data shapes, incorrect quiz-answer references, and broken content relationships.
+
+Remember that passing automated tests does not independently establish linguistic accuracy.
+
+---
+
+# PART 16 — IMPLEMENTATION ORDER
+
+Execute the work in carefully sequenced phases.
+
+## Phase 1 — Analyze the existing project
+
+Inspect project structure, content data, learning components, and dependencies.
+
+Identify educational problems and implementation risks.
+
+## Phase 2 — Remove textbook references
+
+Remove source-specific citations and references from learner-facing content, rendering functions, and speech output.
+
+Rewrite source-dependent explanations in original educational language.
+
+## Phase 3 — Improve course organization
+
+Reorder lessons into a logical learning progression.
+
+Preserve course identifiers and saved-progress compatibility where possible.
+
+## Phase 4 — Completely improve A0 and A1
+
+Give the highest priority to beginner content.
+
+Rewrite explanations, exercises, dialogues, learning objectives, and assessments.
+
+Fill essential prerequisite gaps.
+
+## Phase 5 — Improve A2 through C1
+
+Reorganize and improve increasingly advanced material using the same educational standards.
+
+## Phase 6 — Audit vocabulary and grammar
+
+Validate the vocabulary-generation system, grammar rules, translations, declensions, conjugations, and pronunciation guidance.
+
+Correct invalid or misleading material.
+
+## Phase 7 — Improve interactive practice
+
+Update flashcards, sentence correction, quizzes, explanations, and the interactive reader.
+
+## Phase 8 — Validate the application
+
+Test affected code paths and educational interactions.
+
+Confirm that the application still works.
+
+Correct regressions before declaring the task complete.
+
+### Execution requirements
+
+Do not stop after creating an implementation plan.
+
+Begin making actual project modifications.
+
+Complete phases incrementally and verify each completed area.
+
+Do not unnecessarily regenerate the entire application.
+
+If execution or context limits interrupt the work, preserve validated modifications and report remaining phases accurately.
+
+---
+
+# PART 17 — TESTING AND VERIFICATION
+
+After implementing changes, use available Build Mode tools to verify the result.
+
+Where supported:
+
+1. Run application build or syntax checks.
+2. Check for JavaScript or TypeScript errors.
+3. Check content objects and data schemas.
+4. Verify quiz answer keys.
+5. Check vocabulary duplicates.
+6. Check that deleted textbook references no longer appear in learner-facing content.
+7. Confirm that lessons render correctly.
+8. Test navigation between learning modules.
+9. Test flashcard review actions.
+10. Test grammar inspector interactions.
+11. Test vocabulary searching and filtering.
+12. Test text-to-speech controls.
+13. Confirm displayed reading content matches audio input.
+14. Verify progress persistence.
+15. Test mobile responsiveness.
+16. Confirm the existing themes remain functional.
+
+Use the live preview to inspect affected interfaces when available.
+
+Do not merely assume an edit is correct because the code was generated successfully.
+
+If tests cannot be run, clearly distinguish untested behavior from verified functionality.
+
+---
+
+# PART 18 — FINAL QUALITY CHECKLIST
+
+Before completion, confirm:
+
+- The curriculum is clearly organized.
+- A0 lessons are suitable for absolute beginners.
+- A1 content introduces grammar progressively.
+- Advanced concepts appear at appropriate levels.
+- English explanations are simple and accurate.
+- Grammatical terminology is clearly defined.
+- Ukrainian examples sound natural.
+- English translations are correct.
+- Every important rule includes examples.
+- Exercises test previously taught material.
+- Quiz answer keys are valid.
+- Vocabulary data does not contain knowingly fabricated entries.
+- Unverified frequency rankings are not presented as facts.
+- Pronunciation guidance is reliable.
+- Grammar tables display appropriate word forms.
+- Reading passages are coherent and level-appropriate.
+- Displayed text matches spoken text.
+- All unnecessary textbook references are removed.
+- Progress and flashcard scheduling are preserved.
+- The application's existing design remains intact.
+- Modified functionality has been tested wherever possible.
+
+Do not claim that the entire vocabulary catalog or curriculum was verified unless that verification was actually completed.
+
+---
+
+# PART 19 — FINAL OUTPUT AND REPORTING
+
+Make all changes directly within the existing Google AI Studio project.
+
+Do not recreate the application as an unrelated new project.
+
+Do not respond with enormous blocks of source code unless project editing is unavailable.
+
+After implementation, provide a concise summary explaining:
+
+1. What files and components were modified.
+2. What educational content was rewritten.
+3. How the curriculum was reorganized.
+4. Which inaccuracies were corrected.
+5. How textbook references were removed.
+6. What vocabulary validation was performed.
+7. Which application features were tested.
+8. What work, if any, remains unfinished.
+
+Clearly distinguish completed work from recommendations or unverified changes.
+
+---
+
+# FINAL DIRECTIVE
+
+Your goal is to make Slovo UA an exceptionally effective and accessible Ukrainian language-learning application for native English speakers.
+
+Prioritize:
+
+1. Linguistic accuracy.
+2. Beginner-friendly explanations.
+3. Logical curriculum progression.
+4. Effective learning and retention.
+5. Authentic modern Ukrainian.
+6. Practical everyday communication.
+7. High-quality exercises and feedback.
+8. Preservation of existing application functionality.
+9. Clear organization and readability.
+10. Maintainable implementation.
+
+Do not merely simplify sentences.
+
+Improve the underlying instructional design.
+
+Add missing explanations and practice where pedagogically necessary.
+
+Correct factual and grammatical inaccuracies.
+
+Remove textbook-specific references.
+
+Validate generated vocabulary rather than trusting it blindly.
+
+Preserve the existing app's strengths.
+
+**Most importantly, IMPLEMENT the improvements directly in the existing Slovo UA project using Google AI Studio Build Mode. Begin with project inspection and then proceed to actual code and content modifications.**

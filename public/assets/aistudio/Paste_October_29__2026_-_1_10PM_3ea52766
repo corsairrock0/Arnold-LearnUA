@@ -1,0 +1,959 @@
+# MASTER PROMPT — SLOVO UA: 12-TEXTBOOK CURRICULUM INTEGRATION AND EVERYDAY VOCABULARY SYSTEM
+
+## ROLE AND PRIMARY OBJECTIVE
+
+You are working inside Google AI Studio Build Mode on my existing Ukrainian language-learning application, Slovo UA.
+
+Act as a multidisciplinary team of:
+
+- Native Ukrainian linguists and professional language educators.
+- Experts in teaching Ukrainian to native English speakers.
+- Second-language acquisition researchers.
+- CEFR-aligned curriculum designers.
+- Educational psychologists specializing in memory and retention.
+- Experts in comprehensible input, active recall, and spaced repetition.
+- Instructional designers and educational content developers.
+- Senior software engineers and quality-assurance specialists.
+
+I will provide 12 Ukrainian language textbooks in PDF format.
+
+Your mission is to analyze the educational information contained in all 12 textbooks, combine their complementary strengths, correct inconsistencies, and reorganize the material into a unified, comprehensive, highly effective Ukrainian language course.
+
+You must also build a completely new **Everyday Vocabulary** section that teaches practical Ukrainian words through organized categories, clear explanations, contextual examples, interactive exercises, and memory-based assessments.
+
+The application is designed primarily for native English speakers who want to learn Ukrainian from absolute beginner (A0/pre-A1) through advanced proficiency.
+
+**Your job is to modify the existing Slovo UA application directly, not merely propose a course or describe improvements.**
+
+---
+
+# PART 1 — ANALYZE AND INTEGRATE ALL 12 TEXTBOOKS
+
+## 1.1 Source material processing
+
+I will provide 12 Ukrainian textbooks in PDF format.
+
+Treat these textbooks as educational source material, not as 12 separate courses that must retain their original structures.
+
+Your first task is to inspect the available files and determine:
+
+1. Which textbooks are accessible.
+2. Which textbooks contain extractable text.
+3. Which PDFs require scanned-page text extraction.
+4. Which language proficiency levels each covers.
+5. Which grammar topics each covers.
+6. Which vocabulary topics each covers.
+7. Which exercises and teaching methods they use.
+8. Which subjects overlap.
+9. Which subjects are missing from the combined curriculum.
+10. Which explanations appear inconsistent or require verification.
+
+Do not assume a textbook has been successfully processed until its relevant content has actually been extracted and analyzed.
+
+If some PDF files are missing or inaccessible, identify them accurately. Never invent their contents.
+
+## 1.2 Efficient multi-document processing
+
+Do not attempt to load all 12 complete PDFs into one model request if doing so risks exceeding available context.
+
+Instead, use an incremental processing workflow.
+
+For each textbook:
+
+1. Extract or read its accessible instructional content.
+2. Identify grammar topics.
+3. Identify vocabulary themes.
+4. Identify learning objectives.
+5. Identify useful exercise formats.
+6. Identify the approximate teaching difficulty.
+7. Produce a compact structured internal content inventory.
+8. Store the inventory in persistent project files when supported.
+9. Continue with the next textbook.
+
+Process the textbooks individually or in small batches as necessary.
+
+Do not repeatedly reprocess PDFs that have already been successfully analyzed.
+
+Maintain an internal source-to-topic mapping so educational claims can be checked later.
+
+This mapping is for internal content management and verification, not for displaying textbook page references throughout the learning interface.
+
+If scanning or extraction is unavailable for some pages, record the limitation rather than inventing their contents.
+
+## 1.3 Synthesize the textbooks into one course
+
+After processing the available textbooks, create a unified curriculum.
+
+Do not simply concatenate textbook chapters.
+
+Do not organize lessons according to the order in which textbooks were uploaded.
+
+Instead:
+
+- Identify the best instructional sequence.
+- Combine overlapping explanations.
+- Remove unnecessary duplication.
+- Resolve inconsistencies using reliable linguistic evidence.
+- Select the clearest beginner-level explanations.
+- Preserve important advanced linguistic concepts for later lessons.
+- Fill pedagogical gaps using established Ukrainian language knowledge, clearly distinguishing added material from source-derived material in internal records.
+- Introduce grammar when students have the vocabulary and prerequisite knowledge needed to understand it.
+
+The final curriculum should feel like one original, professionally designed language course.
+
+It should not feel like 12 separate textbooks stitched together.
+
+## 1.4 Copyright and source-reference requirements
+
+Use the textbooks to understand linguistic facts, curriculum coverage, teaching approaches, and grammatical concepts.
+
+Create original instructional explanations, original dialogues, and original exercises.
+
+Do not reproduce extended textbook passages, copyrighted exercise sets, or substantial proprietary content verbatim.
+
+Remove unnecessary textbook author names, book titles, publishers, page numbers, chapter citations, and section references from the student-facing lessons.
+
+Preserve legally required attribution in an appropriate legal or acknowledgments location if necessary.
+
+Keep source traceability internally without cluttering the educational interface.
+
+---
+
+# PART 2 — REBUILD THE GRAMMAR CURRICULUM USING EFFECTIVE LEARNING PRINCIPLES
+
+## 2.1 Learning philosophy
+
+Build the curriculum around evidence-informed language-learning approaches.
+
+Use:
+
+- Comprehensible input.
+- Structured scaffolding.
+- Explicit grammar explanations when useful.
+- Active recall.
+- Spaced repetition.
+- Retrieval practice.
+- Interleaved review.
+- Contextual vocabulary acquisition.
+- Communicative language teaching.
+- Task-based learning.
+- Gradual difficulty progression.
+- Immediate corrective feedback.
+- Repeated exposure to high-utility vocabulary.
+- Meaningful reading and listening practice.
+- Opportunities for productive language use.
+
+Do not assume one teaching method is universally best for every student or linguistic skill.
+
+Combine complementary approaches where appropriate.
+
+The main objective is to help students understand, remember, and actually use Ukrainian.
+
+## 2.2 Restructure the curriculum by proficiency
+
+Use CEFR principles to organize learning progression.
+
+Treat A0 as an introductory pre-A1 stage rather than an official CEFR level.
+
+### A0 — Absolute Beginner
+
+- Ukrainian alphabet.
+- Cyrillic reading.
+- Pronunciation fundamentals.
+- Word stress.
+- Greetings.
+- Introducing yourself.
+- Formal versus informal communication.
+- Basic pronouns.
+- Simple sentence patterns.
+- Yes/no questions.
+- Question words.
+- Basic negation.
+- Essential everyday expressions.
+
+### A1 — Beginner
+
+- Noun gender.
+- Common nouns.
+- Singular and plural.
+- Present-tense verbs.
+- Basic adjective agreement.
+- Everyday conversations.
+- Expressing likes and wants.
+- Common prepositions.
+- Introductory grammatical cases.
+- Family, food, work, hobbies, and daily activities.
+- Basic past tense.
+
+### A2 — Elementary
+
+- Expanded noun declension.
+- More complete pronoun and adjective inflection.
+- Past and future tense.
+- Verb aspect.
+- Common motion verbs.
+- Directions and transportation.
+- Travel and daily errands.
+- Comparisons.
+- Sentence connectors.
+- More complex conversations.
+
+### B1 — Intermediate
+
+- More sophisticated case usage.
+- Detailed verb aspect.
+- Motion verbs and prefixes.
+- Longer narratives.
+- Complex sentence patterns.
+- Conditional expressions.
+- Natural conversation strategies.
+- Increased reading comprehension.
+
+### B2–C1 — Upper Intermediate and Advanced
+
+- Complex grammatical structures.
+- Advanced syntax.
+- Nuanced aspect and word choice.
+- Idiomatic expressions.
+- Stylistic variation.
+- More advanced listening and reading.
+- Abstract discussions.
+- Natural extended communication.
+
+Do not assign CEFR levels based solely on vocabulary counts or an arbitrary lesson sequence.
+
+Ensure each lesson introduces concepts only after the necessary prerequisites have been taught.
+
+---
+
+# PART 3 — REWRITE AND EXPAND THE GRAMMAR LESSONS
+
+Every lesson must use clear, beginner-friendly English.
+
+Assume the student has no knowledge of Slavic languages.
+
+Explain unfamiliar grammatical terminology before using it.
+
+Avoid overly academic explanations.
+
+Each lesson should contain, where appropriate:
+
+1. Lesson title.
+2. Clear learning objectives.
+3. Essential vocabulary.
+4. Simple explanation.
+5. Grammar pattern or rule.
+6. Worked Ukrainian examples.
+7. English translations.
+8. Guided practice.
+9. Active-recall exercise.
+10. Real-life conversational application.
+11. Knowledge check.
+12. Short summary.
+13. Mastery assessment.
+
+### Example of improved instruction
+
+Instead of:
+
+"The accusative singular feminine declension transforms the nominal ending -а to -у."
+
+Teach:
+
+"In Ukrainian, some words change their endings depending on their role in the sentence.
+
+For example:
+
+книга — book
+
+Я читаю книгу. — I am reading a book.
+
+Notice how книга becomes книгу.
+
+This happens because 'book' is the direct object of the sentence. Ukrainian often uses the accusative case for direct objects.
+
+Let's practice with three more examples."
+
+The explanation must be linguistically accurate, but easy for an English-speaking beginner to understand.
+
+Use clear tables only when they genuinely improve comprehension.
+
+Do not overload introductory lessons with complete seven-case paradigms.
+
+Keep advanced details available through optional grammar explanations and the existing inspector.
+
+---
+
+# PART 4 — BUILD A NEW "EVERYDAY VOCABULARY" TAB
+
+## 4.1 Main requirement
+
+Create a completely new top-level navigation tab called:
+
+**Everyday Vocabulary**
+
+This must be a functioning learning feature, not just a static word list.
+
+Integrate it with the existing Slovo UA interface, design system, saved progress, pronunciation system, grammar inspector, and spaced-repetition functionality.
+
+Preserve the current Material 3 Expressive-inspired appearance and mobile-friendly navigation.
+
+Make it easy to use on the iPhone 16 Pro Max.
+
+The new tab should help students acquire practical words needed for conversations and everyday life in Ukraine.
+
+## 4.2 Vocabulary categories
+
+Organize words into meaningful categories.
+
+Start with the following categories, expanding or subdividing them when educationally useful:
+
+1. Greetings and introductions.
+2. People and relationships.
+3. Family.
+4. Home and household objects.
+5. Food and drinks.
+6. Cooking and kitchen vocabulary.
+7. Restaurants and cafés.
+8. Shopping and money.
+9. Clothing and accessories.
+10. Body and health.
+11. Feelings and emotions.
+12. Daily routines.
+13. Common actions and verbs.
+14. Time, days, and dates.
+15. Numbers and quantities.
+16. Weather and seasons.
+17. Transportation.
+18. Travel and hotels.
+19. Directions and locations.
+20. Work and professions.
+21. School and education.
+22. Technology and electronics.
+23. Hobbies and entertainment.
+24. Sports and exercise.
+25. Nature and the environment.
+26. Describing people and objects.
+27. Common adjectives.
+28. Essential adverbs.
+29. Common prepositions.
+30. Everyday questions and useful expressions.
+
+The initial experience should prioritize the most practical categories rather than overwhelming students with all categories at once.
+
+Allow students to browse all categories when they choose.
+
+Each category should contain structured vocabulary lessons at appropriate proficiency levels.
+
+Do not fill categories with invented words merely to achieve a target quantity.
+
+---
+
+# PART 5 — VOCABULARY CONTENT STRUCTURE
+
+Every vocabulary entry should contain accurate, relevant information.
+
+## 5.1 Required learning information
+
+For each vocabulary entry, include:
+
+- Ukrainian word or expression.
+- Natural English translation.
+- Part of speech.
+- Correct word stress when reliably known.
+- Grammatical gender for nouns, where applicable.
+- Verb aspect for verbs, where relevant.
+- Short English explanation.
+- Natural example sentence.
+- English translation of the example.
+- Relevant proficiency level estimate.
+- Category and subcategory.
+- Optional common alternative meanings.
+- Optional usage notes.
+- Pronunciation playback.
+
+Make the vocabulary explanations concise but useful.
+
+## 5.2 Example vocabulary entry
+
+**Word:** зустрі́ч
+
+**English:** meeting; encounter
+
+**Part of speech:** feminine noun
+
+**Explanation:**
+
+"Зустріч" means a meeting or encounter. You can use it when talking about meeting friends, having an appointment, or attending a work meeting.
+
+**Example:**
+
+У мене сьогодні зустріч.
+
+I have a meeting today.
+
+**Useful expression:**
+
+До зустрічі!
+
+See you!
+
+**Grammar note:**
+
+"Зустріч" is a feminine noun. Its grammatical form can change depending on its role in the sentence.
+
+The learner should be able to hear the pronunciation, inspect the grammar, save the word, and practice using it.
+
+## 5.3 Vocabulary quality requirements
+
+Use real, contemporary Ukrainian vocabulary.
+
+Verify uncertain forms using reliable linguistic evidence when available.
+
+Avoid:
+
+- Invented words.
+- Incorrect translations.
+- Unnatural expressions.
+- Misleading stress marks.
+- Duplicate entries with identical meanings.
+- Incorrect parts of speech.
+- Arbitrary frequency rankings.
+- Incorrect CEFR classifications.
+
+Distinguish a word's dictionary form from its inflected forms.
+
+Handle common expressions and multiword phrases as complete learning items when appropriate.
+
+Do not assume mechanically generated word combinations are valid Ukrainian vocabulary.
+
+---
+
+# PART 6 — EVERYDAY VOCABULARY USER EXPERIENCE
+
+Build the tab around a simple learning workflow.
+
+## 6.1 Category dashboard
+
+Display a grid or list of vocabulary categories.
+
+Each category should show:
+
+- Category name.
+- Suitable icon.
+- Short description.
+- Number of available verified vocabulary entries.
+- Number of words learned.
+- Review progress.
+- Learning level or level filter.
+
+Allow filtering by A0, A1, A2, B1, B2, and C1 where enough reliable content exists.
+
+## 6.2 Vocabulary lesson view
+
+When the student opens a category, display manageable learning sets.
+
+Use approximately 5–15 new vocabulary items per lesson, with smaller sets for difficult material.
+
+Each entry should show its Ukrainian word, meaning, pronunciation control, and optional explanation.
+
+Allow students to reveal more detailed examples and grammar information.
+
+Students should be able to:
+
+- Listen to the word.
+- Reveal its English translation.
+- Read an example sentence.
+- Open grammar explanations.
+- Save the word for review.
+- Practice the word.
+- Mark the word as familiar where appropriate.
+
+Do not overwhelm the interface with unnecessary information.
+
+## 6.3 Daily vocabulary learning
+
+Add a configurable daily new-word goal.
+
+Suggested options:
+
+- 5 words per day.
+- 10 words per day.
+- 15 words per day.
+- 20 words per day.
+- Custom goal.
+
+Prioritize appropriate new vocabulary while also showing words due for review.
+
+Allow students to browse categories freely without disrupting their daily review schedules.
+
+---
+
+# PART 7 — VOCABULARY QUIZZES AND EXERCISES
+
+The new vocabulary tab must include an integrated practice system.
+
+Each category should have exercises that reinforce memory and usage.
+
+## 7.1 Exercise types
+
+Implement the following where supported by the existing application.
+
+### Exercise 1 — Ukrainian to English
+
+Show:
+
+"яблуко"
+
+Ask:
+
+"What does this word mean?"
+
+Student selects or enters:
+
+"Apple"
+
+### Exercise 2 — English to Ukrainian
+
+Show:
+
+"Apple"
+
+Ask the student to recall the Ukrainian word.
+
+Correct answer:
+
+"Яблуко"
+
+Allow reasonable handling of capitalization and stress marks without hiding genuine spelling mistakes.
+
+### Exercise 3 — Fill in the blank
+
+Show:
+
+"Я п'ю _____."
+
+English meaning:
+
+"I am drinking coffee."
+
+Expected answer:
+
+"каву"
+
+Explain why the correct grammatical form is used.
+
+### Exercise 4 — Sentence matching
+
+Match Ukrainian example sentences with their English meanings.
+
+### Exercise 5 — Choose the correct form
+
+Ask students to select the appropriate grammatical form in a complete sentence.
+
+### Exercise 6 — Sentence construction
+
+Ask students to build a natural Ukrainian sentence from words or produce an appropriate short answer.
+
+### Exercise 7 — Listening recognition
+
+Play Ukrainian audio and ask students to identify the spoken word or its meaning.
+
+Use this only when functioning audio is available.
+
+### Exercise 8 — Error correction
+
+Present a sentence with a purposeful vocabulary or grammar error.
+
+Ask students to identify and correct it.
+
+Only test grammatical structures already taught.
+
+## 7.2 Adaptive practice
+
+Use performance to adapt review priorities.
+
+When students repeatedly answer a vocabulary item incorrectly:
+
+- Provide clearer explanations.
+- Show an additional example.
+- Schedule further review.
+- Offer practice in a different context.
+
+When students consistently remember a word:
+
+- Reduce unnecessary repetition.
+- Introduce contextual examples.
+- Transition toward active production.
+
+Avoid treating recognition, translation, listening, and productive recall as identical skills.
+
+Where feasible, track them separately while avoiding duplicate vocabulary records.
+
+---
+
+# PART 8 — INTEGRATE WITH EXISTING SPACED REPETITION
+
+The existing application uses FSRS-style flashcard scheduling.
+
+Reuse this system when appropriate.
+
+Do not create an incompatible second review scheduler unless absolutely necessary.
+
+Integrate Everyday Vocabulary with the existing flashcard database through stable vocabulary identifiers.
+
+A student should be able to learn a word in a category and review that same word through the existing flashcard system.
+
+Avoid generating duplicate database records when a word appears in several categories.
+
+Preserve existing FSRS scheduling data.
+
+The learner should have access to:
+
+- New words.
+- Due reviews.
+- Recently learned words.
+- Difficult words.
+- Completed category lessons.
+- Vocabulary progress.
+
+Do not reset existing flashcard histories.
+
+Do not award duplicate experience points for repeated submissions of the same activity.
+
+---
+
+# PART 9 — CONNECT GRAMMAR AND VOCABULARY LEARNING
+
+Grammar and vocabulary should reinforce each other.
+
+Do not treat them as completely isolated learning systems.
+
+For example:
+
+When teaching the accusative case, use familiar everyday vocabulary such as:
+
+- кава → каву
+- книга → книгу
+- вода → воду
+
+Explain the changes clearly in context.
+
+When a student learns a new grammatical construction, provide opportunities to use previously learned vocabulary with that construction.
+
+When the student learns vocabulary, provide examples using grammar they have already studied.
+
+Create relationships between:
+
+- Grammar lessons.
+- Vocabulary categories.
+- Reading passages.
+- Flashcards.
+- Quizzes.
+- Sentence-building exercises.
+
+Where practical, link related lessons and vocabulary categories.
+
+Avoid overwhelming students with vocabulary or grammar they have not yet learned.
+
+Use appropriate scaffolding whenever unfamiliar material is necessary.
+
+---
+
+# PART 10 — IMPROVE READING AND CONVERSATIONAL PRACTICE
+
+Use the combined textbook knowledge and validated educational content to improve reading and conversational exercises.
+
+Create original graded reading passages.
+
+Use authentic everyday contexts.
+
+### A0 example
+
+Привіт! Мене звати Олена.
+
+Hello! My name is Olena.
+
+### A1 example
+
+Мене звати Олена. Я живу у Львові. Щоранку я п'ю каву і читаю книгу.
+
+My name is Olena. I live in Lviv. Every morning, I drink coffee and read a book.
+
+Gradually introduce longer passages as students progress.
+
+Allow students to tap Ukrainian words and open their vocabulary or grammar information.
+
+Ensure audio matches the displayed text.
+
+Include short comprehension questions appropriate to the learner's level.
+
+Create practical dialogues involving:
+
+- Meeting friends.
+- Ordering food.
+- Shopping.
+- Traveling.
+- Discussing work.
+- Family conversations.
+- Making plans.
+- Talking about hobbies.
+- Describing personal preferences.
+
+Do not copy lengthy dialogues directly from the textbooks.
+
+Create original dialogues based on common communicative needs.
+
+---
+
+# PART 11 — EDUCATIONAL ACCURACY AND LANGUAGE QUALITY
+
+All Ukrainian content must use contemporary standard Ukrainian by default.
+
+Check for:
+
+- Correct spelling.
+- Correct stress.
+- Natural word choice.
+- Accurate translations.
+- Gender agreement.
+- Grammatical cases.
+- Correct conjugation.
+- Verb aspect.
+- Correct prepositions.
+- Appropriate sentence structure.
+- Natural conversational usage.
+
+Differentiate formal, informal, colloquial, and regional expressions when relevant.
+
+If the 12 textbooks disagree, do not arbitrarily select one explanation.
+
+Compare available evidence and use the most linguistically sound explanation.
+
+Where uncertainty remains, avoid presenting unsupported claims as certain.
+
+Automated code checks cannot verify every linguistic fact. Keep linguistic verification separate from code validation.
+
+---
+
+# PART 12 — TECHNICAL IMPLEMENTATION REQUIREMENTS
+
+## 12.1 Preserve the existing application
+
+Do not unnecessarily replace the app architecture.
+
+Preserve:
+
+- Existing navigation.
+- Existing FSRS review functionality.
+- Existing vocabulary catalog.
+- Grammar inspector.
+- Pronunciation playback.
+- Course modules.
+- Reader.
+- Sentence-correction system.
+- User progress.
+- Local storage or existing persistence.
+- Light and dark themes.
+- Responsive mobile design.
+- iPhone 16 Pro Max optimization.
+
+Integrate the new Everyday Vocabulary tab into the existing navigation.
+
+On smaller screens, adapt navigation so the new tab remains accessible without overcrowding the interface.
+
+## 12.2 Maintainable data design
+
+Use a structured data model for vocabulary and lessons.
+
+Where appropriate, include fields such as:
+
+- Stable vocabulary ID.
+- Ukrainian lemma.
+- English meaning.
+- Part of speech.
+- Category IDs.
+- Difficulty estimate.
+- Stress-marked display form.
+- Example sentence.
+- Example translation.
+- Grammar metadata.
+- Related lesson IDs.
+- Verification status.
+
+Use reusable components for vocabulary displays, exercise types, and explanations.
+
+Do not hardcode enormous duplicate content blocks into multiple UI components.
+
+Prefer maintainable, reusable educational data structures suited to the existing project.
+
+## 12.3 Persistence
+
+Track relevant vocabulary progress.
+
+Preserve stable mappings between vocabulary items, lessons, and review records.
+
+Do not erase previously saved progress.
+
+Implement migrations when necessary.
+
+Avoid marking vocabulary as mastered simply because it has been displayed or viewed.
+
+---
+
+# PART 13 — IMPLEMENTATION PHASES
+
+Execute the project in this sequence.
+
+## Phase 1 — Inspect and protect the application
+
+Inspect the existing project.
+
+Identify critical code dependencies.
+
+Verify the development server and preview currently work.
+
+Make a recoverable checkpoint where supported.
+
+If the dev server is not working, repair its startup before making large curriculum changes.
+
+## Phase 2 — Process the 12 textbooks
+
+Analyze each accessible textbook incrementally.
+
+Extract its educational topic coverage into structured project data.
+
+Create a combined grammar and vocabulary inventory.
+
+Identify overlaps and gaps.
+
+Do not pretend inaccessible PDFs were processed.
+
+## Phase 3 — Design the unified curriculum
+
+Combine the educational material.
+
+Reorganize grammar progression based on prerequisites, communicative needs, and appropriate difficulty.
+
+Preserve useful existing course content.
+
+Avoid copying the original textbook structures.
+
+## Phase 4 — Rewrite A0 and A1
+
+Prioritize absolute beginner and beginner content.
+
+Create clear English explanations, examples, exercises, and assessments.
+
+Fill essential learning gaps.
+
+## Phase 5 — Improve A2 through C1
+
+Integrate additional grammatical concepts and more advanced language skills progressively.
+
+## Phase 6 — Build Everyday Vocabulary
+
+Create the navigation tab, categories, word displays, explanations, pronunciation controls, and progress tracking.
+
+Use verified vocabulary.
+
+## Phase 7 — Add vocabulary quizzes
+
+Build and integrate memory exercises, active-recall practice, contextual tests, listening exercises where supported, and corrective feedback.
+
+## Phase 8 — Integrate learning systems
+
+Connect everyday vocabulary to the existing FSRS scheduling, grammar inspector, related lessons, and relevant reading material.
+
+## Phase 9 — Test and refine
+
+Verify educational content integrity and application behavior.
+
+Run available code checks and inspect the preview.
+
+Fix regressions before finishing.
+
+Do not perform unnecessarily large rewrites when smaller validated changes can achieve the same objectives.
+
+---
+
+# PART 14 — QUALITY ASSURANCE
+
+After implementing each major feature, verify:
+
+1. The application starts successfully.
+2. Existing navigation still works.
+3. The new Everyday Vocabulary tab appears.
+4. Vocabulary categories open correctly.
+5. Word explanations display properly.
+6. Audio pronunciation works where configured.
+7. Grammar inspection still functions.
+8. Vocabulary exercises accept correct answers.
+9. Incorrect answers receive useful feedback.
+10. Exercise answers are linguistically valid.
+11. Progress is saved.
+12. FSRS reviews remain compatible.
+13. Existing course modules still load.
+14. New curriculum material renders correctly.
+15. Reading text and speech remain aligned.
+16. Mobile layouts remain usable.
+17. Light and dark themes still work.
+18. No textbook-specific citations clutter the educational interface.
+19. No knowingly fabricated vocabulary is added.
+20. The development server still starts after modifications.
+
+Where possible, use automated checks for data integrity, duplicate detection, valid lesson references, quiz-answer consistency, and source-material processing status.
+
+Do not confuse successful automated tests with complete linguistic validation.
+
+---
+
+# PART 15 — COMPLETION REQUIREMENTS
+
+Implement the improvements directly in the existing project.
+
+Do not simply output a curriculum outline.
+
+Do not build a separate unrelated application.
+
+Do not delete existing courses, vocabulary, or review histories without an explicit and necessary migration strategy.
+
+At the end, provide a concise implementation summary containing:
+
+- Textbooks successfully processed.
+- Textbooks not processed and reasons.
+- Grammar topics integrated.
+- Curriculum changes completed.
+- Beginner lessons improved.
+- Everyday Vocabulary categories created.
+- Verified vocabulary entries imported or created.
+- Quiz types implemented.
+- Spaced-repetition integration status.
+- Application features tested.
+- Known limitations.
+- Remaining work.
+
+Only report work as complete when it has actually been implemented and appropriately verified.
+
+---
+
+# FINAL EXECUTION DIRECTIVE
+
+Transform Slovo UA into a comprehensive Ukrainian language-learning system that combines the strongest educational information from the 12 provided textbooks into one coherent curriculum.
+
+The application must prioritize:
+
+1. Clear English explanations.
+2. Linguistically accurate Ukrainian.
+3. Logical grammar progression.
+4. Everyday vocabulary acquisition.
+5. Comprehensible input.
+6. Practical communication skills.
+7. Active recall and spaced repetition.
+8. Effective memory testing.
+9. Meaningful corrective feedback.
+10. Long-term learning retention.
+
+The new Everyday Vocabulary tab is a major required feature and must be fully integrated into the existing application.
+
+**Begin by inspecting the project and verifying access to the textbook PDFs. Then process the source materials incrementally, improve the curriculum, and implement the new vocabulary-learning system. Preserve the existing app and verify functionality throughout.**
