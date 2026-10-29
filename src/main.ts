@@ -713,7 +713,7 @@ export function renderAnkiStage(): void {
   if (!bodyEl || !actionEl) return;
 
   if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 UK → EN Queue Complete!</h2><p style="color:var(--text-secondary); margin:0;">Add more verified words from the lexicon below or review another deck.</p></div>`;
+    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 UA → EN Queue Complete!</h2><p style="color:var(--text-secondary); margin:0;">Add more verified words from the lexicon below or review another deck.</p></div>`;
     actionEl.innerHTML = `<button class="btn btn-success" style="width:100%;" onclick="batchAddNextFrequencyWords(25)">+ Add Next 25 Words</button>`;
     return;
   }
@@ -806,7 +806,7 @@ export function renderEn2UkStage(): void {
   if (!bodyEl || !actionEl) return;
 
   if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 EN → UK Recall Queue Complete!</h2></div>`;
+    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 EN → UA Recall Queue Complete!</h2></div>`;
     actionEl.innerHTML = `<button class="btn btn-success" style="width:100%;" onclick="batchAddNextFrequencyWords(25)">+ Add Next 25 Words</button>`;
     return;
   }
@@ -819,7 +819,7 @@ export function renderEn2UkStage(): void {
   if (!en2ukFlipped) {
     bodyEl.innerHTML = `
       <div style="margin:auto 0;">
-        <span class="tag" style="background:var(--warn-container); color:var(--warn-on-container);">EN → UK Recall • #${item.rank} (${item.level})</span>
+        <span class="tag" style="background:var(--warn-container); color:var(--warn-on-container);">EN → UA Recall • #${item.rank} (${item.level})</span>
         <div class="anki-front-word" style="color:var(--text); font-size:clamp(24px, 6.5vw, 36px);">"${item.en}"</div>
         <div style="color:var(--text-secondary); font-size:13px; margin-bottom:12px;">Part of Speech: <b>${item.pos}</b> — Recall or type the Ukrainian word:</div>
         <input id="en2uk-user-guess" class="input-box" style="max-width:340px; width:100%; text-align:center;" placeholder="Optional: Type Ukrainian word..." onkeydown="if(event.key==='Enter') flipEn2UkCard()">
@@ -2954,7 +2954,13 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
   document
     .querySelectorAll('.nav-btn')
     .forEach((b) => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  if (btn) {
+    btn.classList.add('active');
+  } else {
+    document
+      .querySelector(`.nav-btn[onclick*="switchTab('${tab}'"]`)
+      ?.classList.add('active');
+  }
   if (tab === 'vocab') {
     renderEverydayVocabTab();
   }

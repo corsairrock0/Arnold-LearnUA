@@ -289,8 +289,8 @@ export function renderExampleBreakdown(props: ExampleBreakdownProps): string {
           <div class="vc-example-en">${props.en}</div>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; flex-shrink:0;">
-          <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="event.stopPropagation(); speakUkrainian('${escapeQuote(props.uk)}')">🔊 UK</button>
-          <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeQuote(`${props.uk}. ${props.en}`)}', 'uk')">🗣️ UK + EN</button>
+          <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="event.stopPropagation(); speakUkrainian('${escapeQuote(props.uk)}')">🔊 UA</button>
+          <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeQuote(`${props.uk}. ${props.en}`)}', 'uk')">🗣️ UA + EN</button>
         </div>
       </div>
       <div class="vc-example-why"><b>Why it works:</b> ${props.whyItWorks}</div>

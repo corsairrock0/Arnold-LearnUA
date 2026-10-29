@@ -1740,13 +1740,21 @@
                 <div>🔥 Reviews Done: <b id="drills-display" style="color:var(--success)">0</b></div>
                 <div>🏆 Course Mods: <b id="mods-display">0</b> / 29</div>
             </div>
-            <button class="nav-btn active" onclick="switchTab('srs', this)">
-                <span class="nav-icon" aria-hidden="true">🧠</span>
-                <span>UK→EN</span>
+            <button class="nav-btn active" onclick="switchTab('course', this)">
+                <span class="nav-icon" aria-hidden="true">🎓</span>
+                <span>Course</span>
             </button>
             <button class="nav-btn" onclick="switchTab('en2uk', this)">
                 <span class="nav-icon" aria-hidden="true">🔄</span>
-                <span>EN→UK</span>
+                <span>EN→UA</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab('srs', this)">
+                <span class="nav-icon" aria-hidden="true">🧠</span>
+                <span>UA→EN</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab('vocab', this)">
+                <span class="nav-icon" aria-hidden="true">🗂️</span>
+                <span>Vocab</span>
             </button>
             <button class="nav-btn" onclick="switchTab('correction', this)">
                 <span class="nav-icon" aria-hidden="true">🛠️</span>
@@ -1755,14 +1763,6 @@
             <button class="nav-btn" onclick="switchTab('phonetics', this)">
                 <span class="nav-icon" aria-hidden="true">✍️</span>
                 <span>Phonetics</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('course', this)">
-                <span class="nav-icon" aria-hidden="true">🎓</span>
-                <span>Course</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('vocab', this)">
-                <span class="nav-icon" aria-hidden="true">🗂️</span>
-                <span>Vocab</span>
             </button>
             <button class="nav-btn" onclick="switchTab('reader', this)">
                 <span class="nav-icon" aria-hidden="true">📖</span>
@@ -1775,8 +1775,8 @@
 
         <main class="main" id="main-scroll-container">
             <div class="content-area">
-                <!-- TAB 1: UK -> EN RECOGNITION ANKI -->
-                <section id="tab-srs" aria-label="Ukrainian to English Flashcards">
+                <!-- TAB 1: UA -> EN RECOGNITION ANKI -->
+                <section id="tab-srs" class="hidden" aria-label="Ukrainian to English Flashcards">
                     <div class="section-header">
                         <div>
                             <h1 class="section-title">Ukrainian → English Anki</h1>
@@ -1920,7 +1920,7 @@
                 </section>
 
                 <!-- TAB 5: STEP-BY-STEP UKRAINIAN COURSE (A0-C1, 29 MODULES) -->
-                <section id="tab-course" class="hidden" aria-label="Comprehensive Ukrainian Course">
+                <section id="tab-course" aria-label="Comprehensive Ukrainian Course">
                     <div class="section-header">
                         <div>
                             <h1 class="section-title">Step-by-Step Ukrainian Course (A0 → C1)</h1>
