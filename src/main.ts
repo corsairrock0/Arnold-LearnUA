@@ -15,6 +15,19 @@ import {
   CONTEXTUAL_CHOICE_EXERCISES,
   GRAMMAR_AWARE_EXERCISES,
 } from './everydayVocabData';
+import {
+  renderGrammarTable,
+  renderExampleBreakdown,
+  renderRuleAndException,
+  renderDeclensionExplorer,
+  renderConjugationExplorer,
+  renderAspectTimeline,
+  renderGrammarDiagram,
+  renderCommonMistake,
+  renderLessonReference,
+  renderKnowledgeCheck,
+  type StructuredCourseLesson,
+} from './courseVisualComponents';
 
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
@@ -1391,13 +1404,21 @@ export function renderCourseSyllabus(): void {
 
   const filterBarEl = document.getElementById('course-level-filter-bar');
   if (filterBarEl) {
+    const countA0 = COURSE_MODULES.filter((m) => m.level === 'A0').length;
+    const countA1 = COURSE_MODULES.filter((m) => m.level === 'A1').length;
+    const countA2 = COURSE_MODULES.filter((m) => m.level === 'A2').length;
+    const countB1 = COURSE_MODULES.filter((m) => m.level === 'B1').length;
+    const countB2C1 = COURSE_MODULES.filter(
+      (m) => m.level === 'B2' || m.level === 'C1'
+    ).length;
+
     const levels = [
-      { id: 'ALL', label: 'All 21 Modules' },
-      { id: 'A0', label: 'A0 Foundations (4)' },
-      { id: 'A1', label: 'A1 Beginner (4)' },
-      { id: 'A2', label: 'A2 Elementary (5)' },
-      { id: 'B1', label: 'B1 Intermediate (4)' },
-      { id: 'B2-C1', label: 'B2–C1 Advanced (4)' },
+      { id: 'ALL', label: `All ${COURSE_MODULES.length} Modules` },
+      { id: 'A0', label: `A0 Foundations (${countA0})` },
+      { id: 'A1', label: `A1 Beginner (${countA1})` },
+      { id: 'A2', label: `A2 Elementary (${countA2})` },
+      { id: 'B1', label: `B1 Intermediate (${countB1})` },
+      { id: 'B2-C1', label: `B2–C1 Advanced (${countB2C1})` },
     ];
     filterBarEl.innerHTML = levels
       .map(
@@ -1420,7 +1441,7 @@ export function renderCourseSyllabus(): void {
       const passed = db.passedMods.includes(m.id);
       return `
       <div class="module-card ${m.id === activeModId ? 'active' : ''}" onclick="selectCourseModule('${m.id}')">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; flex-wrap:wrap;">
           <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">${m.id} • ${m.level}</span>
           ${
             passed
@@ -1433,6 +1454,103 @@ export function renderCourseSyllabus(): void {
     `;
     })
     .join('');
+}
+
+export function inspectCourseWord(rawWord: string): void {
+  triggerHaptic('light');
+  const firstToken = rawWord
+    .split(/[,/—()]/)[0]
+    .replace(/[«»"“”.!?;:]/g, '')
+    .trim();
+  const cleanLower = firstToken.replace(/\u0301/g, '').toLowerCase();
+
+  const matchedVocab = FREQ_6000_DB.find(
+    (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === cleanLower
+  );
+
+  if (matchedVocab) {
+    inspectWordDeep(matchedVocab.rank, true, true);
+    return;
+  }
+
+  const m = COURSE_MODULES.find((x) => x.id === activeModId) || COURSE_MODULES[0];
+  const modVocabTuple = m.vocab.find(
+    ([uk]) => uk.replace(/\u0301/g, '').toLowerCase() === cleanLower
+  );
+
+  const synthItem: VocabItem = {
+    rank: 1,
+    ru: modVocabTuple ? modVocabTuple[0] : firstToken,
+    pos: modVocabTuple ? modVocabTuple[1] : 'NOUN',
+    en: modVocabTuple ? modVocabTuple[2] : 'Course Vocabulary Item',
+    level: m.level === 'A0' ? 'A1' : m.level,
+    exampleUk: modVocabTuple?.[3] || firstToken,
+    exampleEn: modVocabTuple?.[4] || '',
+    exUk: modVocabTuple?.[3] || firstToken,
+    exEn: modVocabTuple?.[4] || '',
+  };
+
+  const phon = generateUkrainianPhonetics(synthItem.ru);
+  const gram = generateGrammarBreakdown(synthItem);
+  const inspectorBody = document.getElementById('inspector-body');
+  if (inspectorBody) {
+    inspectorBody.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">Course Inspector • ${m.id}</span>
+      </div>
+      <div style="font-size:28px; font-weight:800; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(synthItem.ru)}')">🔊 ${synthItem.ru}</div>
+      <div style="font-size:13.5px; color:var(--text-secondary);">Sounds like: <b>${phon.plainGuide}</b> <span style="color:var(--accent); font-family:ui-monospace, monospace;">${phon.ipa}</span></div>
+      <div style="font-size:18px; font-weight:800; color:var(--success); margin:6px 0;">${synthItem.en}</div>
+      ${gram.tableHtml}
+    `;
+  }
+  if (typeof window !== 'undefined' && window.innerWidth <= 960) {
+    openInspectorSheet();
+  }
+  speakUkrainian(rawWord);
+}
+
+export function jumpToLessonSection(sectionId: string): void {
+  triggerHaptic('light');
+  const el = document.getElementById(sectionId);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function createCardRecord(rank: number) {
+  return {
+    rank,
+    state: 'new' as const,
+    interval: 0,
+    ease: 2.5,
+    due: Date.now(),
+  };
+}
+
+export function addModuleVocabToFSRS(modId: string): void {
+  triggerHaptic('heavy');
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  let added = 0;
+  for (const [uk] of m.vocab) {
+    const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase();
+    const matched = FREQ_6000_DB.find(
+      (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === cleanTarget
+    );
+    if (matched && !db.cards.some((c) => c.rank === matched.rank)) {
+      db.cards.push(createCardRecord(matched.rank));
+      added++;
+    }
+  }
+  if (added > 0) {
+    db.xp += added * 2;
+    saveDB();
+    renderAnkiStage();
+    renderEn2UkStage();
+    renderCorrectionStage();
+    renderSrsCatalog6000();
+  }
+  renderActiveModule();
 }
 
 export function speakCourseOverview(modId: string): void {
@@ -1464,8 +1582,14 @@ export function speakCourseDialogue(modId: string): void {
 }
 
 export function renderActiveModule(): void {
+  const modIndex = COURSE_MODULES.findIndex((x) => x.id === activeModId);
   const m: CourseModule =
-    COURSE_MODULES.find((x) => x.id === activeModId) || COURSE_MODULES[0];
+    modIndex >= 0 ? COURSE_MODULES[modIndex] : COURSE_MODULES[0];
+  const prevMod = modIndex > 0 ? COURSE_MODULES[modIndex - 1] : null;
+  const nextMod =
+    modIndex >= 0 && modIndex < COURSE_MODULES.length - 1
+      ? COURSE_MODULES[modIndex + 1]
+      : null;
 
   const levelEl = document.getElementById('active-mod-level');
   const refEl = document.getElementById('active-mod-ref');
@@ -1495,95 +1619,341 @@ export function renderActiveModule(): void {
   const box = document.getElementById('stage-content');
   if (!box) return;
 
+  const modNavFooter = `
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-subtle);">
+      ${
+        prevMod
+          ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="selectCourseModule('${prevMod.id}')">← Prev: ${prevMod.id} (${prevMod.title})</button>`
+          : `<span style="font-size:12px; color:var(--muted); font-weight:700;">Start of Course (Module 1 of ${COURSE_MODULES.length})</span>`
+      }
+      ${
+        nextMod
+          ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="selectCourseModule('${nextMod.id}')">Next Module: ${nextMod.id} (${nextMod.title}) →</button>`
+          : `<span style="font-size:12px; color:var(--muted); font-weight:700;">Final Module (${COURSE_MODULES.length} of ${COURSE_MODULES.length})</span>`
+      }
+    </div>
+  `;
+
   if (activeStage === 0) {
-    box.innerHTML = `
-      <div style="line-height:1.65; font-size:14.5px;">
-        <div style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
-            <b style="color:var(--accent); font-size:15px;">🎯 Learning Objectives & Overview</b>
-            <button class="btn btn-warn" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseOverview('${m.id}')">🗣️ Listen to Overview</button>
-          </div>
-          <ul style="margin:0 0 10px 18px; padding:0; color:var(--text); font-size:13.5px;">
-            ${m.objectives.map((obj) => `<li style="margin-bottom:4px;">${obj}</li>`).join('')}
-          </ul>
-          <p style="margin:0; color:var(--text-secondary); font-size:14px;">${m.summary}</p>
-        </div>
+    if (m.structuredLesson) {
+      const sl = m.structuredLesson as StructuredCourseLesson;
+      const jumpSections = [
+        { id: 'sec-learn', label: "A. What You'll Learn" },
+        { id: 'sec-big-idea', label: 'B. The Big Idea' },
+        { id: 'sec-action', label: 'C. See It in Action' },
+        { id: 'sec-pattern', label: 'D. Visual Patterns & Tables' },
+        { id: 'sec-steps', label: 'E. Step-by-Step Rules' },
+        { id: 'sec-more-ex', label: 'F. More Examples' },
+        { id: 'sec-exceptions', label: 'G. Exceptions' },
+        { id: 'sec-mistakes', label: 'H. Common Mistakes' },
+        { id: 'sec-inline-check', label: 'I. Practice It' },
+        { id: 'sec-dialogue', label: 'J. In Real Life' },
+        { id: 'sec-reference', label: 'K. Complete Reference' },
+        { id: 'sec-remember', label: 'L. What to Remember' },
+      ];
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:14px 0 8px 0;">
-          <h3 style="font-size:16px; margin:0; color:var(--text);">Step-by-Step Core Concepts:</h3>
-          <button class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakAllCourseRules('${m.id}')">🔊 Listen to All Concepts</button>
-        </div>
-        ${m.rules
-          .map(
-            (r, idx) =>
-              `<div style="padding:11px 13px; background:var(--surface-2); border-radius:var(--radius-sm); margin-bottom:8px; border-left:3px solid var(--accent); font-size:13.8px; cursor:pointer;" onclick="speakCourseRule('${m.id}', ${idx})">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-                  <div style="flex:1;">${r}</div>
-                  <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); speakCourseRule('${m.id}', ${idx})">🔊 Listen</button>
+      box.innerHTML = `
+        <div style="line-height:1.65; font-size:14.5px;">
+          <div class="vc-jump-bar" aria-label="Lesson Section Outline">
+            <span style="font-size:11.5px; font-weight:800; color:var(--text); align-self:center; margin-right:4px;">📑 Jump to Section:</span>
+            ${jumpSections
+              .map(
+                (sec) =>
+                  `<button type="button" class="vc-jump-btn" onclick="jumpToLessonSection('${sec.id}')">${sec.label}</button>`
+              )
+              .join('')}
+          </div>
+
+          <!-- A. WHAT YOU'LL LEARN -->
+          <div id="sec-learn" class="vc-section-block" style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+              <b style="color:var(--accent); font-size:15.5px;">🎯 A. What You’ll Learn in ${m.id}</b>
+              <button type="button" class="btn btn-warn" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseOverview('${m.id}')">🗣️ Listen to Overview</button>
+            </div>
+            <div style="font-size:12.5px; color:var(--text-secondary); font-weight:700; margin-bottom:6px;">By the end of this lesson, you will be able to:</div>
+            <ul style="margin:0 0 10px 18px; padding:0; color:var(--text); font-size:13.8px;">
+              ${m.objectives.map((obj) => `<li style="margin-bottom:5px;">${obj}</li>`).join('')}
+            </ul>
+            <p style="margin:0 0 10px 0; color:var(--text-secondary); font-size:13.8px;">${m.summary}</p>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:8px; border-top:1px solid var(--border-subtle); font-size:12px;">
+              ${sl.prerequisites
+                .map(
+                  (pr) =>
+                    `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary);">🧭 ${pr.label}</span>`
+                )
+                .join('')}
+              ${sl.relatedTopics
+                .map(
+                  (rt) =>
+                    `<span class="tag" style="background:var(--surface-1); color:var(--accent);">${rt}</span>`
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- B. THE BIG IDEA -->
+          <div id="sec-big-idea" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>💡 B. The Big Idea: ${sl.bigIdea.headline}</span>
+            </div>
+            <div style="background:var(--surface-2); border:1px solid var(--border-subtle); border-left:4px solid var(--accent); border-radius:var(--radius-md); padding:13px 15px;">
+              <p style="margin:0 0 8px 0; font-size:14px; color:var(--text);">${sl.bigIdea.plainEnglish}</p>
+              <p style="margin:0 0 8px 0; font-size:13.5px; color:var(--text-secondary);"><b>🇺🇸 How It Compares to English:</b> ${sl.bigIdea.englishComparison}</p>
+              <div style="background:var(--surface-1); padding:9px 12px; border-radius:var(--radius-sm); font-size:13px; color:var(--accent); font-weight:700;">
+                🔑 Study Strategy: ${sl.bigIdea.keyInsight}
+              </div>
+            </div>
+          </div>
+
+          <!-- C. SEE IT IN ACTION -->
+          <div id="sec-action" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>👀 C. See It in Action (Tap Any Sentence or Word to Hear & Inspect)</span>
+            </div>
+            ${sl.seeItInAction.map((ex) => renderExampleBreakdown(ex)).join('')}
+          </div>
+
+          <!-- D. UNDERSTAND THE PATTERN (TABLES & DIAGRAMS) -->
+          <div id="sec-pattern" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>📊 D. Understand the Pattern (Visual Tables & Sound Maps)</span>
+            </div>
+            ${sl.patternTables.map((tb) => renderGrammarTable(tb)).join('')}
+            ${(sl.declensions || []).map((dc) => renderDeclensionExplorer(dc)).join('')}
+            ${(sl.conjugations || []).map((cj) => renderConjugationExplorer(cj)).join('')}
+            ${(sl.aspectTimelines || []).map((at) => renderAspectTimeline(at)).join('')}
+            ${(sl.diagrams || []).map((dg) => renderGrammarDiagram(dg)).join('')}
+          </div>
+
+          <!-- E. STEP-BY-STEP EXPLANATION -->
+          <div id="sec-steps" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>🪜 E. Step-by-Step Explanation</span>
+              <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="speakAllCourseRules('${m.id}')">🔊 Listen to All Steps</button>
+            </div>
+            ${sl.stepByStep.map((step) => renderRuleAndException(step)).join('')}
+          </div>
+
+          <!-- F. MORE EXAMPLES -->
+          <div id="sec-more-ex" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>🔍 F. More Examples by Pattern</span>
+            </div>
+            ${sl.moreExamples
+              .map(
+                (grp) => `
+              <div style="margin-bottom:12px;">
+                <div style="font-weight:800; font-size:14px; color:var(--text); margin-bottom:2px;">${grp.groupTitle}</div>
+                <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:8px;">${grp.groupNote}</div>
+                ${grp.items.map((item) => renderExampleBreakdown(item)).join('')}
+              </div>
+            `
+              )
+              .join('')}
+          </div>
+
+          <!-- G. IMPORTANT EXCEPTIONS -->
+          <div id="sec-exceptions" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>⚡ G. Important Exceptions & Natural Speech Details</span>
+            </div>
+            ${sl.importantExceptions
+              .map(
+                (exc) => `
+              <div class="vc-exception-box" style="margin-bottom:10px;">
+                <div class="vc-exception-header">
+                  <span class="vc-exception-badge">${exc.badge}</span>
+                  <b>${exc.title}</b>
                 </div>
-              </div>`
-          )
-          .join('')}
-
-        <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">Worked Examples (Tap to Hear Ukrainian Audio):</h3>
-        ${m.examples
-          .map(
-            (ex) => `
-          <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(ex.uk)}')">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-              <div style="flex:1;">
-                <div style="font-weight:800; font-size:15.5px; color:var(--text);">🔊 ${ex.uk}</div>
-                <div style="color:var(--text-secondary); font-size:13px; margin-top:3px;">${ex.en}</div>
+                <div class="vc-exception-body">${exc.rule}</div>
+                <div class="vc-exception-ex-list">
+                  ${exc.examples
+                    .map(
+                      (e) =>
+                        `<button type="button" class="vc-mini-word-btn" onclick="inspectCourseWord('${escapeSingleQuotes(e.uk)}')">🔊 <b>${e.uk}</b> — ${e.en}${e.note ? ` <i>(${e.note})</i>` : ''}</button>`
+                    )
+                    .join('')}
+                </div>
               </div>
-              <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeSingleQuotes(`${ex.uk} ${ex.en}`)}', 'uk')">🗣️ UK + EN</button>
+            `
+              )
+              .join('')}
+          </div>
+
+          <!-- H. COMMON ENGLISH-SPEAKER MISTAKES -->
+          <div id="sec-mistakes" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>🛠️ H. Common English-Speaker Mistakes (And How to Avoid Them)</span>
+            </div>
+            ${sl.commonMistakes.map((cm) => renderCommonMistake(cm)).join('')}
+          </div>
+
+          <!-- I. PRACTICE IT (INLINE KNOWLEDGE CHECKS) -->
+          <div id="sec-inline-check" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>✏️ I. Practice It Right Now (Quick Interactive Checks)</span>
+            </div>
+            ${sl.embeddedChecks.map((kc) => renderKnowledgeCheck(kc, m.id)).join('')}
+          </div>
+
+          <!-- J. IN REAL LIFE (DIALOGUE) -->
+          <div id="sec-dialogue" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>💬 J. In Real Life: ${m.dialogue.title}</span>
+              <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="speakCourseDialogue('${m.id}')">🔊 Listen to Full Dialogue</button>
+            </div>
+            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">${sl.dialogueContextNote}</div>
+            <div style="background:var(--surface-2); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+              ${m.dialogue.lines
+                .map(
+                  (line) => `
+                <div style="padding:9px 11px; border-radius:var(--radius-sm); background:var(--surface-1); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.03em;">${line.speaker}</span>
+                    <button type="button" class="vc-audio-mini" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(line.uk)}')">🔊 Hear Line</button>
+                  </div>
+                  <div style="font-weight:800; font-size:15.5px; color:var(--text); margin-top:3px;">${line.uk}</div>
+                  <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">${line.en}</div>
+                </div>
+              `
+                )
+                .join('')}
             </div>
           </div>
-        `
-          )
-          .join('')}
 
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:18px 0 8px 0;">
-          <h3 style="font-size:16px; margin:0; color:var(--text);">💬 Real-Life Dialogue: ${m.dialogue.title}</h3>
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseDialogue('${m.id}')">🔊 Listen to Dialogue</button>
+          <!-- K. COMPLETE REFERENCE (EXPANDABLE DEEP DIVE) -->
+          <div id="sec-reference" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>📚 K. Complete Linguistic Reference</span>
+            </div>
+            ${renderLessonReference(sl.completeReference)}
+          </div>
+
+          <!-- L. WHAT TO REMEMBER & ACTIVE RECALL -->
+          <div id="sec-remember" class="vc-section-block">
+            <div class="vc-section-heading">
+              <span>📌 L. What to Remember & Active Recall</span>
+              <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">🔊 Listen Summary</button>
+            </div>
+            <div style="background:var(--accent-container); color:var(--accent-on-container); padding:13px 15px; border-radius:var(--radius-md); margin-bottom:12px;">
+              <ul style="margin:0 0 0 18px; padding:0; font-size:13.5px; font-weight:600;">
+                ${sl.whatToRemember.map((item) => `<li style="margin-bottom:5px;">${item}</li>`).join('')}
+              </ul>
+            </div>
+
+            <div style="font-weight:800; font-size:14px; color:var(--text); margin-bottom:8px;">⚡ Self-Test Flashcards (Tap to Reveal Ukrainian):</div>
+            <div style="display:grid; gap:8px; margin-bottom:14px;">
+              ${m.activeRecall
+                .map(
+                  (ar) => `
+                <details style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                  <summary style="cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text);">❓ How do you say "${ar.promptEn}" in Ukrainian? <span style="color:var(--muted); font-weight:500; font-size:12px;">(Hint: ${ar.hint})</span></summary>
+                  <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <b style="color:var(--success); font-size:15px;">✅ ${ar.answerUk}</b>
+                    <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="inspectCourseWord('${escapeSingleQuotes(ar.answerUk)}')">🔊 Hear & Inspect</button>
+                  </div>
+                </details>
+              `
+                )
+                .join('')}
+            </div>
+
+            <button class="btn" style="width:100%;" onclick="selectCourseStage(1)">Continue to Stage 2 — Knowledge Check (${m.cfu.length} Questions) →</button>
+            ${modNavFooter}
+          </div>
         </div>
-        <div style="background:var(--surface-2); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
-          ${m.dialogue.lines
+      `;
+    } else {
+      box.innerHTML = `
+        <div style="line-height:1.65; font-size:14.5px;">
+          <div style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+              <b style="color:var(--accent); font-size:15px;">🎯 Learning Objectives & Overview</b>
+              <button class="btn btn-warn" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseOverview('${m.id}')">🗣️ Listen to Overview</button>
+            </div>
+            <ul style="margin:0 0 10px 18px; padding:0; color:var(--text); font-size:13.5px;">
+              ${m.objectives.map((obj) => `<li style="margin-bottom:4px;">${obj}</li>`).join('')}
+            </ul>
+            <p style="margin:0; color:var(--text-secondary); font-size:14px;">${m.summary}</p>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:14px 0 8px 0;">
+            <h3 style="font-size:16px; margin:0; color:var(--text);">Step-by-Step Core Concepts:</h3>
+            <button class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakAllCourseRules('${m.id}')">🔊 Listen to All Concepts</button>
+          </div>
+          ${m.rules
             .map(
-              (line) => `
-            <div style="padding:8px 10px; border-radius:var(--radius-sm); background:var(--surface-1); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
-              <div style="font-size:12px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.03em;">${line.speaker}</div>
-              <div style="font-weight:700; font-size:15px; color:var(--text); margin-top:2px;">🔊 ${line.uk}</div>
-              <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">${line.en}</div>
+              (r, idx) =>
+                `<div style="padding:11px 13px; background:var(--surface-2); border-radius:var(--radius-sm); margin-bottom:8px; border-left:3px solid var(--accent); font-size:13.8px; cursor:pointer;" onclick="speakCourseRule('${m.id}', ${idx})">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                    <div style="flex:1;">${r}</div>
+                    <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); speakCourseRule('${m.id}', ${idx})">🔊 Listen</button>
+                  </div>
+                </div>`
+            )
+            .join('')}
+
+          <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">Worked Examples (Tap to Hear Ukrainian Audio):</h3>
+          ${m.examples
+            .map(
+              (ex) => `
+            <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(ex.uk)}')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div style="flex:1;">
+                  <div style="font-weight:800; font-size:15.5px; color:var(--text);">🔊 ${ex.uk}</div>
+                  <div style="color:var(--text-secondary); font-size:13px; margin-top:3px;">${ex.en}</div>
+                </div>
+                <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeSingleQuotes(`${ex.uk} ${ex.en}`)}', 'uk')">🗣️ UK + EN</button>
+              </div>
             </div>
           `
             )
             .join('')}
-        </div>
 
-        <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">⚡ Quick Active Recall Check (Tap to Reveal):</h3>
-        <div style="display:grid; gap:8px; margin-bottom:14px;">
-          ${m.activeRecall
-            .map(
-              (ar) => `
-            <details style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-              <summary style="cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text);">❓ ${ar.promptEn} <span style="color:var(--muted); font-weight:500; font-size:12px;">(Hint: ${ar.hint})</span></summary>
-              <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                <b style="color:var(--success); font-size:15px;">✅ ${ar.answerUk}</b>
-                <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="speakUkrainian('${escapeSingleQuotes(ar.answerUk)}')">🔊 Hear</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:18px 0 8px 0;">
+            <h3 style="font-size:16px; margin:0; color:var(--text);">💬 Real-Life Dialogue: ${m.dialogue.title}</h3>
+            <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseDialogue('${m.id}')">🔊 Listen to Dialogue</button>
+          </div>
+          <div style="background:var(--surface-2); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
+            ${m.dialogue.lines
+              .map(
+                (line) => `
+              <div style="padding:8px 10px; border-radius:var(--radius-sm); background:var(--surface-1); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
+                <div style="font-size:12px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.03em;">${line.speaker}</div>
+                <div style="font-weight:700; font-size:15px; color:var(--text); margin-top:2px;">🔊 ${line.uk}</div>
+                <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">${line.en}</div>
               </div>
-            </details>
-          `
-            )
-            .join('')}
-        </div>
+            `
+              )
+              .join('')}
+          </div>
 
-        <div style="background:var(--accent-container); color:var(--accent-on-container); padding:12px 14px; border-radius:var(--radius-md); font-size:13.5px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div style="flex:1;"><b>📌 Key Takeaway:</b> ${m.reviewSummary}</div>
-          <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">🔊 Listen</button>
-        </div>
+          <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">⚡ Quick Active Recall Check (Tap to Reveal):</h3>
+          <div style="display:grid; gap:8px; margin-bottom:14px;">
+            ${m.activeRecall
+              .map(
+                (ar) => `
+              <details style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <summary style="cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text);">❓ ${ar.promptEn} <span style="color:var(--muted); font-weight:500; font-size:12px;">(Hint: ${ar.hint})</span></summary>
+                <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                  <b style="color:var(--success); font-size:15px;">✅ ${ar.answerUk}</b>
+                  <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="speakUkrainian('${escapeSingleQuotes(ar.answerUk)}')">🔊 Hear</button>
+                </div>
+              </details>
+            `
+              )
+              .join('')}
+          </div>
 
-        <button class="btn" style="width:100%;" onclick="selectCourseStage(1)">Next: Stage 2 — Knowledge Check →</button>
-      </div>`;
+          <div style="background:var(--accent-container); color:var(--accent-on-container); padding:12px 14px; border-radius:var(--radius-md); font-size:13.5px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div style="flex:1;"><b>📌 Key Takeaway:</b> ${m.reviewSummary}</div>
+            <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">🔊 Listen</button>
+          </div>
+
+          <button class="btn" style="width:100%;" onclick="selectCourseStage(1)">Next: Stage 2 — Knowledge Check →</button>
+          ${modNavFooter}
+        </div>`;
+    }
   } else if (activeStage === 1) {
     box.innerHTML =
       m.cfu
@@ -1635,7 +2005,10 @@ export function renderActiveModule(): void {
       `<button class="btn" style="width:100%;" onclick="selectCourseStage(3)">Next: Stage 4 — Essential Vocabulary (${m.vocab.length} Words) →</button>`;
   } else if (activeStage === 3) {
     box.innerHTML = `
-      <p style="margin-top:0; font-size:13.5px; color:var(--text-secondary);">Tap any vocabulary word or example from <b>${m.id} (${m.title})</b> to hear its Ukrainian pronunciation or full explanation:</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+        <p style="margin:0; font-size:13.5px; color:var(--text-secondary);">Tap any vocabulary word from <b>${m.id} (${m.title})</b> to hear its Ukrainian pronunciation or inspect its 7-case forms:</p>
+        <button type="button" class="btn btn-success" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="addModuleVocabToFSRS('${m.id}')">+ Add Module Words to FSRS Deck</button>
+      </div>
       ${m.vocab
         .map(([uk, pos, en, exUk, exEn], idx) => {
           const p = generateUkrainianPhonetics(uk);
@@ -1652,7 +2025,7 @@ export function renderActiveModule(): void {
           };
           const gram = generateGrammarBreakdown(tempItem);
           return `
-          <div class="freq-row" onclick="speakUkrainian('${escapeSingleQuotes(uk)}')" style="cursor:pointer;">
+          <div class="freq-row" onclick="inspectCourseWord('${escapeSingleQuotes(uk)}')" style="cursor:pointer;">
             <div style="flex:1; min-width:190px;">
               <span class="tag">${pos}</span>
               <b style="font-size:17px; color:var(--text); margin-left:4px;">🔊 ${uk}</b>
@@ -1665,6 +2038,7 @@ export function renderActiveModule(): void {
               }
             </div>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); inspectCourseWord('${escapeSingleQuotes(uk)}')">🔍 7-Case</button>
               ${
                 exUk
                   ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Example</button>`
@@ -1853,7 +2227,17 @@ export function inspectReaderWord(
 
   const passage =
     READER_PASSAGES.find((p) => p.id === passageId) || READER_PASSAGES[0];
-  const gloss = passage.glossary[cleanLower];
+  const rawGloss = passage.glossary[cleanLower];
+  const gloss =
+    typeof rawGloss === 'string'
+      ? {
+          surface: rawWord,
+          lemma: rawWord,
+          pos: 'NOUN',
+          en: rawGloss,
+          note: rawGloss,
+        }
+      : rawGloss;
 
   // Look up matching lemma or surface form in FREQ_6000_DB
   const targetLemma = gloss
@@ -1963,7 +2347,8 @@ export function initReader(): void {
         ${visiblePassages
           .map((p) => {
             const isAct = p.id === passage.id;
-            const shortTopic = p.genre.split('•')[1]?.trim() || p.genre;
+            const genreStr = p.genre || '';
+            const shortTopic = genreStr.split('•')[1]?.trim() || genreStr;
             return `
             <button type="button" class="reader-passage-card ${isAct ? 'active' : ''}" onclick="selectReaderPassage('${p.id}')">
               <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:3px;">
@@ -2632,6 +3017,9 @@ declare global {
     selectCourseModule: typeof selectCourseModule;
     selectCourseStage: typeof selectCourseStage;
     renderCourseSyllabus: typeof renderCourseSyllabus;
+    inspectCourseWord: typeof inspectCourseWord;
+    jumpToLessonSection: typeof jumpToLessonSection;
+    addModuleVocabToFSRS: typeof addModuleVocabToFSRS;
     speakCourseOverview: typeof speakCourseOverview;
     speakCourseRule: typeof speakCourseRule;
     speakAllCourseRules: typeof speakAllCourseRules;
@@ -2698,6 +3086,9 @@ if (typeof window !== 'undefined') {
   window.selectCourseModule = selectCourseModule;
   window.selectCourseStage = selectCourseStage;
   window.renderCourseSyllabus = renderCourseSyllabus;
+  window.inspectCourseWord = inspectCourseWord;
+  window.jumpToLessonSection = jumpToLessonSection;
+  window.addModuleVocabToFSRS = addModuleVocabToFSRS;
   window.speakCourseOverview = speakCourseOverview;
   window.speakCourseRule = speakCourseRule;
   window.speakAllCourseRules = speakAllCourseRules;

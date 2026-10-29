@@ -1,0 +1,329 @@
+{
+  "project": "LangoUA (Slovo UA) — Step-by-Step Ukrainian Course (A0 → C1) Visual & Pedagogical Redesign",
+  "lastUpdated": "2026-10-29",
+  "totalModules": 29,
+  "completedModulesCount": 29,
+  "remainingModulesCount": 0,
+  "completedModules": [
+    {
+      "id": "A0.1",
+      "level": "A0",
+      "title": "Reading the Ukrainian Alphabet & Clear Vowels",
+      "topicTag": "Pre-A1 Foundation • Alphabet & Vowels",
+      "status": "completed",
+      "sectionsImplemented": [
+        "A. What You'll Learn (4 concrete student-friendly learning goals + prerequisites & related links)",
+        "B. The Big Idea (Plain-English explanation of Ukrainian phonetic spelling & unstressed vowel clarity vs. English)",
+        "C. See It in Action (4 ExampleBreakdown cards with word-by-word segment chips, phonetic guides & audio)",
+        "D. Understand the Pattern (3 GrammarTables: 7 True Friends, 6 Look-Alikes, 7 Everyday Cyrillic Shapes + 2 GrammarDiagrams: 6 Core Simple Vowels Mouth-Position Grid & 5 Ukrainian Intonation Contours with SVG pitch curves)",
+        "E. Step-by-Step Explanation (5 numbered RuleAndException cards with formulas, audio pills & кіт/кит and за́мок/замо́к callouts)",
+        "F. More Examples (Grouped by sub-pattern with ExampleBreakdown cards)",
+        "G. Important Exceptions & Natural Speech Details (Zero present-tense 'to be' & Unstressed Vowel Harmony [е/и] and [о/у])",
+        "H. Common English-Speaker Mistakes (3 side-by-side ❌ vs. ✅ CommonMistake cards: unstressed О, Cyrillic look-alikes, and І vs. И)",
+        "I. Practice It (3 inline KnowledgeCheck items + Stage 2 Check & Stage 3 Practice Drills)",
+        "J. In Real Life (Breakfast table dialogue with context note & clickable audio lines)",
+        "K. Complete Reference (Expandable LessonReference preserving full 33-letter inventory, positional vowel harmony [еи]/[ие]/[оу], and ІК-1..ІК-5 intonation contours)",
+        "L. What to Remember (5-point takeaway checklist + 4 self-test Active Recall flashcards)"
+      ]
+    },
+    {
+      "id": "A0.2",
+      "level": "A0",
+      "title": "Key Ukrainian Consonants, Soft Sounds & The Apostrophe",
+      "topicTag": "Pre-A1 Foundation • Consonants & Palatalization",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Г [ɦ] vs. Ґ [ɡ], bilabial В [w/u̯], soft sign Ь, iotated vowels Я/Ю/Є/Ї, apostrophe rules after labials & Р, sibilant/velar clusters (Ж, Ч, Ш, Щ, Ц, Х), and final consonant voicing preservation"
+      ]
+    },
+    {
+      "id": "A0.3",
+      "level": "A0",
+      "title": "Everyday Greetings, Politeness & Introducing Yourself",
+      "topicTag": "Pre-A1 Foundation • Social Interaction & Etiquette",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering time-of-day greetings (Genitive ডо́брого ра́нку vs. Accusative До́брий день/ве́чір), Ти vs. Ви register, Як вас зва́ти? / Мене́ зва́ти..., patronymics (-ович/-івна/-ївна), and Diminutives & Vocative previews"
+      ]
+    },
+    {
+      "id": "A0.4",
+      "level": "A0",
+      "title": "Simple Sentences, Questions, Negation & Numbers 1–10",
+      "topicTag": "Pre-A1 Foundation • Sentence Building & Numbers 1–10",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Це/Ось/Он pointing structures, Так/Ні/Чи questions, Хто vs. Що, Devoicing Assimilation exception (ні́гті [nʲíxtʲi], ле́гко [lɛ́xko]), Numbers 0–10 with 1/2 gender agreement (оди́н/одна́/одне́, два/дві), and Counting Cases (1 + Nom. Sg., 2–4 + Nom. Pl., 5–10 + Gen. Pl.)"
+      ]
+    },
+    {
+      "id": "A1.1",
+      "level": "A1",
+      "title": "Noun Gender, Plurals & Describing Things with Adjectives",
+      "topicTag": "Core Grammar • Gender, Plurals & Adjective Agreement",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering grammatical gender (-Ø, -а/-я, -о/-е/-я), DeclensionExplorer for hard/soft adjectives & nouns, Nominative Plural rules (-и/-і/-а/-я), fleeting vowels (день → дні), -анин/-янин ethnonyms, and neuter -м’я/-ат- stems (ім’я́ → імена́, теля́ → теля́та)"
+      ]
+    },
+    {
+      "id": "A1.2",
+      "level": "A1",
+      "title": "Everyday Verbs in the Present & Past Tense",
+      "topicTag": "Core Grammar • Present & Past Tense Verbs",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Conjugation I (-ає/-уть, -ує/-ують) & Conjugation II (-ить/-ять) via ConjugationExplorer, stem-changing verbs (жи́ти → живу́, хоті́ти → хо́чу, могти́ → мо́жу, ї́сти, да́ти), labial -л- insertion (люблю́, сплю), and gender-based Past Tense (-в, -ла, -ло, -ли; ніс/міг)"
+      ]
+    },
+    {
+      "id": "A1.3",
+      "level": "A1",
+      "title": "Ordering Food, Café Conversations & The Accusative Case",
+      "topicTag": "Core Grammar • Direct Objects & Café Ordering",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Accusative Direct Objects (-а → -у, -я → -ю, adjective -у/-ю), Animate vs. Inanimate Masculine Accusative via DeclensionExplorer, destination prepositions у/в & на + Accusative, and partitive Genitive vs. Accusative food ordering"
+      ]
+    },
+    {
+      "id": "A1.4",
+      "level": "A1",
+      "title": "Family, Saying What You Have & Basic Locations (Genitive & Locative Intro)",
+      "topicTag": "Core Grammar • Possession, Absence & Location",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering У ме́не є + Nominative vs. У ме́не нема́є + Genitive, Locative case with у/в & на (-і/-ї/-у) and consonant mutations (г → з, к → ц, х → с: ріка́ → у ріці́, бібліоте́ка → у бібліоте́ці) via DeclensionExplorer, plus irregular family plurals (брати́, се́стри, ді́ти, лю́ди)"
+      ]
+    },
+    {
+      "id": "A2.1",
+      "level": "A2",
+      "title": "Talking About the Past, the Future & Completed Actions",
+      "topicTag": "Core Grammar • Verbal Aspect (Imperfective vs. Perfective) & 3 Future Tenses",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) featuring interactive AspectTimeline & ConjugationExplorer, Imperfective vs. Perfective aspect diagnostics, prefixation/suffixation/suppletion (бра́ти/взя́ти, говори́ти/сказа́ти, лови́ти/спійма́ти), and the 3 Future Tense forms (бу́ду чита́ти, чита́тиму, прочита́ю)"
+      ]
+    },
+    {
+      "id": "A2.2",
+      "level": "A2",
+      "title": "Giving, Helping & Doing Things Together (Dative & Instrumental)",
+      "topicTag": "Core Grammar • Dative (-ові/-еві vs. -у/-ю) & Instrumental (-ом/-ем/-ою/-ею/-ам’ям)",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for Dative (-ові/-еві/-єві vs. -у/-ю, mutations к→ц, г→з, х→с) & Instrumental (-ом/-ем/-ям, feminine -ою/-ею/-єю, -’ю doubling ні́ччю/сі́ллю vs. ма́тір’ю/любо́в’ю), age expressions (Мені́ два́дцять ро́ків), and Ми з бра́том inclusive constructions"
+      ]
+    },
+    {
+      "id": "A2.3",
+      "level": "A2",
+      "title": "Describing Things, Comparing Options & Feeling Well",
+      "topicTag": "Core Grammar • Adverbs, Comparatives, Superlatives & Dative Impersonals",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering adverbs (-о/-е vs. по-украї́нськи), synthetic (-рі/-іший with sibilant mutations до́рогий → доро́жчий, ви́сокий → ви́щий) & analytic comparatives, superlatives (най-, якнай-, щонай-), 6 irregular comparatives (кра́щий, гі́рший, бі́льший, ме́нший), ні/за + Acc. vs. від + Gen., and Dative feeling expressions"
+      ]
+    },
+    {
+      "id": "A2.4",
+      "level": "A2",
+      "title": "Reflexive Verbs (-ся), Daily Routines, Reciprocals & Double Negation",
+      "topicTag": "Core Grammar • Reflexive Verbs (-ся/-сь), Phase Verbs & Double Negation",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with ConjugationExplorer for умива́тися & учи́тися, 3rd sg. -ться [tʲsʲɐ] pronunciation rule, 5 functions of -ся (true reflexive, reciprocal, middle/intransitive, emotional state, impersonal Мені́ не спи́ться), phase verbs + infinitive, and mandatory Ukrainian multiple negation (Ніхто́ ніко́ли нічо́го не зна́є)"
+      ]
+    },
+    {
+      "id": "A2.5",
+      "level": "A2",
+      "title": "Telling Time, Dates, Seasons, Numbers 100–1,000,000 & Arithmetic",
+      "topicTag": "Core Grammar • Official vs. Conversational Clock Time, Dates & Large Numbers",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Kотра́ годи́на? vs. О котрі́й годи́ні?, conversational half-past (пів на + next feminine ordinal), quarter-past (чверть на + next) & minutes-to (за + Acc. + Nom. next hour), Genitive dates (два́дцять че́твертого се́рпня), seasonal cases, hundreds 100–900, and Ukrainian arithmetic operations"
+      ]
+    },
+    {
+      "id": "B1.1",
+      "level": "B1",
+      "title": "Moving Around: On Foot, By Vehicle & Prefixed Motion Verbs",
+      "topicTag": "Intermediate Grammar • Unidirectional vs. Multidirectional & Prefixed Motion Verbs",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with ConjugationExplorer & AspectTimeline covering the 4 core motion pairs (іти́/ходи́ти, ї́хати/ї́здити, бі́гти/бі́гати, леті́ти/літа́ти), transport pairs (нести́/носи́ти, везти́/вози́ти, вести́/води́ти), directional prefixes (при-, ви-, в-/у-, пере-, до-, за-, під-, від-, об-, роз-, з-), and the 3-way Where To / Where At / Where From spatial matrix"
+      ]
+    },
+    {
+      "id": "B1.2",
+      "level": "B1",
+      "title": "Direct Address (Vocative Case) & Polite Requests (Imperatives)",
+      "topicTag": "Intermediate Grammar • The 7th Case (Кличний відмінок) & Imperative Mood",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer & ConjugationExplorer covering Vocative endings (-е/-о/-ю/-у, consonant mutations дру́же/хло́пче/коза́че, double Vocative па́не профе́соре / па́ні Окса́но), Imperative mood (-и/-іть, -ь/-ьте, -й/-йте, 1st pl. -імо/-ймо), and Aspect in Negative vs. Positive Imperatives"
+      ]
+    },
+    {
+      "id": "B1.3",
+      "level": "B1",
+      "title": "Connecting Ideas (яки́й, щоб, тому́ що) & Counting with Cases",
+      "topicTag": "Intermediate Grammar • Relative Clauses, Purpose (щоб) & Numeral Case Agreement",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for яки́й across all 7 cases, same-subject (щоб + Infinitive) vs. different-subject (щоб + Past Tense) purpose clauses, causal connectors (тому́ що, бо, оскі́льки, Бо́же, за́вдяки + Dat. vs. че́рез + Acc.), indirect questions (чи), and the 1 / 2–4 / 5+ numeral counting rules including Genitive Plural zero-endings with fleeting О/Е"
+      ]
+    },
+    {
+      "id": "B1.4",
+      "level": "B1",
+      "title": "Mastering Ukrainian Prepositions: Spatial, Temporal & Causal Contrasts",
+      "topicTag": "Intermediate Grammar • Multi-Case Prepositions, З/ІЗ/ЗІ Euphony & Idiomatic Time/Cause",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering dual-case spatial prepositions (у/в, на, за, під, над, між: Accusative motion vs. Locative/Instrumental location), the 5-way English 'for' disambiguation (для + Gen., за + Acc., на + Acc., про́тягом + Gen., че́рез + Acc.), З/ІЗ/ЗІ euphony, and по + Locative"
+      ]
+    },
+    {
+      "id": "B1.5",
+      "level": "B1",
+      "title": "The 7-Case Declension System: Hard, Soft & Mixed Groups, Demonstratives (цей/той) & Possessives",
+      "topicTag": "Intermediate Grammar • Complete 4-Declension Noun Architecture & Pronominal Modifiers",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for цей/той, мій/наш, свій vs. його́/її́/ї́хній, Hard/Soft/Mixed (ж, ч, ш, щ, р) noun groups across Declensions I–IV, Masculine Genitive Singular -а/-я (concrete/countable) vs. -у/-ю (abstract/mass/process), and Genitive Plural (-ів/-їв, -ей, -Ø)"
+      ]
+    },
+    {
+      "id": "B1.6",
+      "level": "B1",
+      "title": "Declining Cardinal Numerals Across All 7 Cases, Ukrainian Holiday Traditions & Letter Etiquette",
+      "topicTag": "Intermediate Grammar • Oblique Numeral Declension (двох, п’яти́/п’ятьо́х) & Cultural Traditions",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for два дру́зі, п’ять міст, and оби́два/оби́дві/кі́лька across all 7 cases, stem vowel shifts in 6/7/8 (шести́/семи́/восьми́), 40/90/100 → сорока́/дев’яно́ста/ста, collective numerals (дво́є–три́дцятеро), Святи́й ве́чір & Вели́кдень traditions (діду́х, кутя́, пи́санка vs. кра́шанка), postal abbreviations, and Cossack compound surnames"
+      ]
+    },
+    {
+      "id": "B1.7",
+      "level": "B1",
+      "title": "Placing vs. Resting (кла́сти / лежа́ти / ляга́ти), Ukrainian Surnames, In-Laws & Applying",
+      "topicTag": "Intermediate Grammar • Positional Verbs (Placing vs. Resting), Surname Declension & Extended Family",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for Ukrainian surnames (-енко/-ко/-чук masculine vs. indeclinable feminine; -ський/-ська adjectival), the 4×3 positional verb matrix (кла́сти/покла́сти — лежа́ти — ляга́ти/лягти́ [ліг]; ста́вити — стоя́ти — става́ти; сади́ти — сиді́ти — сіда́ти/сі́сти [ся́ду, сів]; ві́шати — висі́ти), in-laws (те́ща/тесть vs. свекру́ха/све́кор, зять, неві́стка), and meat nouns in -ина"
+      ]
+    },
+    {
+      "id": "B1.8",
+      "level": "B1",
+      "title": "Regions & Natural Wonders of Ukraine: Kyiv, Lviv, the Carpathian Polonynas & the Black Sea Coast",
+      "topicTag": "Cultural & Geographical Mastery • Regional Heritage, Carpathian Highlands & Ecological Zones",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering Kyiv (Ки́ївська Русь, Пирогі́в — музе́й про́сто не́ба, котле́та по-ки́ївськи), Lviv (Королі́вство Ру́ське, кам’яни́ці на пло́щі Ри́нок, ра́туша, па́м’ятка архітекту́ри vs. па́м’ятник), Carpathians (Бески́ди, Горга́ни, Чорного́ра, гора́ Гове́рла 2061 м, полони́ни, ба́нуш), Black Sea (наси́чене сірково́днем ни́жче 200 м) & Danube Reserve, 3 ecological zones, and folk instruments/dances/attire"
+      ]
+    },
+    {
+      "id": "B1.9",
+      "level": "B1",
+      "title": "Real vs. Hypothetical Conditionals (якщо́ vs. якби́), Medical Care, University Life & Expressing Opinions",
+      "topicTag": "Intermediate Grammar • Real (якщо́ + Future) vs. Counterfactual (якби́ + Past) Conditionals & Medical Care",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) contrasting real future conditionals (якщо́ / як ті́льки / за умо́ви, що + Future), hypothetical conditionals (якби́ + Past, ... б/би + Past), explicit past counterfactuals (був би + Past), and two-word що б vs. one-word щоб, plus personal vs. Accusative impersonal medical symptoms (Мене́ моро́зить / ну́дить / лихома́нить) and university/opinion formulas"
+      ]
+    },
+    {
+      "id": "B1.10",
+      "level": "B1",
+      "title": "Safe Travel, Emergencies, Dental & Optical Care, and Sustainable Ecology",
+      "topicTag": "Practical B1 Mastery • Emergency Communication, Specialist Healthcare & Environmental Vocabulary",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) contrasting Я загуби́в па́спорт (misplaced), У ме́не вкра́ли су́мку (stolen), and Я заблука́в (lost one's way), emergency calls (Ви́кличте швидку́ допомо́гу / полі́цію!), dental & optical care (ви́пала пло́мба, знебо́лювання, ви́далити зуб, полаго́дити окуля́ри), and sustainable ecology (зда́ти на переро́бку, справедли́ва торгі́вля, навко́лишнє середо́вище, парнико́вий ефе́кт)"
+      ]
+    },
+    {
+      "id": "B2.1",
+      "level": "B2",
+      "title": "Hypotheticals (якби́ ... б), Impersonal Passive (-но / -то) & Verbal Adverbs",
+      "topicTag": "Upper-Intermediate Grammar • Impersonal Resultatives (-но/-то), Verbal Adverbs (Дієприслівники) & Word Families",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering invariable -но / -то impersonal resultatives (+ Accusative direct object, бу́ло/бу́де tense markers), present (-учи/-ючи) and past (-вши/-ши, -вшись) verbal adverbs with same-subject constraint, Я ба́чив, як... perception clauses, attenuative по- vs. ingressive за-, and the писа́ти, ста́вити / ставля́ти (ви́ставка vs. виста́ва), and роби́ти / робля́ти word families"
+      ]
+    },
+    {
+      "id": "B2.2",
+      "level": "B2",
+      "title": "Natural Ukrainian Syntax: Impersonal Sentences, Correlatives (чим... тим) & Modal Words",
+      "topicTag": "Upper-Intermediate Grammar • Subjectless Syntax, Чим... тим... Correlatives & Discourse Modals",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering 0-subject nature/time verbs (Світа́є, Вечорі́є, Сутені́є, Похолода́ло), Dative experiencers (Мені́ пощасти́ло, Нам вистача́є / браку́є ча́су), short predicate adjectives (пе́вен, по́вен + Gen., ви́нен, рад), па́хне + Instrumental, Чим + comparative ..., тим + comparative ..., and parenthetical modal connectors (ма́буть, безумо́вно, між і́ншим, зре́штою, щопра́вда)"
+      ]
+    },
+    {
+      "id": "B2.3",
+      "level": "B2",
+      "title": "Indefinite Pronouns (-сь / -не́будь / будь-), Stress-Shift Negatives (ні́кого / ні́коли) & Passive Participles",
+      "topicTag": "Upper-Intermediate Grammar • 4-Tier Indefinites, Negative Predicates (ні́коли vs. ніко́ли) & Passive Participles",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for хтось and де́хто (preposition splitting де́ з ким / будь у ко́го), the 4-tier indefinite system (-сь, -не́будь, де́-, будь-), meaning-changing stress shift in negatives (ніко́го / ніко́ли = never vs. ні́кого / ні́коли = no time / no one to...), passive past participles (-ний / -тий) + governed cases, and уве́сь vs. ці́лий"
+      ]
+    },
+    {
+      "id": "B2.4",
+      "level": "B2",
+      "title": "Possessive Adjectives (-ин/-їн & -ів/-їв), Short Adjectives (пови́нен, ви́нен, пе́вен), Masculine -а/-я Nouns & Emphatic «сам»",
+      "topicTag": "Upper-Intermediate Grammar • Possessive Adjectives (-ин/-їн, -ів/-їв), Short Predicates & Common-Gender Nouns",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) with DeclensionExplorer for бра́тів (бра́това, бра́тового) & Ю́ріїв (Ю́рієва), feminine possessives (-ин/-їн with mutations до́ччин, О́льжин, свекру́шин, Марі́їн), masculine possessives (-ів/-їв → -ов-/-ев-/-єв-), the 5 short masculine predicate adjectives (пови́нен, ви́нен, пе́вен, по́вен, рад), common-gender [m/f] (сирота́) vs. masculine-only [m] (суддя́ → су́ддів, дру́жба → дру́жбів), and emphatic сам"
+      ]
+    },
+    {
+      "id": "B2.5",
+      "level": "B2",
+      "title": "Business Ukrainian, Joint Ventures, Conversational Tactics, Exclamations & Word Families",
+      "topicTag": "Upper-Intermediate Mastery • Commercial Register, Governed Verbs, Discourse Openers & Idiomatic Exclamations",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering спі́льне підприє́мство vs. зага́льна су́ма ви́трат, high-frequency governed verbs (потребува́ти + Gen., спеціалізува́тися на + Loc., вважа́ти на + Acc. vs. вважа́ти + Inst.), conversational tactics (Річ у тім, що..., Йде́ться про..., Ма́ється на ува́зі...), idiomatic exclamations (Та Ви що!, Оце́ так несподі́ванка!, Хай йому́ грець!), and character/landscape vocabulary (розсу́дливий vs. легкова́жний, знаве́ць)"
+      ]
+    },
+    {
+      "id": "C1.1",
+      "level": "C1",
+      "title": "Mastering Ukrainian Euphony (у/в, і/й/та), Idioms & Nuanced Register",
+      "topicTag": "Advanced Mastery • Law of Euphony (Милозвучність), Authentic Collocations, Cultural Idioms & Stress Minimal Pairs",
+      "status": "completed",
+      "sectionsImplemented": [
+        "All 12 structured visual sections (A–L) covering the complete Law of Euphony (у/в, word-initial у-/в- учи́ться/вчи́ться, і/й/та, word-initial і-/й- іти́/йти, з/із/зі), authentic Ukrainian collocations (бра́ти у́часть, ма́ти ра́цію, на ча́сі, насту́пного ти́жня, про́тягом ро́ку, ста́ти лі́карем), cultural idioms (лови́ти гав, би́ти ба́йдики, не па́сти за́дніх, діста́ти гарбуза́, зниза́ти плечи́ма), stress minimal pairs (похо́дити/походи́ти, про́бувати/пробува́ти, ви́года/виго́да, за́мок/замо́к), and high-style verbal adverbs"
+      ]
+    }
+  ],
+  "remainingModules": [],
+  "reusableComponentsCreated": [
+    "GrammarTable",
+    "ExampleBreakdown",
+    "RuleAndException",
+    "DeclensionExplorer",
+    "ConjugationExplorer",
+    "GrammarDiagram",
+    "AspectTimeline",
+    "LessonReference",
+    "CommonMistake",
+    "KnowledgeCheck"
+  ],
+  "defectsFixed": [
+    "Replaced static HTML placeholder 'A0.1 / Level A0 / Module Title' in index.html (#active-mod-level, #active-mod-ref, #active-mod-title) with the real initial module metadata ('A0.1 • CEFR A0', 'Pre-A1 Foundation • Alphabet & Vowels', 'Reading the Ukrainian Alphabet & Clear Vowels').",
+    "Updated renderCourseSyllabus() in src/main.ts to compute CEFR level counts dynamically from COURSE_MODULES (All 29 Modules, A0: 4, A1: 4, A2: 5, B1: 10, B2–C1: 6) instead of stale hardcoded 21-module labels.",
+    "Transformed all 29 course modules (A0.1 through C1.1) to include full 12-section structuredVisualLesson datasets with interactive DeclensionExplorer, ConjugationExplorer, AspectTimeline, GrammarTable, GrammarDiagram, CommonMistake, KnowledgeCheck, and expandable LessonReference components while preserving 100% of underlying grammatical depth."
+  ],
+  "issues": []
+}

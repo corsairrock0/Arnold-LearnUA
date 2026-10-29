@@ -32,6 +32,7 @@ test('1. Zero textbook references (Pugh, Press, Routledge, §) across all source
         'src/courseDataA0A1.ts',
         'src/courseDataA2C1.ts',
         'src/courseData.ts',
+        'src/courseVisualComponents.ts',
         'src/readerData.ts',
         'src/readerExtraData.ts',
         'src/main.ts'
@@ -178,7 +179,7 @@ test('5. Course Curriculum (29 modules A0.1-C1.1): structure, dialogues, recall 
             });
             assert.equal(gData.exampleRu, exUk, `Module ${mod.id} vocab ${uk} exampleRu mismatch`);
             assert.equal(gData.exampleEn, exEn, `Module ${mod.id} vocab ${uk} exampleEn mismatch`);
-            assert.ok(gData.spokenSummary.includes(exUk), `Module ${mod.id} vocab ${uk} spokenSummary does not include its exact card example '${exUk}'`);
+            assert.ok(gData.spokenSummary.includes(exUk || ''), `Module ${mod.id} vocab ${uk} spokenSummary does not include its exact card example '${exUk}'`);
         }
         assert.equal(mod.exam.length, 6, `Module ${mod.id} should have 6 mastery exam questions`);
 
@@ -235,5 +236,60 @@ test('7. Everyday Vocabulary & Memory Lab: 27 categories, tolerant Ukrainian ans
     assert.ok(SENTENCE_CONSTRUCTION_EXERCISES.length >= 37, 'Expected at least 37 sentence construction exercises');
     assert.ok(CONTEXTUAL_CHOICE_EXERCISES.length >= 37, 'Expected at least 37 contextual choice exercises');
     assert.ok(GRAMMAR_AWARE_EXERCISES.length >= 37, 'Expected at least 37 grammar-aware exercises');
+});
+
+test('8. Visual Course Redesign (All 29 Modules A0.1–C1.1): structuredLesson sections, visual components, and zero Module Title placeholders', async () => {
+    const {
+        renderGrammarTable,
+        renderGrammarDiagram,
+        renderLessonReference,
+        renderExampleBreakdown,
+        renderRuleAndException,
+        renderCommonMistake,
+        renderKnowledgeCheck
+    } = await import('../courseVisualComponents.ts');
+
+    for (const mod of COURSE_MODULES) {
+        assert.ok(mod.structuredLesson, `Expected module ${mod.id} (${mod.title}) to have a structuredLesson`);
+        const sl = mod.structuredLesson;
+        assert.ok(sl.bigIdea && sl.bigIdea.headline && sl.bigIdea.plainEnglish, `Module ${mod.id} missing bigIdea`);
+        assert.ok(sl.seeItInAction && sl.seeItInAction.length >= 2, `Module ${mod.id} should have at least 2 seeItInAction examples`);
+        assert.ok(sl.patternTables && sl.patternTables.length >= 1, `Module ${mod.id} should have at least 1 patternTable`);
+        assert.ok(sl.stepByStep && sl.stepByStep.length >= 2, `Module ${mod.id} should have at least 2 stepByStep cards`);
+        assert.ok(sl.moreExamples && sl.moreExamples.length >= 1, `Module ${mod.id} should have at least 1 moreExamples group`);
+        assert.ok(sl.importantExceptions && sl.importantExceptions.length >= 1, `Module ${mod.id} should have at least 1 importantException`);
+        assert.ok(sl.commonMistakes && sl.commonMistakes.length >= 2, `Module ${mod.id} should have at least 2 commonMistakes`);
+        assert.ok(sl.embeddedChecks && sl.embeddedChecks.length >= 2, `Module ${mod.id} should have at least 2 embeddedChecks`);
+        assert.ok(sl.completeReference && sl.completeReference.sections.length >= 1, `Module ${mod.id} should have completeReference sections`);
+        assert.ok(sl.whatToRemember && sl.whatToRemember.length >= 3, `Module ${mod.id} should have at least 3 whatToRemember takeaways`);
+
+        // Verify component rendering for each module's visual data
+        assert.ok(renderGrammarTable(sl.patternTables[0]).includes('vc-table'), `Module ${mod.id} patternTable failed to render`);
+        assert.ok(renderExampleBreakdown(sl.seeItInAction[0]).includes('vc-example-card'), `Module ${mod.id} seeItInAction failed to render`);
+        assert.ok(renderRuleAndException(sl.stepByStep[0]).includes('vc-rule-card'), `Module ${mod.id} stepByStep failed to render`);
+        assert.ok(renderCommonMistake(sl.commonMistakes[0]).includes('vc-mistake-card'), `Module ${mod.id} commonMistake failed to render`);
+        assert.ok(renderLessonReference(sl.completeReference).includes('vc-reference-details'), `Module ${mod.id} completeReference failed to render`);
+        assert.ok(renderKnowledgeCheck(sl.embeddedChecks[0], mod.id).includes('vc-kc-card'), `Module ${mod.id} embeddedCheck failed to render`);
+    }
+
+    const a01 = COURSE_MODULES.find((m) => m.id === 'A0.1')!;
+    const sl = a01.structuredLesson!;
+    const tableHtml = renderGrammarTable(sl.patternTables[0]);
+    assert.ok(tableHtml.includes('ма́ма') && tableHtml.includes('vc-table'), 'Expected GrammarTable to render ма́ма');
+
+    const diagramHtml = renderGrammarDiagram(sl.diagrams![1]);
+    assert.ok(diagramHtml.includes('svg') && diagramHtml.includes('Це ка́ва?'), 'Expected Intonation Diagram to render SVG contour and Це ка́ва?');
+
+    const refHtml = renderLessonReference(sl.completeReference);
+    assert.ok(refHtml.includes('село́') && refHtml.includes('голу́бка'), 'Expected Complete Reference to preserve unstressed vowel harmony examples');
+
+    const indexHtml = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+    assert.equal(indexHtml.includes('>Module Title<'), false, 'index.html must not contain static >Module Title< placeholder');
+
+    const progressJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'course_rewrite_progress.json'), 'utf8'));
+    assert.equal(progressJson.totalModules, 29);
+    assert.equal(progressJson.completedModulesCount, 29);
+    assert.equal(progressJson.remainingModulesCount, 0);
+    assert.equal(progressJson.completedModules.length, 29);
 });
 

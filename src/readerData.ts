@@ -21,12 +21,16 @@ export interface ReaderGlossaryEntry {
 export interface ReaderPassage {
   id: string;
   level: 'A0' | 'A1' | 'A2' | 'B1' | 'B2–C1';
-  titleUk: string;
-  titleEn: string;
-  genre: string;
-  summaryEn: string;
+  title?: string;
+  subtitle?: string;
+  topic?: string;
+  titleUk?: string;
+  titleEn?: string;
+  genre?: string;
+  Focus?: string;
+  summaryEn?: string;
   sentences: ReaderSentence[];
-  glossary: Record<string, ReaderGlossaryEntry>;
+  glossary: Record<string, ReaderGlossaryEntry | string>;
   questions: ReaderComprehensionQuestion[];
 }
 
@@ -393,6 +397,14 @@ const LEVEL_ORDER: Array<ReaderPassage['level']> = [
 
 export const READER_PASSAGES: ReaderPassage[] = LEVEL_ORDER.flatMap((lvl) => [
   ...BASE_READER_PASSAGES.filter((p) => p.level === lvl),
-  ...EXTRA_READER_PASSAGES.filter((p) => p.level === lvl),
+  ...(EXTRA_READER_PASSAGES as any[])
+    .filter((p) => p.level === lvl)
+    .map((p): ReaderPassage => ({
+      ...p,
+      titleUk: p.titleUk || p.title || p.id,
+      titleEn: p.titleEn || p.subtitle || p.topic || '',
+      genre: p.genre || p.Focus || p.topic || p.subtitle || `CEFR ${p.level} Story`,
+      summaryEn: p.summaryEn || p.Focus || p.subtitle || p.topic || '',
+    })),
 ]);
 

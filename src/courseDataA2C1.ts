@@ -23,6 +23,296 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>7. Conversational Synthetic Future («відпочива́тиму», «чека́тиму з нетерпі́нням») & Lively Planning Responses</b>:<ul><li>In everyday spoken Ukrainian, the one-word synthetic imperfective future (<b>infinitive + -му, -меш, -ме, -мемо, -мете, -муть</b>) sounds especially warm and natural when talking about upcoming plans or anticipation:<ul><li><b>За́втра відпочива́тиму ці́лий день!</b> (Tomorrow I’ll be resting all day long!)</li><li><b>Чека́тиму з нетерпі́нням!</b> (I’ll be looking forward to it impatiently!)</li></ul></li><li><b>High-Frequency Conversational Agreement & Empathy Phrases</b>:<ul><li><b>І не кажи́!</b> = "You bet! / Tell me about it! / Don’t even say it!" (warm agreement when someone says they are tired or amazed: <i>— Я страше́нно втоми́вся. — І не кажи́!</i>).</li><li><b>Домо́вилися!</b> = "Agreed! / It’s a deal!"</li><li><b>Авже́ж!</b> = "Of course! / Sure thing!"</li><li><b>Дай поду́мати...</b> = "Let me think..."</li></ul></li></ul>',
       '<b>8. Expressing Intention with «ду́мати + Infinitive» & Past/Future Possibility («було́ мо́жна / бу́де мо́жна»)</b>:<ul><li><b>«ду́мати + Infinitive» ("to plan / intend to")</b>: When <b>ду́мати</b> is followed by an infinitive verb, it means "to intend / plan to", and the aspect of the infinitive shows how firm the plan is:<ul><li><b>ду́мати + Perfective Infinitive</b> = a firm, concrete intention: <b>Ми ду́маємо пої́хати до Черні́гова в субо́ту</b> (We intend to go to Chernihiv on Saturday).</li><li><b>ду́мати + Imperfective Infinitive</b> = a tentative or general thought: <b>Ми ду́маємо ї́хати по́тягом</b> (We are thinking of traveling by train).</li><li><b>Past «ду́мав / ду́мала + Perfective Infinitive»</b> = an unfulfilled past intention ("was going to, but didn’t"): <b>Я ду́мав піти́ в кіно́, але́ почався́ си́льний дощ</b> (I was going to go to the cinema, but heavy rain started).</li></ul></li><li><b>Past & Future of «мо́жна» and «тре́ба»</b>: Add neuter <b>було́</b> for past possibility/necessity and <b>бу́де</b> for future possibility/necessity: <b>Учо́ра тут мо́жна було́ купи́ти квитки́, а за́втра мо́жна бу́де (не мо́жна бу́де) пої́хати</b>.</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Ukrainian makes talking about the past remarkably easy: instead of memorizing six different endings for "I, you, he, we, they," you just drop -ти from the infinitive and add ONE ending for the speaker’s gender or plural (-в, -ла, -ло, -ли)! At the same time, Ukrainian verbs come in pairs called "aspects": an Imperfective verb acts like a video camera filming an ongoing or repeated process (чита́ти = to be reading / to read regularly), while its Perfective partner acts like a photo snapshot of a completed result (прочита́ти = to finish reading).',
+      whyItMatters:
+        'Once you understand how verb pairs (imperfective vs. perfective) work, you unlock both the Past and the Future tenses at once—letting you distinguish between "I was writing a report" (писа́в) and "I finished the report" (написа́в), or "I will be working all day" (бу́ду працюва́ти / працюва́тиму) and "I’ll get it done tomorrow" (зроблю́).',
+      seeItInAction: [
+        {
+          uk: 'Учо́ра я до́вго чита́ла цю кни́жку, і наре́шті прочита́ла її́.',
+          en: 'Yesterday I was reading this book for a long time, and finally finished reading it.',
+          highlight: 'чита́ла → прочита́ла',
+          SpotlightNote: 'Notice the pair in action: чита́ла (imperfective feminine past = process over time) vs. прочита́ла (perfective feminine past = completed result).',
+        },
+        {
+          uk: 'За́втра я відпочива́тиму ці́лий день, а вве́чері напишу́ тобі́ повідо́млення.',
+          en: 'Tomorrow I will be resting all day, and in the evening I will write you a message.',
+          highlight: 'відпочива́тиму ... напишу́',
+          SpotlightNote: 'відпочива́тиму uses the warm one-word synthetic imperfective future (-му = ongoing all day), while напишу́ uses a conjugated perfective verb for a single completed future message.',
+        },
+        {
+          uk: 'Андрі́й допомі́г мені́ й сказа́в, що за́втра теж при́йде.',
+          en: 'Andriy helped me and said that he would come tomorrow too.',
+          highlight: 'допомі́г ... при́йде',
+          SpotlightNote: 'Unlike English ("said he would come"), Ukrainian keeps the speaker’s original future tense (при́йде) in reported speech!',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. The Gender-Based Past Tense (-в, -ла, -ло, -ли)',
+          subtitle: 'Drop -ти from the infinitive and match the gender or plural of the subject—no matter whether the subject is "I," "you," or "they"',
+          headers: ['Subject Gender / Number', 'Past Suffix', 'чита́ти (to read)', 'бу́ти (to be)', 'допомогти́ (consonant stem)'],
+          rows: [
+            ['Masculine Singular (я, ти, він)', '-в (or -Ø)', 'чита́в', 'був', 'допомі́г (drops -в!)'],
+            ['Feminine Singular (я, ти, вона́)', '-ла', 'чита́ла', 'була́', 'допомогла́'],
+            ['Neuter Singular (воно́, це)', '-ло', 'чита́ло', 'було́', 'допомогло́'],
+            ['Plural & Formal Ви (ми, ви, вони́)', '-ли', 'чита́ли', 'були́', 'допомогли́'],
+          ],
+          footnote: 'If a man says "I worked," he says Я працюва́в. If a woman says "I worked," she says Я працюва́ла. Formal singular Ви always takes the plural past ending -ли (Ви чита́ли?).',
+        },
+        {
+          title: '2. Essential Imperfective & Perfective Verb Pairs',
+          subtitle: 'Every action has a "process/habit" verb (Imperfective) and a "completed result" verb (Perfective)',
+          headers: ['Meaning', 'Imperfective (Process / Habit)', 'Perfective (Completed Result)', 'How the Pair Is Built'],
+          rows: [
+            ['to do / make', 'роби́ти (робив / робитиму)', 'зроби́ти (зробив / зроблю́)', 'Prefix з-'],
+            ['to write', 'писа́ти (писав / писатиму)', 'написа́ти (написав / напишу́)', 'Prefix на-'],
+            ['to read', 'чита́ти (читав / читатиму)', 'прочита́ти (прочитав / прочита́ю)', 'Prefix про-'],
+            ['to drink', 'пи́ти (пив / питиму)', 'ви́пити (випив / ви́п’ю)', 'Prefix ви́-'],
+            ['to eat', 'ї́сти (їв / їстиму)', 'з’ї́сти (з’їв / з’їм)', 'Prefix з’- + apostrophe'],
+            ['to buy', 'купува́ти (купував / купуватиму)', 'купи́ти (купив / куплю́)', 'Suffix change (-ува- → -и-)'],
+            ['to help', 'допомага́ти (допомагає)', 'допомогти́ (допомі́г / допоможу́)', 'Stem change (-мага- → -мог-)'],
+          ],
+        },
+        {
+          title: '3. Three Ways to Express the Future Tense in Ukrainian',
+          subtitle: 'Choose Imperfective Future for ongoing/repeated plans and Perfective Future for a single completed result',
+          headers: ['Future Type', 'When to Use It', 'How to Build It', 'Examples (чита́ти / прочита́ти)'],
+          rows: [
+            ['1. Compound Imperfective', 'Ongoing process or repeated future habit', 'бу́ду, бу́деш, бу́де, бу́демо, бу́дете, бу́дуть + Impf. Infinitive', 'Я бу́ду чита́ти; Ми бу́демо працюва́ти'],
+            ['2. Synthetic Imperfective', 'Ongoing process (warm, natural 1-word form)', 'Impf. Infinitive + -му, -меш, -ме, -мемо, -мете, -муть', 'Я чита́тиму; За́втра відпочива́тиму; Чека́тиму!'],
+            ['3. Simple Perfective', 'Single completed future result ("will get it done")', 'Conjugate the Perfective verb with present-style endings', 'Я прочита́ю за́втра; Він напи́ше звіт; Ми ку́пимо квитки́'],
+          ],
+          footnote: 'Never combine бу́ду with a perfective verb (*буду прочитати is impossible)! Бу́ду works ONLY with imperfective infinitives.',
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Ask One Question Before Choosing a Verb: Process or Finished Result?',
+          explanation:
+            'If you are talking about how long an action lasted (до́вго, ці́лий день, уве́сь ве́чір), a habit (щодня́, зазвича́й), or an action in progress, choose the Imperfective verb. If you are emphasizing that the task was (or will be) 100% completed, choose the Perfective verb.',
+          examples: [
+            { uk: 'Я до́вго писа́в статтю́. → Наре́шті я написа́в статтю́!', en: 'I was writing the article for a long time (Impf.). → Finally I finished writing the article (Pf.)!' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Use the Synthetic Future (-му, -меш) for Warm Everyday Plans',
+          explanation:
+            'Ukrainian is unique among East Slavic languages in preserving a one-word imperfective future: attach -му, -меш, -ме, -мемо, -мете, -муть right onto any imperfective infinitive. It means the exact same thing as бу́ду + infinitive and sounds wonderfully idiomatic.',
+          examples: [
+            { uk: 'Що ти роби́тимеш уве́чері? — Відпочива́тиму й чека́тиму на дру́зів!', en: 'What will you be doing in the evening? — I’ll be resting and waiting for friends!' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Master the Three "Athematic" Verbs (да́ти, ї́сти, відповісти́ / розповісти́)',
+          explanation:
+            'Only three verb families in Ukrainian use the ancient singular endings -м (я), -си́ (ти), -сть (він/вона́). Because ї́сти is imperfective, я їм means "I eat / am eating." Because да́ти, відповісти́, and розповісти́ are perfective, я дам / я відпові́м / я розпові́м mean "I will give / I will answer / I will tell"!',
+          examples: [
+            { uk: 'Ти їси́ варе́ники, а по́тім розповіси́ нам про по́дорож і даси́ нову́ кни́жку.', en: 'You are eating varenyky, and afterward you will tell us about the trip and give us the new book.' },
+          ],
+        },
+      ],
+      aspectTimelines: [
+        {
+          pairTitle: 'How Aspect Shapes Time: чита́ти (Imperfective) vs. прочита́ти (Perfective)',
+          imperfective: {
+            verb: 'чита́ти',
+            label: 'IMPERFECTIVE — Video Camera (Process, Duration, Repetition)',
+            timelineMode: 'continuous',
+            pastExample: 'Учо́ра я чита́в уве́сь ве́чір. (I was reading all evening.)',
+            presentExample: 'За́раз я чита́ю ціка́ву кни́жку. (Right now I am reading an interesting book.)',
+            futureExample: 'За́втра я бу́ду чита́ти / чита́тиму. (Tomorrow I will be reading.)',
+          },
+          perfective: {
+            verb: 'прочита́ти',
+            label: 'PERFECTIVE — Photo Snapshot (Completed Result / Boundary Reached)',
+            timelineMode: 'completed',
+            pastExample: 'Я вже прочита́в усю́ кни́жку! (I have already finished reading the whole book!)',
+            presentExample: 'No Present Tense! (An action cannot be 100% finished while still happening right now.)',
+            futureExample: 'Я обов’язко́во прочита́ю її́ за́втра. (I will definitely finish reading it tomorrow.)',
+          },
+        },
+      ],
+      explorers: [
+        {
+          title: 'Interactive Conjugation Explorer: Athematic Verbs & Synthetic Future',
+          subtitle: 'Click each verb to compare the archaic -м/-си́/-сть verbs and the one-word -му/-меш future',
+          tabs: [
+            {
+              label: 'да́ти (pf. will give)',
+              verb: 'да́ти',
+              conjugationType: 'Athematic Perfective (Simple Future)',
+              forms: [
+                { pronoun: 'я', form: 'дам', en: 'I will give' },
+                { pronoun: 'ти', form: 'даси́', en: 'you will give (note -си́!)' },
+                { pronoun: 'він / вона́', form: 'дасть', en: 'he / she will give' },
+                { pronoun: 'ми', form: 'дамо́', en: 'we will give' },
+                { pronoun: 'ви', form: 'дасте́', en: 'you will give' },
+                { pronoun: 'вони́', form: 'даду́ть', en: 'they will give (note -ду́ть!)' },
+              ],
+              note: 'All prefixed partners conjugate identically: продати́ (продам, продаси́), відда́ти, переда́ти, зда́ти. Imperative: дай! да́йте!',
+            },
+            {
+              label: 'ї́сти (impf. eat)',
+              verb: 'ї́сти',
+              conjugationType: 'Athematic Imperfective (Present)',
+              forms: [
+                { pronoun: 'я', form: 'їм', en: 'I eat (pf. з’їм = I will eat up)' },
+                { pronoun: 'ти', form: 'їси́', en: 'you eat (pf. з’їси́)' },
+                { pronoun: 'він / вона́', form: 'їсть', en: 'he / she eats (pf. з’їсть)' },
+                { pronoun: 'ми', form: 'їмо́', en: 'we eat (pf. з’їмо́)' },
+                { pronoun: 'ви', form: 'їсте́', en: 'you eat (pf. з’їсте́)' },
+                { pronoun: 'вони́', form: 'їдя́ть', en: 'they eat (pf. з’їдя́ть)' },
+              ],
+              note: 'Imperative: їж! ї́жте! Past: їв, ї́ла, ї́ли.',
+            },
+            {
+              label: 'відповісти́ (pf. will answer)',
+              verb: 'відповісти́ / розповісти́',
+              conjugationType: 'Athematic Perfective (Simple Future)',
+              forms: [
+                { pronoun: 'я', form: 'відпові́м / розпові́м', en: 'I will answer / tell' },
+                { pronoun: 'ти', form: 'відповіси́ / розповіси́', en: 'you will answer / tell' },
+                { pronoun: 'він / вона́', form: 'відпові́сть / розпові́сть', en: 'he / she will answer / tell' },
+                { pronoun: 'ми', form: 'відповімо́ / розповімо́', en: 'we will answer / tell' },
+                { pronoun: 'ви', form: 'відповісте́ / розповісте́', en: 'you will answer / tell' },
+                { pronoun: 'вони́', form: 'відповідя́ть / даду́ть ві́дповідь', en: 'they will answer' },
+              ],
+              note: 'Past: відпові́в, відповіла́, відповіли́. Imperative uses imperfective Відповіда́йте! / Да́йте ві́дповідь! or Розкажі́ть! / Розповіда́йте!',
+            },
+            {
+              label: 'працюва́тиму (Synthetic Future)',
+              verb: 'працюва́ти (impf.)',
+              conjugationType: 'Synthetic Imperfective Future (-му, -меш)',
+              forms: [
+                { pronoun: 'я', form: 'працюва́тиму (= бу́ду працюва́ти)', en: 'I will be working' },
+                { pronoun: 'ти', form: 'працюва́тимеш (= бу́деш працюва́ти)', en: 'you will be working' },
+                { pronoun: 'він / вона́', form: 'працюва́тиме (= бу́де працюва́ти)', en: 'he / she will be working' },
+                { pronoun: 'ми', form: 'працюва́тимемо (= бу́демо працюва́ти)', en: 'we will be working' },
+                { pronoun: 'ви', form: 'працюва́тимете (= бу́дете працюва́ти)', en: 'you will be working' },
+                { pronoun: 'вони́', form: 'працюва́тимуть (= бу́дуть працюва́ти)', en: 'they will be working' },
+              ],
+              note: 'Attach -му, -меш, -ме, -мемо, -мете, -муть directly to any imperfective infinitive!',
+            },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'How «ду́мати + Infinitive» Expresses Firm vs. Tentative vs. Unfulfilled Plans',
+          subtitle: 'When ду́мати is followed by an infinitive, it means "to intend / plan to"',
+          nodes: [
+            {
+              label: 'ду́мати + Imperfective Inf.',
+              value: 'Ми ду́маємо ї́хати по́тягом.',
+              description: 'Tentative or general thought ("We are thinking of traveling by train").',
+              tone: 'blue',
+            },
+            {
+              label: 'ду́мати + Perfective Inf.',
+              value: 'Ми ду́маємо пої́хати в субо́ту.',
+              description: 'Firm, concrete intention ("We intend/plan to go on Saturday").',
+              tone: 'emerald',
+            },
+            {
+              label: 'Past ду́мав + Perfective Inf.',
+              value: 'Я ду́мав піти́ в кіно́, але́...',
+              description: 'Unfulfilled past intention ("I was going to go to the cinema, but didn’t").',
+              tone: 'amber',
+            },
+            {
+              label: 'No Tense Shift in Indirect Speech',
+              value: 'Він сказа́в, що вона́ за́раз працю́є.',
+              description: 'Ukrainian keeps the original present/future tense after сказа́в ("He said she is working right now").',
+              tone: 'violet',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Я бу́ду прочита́ти цю кни́жку за́втра.',
+          right: 'Я прочита́ю цю кни́жку за́втра. (or: Я бу́ду чита́ти...)',
+          why: 'Never combine бу́ду with a perfective verb like прочита́ти! For a completed future result, simply conjugate прочита́ти → я прочита́ю.',
+        },
+        {
+          wrong: 'Він сказа́в, що вона́ тоді́ працюва́ла (when she is still working at that moment).',
+          right: 'Він сказа́в, що вона́ працю́є.',
+          why: 'English backshifts present to past ("He said that she was working"), but Ukrainian preserves the tense that was true at the moment the speaker spoke (працю́є = Simultaneous; при́йде = Future).',
+        },
+        {
+          wrong: 'Андрі́й допомі́гв мені́.',
+          right: 'Андрі́й допомі́г мені́. (fem. допомогла́)',
+          why: 'Verbs whose stem ends in a consonant (-сти, -зти, -гти: нести́, везти́, могти́, допомогти́) drop -в in the masculine singular past: він ніс, віз, міг, допомі́г.',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Consonant-Stem Past Verbs, Past/Future «мо́жна / тре́ба» & Conversational Replies',
+          summary: 'Expand for irregular masculine past stems (ніс, віз, міг), мо́жна було́/бу́де, and high-frequency agreement phrases',
+          blocks: [
+            {
+              heading: '1. Consonant-Stem Masculine Past Forms (No -в Ending)',
+              items: [
+                'нести́ (to carry on foot) → він ніс, вона́ несла́, воно́ несло́, вони́ несли́.',
+                'везти́ (to transport by vehicle) → він віз, вона́ везла́, воно́ везло́, вони́ везли́.',
+                'могти́ (to be able) → він міг, вона́ могла́, воно́ могло́, вони́ могли́.',
+                'допомогти́ (to help — pf.) → він допомі́г, вона́ допомогла́, вони́ допомогли́.',
+                'ме́рзнути (to freeze / feel cold) → він мерз (or ме́рзнув), вона́ ме́рзла.',
+              ],
+            },
+            {
+              heading: '2. Past & Future of Impersonal «мо́жна» and «тре́ба»',
+              items: [
+                'Present: Тут мо́жна купи́ти квитки́. Мені́ тре́ба працюва́ти.',
+                'Past (add neuter було́): Учо́ра тут мо́жна було́ купи́ти квитки́. Мені́ тре́ба було́ працюва́ти.',
+                'Future (add бу́де): За́втра мо́жна бу́де (не мо́жна бу́де) пої́хати. Нам тре́ба бу́де зателефонува́ти.',
+              ],
+            },
+            {
+              heading: '3. High-Frequency Conversational Agreement & Planning Phrases',
+              items: [
+                'І не кажи́! — "Tell me about it! / You bet! / Don’t even say it!" (warm empathy when someone shares how tired or amazed they are).',
+                'Домо́вилися! — "Agreed! / It’s a deal!"',
+                'Авже́ж! — "Of course! / Sure thing!"',
+                'Дай поду́мати... — "Let me think..."',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'How does a female speaker say "Yesterday I finished writing the report" in Ukrainian?',
+          options: [
+            'Учо́ра я написа́ла звіт.',
+            'Учо́ра я писа́в звіт.',
+            'Учо́ра я бу́ду написа́ти звіт.',
+          ],
+          correctIndex: 0,
+          explanation: 'Use the perfective verb написа́ти (completed result) with the feminine singular past ending -ла: написа́ла.',
+        },
+        {
+          question: 'Which sentence correctly translates "He said that he will come tomorrow"?',
+          options: [
+            'Він сказа́в, що за́втра при́йде.',
+            'Він сказа́в, що за́втра бу́де прийти́.',
+            'Він сказа́ла, що за́втра прийшо́в.',
+          ],
+          correctIndex: 0,
+          explanation: 'Ukrainian keeps the original future tense (при́йде, 3rd person singular of perfective прийти́) in indirect speech.',
+        },
+      ],
+      takeaways: [
+        'Past tense endings match gender/number: -в (m.), -ла (f.), -ло (n.), -ли (pl.), with consonant stems like ніс, віз, міг, допомі́г dropping -в in the masculine.',
+        'Imperfective verbs film the ongoing process or habit (чита́в, бу́ду чита́ти / чита́тиму); Perfective verbs capture the finished result (прочита́в, прочита́ю).',
+        'Remember the three athematic verb families with -м, -си́, -сть: да́ти (дам, даси́, дасть, даду́ть), ї́сти (їм, їси́, їсть, їдя́ть), and відповісти́ / розповісти́.',
+      ],
+    },
     examples: [
       { uk: 'Учо́ра я довго чита́ла цю кни́жку, і наре́шті прочита́ла її́.', en: 'Yesterday I was reading this book for a long time, and finally finished reading it.' },
       { uk: 'Що ти роби́в на вихідни́х? — Я відпочива́в і гуля́в у па́рку.', en: 'What did you (m.) do on the weekend? — I rested and walked in the park.' },
@@ -182,6 +472,267 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>10. «вдво́х із + Instrumental», Impersonal Scent Verb «па́хнути + Instrumental», Remedies with «від + Genitive», & Ukrainian Feast Etiquette</b>:<ul><li><b>«вдво́х / утрьо́х із + Instrumental» ("the two/three of us together with...")</b>: To emphasize that two people are doing something together, Ukrainian combines the adverb <b>вдво́х / удво́х</b> ("the two of us / as a pair") with <b>з / із / зі + Instrumental</b>: <b>Ми летимо́ вдво́х із мої́м дру́гом</b> (My friend and I are flying as a pair); <b>Вони́ прийшли́ вдво́х із сестро́ю</b>.</li><li><b>Impersonal Scent Verb «па́хнути + Instrumental» ("It Smells of...")</b>: The verb <b>па́хнути</b> (3rd sg. <b>па́хне</b>, past neuter <b>па́хло</b>) takes the <b>bare Instrumental case</b> to name the scent: <b>У са́ду чу́дово па́хне весняни́ми кві́тами й бузко́м</b> (In the garden it smells wonderfully of spring flowers and lilac); <b>На ку́хні па́хло сві́жою ка́вою та вані́ллю</b>.</li><li><b>Medicines & Remedies with «від + Genitive» ("For [a Symptom]")</b>: Where English says "pills <i>for</i> a headache" or "syrup <i>for</i> a cough", Ukrainian uses <b>від + Genitive</b> ("against / away from"): <b>табле́тки від головно́го бо́лю</b>, <b>міксту́ра від ка́шлю</b>, <b>кра́плі від не́житю</b>, <b>порошо́к від засту́ди</b>.</li><li><b>Ukrainian Table Setting & Toasting Etiquette</b>: At a festive dinner or anniversary (<b>річни́ця / уроди́ни</b>), a toastmaster (<b>тамада́</b>) leads the toasts using <b>За + Accusative!</b> (<b>За імени́нника / імени́нницю! За на́шу дру́жбу! За Ва́ше здоро́в’я та добро́бут!</b>), and guests clink stemware (<b>ке́лих, фуже́р, ча́рка</b>) around a full table service (<b>столо́вий а́бо чайни́й серві́з, столо́вий прибо́р, блю́дечко</b>).</li></ul>',
       '<b>11. Restaurant Menu Word Order, Traditional Ukrainian Dishes, Three Kinds of Jam, & Crucial False Friends</b>:<ul><li><b>Post-Nominal Menu Adjectives & Portion Weights</b>: On Ukrainian restaurant menus, the adjective describing how a dish is prepared typically <i>follows</i> the noun: <b>карто́пля сма́жена</b> ("potatoes fried"), <b>бали́к осетро́вий</b> ("sturgeon fillet cured"), <b>ри́ба запече́на</b> ("fish baked"), alongside portion indicators like <b>200 г</b> (200 grams) or <b>1 шт.</b> (<i>одна́ шту́ка</i> = 1 piece).</li><li><b>Classic Ukrainian Dishes & Drinks</b>:<ul><li><b>борщ із пампу́шками</b> = beet soup served with warm garlic buns (<b>пампу́шки</b>);</li><li><b>холоде́ць із хро́ном або́ гірчи́цею</b> = jellied meat aspics served with horseradish (<b>хрін</b>, Inst. <i>хро́ном</i>) or spicy mustard (<b>гірчи́ця</b>);</li><li><b>млинці́ vs. на́лисники</b> = pancakes (<b>млинці́</b>) vs. paper-thin rolled crepes stuffed with sweet cottage cheese, poppy seeds, or cherries (<b>на́лисники</b>);</li><li><b>кисі́ль</b> (drinkable berry fruit jelly) and <b>квас</b> (refreshing fermented rye-bread drink).</li></ul></li><li><b>Three Ukrainian Words for Jam</b>: <b>варе́ння</b> (whole berries or fruit pieces in clear syrup, served in a small dish to eat with a spoon alongside tea), <b>пови́дло</b> (smooth cooked plum or apple butter), and <b>джем</b> (thick spreadable jam).</li><li><b>Crucial False Friends Warning!</b>:<ul><li>To say "food preservatives" or "chemical-free / organic", use <b>консерва́нти</b> or <b>проду́кти без хіміка́тів</b>—NEVER say <i>*презервативи</i> (which means "condoms"!).</li><li>To say a conference "panel", say <b>кру́глий стіл</b> ("round table") or <b>секці́йне засіда́ння</b>—never <i>*на панелі</i>!</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Today you unlock two of the most expressive cases in Ukrainian: the Dative case (Кому́? Чому́? — "to/for whom") and the Instrumental case (Ким? Чим? — "with/by means of whom or what"). Whenever you give a gift, call a friend, state your age, or say "I like" (Мені́ подо́бається), Ukrainian uses the Dative. Whenever you do something together with a friend (з дру́гом), order coffee with milk (ка́ва з молоко́м), write with a pen (писа́ти ру́чкою), or state your profession (працюва́ти лі́каркою), Ukrainian uses the Instrumental.',
+      whyItMatters:
+        'English uses the word "with" for two completely different ideas: accompaniment ("I went with a friend") and tools ("I wrote with a pen"). Ukrainian separates them cleanly: accompaniment uses з + Instrumental (з дру́гом), whereas a tool or transport uses the bare Instrumental alone without з (писа́ти ру́чкою, ї́хати по́їздом)!',
+      seeItInAction: [
+        {
+          uk: 'Мені́ ду́же подо́бається ця кав’я́рня, тож я телефо́ную сво́їй по́друзі та бра́тові.',
+          en: 'I really like this coffeehouse, so I am calling my female friend and my brother.',
+          highlight: 'Мені́ ... по́друзі ... бра́тові',
+          SpotlightNote: 'All three highlighted words are in the Dative case: Мені́ ("to me"), по́друзі (feminine -га → -зі), and бра́тові (masculine -ові).',
+        },
+        {
+          uk: 'Ми з дру́зями п’ємо́ ка́ву з молоко́м і пи́шемо листі́вку си́ньою ру́чкою.',
+          en: 'My friends and I drink coffee with milk and write a postcard with a blue pen.',
+          highlight: 'з молоко́м vs. ру́чкою',
+          SpotlightNote: 'Notice the contrast: accompaniment/toppings take з + Instrumental (з молоко́м), while the tool takes bare Instrumental without з (си́ньою ру́чкою).',
+        },
+        {
+          uk: 'Я пози́чив словни́к това́ришеві, а ціка́ву по́вість пози́чив у сестри́ і чита́в її́ з ра́дістю ці́лу ніч.',
+          en: 'I lent the dictionary to a friend, and borrowed an interesting novella from my sister and read it with joy all night.',
+          highlight: 'пози́чив това́ришеві vs. пози́чив у сестри́',
+          SpotlightNote: 'One verb (позича́ти / пози́чити) means both "lend" (+ Dative recipient това́ришеві) and "borrow" (+ у/в + Genitive source у сестри́)!',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. The Dative Case (Кому́? Чому́? — To / For Whom)',
+          subtitle: 'Used for indirect objects (giving, telling, helping, calling), age, feelings, and Мені́ подо́бається',
+          headers: ['Group', 'Nominative (Хто? Що?)', 'Dative Ending', 'Dative Example', 'Key Rule / Notes'],
+          rows: [
+            ['Masculine Hard', 'брат, друг, Петро́', '-ові OR -у', 'бра́тові / бра́ту, дру́гові / дру́гу', 'Both endings are 100% natural! Alternate in chains: па́нові дире́ктору'],
+            ['Masculine Soft / Mixed', 'учи́тель, Андрі́й, това́риш', '-еві / -єві OR -ю', 'учи́телеві / учи́телю, Андрі́єві / Андрі́ю', 'Three-part name chain: Петро́ві Васи́льовичу Пилипе́нку'],
+            ['Feminine (-а / -я)', 'сестра́, Марі́я', '-і / -ї', 'сестрі́, Марі́ї', 'Identical to Locative singular!'],
+            ['Feminine (-ка, -га, -ха)', 'по́друга, кни́жка, му́ха', '-зі, -ці, -сі', 'по́друзі, кни́жці, му́сі', 'г → з, к → ц, х → с before -і'],
+            ['Neuter (-о / -е)', 'мі́сто, мо́ре', '-у / -ю', 'мі́сту, мо́рю', '4th decl. baby animals: цуценя́ → цуценя́ті; ім’я́ → і́мені'],
+            ['Personal Pronouns', 'я, ти, він, вона́, ми, ви, вони́', 'Dative Forms', 'мені́, тобі́, йому́, їй, нам, вам, їм', 'Мені́ дали́ кни́жку ("I was given a book" — active 3rd pl.!)'],
+          ],
+        },
+        {
+          title: '2. The Instrumental Case (Ким? Чим? — With / By Means Of)',
+          subtitle: 'Compare regular nouns, 3rd-declension feminine nouns in a consonant, and 4th-declension baby animals',
+          headers: ['Group', 'Nominative', 'Instrumental Ending', 'Instrumental Example', 'Important Spelling / Sound Rule'],
+          rows: [
+            ['Masculine & Neuter Hard', 'друг, авто́бус, молоко́', '-ом', 'з дру́гом, авто́бусом, з молоко́м', 'Sibilants take -ем when unstressed (това́ришем), -ом when stressed (ноже́м/плаще́м)'],
+            ['Masculine & Neuter Soft', 'учи́тель, чай, мо́ре', '-ем / -єм', 'учи́телем, з ча́єм, мо́рем', 'Used bare after працюва́ти / бу́ти / ста́ти: працю́є вчи́телем'],
+            ['Feminine (-а / -я)', 'сестра́, ка́ва, зе́мля, Марі́я', '-ою / -ею / -єю', 'із сестро́ю, з ка́вою, земле́ю, з Марі́єю', 'Hard -ою; soft/sibilant -ею; after vowel -єю'],
+            ['3rd Decl. Fem. (1 consonant)', 'ніч, сіль, о́сінь, по́дорож', 'Doubled + -ю', 'ні́ччю, сі́ллю, о́сінню, по́дорожжю', 'Single non-labial consonant doubles before -ю'],
+            ['3rd Decl. Fem. (labial/р or cluster)', 'любо́в, ма́ти vs. ра́дість, чверть', '’ю vs. -ю (no doubling)', 'любо́в’ю, ма́тір’ю vs. ра́дістю, чве́ртю', 'Labial/р takes apostrophe; 2-consonant cluster adds -ю directly'],
+            ['4th Decl. Neuter (-а/-я)', 'цуценя́, котеня́, курча́, ім’я́', '-м (no -ат-/-ят-!)', 'з цуценя́м, з котеня́м, з курча́м, ім’я́м / і́менем', 'Drops -ат-/-ят- in Inst. sg. and adds -м directly!'],
+          ],
+        },
+        {
+          title: '3. When to Use «з + Instrumental» vs. Bare Instrumental (No Preposition)',
+          subtitle: 'Mastering this distinction immediately makes your Ukrainian sound authentic',
+          headers: ['Function', 'Pattern', 'Ukrainian Examples', 'English Meaning'],
+          rows: [
+            ['Accompaniment / Together With', 'з / із / зі + Instrumental', 'іти́ з дру́гом; Ми з дру́зями; вдво́х із сестро́ю', 'go with a friend; my friends and I; the two of us with my sister'],
+            ['Food Toppings & Pairings', 'з / із / зі + Instrumental', 'ка́ва з молоко́м; борщ із пампу́шками; варе́ники зі смета́ною', 'coffee with milk; borscht with garlic buns; varenyky with sour cream'],
+            ['Tool / Utensil / Instrument Used', 'BARE Instrumental (NO з!)', 'писа́ти ру́чкою / олівце́м; рі́зати хліб ноже́м; ми́ти ру́ки ми́лом', 'write with a pen/pencil; cut bread with a knife; wash hands with soap'],
+            ['Mode of Transport & Path', 'BARE Instrumental (NO з!)', 'ї́хати по́їздом / авто́бусом; гуля́ти ву́лицями Ки́єва; іти́ Хреща́тиком', 'go by train/bus; walk through the streets of Kyiv; walk along Khreshchatyk'],
+            ['Profession / Temporary State', 'BARE Instrumental', 'працюва́ти лі́каркою; ста́ти інжене́ром; Він був учи́телем', 'work as a doctor; become an engineer; He was a teacher'],
+            ['Scent, Pride, Interest & Satisfaction', 'BARE Instrumental', 'па́хне весняни́ми кві́тами; пиша́тися ро́ботою; ціка́витися істо́рією; задово́лений результа́том', 'smells of spring flowers; proud of work; interested in history; satisfied with the result'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Put the Experiencer or Recipient in the Dative Case',
+          explanation:
+            'In Ukrainian, feelings, age, and liking happen "to" a person (Dative: мені́, тобі́, йому́, їй, бра́тові, сестрі́). Even English passive sentences like "I was given a book" or "She was told" keep the person in the Dative with an active 3rd-person plural verb: Мені́ дали́ кни́жку; Їй сказа́ли.',
+          examples: [
+            { uk: 'Скі́льки тобі́ ро́ків? — Мені́ два́дцять ро́ків, і мені́ ду́же подо́бається Львів.', en: 'How old are you? — I am 20 years old, and I really like Lviv.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Alternate Endings in Masculine Dative Chains (-ові + -у)',
+          explanation:
+            'Because masculine nouns have two Dative endings (-ові/-еві and -у/-ю), Ukrainian alternates them when two or three masculine nouns stand side by side so the phrase flows musically.',
+          examples: [
+            { uk: 'Ми передали́ докуме́нти па́нові дире́ктору Петро́ві Васи́льовичу Пилипе́нку.', en: 'We handed the documents to Mr. Director Petro Vasylovych Pylypenko.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Use Inclusive «Ми з + Instrumental» for "X and I"',
+          explanation:
+            'Instead of saying "My friend and I" as two separate subjects (*Мій друг і я), natural Ukrainian says Ми з дру́гом ("We with [my] friend") or Ми вдво́х із по́другою ("The two of us with [my] friend") + a 1st-person plural verb.',
+          examples: [
+            { uk: 'Ми з дру́зями хо́чемо пообі́дати ра́зом.', en: 'My friends and I want to have lunch together.' },
+          ],
+        },
+      ],
+      explorers: [
+        {
+          title: 'Interactive Declension Explorer: Dative & Instrumental Across All 4 Declensions',
+          subtitle: 'Inspect regular nouns alongside 3rd-declension feminine nouns (ніч, любо́в, ра́дість) and 4th-declension baby animals (цуценя́)',
+          tabs: [
+            {
+              label: 'по́друга (f. -га)',
+              noun: 'по́друга',
+              gender: 'Feminine Hard (г → з before -і)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто? Що?', sg: 'по́друга', pl: 'по́други', note: 'Subject' },
+                { caseName: 'Genitive', question: 'Кого́? Чого́?', sg: 'по́други', pl: 'по́друг', note: 'у по́други (borrowed from a friend)' },
+                { caseName: 'Dative', question: 'Кому́? Чому́?', sg: 'по́друзі', pl: 'по́другам', note: 'г → з before -і! (телефону́ю по́друзі)' },
+                { caseName: 'Accusative', question: 'Кого́? Що?', sg: 'по́другу', pl: 'по́друг', note: 'Direct object' },
+                { caseName: 'Instrumental', question: 'Ким? Чим?', sg: 'з по́другою', pl: 'з по́другами', note: 'вдво́х із по́другою' },
+                { caseName: 'Locative', question: 'На ко́му?', sg: 'на по́друзі', pl: 'на по́другах', note: 'Same г → з mutation' },
+              ],
+            },
+            {
+              label: 'друг (m. animate)',
+              noun: 'друг',
+              gender: 'Masculine Hard (Parallel Dative)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто? Що?', sg: 'друг', pl: 'дру́зі', note: 'г → з in Nom. pl. дру́зі!' },
+                { caseName: 'Genitive', question: 'Кого́? Чого́?', sg: 'дру́га', pl: 'дру́зів', note: 'без дру́га' },
+                { caseName: 'Dative', question: 'Кому́? Чому́?', sg: 'дру́гові / дру́гу', pl: 'дру́зям', note: 'Both -ові and -у are valid!' },
+                { caseName: 'Accusative', question: 'Кого́? Що?', sg: 'дру́га', pl: 'дру́зів', note: 'Animate Acc. = Gen.' },
+                { caseName: 'Instrumental', question: 'Ким? Чим?', sg: 'з дру́гом', pl: 'з дру́зями', note: 'Ми з дру́гом ("My friend and I")' },
+                { caseName: 'Vocative', question: 'Кличний', sg: 'дру́же!', pl: 'дру́зі!', note: 'г → ж in Vocative' },
+              ],
+            },
+            {
+              label: 'цуценя́ (4th decl.)',
+              noun: 'цуценя́ (puppy)',
+              gender: 'Neuter 4th Declension (-ят- stem)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто? Що?', sg: 'цуценя́', pl: 'цуценя́та', note: 'Also котеня́, курча́, теля́, дитя́' },
+                { caseName: 'Genitive', question: 'Кого́? Чого́?', sg: 'цуценя́ти', pl: 'цуценя́т', note: 'Inserts -ят- (-ат- after ч/ж/ш)' },
+                { caseName: 'Dative', question: 'Кому́? Чому́?', sg: 'цуценя́ті', pl: 'цуценя́там', note: 'Inserts -ят-' },
+                { caseName: 'Instrumental', question: 'Ким? Чим?', sg: 'з цуценя́м', pl: 'з цуценя́тами', note: 'NO -ят- in Inst. sg.! Just add -м: з цуценя́м, з котеня́м, з курча́м' },
+                { caseName: 'Locative', question: 'На ко́му?', sg: 'на цуценя́ті', pl: 'на цуценя́тах', note: 'Inserts -ят-' },
+              ],
+            },
+            {
+              label: 'ніч / любо́в / ра́дість (3rd decl.)',
+              noun: 'ніч, любо́в, ра́дість',
+              gender: 'Feminine 3rd Declension (Consonant Stem)',
+              forms: [
+                { caseName: 'Nominative', question: 'Що?', sg: 'ніч / любо́в / ра́дість', pl: 'но́чі / — / ра́дощі', note: 'Zero-ending feminine nouns' },
+                { caseName: 'Gen. / Dat. / Loc.', question: 'Чого́? Чому́?', sg: 'но́чі / любо́ві / ра́дості', pl: 'ноче́й', note: 'о → і in closed syllable ніч → но́чі' },
+                { caseName: 'Instrumental (1 cons.)', question: 'Чим?', sg: 'ні́ччю, сі́ллю, о́сінню, по́дорожжю', pl: 'ноча́ми', note: 'Single non-labial consonant doubles before -ю' },
+                { caseName: 'Instrumental (labial/р)', question: 'Чим?', sg: 'любо́в’ю, кро́в’ю, ма́тір’ю', pl: 'матеря́ми', note: 'Labial (б,п,в,м,ф) or р takes apostrophe + -ю' },
+                { caseName: 'Instrumental (2 cons.)', question: 'Чим?', sg: 'ра́дістю, я́кістю, сме́ртю, чве́ртю', pl: '—', note: 'Two-consonant cluster adds -ю with NO doubling' },
+              ],
+            },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Case Contrasts That Change Meaning: Lend vs. Borrow & Languages vs. Sports/Music',
+          subtitle: 'Pay attention to the case or preposition following these high-frequency verbs',
+          nodes: [
+            {
+              label: 'позича́ти + Dative',
+              value: 'Я пози́чив кни́жку това́ришеві.',
+              description: 'To LEND to someone (recipient in Dative: това́ришеві).',
+              tone: 'blue',
+            },
+            {
+              label: 'позича́ти + у/в + Genitive',
+              value: 'Я пози́чив кни́жку в това́риша.',
+              description: 'To BORROW from someone (source in у/в + Genitive: у това́риша).',
+              tone: 'emerald',
+            },
+            {
+              label: 'Language: вивча́ти vs. розмовля́ти',
+              value: 'вивча́ти украї́нську мо́ву (Acc.) vs. розмовля́ти украї́нською мо́вою (Inst.)',
+              description: 'зна́ти/вивча́ти/розумі́ти take Accusative; розмовля́ти/говори́ти/володі́ти take Instrumental!',
+              tone: 'violet',
+            },
+            {
+              label: 'гра́ти в (Sport) vs. гра́ти на (Instrument)',
+              value: 'гра́ти у футбо́л / у ша́хи (Acc.) vs. гра́ти на гіта́рі / на піані́но (Loc.)',
+              description: 'Sports and games use в/у + Accusative; musical instruments use на + Locative.',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Я пишу́ з ру́чкою і їм суп з ло́жкою.',
+          right: 'Я пишу́ ру́чкою і їм суп ло́жкою.',
+          why: 'Never use з before a tool or utensil! Use the bare Instrumental case alone (ру́чкою, олівце́м, ноже́м, ло́жкою, ми́лом). Reserve з for accompaniment or food toppings (з дру́гом, суп зі смета́ною).',
+        },
+        {
+          wrong: 'Мені́ потрі́бні табле́тки для головно́го бо́лю.',
+          right: 'Мені́ потрі́бні табле́тки від головно́го бо́лю (міксту́ра від ка́шлю, кра́плі від не́житю).',
+          why: 'For medicine or remedies "for [a symptom]", Ukrainian uses від + Genitive ("against / away from the ache"), not для.',
+        },
+        {
+          wrong: 'Ді́ти гра́лися з мале́ньким цуценя́тим.',
+          right: 'Ді́ти гра́лися з мале́ньким цуценя́м (з котеня́м, з курча́м).',
+          why: '4th-declension baby animal nouns insert -ат-/-ят- in Gen./Dat./Loc. (цуценя́ти, цуценя́ті), but NEVER in the Instrumental singular—just add -м (з цуценя́м)!',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: «за-» ("Too"), Celebrations, Ukrainian Feast Dishes & False Friends',
+          summary: 'Expand for prefix за- (задороги́й), birthday/toasting etiquette, menu word order, 3 kinds of jam, and false friends',
+          blocks: [
+            {
+              heading: '1. Expressing "Too / Excessively" with Prefix «за-» and «на́дто / зана́дто»',
+              items: [
+                'Adverb + Adjective/Adverb: на́дто пі́зно (too late), зана́дто складни́й (too complicated), забага́то / зама́ло + Genitive (too much / too little).',
+                'Prefix за- attached directly to an adjective or adverb: задороги́й (too expensive), задо́вгий (too long), заважки́й (too heavy), замали́й (too small), зашви́дко (too fast).',
+              ],
+            },
+            {
+              heading: '2. Celebration, Toasting & Table-Setting Etiquette',
+              items: [
+                'Congratulating & Wishing: Віта́ю тебе́/Вас із + Instrumental (Віта́ю з Днем наро́дження / зі свя́том / з Різдво́м Христо́вим!) + Бажа́ю тобі́/Вам + Genitive (Бажа́ю ща́стя, міцно́го здоро́в’я та добро́буту!).',
+                'Festive Table & Toasts: At an anniversary or birthday (річни́ця / уроди́ни), the toastmaster (тамада́) proposes toasts with За + Accusative! (За імени́нника / імени́нницю! За на́шу дру́жбу!) while guests raise stemware (ке́лих, фуже́р, ча́рка) around a table service (столо́вий або́ чайни́й серві́з, столо́вий прибо́р, блю́дечко).',
+              ],
+            },
+            {
+              heading: '3. Ukrainian Menu Word Order, Classic Dishes, Three Jams & False Friends',
+              items: [
+                'Menu Word Order (Noun + Post-Nominal Adjective): карто́пля сма́жена ("potatoes fried"), ри́ба запече́на ("fish baked"), бали́к осетро́вий, with weights in 200 г or 1 шт. (одна́ шту́ка).',
+                'Signature Dishes: борщ із пампу́шками (beet soup with garlic buns); холоде́ць із хро́ном або́ гірчи́цею (meat aspic with horseradish or mustard); млинці́ (pancakes) vs. на́лисники (thin rolled crepes stuffed with sweet cheese, poppy seeds, or cherries); кисі́ль (berry drink) and квас.',
+                'Three Words for Jam: варе́ння (whole fruit/berries in syrup), пови́дло (smooth plum/apple butter), джем (thick spreadable jam).',
+                'Crucial False Friends: For "food preservatives", say консерва́нти or проду́кти без хіміка́тів—never *презервативи! For a conference "panel", say кру́глий стіл or секці́йне засіда́ння.',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'How do you say "We write with a pen, and we drink tea with lemon" in Ukrainian?',
+          options: [
+            'Ми пи́шемо ру́чкою, і ми п’ємо́ чай з лимо́ном.',
+            'Ми пи́шемо з ру́чкою, і ми п’ємо́ чай лимо́ном.',
+            'Ми пи́шемо ру́чку, і ми п’ємо́ чай з лимо́на.',
+          ],
+          correctIndex: 0,
+          explanation: 'Tools take the bare Instrumental without з (ру́чкою), whereas accompaniments/additions take з + Instrumental (з лимо́ном).',
+        },
+        {
+          question: 'What is the difference between "Я пози́чив кни́жку дру́гові" and "Я пози́чив кни́жку в дру́га"?',
+          options: [
+            '"Дру́гові" (Dative) means I lent the book to my friend; "в дру́га" (у/в + Genitive) means I borrowed the book from my friend.',
+            'They mean the exact same thing.',
+            '"Дру́гові" is plural and "в дру́га" is singular.',
+          ],
+          correctIndex: 0,
+          explanation: 'With позича́ти / пози́чити, Dative marks the recipient you lend to, while у/в + Genitive marks the person you borrow from.',
+        },
+      ],
+      takeaways: [
+        'Use the Dative case (-і/-ї for feminine with г→з, к→ц, х→с; -ові/-еві or -у/-ю for masculine) for recipients, age, feelings, and Мені́ подо́бається.',
+        'Use the bare Instrumental (no з!) for tools (писа́ти ру́чкою), transport/path (ї́хати по́їздом, іти́ Хреща́тиком), professions (працюва́ти лі́каркою), and scents (па́хне кві́тами).',
+        'Use з + Instrumental for accompaniment and toppings (Ми з дру́гом, ка́ва з молоко́м, з мале́ньким цуценя́м).',
+      ],
+    },
     examples: [
       { uk: 'Мені́ ду́же подо́бається ця нова́ пі́сня.', en: 'I really like this new song.' },
       { uk: 'Я телефо́ную сво́їй по́друзі та бра́тові.', en: 'I am calling my female friend and my brother.' },
@@ -336,6 +887,205 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>7. Compound Adjectives with Linking «-о-» & Color Shades («-ува́тий», Hyphenated Colors)</b>:<ul><li><b>Compound Adjectives (One Word with Linking -о-)</b>: Ukrainian productively joins an adjective or numeral stem + a noun stem with linking <b>-о-</b>: <b>багатоповерхо́вий буди́нок</b> (multi-story building), <b>двоповерхо́вий</b> (two-story), <b>добросе́рдий</b> (kind-hearted, from <i>до́бре се́рце</i>), <b>чорноо́кий</b> (dark-eyed), <b>чорнобри́вий</b> (dark-browed), <b>червонощо́кий</b> (rosy-cheeked), <b>сільськогоспода́рський</b> (agricultural), <b>двосторо́нній</b> (bilateral / two-sided, soft stem).</li><li><b>Hyphenated Color Combinations & «-ува́тий» ("-ish")</b>: Two equal colors or shades are joined with a hyphen: <b>си́ньо-жо́втий</b> (blue-and-yellow), <b>черво́но-бі́лий</b> (red-and-white), <b>яскра́во-зелений</b> (bright green), <b>те́мно-си́ній</b> (dark blue). To express a slight shade ("greenish, reddish"), add <b>-ува́тий / -кува́тий</b>: <b>зеленкува́тий / зеленува́тий</b> (greenish), <b>червонува́тий</b> (reddish), <b>синюва́тий</b> (bluish).</li></ul>',
       '<b>8. Analytical Superlatives («найбі́льш / найме́нш + Adjective»), Mandatory Comma Before «ніж», & Physical Appearance («висо́кого зро́сту»)</b>:<ul><li><b>Analytical Comparatives & Superlatives</b>: Alongside single-word forms in <i>-іший / най-...-іший</i>, longer or multi-syllable adjectives often form analytical comparatives with <b>більш / менш + positive adjective</b> (<i>більш суча́сний, менш доро́гий</i>) and analytical superlatives with <b>найбі́льш / найме́нш + positive adjective</b>: <b>найбі́льш ціка́ва кни́жка</b> (the most interesting book), <b>найме́нш складна́ впра́ва</b> (the least difficult exercise), <b>найбі́льш розви́нений регіо́н</b>. (Never combine <i>більш/найбі́льш</i> with the <i>-іший</i> form!)</li><li><b>Mandatory Punctuation Rule Before «ніж»</b>: In written Ukrainian, comparisons introduced by <b>ніж</b> ("than") are ALWAYS preceded by a comma: <b>Украї́нська мо́ва зна́чно прості́ша, ніж я ду́мав</b>; <b>Весна́ в Ки́єві теплі́ша, ніж у Ло́ндоні</b>.</li><li><b>Describing Height, Complexion & Facial Features</b>:<ul><li>To describe a person’s height with <b>зріст</b> (Gen. <b>зро́сту</b> = stature/height), use the <b>Genitive of quality</b> (<b>Він висо́кого / сере́днього / низько́го / невисо́кого зро́сту</b>) OR <b>на зріст</b> (<b>Вона́ невисо́ка на зріст, струнка́ й чорноо́ка</b>).</li><li>Rich portrait vocabulary: <b>шате́н / шате́нка</b> (brown-haired man/woman), <b>блонди́н / блонди́нка</b> (blond/blonde), <b>брюне́т / брюне́тка</b> (dark-haired man/woman), <b>смагля́вий</b> (olive-skinned / sun-bronzed), <b>креме́зний</b> (stocky / solidly built), <b>кирпа́тий ніс</b> (turned-up/snub nose), <b>довгі ві́ї</b> (long eyelashes), <b>ластови́ння</b> (freckles), <b>змо́ршки</b> (wrinkles), <b>зали́сини</b> (receding hairline).</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Ukrainian builds comparisons with Lego-like clarity: add -іший (or -ший) to make an adjective comparative ("warmer" = теплі́ший), and snap the prefix най- onto the front of ANY comparative to make it superlative ("the warmest" = найтеплі́ший, "the best" = найкра́щий)! You also have three natural ways to say "than" (ніж + Nominative, за + Accusative, or від + Genitive) and an intuitive pattern for saying what hurts (У ме́не бо́лить голова́ / боля́ть о́чі).',
+      whyItMatters:
+        'Whether you are comparing winter coats, asking for the fastest train, describing a person’s appearance, or explaining symptoms at a pharmacy, comparative adjectives and adverbs are the backbone of everyday decision-making.',
+      seeItInAction: [
+        {
+          uk: 'Ця зелена́ ку́ртка теплі́ша й деше́вша, ніж та чо́рна, але́ си́ня — найтеплі́ша.',
+          en: 'This green jacket is warmer and cheaper than that black one, but the blue one is the warmest.',
+          highlight: 'теплі́ша ... деше́вша, ніж ... найтеплі́ша',
+          SpotlightNote: 'Notice the mandatory comma before ніж ("than") and how най- turns теплі́ша ("warmer") into найтеплі́ша ("the warmest").',
+        },
+        {
+          uk: 'У ме́не сього́дні бо́лить го́рло, але́ пі́сля те́плого ча́ю я почува́юся зна́чно кра́ще.',
+          en: 'My throat hurts today, but after warm tea I feel much better.',
+          highlight: 'бо́лить го́рло ... почува́юся кра́ще',
+          SpotlightNote: 'With У ме́не бо́лить..., the body part is the grammatical subject (singular го́рло бо́лить; plural о́чі боля́ть). Кра́ще is the comparative adverb ("better").',
+        },
+        {
+          uk: 'Я сів не на той троле́йбус на са́мому поча́тку маршру́ту, тож приї́ду якомо́га шви́дше.',
+          en: 'I got on the wrong trolleybus at the very beginning of the route, so I will arrive as quickly as possible.',
+          highlight: 'не на той ... на са́мому ... якомо́га шви́дше',
+          SpotlightNote: 'не той = "the wrong one"; на са́мому поча́тку = "at the very beginning"; якомо́га шви́дше = "as quickly as possible".',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Building Comparatives (-er) & Superlatives (the -est)',
+          subtitle: 'Regular suffixes (-іший / -ший), the four essential irregulars, and strengthened superlatives',
+          headers: ['Positive Adjective', 'Comparative ("More / -er")', 'Superlative ("The Most / -est")', 'Comparative Adverb ("-ly")'],
+          rows: [
+            ['те́плий (warm)', 'теплі́ший (warmer)', 'найтеплі́ший (the warmest)', 'теплі́ше (more warmly)'],
+            ['ціка́вий (interesting)', 'цікаві́ший OR більш ціка́вий', 'найцікаві́ший OR найбі́льш ціка́вий', 'цікаві́ше'],
+            ['деше́вий (cheap)', 'деше́вший (drops -ев- → -евш-)', 'найдеше́вший (the cheapest)', 'деше́вше (more cheaply)'],
+            ['дороги́й / висо́кий / широ́кий', 'доро́жчий / ви́щий / ши́рший', 'найдоро́жчий / найви́щий / найши́рший', 'доро́жче / ви́ще / ши́рше'],
+            ['до́брий / га́рний (good)', 'кра́щий (better)', 'найкра́щий / якнайкра́щий', 'кра́ще (better)'],
+            ['пога́ний (bad)', 'гі́рший (worse)', 'найгі́рший (the worst)', 'гі́рше (worse)'],
+            ['вели́кий (big) / мали́й (small)', 'бі́льший / ме́нший', 'найбі́льший / найме́нший', 'бі́льше / ме́нше'],
+          ],
+          footnote: 'Note: добрі́ший means "kinder (more kind-hearted)", whereas кра́щий means "better in quality"! Add як- or що- before най- (якнайкра́щий, якнайшви́дше) or use якомо́га + comparative adverb (якомо́га шви́дше) for "the very best / as fast as possible."',
+        },
+        {
+          title: '2. Three Ways to Say "Than" in Ukrainian Comparisons',
+          subtitle: 'All three structures are natural in spoken and written Ukrainian',
+          headers: ['Pattern', 'Case Required', 'Ukrainian Example', 'Punctuation / Usage Note'],
+          rows: [
+            ['1. ніж + Nominative', 'Nominative (or case of compared item)', 'По́їзд зручні́ший, ніж авто́бус.', 'ALWAYS put a comma before ніж!'],
+            ['2. за + Accusative', 'Accusative', 'Дніпро́ ши́рший за Те́мзу. Він ви́щий за бра́та.', 'Crisp, idiomatic everyday comparison (no comma)'],
+            ['3. від + Genitive', 'Genitive', 'Мій брат ста́рший від ме́не.', 'Very common when comparing people’s ages or sizes (no comma)'],
+          ],
+        },
+        {
+          title: '3. Health Symptoms («У ме́не бо́лить / боля́ть») & Describing Appearance',
+          subtitle: 'Match бо́лить vs. боля́ть to the number of the body part, and use Genitive of quality for height',
+          headers: ['Category', 'Ukrainian Pattern', 'Examples', 'English Meaning'],
+          rows: [
+            ['Singular Body Part Aches', 'У ме́не (Мені́) бо́лить + Nom. Sg.', 'У ме́не бо́лить голова́ / го́рло / живі́т / зуб.', 'My head / throat / stomach / tooth hurts.'],
+            ['Plural Body Parts Ache', 'У ме́не (Мені́) боля́ть + Nom. Pl.', 'У ме́не боля́ть о́чі / зу́би / но́ги.', 'My eyes / teeth / legs hurt.'],
+            ['General Wellbeing', 'почува́тися + Adverb', 'Як ви себе́ почува́єте? — Сього́дні почува́юся зна́чно кра́ще.', 'How are you feeling? — Today I feel much better.'],
+            ['Height / Stature', 'Genitive of Quality OR на зріст', 'Він висо́кого / сере́днього / низько́го зро́сту; Вона́ невисо́ка на зріст.', 'He is of tall / medium / short height; She is petite in height.'],
+            ['Compound Adjectives (-о-)', 'Stem + -о- + Stem', 'багатоповерхо́вий, двоповерхо́вий, добросе́рдий, чорноо́кий', 'multi-story, two-story, kind-hearted, dark-eyed'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Snap «най-» Onto Any Comparative to Build the Superlative',
+          explanation:
+            'Once you know the comparative form of an adjective (теплі́ший, доро́жчий, кра́щий, бі́льший), you never have to guess the superlative—just attach the prefix най- directly to the front: найтеплі́ший, найдоро́жчий, найкра́щий, найбі́льший.',
+          examples: [
+            { uk: 'Гове́рла — найви́ща гора́ в Украї́ні, а Львів — одне́ з найкрасиві́ших міст.', en: 'Hoverla is the highest mountain in Ukraine, and Lviv is one of the most beautiful cities.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Distinguish Identity («той са́мий») from Similarity («таки́й са́мий») and "Wrong" («не той»)',
+          explanation:
+            'English uses "the same" for both one identical object and two similar objects. Ukrainian distinguishes them clearly: той са́мий = the very same (identical) one; таки́й са́мий = the same kind of (similar); and не той / не та / не те = the wrong one!',
+          examples: [
+            { uk: 'Ми ї́хали тим са́мим по́їздом, і в те́бе така́ са́ма валі́за, як у ме́не!', en: 'We rode on the very same train (тим са́мим), and you have the same kind of suitcase (така́ са́ма) as I do!' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Keep «сам», «са́мий», and «са́ме» Distinct',
+          explanation:
+            'These three look-alike words do different jobs: сам (сама́, самі́) means "(one)self" or "alone"; declined adjective са́мий means "the very / right at" (на са́мому поча́тку); and invariable adverb са́ме means "namely / precisely / right now".',
+          examples: [
+            { uk: 'Він сам зроби́в пере́клад на са́мому поча́тку ти́жня — са́ме про це я й кажу́!', en: 'He did the translation himself at the very beginning of the week — that is precisely what I am talking about!' },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Visualizing «той са́мий» vs. «таки́й са́мий» vs. «не той» & «сам / са́мий / са́ме»',
+          subtitle: 'Six high-frequency precision expressions every A2 speaker needs',
+          nodes: [
+            {
+              label: 'той са́мий (Identical)',
+              value: 'Ми чи́таємо ту са́му кни́жку.',
+              description: 'One single physical object shared or repeated ("the exact same book").',
+              tone: 'blue',
+            },
+            {
+              label: 'таки́й са́мий (Similar)',
+              value: 'У ме́не така́ са́ма ку́ртка, як у те́бе.',
+              description: 'Two separate items of the same model/type ("a jacket just like yours").',
+              tone: 'emerald',
+            },
+            {
+              label: 'не той / не та / не те (Wrong)',
+              value: 'Я сів не на той авто́бус!',
+              description: 'Literally "not that one" → idiomatic Ukrainian for "the wrong bus / wrong door".',
+              tone: 'rose',
+            },
+            {
+              label: 'сам vs. са́мий vs. са́ме',
+              value: 'він сам • на са́мому березі́ • са́ме за́раз',
+              description: 'сам = himself/alone; са́мий = the very; са́ме = precisely/namely.',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Ця кни́жка більш цікаві́ша, ніж та.',
+          right: 'Ця кни́жка цікаві́ша (OR більш ціка́ва), ніж та.',
+          why: 'Never combine більш / найбі́льш with the -іший comparative suffix (that is like saying "more interestinger"). Use either цікаві́ша or більш ціка́ва.',
+        },
+        {
+          wrong: 'У ме́не бо́лить о́чі і зу́би.',
+          right: 'У ме́не боля́ть о́чі і зу́би.',
+          why: 'Because о́чі (eyes) and зу́би (teeth) are plural grammatical subjects, the verb must take the 3rd-person plural form боля́ть.',
+        },
+        {
+          wrong: 'Весна́ в Ки́єві теплі́ша ніж у Ло́ндоні.',
+          right: 'Весна́ в Ки́єві теплі́ша, ніж у Ло́ндоні.',
+          why: 'In written Ukrainian, comparisons with ніж ("than") always require a comma before ніж.',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Relative Adjectives, Expressive Suffixes, Color Shades & Portrait Vocabulary',
+          summary: 'Expand for relative adjectives (кам’яна́ стіна́), expressive suffixes (мале́сенький, білі́сінький), color shades (-ува́тий), and facial features',
+          blocks: [
+            {
+              heading: '1. Relative Adjectives Where English Stacks Two Nouns',
+              items: [
+                'English often places a noun before another noun ("stone wall", "iron bridge", "desk lamp"). Ukrainian derives a relative adjective instead: ка́мінь → кам’яна́ стіна́ (stone wall), залі́зо → залі́зний міст (iron bridge), стіл → насті́льна ла́мпа (desk lamp), де́рево → дерев’я́ний стіл (wooden table).',
+              ],
+            },
+            {
+              heading: '2. Expressive Suffixes & Color Nuances («-ува́тий» and Hyphenated Colors)',
+              items: [
+                'Warm Diminutive/Intensive Suffixes: мале́сенький (tiny/wee), білі́сінький (pure snow-white), тихе́сенько (very softly), швиде́нько (quickly) vs. augmentative величе́зний (huge/enormous).',
+                'Hyphenated Color Combinations: си́ньо-жо́втий (blue-and-yellow), черво́но-бі́лий (red-and-white), яскра́во-зеле́ний (bright green), те́мно-си́ній (dark blue).',
+                'Slight Color Shades ("-ish" = -ува́тий / -кува́тий): зеленува́тий / зеленкува́тий (greenish), червонува́тий (reddish), синюва́тий (bluish).',
+              ],
+            },
+            {
+              heading: '3. Portrait, Hair, Complexion & Facial Features Vocabulary',
+              items: [
+                'Hair & Complexion: шате́н / шате́нка (brown-haired man/woman), блонди́н / блонди́нка (blond/blonde), брюне́т / брюне́тка (dark-haired), смагля́вий (olive-skinned / sun-bronzed), креме́зний (stocky / solidly built).',
+                'Facial Details: чорноо́кий (dark-eyed), чорнобри́вий (dark-browed), червонощо́кий (rosy-cheeked), кирпа́тий ніс (turned-up/snub nose), до́вгі ві́ї (long eyelashes), ластови́ння (freckles), змо́ршки (wrinkles), зали́сини (receding hairline).',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Which sentence correctly uses a comparative and "than" in Ukrainian?',
+          options: [
+            'По́їзд зручні́ший, ніж авто́бус. (or: По́їзд зручні́ший за авто́бус.)',
+            'По́їзд більш зручні́ший ніж авто́бус.',
+            'По́їзд найзручні́ший за авто́буса.',
+          ],
+          correctIndex: 0,
+          explanation: 'Use зручні́ший, ніж + Nominative (with a comma before ніж) or зручні́ший за + Accusative.',
+        },
+        {
+          question: 'How do you say "I got on the wrong bus" in idiomatic Ukrainian?',
+          options: [
+            'Я сів не на той авто́бус!',
+            'Я сів на таки́й са́мий авто́бус!',
+            'Я сів на са́ме авто́бус!',
+          ],
+          correctIndex: 0,
+          explanation: 'Не той (не та, не те) literally means "not that one" and is the standard Ukrainian way to say "the wrong one".',
+        },
+      ],
+      takeaways: [
+        'Form comparatives with -іший/-ший (plus irregulars кра́щий, гі́рший, бі́льший, ме́нший) and superlatives by adding най- (найкра́щий).',
+        'Express "than" with ніж + Nominative (always preceded by a comma), за + Accusative, or від + Genitive.',
+        'Match У ме́не бо́лить (singular body part) vs. У ме́не боля́ть (plural body parts), and distinguish той са́мий (identical) from таки́й са́мий (similar).',
+      ],
+    },
     examples: [
       { uk: 'Ця зелена́ ку́ртка теплі́ша й деше́вша, ніж та чорна.', en: 'This green jacket is warmer and cheaper than that black one.' },
       { uk: 'Львів — одне́ з найкрасиві́ших міст у Євро́пі.', en: 'Lviv is one of the most beautiful cities in Europe.' },
@@ -491,6 +1241,203 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>6. Wearing vs. Putting On Clothes & Footwear (носи́ти, ходи́ти в, одяга́тися/роздяга́тися, переодяга́тися, взува́тися/роззува́тися)</b>:<ul><li><b>Habitual Wearing ("She wears")</b>: Use <b>носи́ти + Accusative</b> (<i>Вона́ но́сить черво́не пальто́ / окуля́ри</i>) OR <b>ходи́ти в/у + Locative</b> (<i>Вона́ зазвича́й хо́дить у черво́ному пальті́</i>).</li><li><b>Wearing Right Now ("She has on / is wearing")</b>: Use <b>бу́ти в/у + Locative</b> (<i>Сього́дні вона́ в си́ній су́кні</i>) OR <b>На ній / на ньому́ + Nominative</b> (<i>На ній гарни́й капелю́шок і нове́ пальто́</i>).</li><li><b>Dressing, Undressing, Changing & Footwear</b>:<ul><li>Putting on / taking off clothes: <b>одяга́ти / одягну́ти</b> (or <b>вдяга́ти / вдягну́ти</b>) + Acc. (<i>одягну́ти ку́ртку</i>); reflexive <b>одяга́тися / одягну́тися</b> (get dressed) vs. <b>роздяга́тися / роздягну́тися</b> (take off one’s coat / undress); <b>переодяга́тися / переодягну́тися</b> (change clothes).</li><li>Putting on / taking off shoes: Ukrainian has dedicated verbs for footwear—<b>взува́ти / взу́ти череви́ки</b> (or reflexive <b>взува́тися / взу́тися</b> = put on one’s shoes) vs. <b>роззува́тися / роззу́тися</b> (take off one’s shoes)!</li></ul></li></ul>',
       '<b>7. Complete 4-Way Reciprocal System («одна́ о́дну / оди́н о́дного / одне́ о́дного / одні́ о́дних») & Splitting Negative Pronouns with Prepositions («ні з ким»)</b>:<ul><li><b>Four Gender/Number Reciprocal Patterns ("One Another / Each Other")</b>: In Ukrainian, the first word stands in the Nominative (agreeing with the subjects’ gender and number), while the second word takes the case required by the verb or preposition—with its stress shifted to the first syllable (<b>о́дного, о́дну, о́дному, о́дних, о́дним</b>)!<ul><li><b>Two females</b>: <b>Вони́ зна́ють одна́ о́дну</b>; <b>Вони́ ду́мають одна́ про о́дну</b>.</li><li><b>Two males</b>: <b>Вони́ розумі́ють оди́н о́дного</b>; <b>Вони́ чека́ють оди́н на о́дного</b>.</li><li><b>A male and a female (mixed pair)</b>: <b>Вони́ хва́лять одне́ о́дного</b>; <b>Вони́ допомага́ють одне́ о́дному</b>.</li><li><b>Two groups of people</b>: <b>Вони́ ба́чать одні́ о́дних</b>; <b>Вони́ дя́кують одні́ о́дним</b>.</li></ul></li><li><b>Prepositions with «ніхто́, ніщо́» vs. «де́хто, де́що»</b>:<ul><li>When a preposition is used with negative pronouns <b>ніхто́</b> or <b>ніщо́</b>, the preposition MUST be placed <b>between</b> <i>ні</i> and the declined pronoun: <b>ні до ко́го / ні до чо́го</b>, <b>ні про ко́го / ні про що</b>, <b>ні з ким / ні з чим</b>, <b>ні на ко́му / ні на чо́му</b> (e.g., <b>Я ніко́ли ні про ко́го пога́но не гово́рю; Він ніку́ди ні з ким не йде́</b>).</li><li>With <b>де́хто</b> (some people) and <b>де́що</b> (some things), the preposition may stand either between the parts OR before the whole word: <b>де з ким</b> OR <b>з де́ким</b>; <b>де про що</b> OR <b>про де́що</b>.</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'In English, we often leave out "myself" or "each other" when talking about daily routines ("I woke up, washed, got dressed, put on my shoes, and met my friend"). In Ukrainian, the reflexive postfix -ся (originally a short form of себе́ = "oneself") attaches directly to the end of the verb to show that the action turns back on the speaker (вмива́тися, одяга́тися, взува́тися), is shared between people (зустріча́тися, листува́тися), or expresses an inner emotion (пиша́тися, дивува́тися).',
+      whyItMatters:
+        'This module also unlocks Ukrainian’s four-way reciprocal system for "each other" (оди́н о́дного for men, одна́ о́дну for women, одне́ о́дного for a mixed pair, одні́ о́дних for groups) and obligatory double negation (Ніхто́ ніко́ли ні про що не забува́є = "Nobody ever forgets about anything").',
+      seeItInAction: [
+        {
+          uk: 'Щора́нку я прокида́юся о сьо́мій, вмива́юся, одяга́юся, взува́юся і вихо́джу з до́му.',
+          en: 'Every morning I wake up at seven, wash my face, get dressed, put on my shoes, and leave the house.',
+          highlight: 'прокида́юся, вмива́юся, одяга́юся, взува́юся',
+          SpotlightNote: 'Notice that Ukrainian has a dedicated verb specifically for putting on footwear (взува́тися, from взуття́) and taking off footwear (роззува́тися)!',
+        },
+        {
+          uk: 'О́льга й І́гор чу́дово розумі́ють одне́ о́дного, а се́стри ча́сто ду́мають одна́ про о́дну.',
+          en: 'Olha and Ihor understand each other wonderfully, and the sisters often think about each other.',
+          highlight: 'одне́ о́дного ... одна́ про о́дну',
+          SpotlightNote: 'A mixed-gender pair uses neuter-first одне́ о́дного, while two women use feminine одна́ о́дну (with any preposition placed right in the middle: одна́ про о́дну).',
+        },
+        {
+          uk: 'Хтось дзво́нить у две́рі, але́ він сього́дні ні з ким і ні про що не розмовля́є.',
+          en: 'Someone is ringing the doorbell, but today he is not talking with anyone or about anything.',
+          highlight: 'ні з ким і ні про що не розмовля́є',
+          SpotlightNote: 'Prepositions split ніхто́ and ніщо́ into three words (ні з ким, ні про що), and the verb still requires не!',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Reflexive (-ся) Verbs Across Routines, Reciprocals & Emotions',
+          subtitle: 'Compare what happens when a verb takes a direct object vs. when it adds -ся (-сь)',
+          headers: ['Category', 'Transitive Verb (+ Object)', 'Reflexive / Reciprocal (-ся)', 'Case / Preposition Used with -ся'],
+          rows: [
+            ['Washing & Dressing', 'вмива́ти дити́ну; одяга́ти ку́ртку', 'вмива́тися (wash face); одяга́тися / роздяга́тися; переодяга́тися (change clothes)', 'Intransitive (action on oneself)'],
+            ['Footwear (Shoes)', 'взува́ти / взу́ти череви́ки', 'взува́тися / взу́тися (put on shoes) vs. роззува́тися / роззу́тися (take off shoes)', 'Dedicated Ukrainian footwear verbs!'],
+            ['Preparing & Stopping', 'готува́ти обі́д; спини́ти авто́', 'готува́тися (prepare oneself); авто́ спини́лося (the car stopped)', 'готува́тися до + Genitive (до і́спиту)'],
+            ['Reciprocal (Mutual)', 'зустрі́ти дру́га; обійня́ти сестру́', 'зустріча́тися (meet up), листува́тися (message each other), мири́тися, обійма́тися', 'Used with з + Instrumental OR plural subject'],
+            ['Emotion & Attitude', 'дивува́ти (to surprise someone)', 'пиша́тися (be proud), ціка́витися (be interested), дивува́тися (marvel), се́рдитися (be cross)', 'пиша́тися/ціка́витися + Inst.; дивува́тися + Dat.; се́рдитися на + Acc.'],
+            ['Meaning-Shifting Pairs', 'розрахо́вувати (count/rely on)', 'розрахо́вуватися (pay / settle the bill at a shop or café)', 'розрахо́вувати на + Acc. vs. розрахо́вуватися ка́рткою / готі́вкою'],
+          ],
+          footnote: 'Pronunciation tip: 2nd-person singular -шся (вмива́єшся) sounds like a long soft [sʲsʲa], and 3rd-person -ться (вмива́ється, вмива́ються) sounds like a soft [tsʲtsʲa].',
+        },
+        {
+          title: '2. Four-Way Pronoun Matrix: себе́ vs. свій vs. сам vs. оди́н о́дного',
+          subtitle: 'Each of these four Ukrainian pronouns translates a different shade of English "self / own / each other"',
+          headers: ['Pronoun', 'Core Meaning', 'How It Changes', 'Authentic Ukrainian Example'],
+          rows: [
+            ['себе́', 'oneself (for ANY subject: I, you, he, she, we, they)', 'Gen./Acc. себе́, Dat. собі́, Inst. собо́ю, Loc. на собі́ (no Nominative!)', 'Я купи́в собі́ ка́ву; Вона́ пиша́ється собо́ю.'],
+            ['свій (своя́, своє́, свої́)', 'one’s own (belongs to the subject of the sentence)', 'Declines like a regular adjective across all genders & cases', 'Я люблю́ своє́ мі́сто. (Omitted on own body parts: Він покла́в ру́ку в кише́ню.)'],
+            ['сам (сама́, само́, самі́)', 'emphatic "myself / herself / personally / alone"', 'Agrees with the person in gender and number', 'Вона́ сама́ спекла́ цей торт! Він живе́ сам.'],
+            ['оди́н о́дного (4-way!)', 'each other / one another', '1st word = Nom. (gender/number); 2nd word = oblique case (stress on о́-!)', 'Вони́ розумі́ють оди́н о́дного (m.) / одна́ о́дну (f.) / одне́ о́дного (mixed) / одні́ о́дних (groups).'],
+          ],
+        },
+        {
+          title: '3. Indefinite («-сь / де́-») vs. Negative Pronouns («ні-») & Split Prepositions',
+          subtitle: 'Negative pronouns ALWAYS require не before the verb and split around prepositions',
+          headers: ['Question Word', 'Indefinite ("Someone / Something")', 'Negative ("No One / Nothing")', 'With a Preposition (Split Rule!)'],
+          rows: [
+            ['хто (who)', 'хтось (someone), де́хто (some people)', 'ніхто́ (nobody / no one)', 'ні до ко́го, ні з ким, ні про ко́го (vs. де з ким / з де́ким)'],
+            ['що (what)', 'щось (something), де́що (some things)', 'ніщо́ (Gen./Acc. нічо́го = nothing)', 'ні до чо́го, ні з чим, ні про що, ні на чо́му'],
+            ['де / куди́ / коли́', 'де́сь (somewhere), куди́сь, коли́сь', 'ніде́ (nowhere), ніку́ди, ніко́ли (never)', 'Я ніко́ли ніку́ди ні з ким не спі́знююся!'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Match the 4-Way Reciprocal ("Each Other") to Who Is Involved',
+          explanation:
+            'Ukrainian is wonderfully expressive when two people interact: use оди́н о́дного for two males, одна́ о́дну for two females, одне́ о́дного for a male-and-female pair, and одні́ о́дних for multiple groups. Notice that the stress on the second word jumps to the first syllable (о́дного, о́дну, о́дному)!',
+          examples: [
+            { uk: 'Подру́ги допомага́ють одна́ о́дній, а Ольга й Тара́с чека́ють одне́ на о́дного.', en: 'The female friends help each other, and Olha and Taras are waiting for each other.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Place Prepositions Inside Negative Pronouns («ні з ким», «ні про що»)',
+          explanation:
+            'Whenever a preposition (з, про, до, на, у) combines with ніхто́ or ніщо́, split the negative prefix ні off and put the preposition right in the middle: ні з ким ("with no one"), ні про що ("about nothing"), ні до ко́го ("to no one"). Always keep не before the verb!',
+          examples: [
+            { uk: 'Я ніко́ли ні про ко́го пога́но не гово́рю.', en: 'I never speak badly about anyone.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Distinguish Wearing Habitually, Wearing Right Now, and Getting Dressed',
+          explanation:
+            'English uses "wear" for both habits and right now. Ukrainian separates them: habitual wearing = носи́ти + Acc. (or ходи́ти в + Loc.); wearing right now = бу́ти в + Loc. (Сього́дні вона́ в си́ній су́кні) or На ній + Nom.; putting on = одяга́ти / взува́ти.',
+          examples: [
+            { uk: 'Вона́ зазвича́й но́сить джинси, але́ сього́дні вона́ в елега́нтній су́кні.', en: 'She usually wears jeans, but today she is wearing an elegant dress.' },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Complete Guide to Clothing & Footwear Verbs in Ukrainian',
+          subtitle: 'How to say "wears", "is wearing right now", "puts on", "changes", and "takes off"',
+          nodes: [
+            {
+              label: 'Habitual ("Wears")',
+              value: 'носи́ти + Acc. OR ходи́ти в + Loc.',
+              description: 'Вона́ но́сить окуля́ри / хо́дить у черво́ному пальті́.',
+              tone: 'blue',
+            },
+            {
+              label: 'Right Now ("Has On")',
+              value: 'бу́ти в + Loc. OR На ній/ньому́ + Nom.',
+              description: 'Сього́дні вона́ в си́ній су́кні. На ній нове́ пальто́.',
+              tone: 'emerald',
+            },
+            {
+              label: 'Clothes: Put On / Change / Take Off',
+              value: 'одяга́тися → переодяга́тися → роздяга́тися',
+              description: 'Transitive with garment: одягну́ти ку́ртку, зня́ти пальто́.',
+              tone: 'violet',
+            },
+            {
+              label: 'Footwear: Put On / Take Off Shoes',
+              value: 'взува́тися / взу́тися ↔ роззува́тися / роззу́тися',
+              description: 'Dedicated footwear verbs! Поверну́вшись додо́му, ми роззу́лися в коридо́рі.',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Ніхто́ зна́є про це.',
+          right: 'Ніхто́ не зна́є про це.',
+          why: 'Ukrainian requires double (or multiple) negation: whenever ніхто́, ніщо́, ніко́ли, or ніде́ appears, the verb MUST have не before it.',
+        },
+        {
+          wrong: 'Він не розмовля́є з ніки́м.',
+          right: 'Він не розмовля́є ні з ким.',
+          why: 'Prepositions must be placed BETWEEN ні and the declined form of хто/що: ні з ким, ні про що, ні до ко́го.',
+        },
+        {
+          wrong: 'Він покла́в його́ ру́ку в його́ кише́ню.',
+          right: 'Він покла́в ру́ку в кише́ню.',
+          why: 'First, a 3rd-person subject’s own possession is свій (not його́). Second, with inalienable body parts and clothes currently worn, Ukrainian naturally omits the possessive altogether unless needed for emphasis!',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Meaning-Shifting «-ся» Pairs, Emotion Verb Case Government & «де з ким / з де́ким»',
+          summary: 'Expand for transitive vs. intransitive -ся pairs, розрахо́вувати vs. розрахо́вуватися, and preposition placement with де́хто/де́що',
+          blocks: [
+            {
+              heading: '1. Transitive vs. Intransitive & Meaning-Shifting «-ся» Pairs',
+              items: [
+                'Making a Transitive Verb Intransitive: спини́ти автомобі́ль (stop the car) → автомобі́ль спини́вся (the car stopped); зачиня́ти две́рі (close the doors) → две́рі зачиня́ються (the doors close); почина́ти уро́к → уро́к почина́ється.',
+                'Meaning-Shifting Pairs: розрахо́вувати на дру́га (to rely/count on a friend) vs. розрахо́вуватися готі́вкою / ка́рткою (to pay / settle the bill in cash or by card); народи́ти дити́ну (to give birth to a child) vs. народи́тися в Ки́єві (to be born in Kyiv).',
+              ],
+            },
+            {
+              heading: '2. Case Government of Essential Reflexive Verbs',
+              items: [
+                '+ Instrumental (Ким? Чим?): пиша́тися (be proud of), ціка́витися (be interested in), захо́плюватися (be fascinated by), милува́тися (admire), користува́тися (use).',
+                '+ Dative (Кому́? Чому́?): дивува́тися (marvel / be surprised at), раді́ти (rejoice at), всміха́тися (smile at).',
+                '+ Preposition: готува́тися до + Genitive (prepare for); се́рдитися / обража́тися на + Accusative (be cross / offended at); домовля́тися про + Accusative (agree on).',
+              ],
+            },
+            {
+              heading: '3. Preposition Placement with «де́хто» and «де́що»',
+              items: [
+                'Unlike ніхто́/ніщо́ (which MUST split: ні з ким), the prefix де́- in де́хто (some people) and де́що (some things) allows the preposition either in the middle OR in front: де з ким OR з де́ким; де про що OR про де́що.',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Which form of "each other" is used when Olha (female) and Ihor (male) understand each other?',
+          options: [
+            'О́льга й І́гор розумі́ють одне́ о́дного.',
+            'О́льга й І́гор розумі́ють одна́ о́дну.',
+            'О́льга й І́гор розумі́ють себе́.',
+          ],
+          correctIndex: 0,
+          explanation: 'A mixed-gender pair uses neuter-first одне́ о́дного (two women use одна́ о́дну; two men use оди́н о́дного).',
+        },
+        {
+          question: 'How do you say "He is not talking with anyone today" in Ukrainian?',
+          options: [
+            'Він сього́дні ні з ким не розмовля́є.',
+            'Він сього́дні з ніки́м розмовля́є.',
+            'Він сього́дні ніхто́ не розмовля́є.',
+          ],
+          correctIndex: 0,
+          explanation: 'The preposition з splits ніхто́ into ні з ким, and не is required before the verb розмовля́є.',
+        },
+      ],
+      takeaways: [
+        'Attach -ся (-сь) for daily routines on oneself (вмива́тися, одяга́тися, взува́тися/роззува́тися), mutual actions (листува́тися), and emotions (пиша́тися + Inst., дивува́тися + Dat.).',
+        'Match the 4-way reciprocal pronoun to the speakers: оди́н о́дного (men), одна́ о́дну (women), одне́ о́дного (mixed pair), одні́ о́дних (groups).',
+        'Always pair negative pronouns (ніхто́, ніщо́, ніко́ли) with не before the verb, and split prepositions inside ніхто́/ніщо́ (ні з ким, ні про що).',
+      ],
+    },
     examples: [
       { uk: 'Щора́нку я прокида́юся о сьо́мій, вмива́юся, одяга́юся і сні́даю.', en: 'Every morning I wake up at seven, wash my face, get dressed, and eat breakfast.' },
       { uk: 'Ми щодня́ листу́ємося й добре розумі́ємо оди́н о́дного.', en: 'We message each other every day and understand each other well.' },
@@ -668,6 +1615,209 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>8. Temporal «за + Accusative» vs. «під час + Genitive», Counterfactual «тре́ба було́», & Official Weather Forecasts</b>:<ul><li><b>«за + Accusative» ("Over the Course of / Within") vs. «під час + Genitive» ("During")</b>:<ul><li>Use <b>за + Accusative</b> to express what was accomplished or occurred over a span of time: <b>Це все відбуло́ся за ті ро́ки</b> (All this took place over those years); <b>Ми ви́конали проє́кт за два ти́жні</b> (We completed the project within two weeks).</li><li>Use <b>під час + Genitive</b> for an action occurring during an event or activity: <b>Під час обі́ду ми обговори́ли пла́ни</b> (During lunch we discussed our plans); <b>Під час кані́кул</b> (During the holidays).</li></ul></li><li><b>Counterfactual Past Obligation («тре́ба було́ + Infinitive» = "Should Have Done")</b>: When <b>тре́ба було́</b> (or <b>слід було́ / ва́рто було́</b>) + perfective infinitive is used about a past situation, it frequently expresses gentle regret ("I/you should have done X [but didn’t]"): <b>Мені́ тре́ба було́ здогада́тися!</b> (I should have guessed!); <b>Тобі́ тре́ба було́ взя́ти парасо́льку</b> (You should have taken an umbrella).</li><li><b>Official Ukrainian Weather-Forecast Register («Прогно́з пого́ди Гідрометце́нтру»)</b>:<ul><li>Sunrise, sunset & day length: <b>Со́нце зі́йде о 7-й годи́ні 14 хвили́н і за́йде о 17-й годи́ні 42 хвили́ни. Трива́лість дня — 10 годи́н 28 хвили́н.</b></li><li>Sky & precipitation: <b>хма́рно з проя́сненнями</b> (cloudy with sunny intervals/clearings), <b>мінли́ва хма́рність</b> (variable cloudiness), <b>без істо́тних о́падів</b> (no significant precipitation), <b>місця́ми невели́кий дощ, мря́чить</b> (light rain in places, drizzling), <b>надвечі́р швидко смерка́є</b> (dusk falls quickly toward evening).</li><li>Temperatures: <b>температу́ра пові́тря вночі́ від 2 гра́дусів моро́зу до 3 гра́дусів тепла́, вдень 8–12 гра́дусів ви́ще нуля́ за Це́льсієм</b>.</li></ul></li></ul>',
       '<b>9. Natural-World Etymologies of the 12 Ukrainian Months, Parallel Clock-Time Expressions, & Translating "Last Night"</b>:<ul><li><b>Why Ukrainian Months Sound Different from Latin-Based Months</b>: Unlike English or French, Ukrainian preserves poetic Slavic names rooted in seasonal nature and agricultural life:<ul><li><b>сі́чень</b> (January — the frost-"slicing" or wood-chopping month, from <i>сікти́</i>); <b>лю́тий</b> (February — the "fierce / angry" winter month); <b>бе́резень</b> (March — the month of birch sap and birch trees, <i>бере́за</i>); <b>кві́тень</b> (April — the month of blooming flowers, <i>кві́тка</i>); <b>тра́вень</b> (May — the month of lush green grass, <i>трава́</i>); <b>че́рвень</b> (June — the month of red ripening berries, <i>черво́ний</i>); <b>ли́пень</b> (July — the month of fragrant linden blossoms and honey, <i>ли́па</i>); <b>се́рпень</b> (August — the harvest month of the sickle, <i>серп</i>); <b>ве́ресень</b> (September — the month of purple heather, <i>ве́рес</i>); <b>жо́втень</b> (October — the month of golden-yellow leaves, <i>жо́втий</i>); <b>листопа́д</b> (November — the month of falling leaves, <i>ли́стя па́дає</i>); <b>гру́день</b> (December — the month of frozen clods of earth, <i>гру́да</i>).</li></ul></li><li><b>Parallel Clock-Time Expressions («пів дру́гої» & «по четве́ртій»)</b>: Alongside standard <b>пів на дру́гу</b> (1:30) and <b>де́сять хвили́н на п’я́ту</b> (4:10), you will also hear the Genitive half-hour <b>пів дру́гої</b> (1:30), <b>пів одина́дцятої</b> (10:30), and the Locative after <b>по</b> for minutes past the completed hour: <b>де́сять хвили́н по четве́ртій</b> (4:10 = 10 minutes after the 4th hour), <b>два́дцять хвили́н по сьо́мій</b> (7:20)!</li><li><b>How to Translate English "Last Night" («учо́ра вве́чері»)</b>: In Ukrainian, <b>ніч</b> refers strictly to the sleeping hours after midnight. Therefore, when asking what someone did "last night" before going to sleep, always say <b>учо́ра вве́чері</b> ("yesterday evening"): <b>Яку́ п’є́су ви ба́чили вчо́ра вве́чері?</b> (What play did you see last night?).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Ukrainian tells clock time with a forward-looking mindset! Think of each hour as a journey: as soon as 5:00 finishes, every minute from 5:01 to 5:30 is already traveling ON THE WAY TO the 6th hour (5:10 = де́сять хвили́н на шо́сту = "10 minutes toward the 6th"; 5:30 = пів на шо́сту = "halfway toward the 6th"). After the half-hour (5:31–5:59), you count how many minutes remain before the 6th hour arrives (5:45 = за чверть шо́ста = "in a quarter-hour it is the 6th").',
+      whyItMatters:
+        'Combined with hundreds (100–900), thousands (одна́ ти́сяча, дві ти́сячі, п’ять ти́сяч), calendar dates, and Ukraine’s poetic nature-based month names (сі́чень through гру́день), this module equips you to read train timetables, historical dates, weather forecasts, and shop prices with complete confidence.',
+      seeItInAction: [
+        {
+          uk: 'За́раз чверть на дев’я́ту, а ранко́вий по́їзд вируша́є о пів на деся́ту й прибува́є за де́сять пе́рша.',
+          en: 'Right now it is 8:15, and the morning train departs at 9:30 and arrives at 12:50.',
+          highlight: 'чверть на дев’я́ту (8:15) • о пів на деся́ту (9:30) • за де́сять пе́рша (12:50)',
+          SpotlightNote: 'Notice how 8:15 looks ahead to the 9th hour (на дев’я́ту), 9:30 is halfway to the 10th hour (пів на деся́ту), and 12:50 is 10 minutes before the 1st hour (за де́сять пе́рша).',
+        },
+        {
+          uk: 'Мені́ тре́ба поміня́ти до́ларів п’ятдеся́т: два квитки́ ко́штують одну́ ти́сячу дві́сті со́рок гри́вень.',
+          en: 'I need to exchange about fifty dollars: two tickets cost 1,240 hryvnias.',
+          highlight: 'до́ларів п’ятдеся́т ... одну́ ти́сячу дві́сті со́рок',
+          SpotlightNote: 'Inverting the noun and number (до́ларів п’ятдеся́т instead of п’ятдеся́т до́ларів) expresses an approximate amount ("about 50 dollars")!',
+        },
+        {
+          uk: 'Львів був засно́ваний у ти́сяча дві́сті тридця́тих (1230-х) рока́х, а в ти́сяча дві́сті сімдеся́т дру́гому (1272) ро́ці став столи́цею.',
+          en: 'Lviv was founded in the 1230s, and in 1272 became the capital.',
+          highlight: 'тридця́тих рока́х ... дру́гому ро́ці',
+          SpotlightNote: 'In compound years, only the VERY LAST word is an ordinal that declines (-ому ро́ці for a specific year; -их рока́х for a decade).',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Complete Ukrainian Clock-Time System (Котра́ годи́на? / О котрі́й годи́ні?)',
+          subtitle: 'Every hour uses a feminine ordinal adjective agreeing with годи́на (пе́рша, дру́га, тре́тя... одина́дцята, двана́дцята)',
+          headers: ['Clock Position', 'Formula ("What time is it?")', 'Example (Around 7:00–8:00)', 'Formula ("At what time?")'],
+          rows: [
+            ['Exact Hour (:00)', 'Fem. Ordinal + годи́на', 'сьо́ма годи́на (7:00); одина́дцята (11:00)', 'о сьо́мій годи́ні; об одина́дцятій (об before о-!)'],
+            ['Minutes Past (:01–:29)', 'Minutes + на + Accusative NEXT hour (or по + Loc. current hour)', 'де́сять хвили́н на во́сьму (7:10) / де́сять по сьо́мій', 'о де́сять хвили́н на во́сьму'],
+            ['Quarter Past (:15)', 'чверть на + Accusative NEXT hour', 'чверть на во́сьму (7:15)', 'о чверть на во́сьму'],
+            ['Half Past (:30)', 'пів на + Accusative NEXT hour (or пів + Gen. next hour)', 'пів на во́сьму (7:30) / пів во́сьмої', 'о пів на во́сьму'],
+            ['Minutes To (:31–:59)', 'за + Acc. minutes + Nominative NEXT hour', 'за два́дцять во́сьма (7:40); за де́сять во́сьма (7:50)', 'за де́сять во́сьма'],
+            ['Quarter To (:45)', 'за чверть + Nominative NEXT hour (or без чве́рті)', 'за чверть во́сьма (7:45) / без чве́рті во́сьма', 'за чверть во́сьма'],
+            ['24-Hour Timetable / Noon / Midnight', 'Cardinal hours + cardinal minutes; опівдні / опівно́чі', 'дев’ятна́дцять годи́н три́дцять хвили́н (19:30)', 'опівдні (at noon); опівно́чі (at midnight)'],
+          ],
+          footnote: 'Add Genitive qualifiers for AM/PM: сьо́ма годи́на ра́нку (7:00 AM), тре́тя годи́на дня (3:00 PM), во́сьма годи́на ве́чора (8:00 PM), дру́га годи́на но́чі (2:00 AM).',
+        },
+        {
+          title: '2. Hundreds (100–900), Thousands (ти́сяча), Millions & Arithmetic',
+          subtitle: 'Notice how 500–900 drop the soft sign before -сот, and how feminine ти́сяча follows the 1 / 2–4 / 5+ rule',
+          headers: ['Hundreds (100–900)', 'Single-Word Ordinals', 'Thousands & Millions', 'Arithmetic Operations'],
+          rows: [
+            ['100 — сто', 'со́тий (100th)', '1,000 — одна́ ти́сяча (fem.!)', '+ додава́ти / додати́ (плюс)'],
+            ['200 — дві́сті (old dual!)', 'двохсо́тий (200th)', '2,000 — дві ти́сячі (Nom. pl.)', '− відніма́ти / відня́ти (мі́нус)'],
+            ['300 — три́ста; 400 — чоти́риста', 'трьохсо́тий; чотирьохсо́тий', '3,000 / 4,000 — три / чоти́ри ти́сячі', '× мно́жити / помно́жити на'],
+            ['500 — п’ятсо́т; 600 — шістсо́т', 'п’ятисо́тий; шестисо́тий', '5,000+ — п’ять ти́сяч (Gen. pl.!)', '÷ діли́ти / поділи́ти на'],
+            ['700 — сімсо́т; 800 — вісімсо́т; 900 — дев’ятсо́т', 'семисо́тий; восьмисо́тий; дев’ятисо́тий', '1,000,000 — оди́н мільйо́н, два мільйо́ни, п’ять мільйо́нів (тися́чний, мільйо́нний)', '= дорі́внює (equals)'],
+          ],
+        },
+        {
+          title: '3. The 12 Poetic Ukrainian Months & Their Natural-World Meanings',
+          subtitle: 'Unlike Latin-based English months, every Ukrainian month describes what happens in nature during that time of year',
+          headers: ['Season Adverb', 'Month (Nominative)', '"In [Month]" (у + Loc.) / Date (Gen.)', 'Natural-World Etymology'],
+          rows: [
+            ['взи́мку (in winter)', 'сі́чень (Jan), лю́тий (Feb), гру́день (Dec)', 'у сі́чні (сі́чня), у лю́тому (лю́того!), у гру́дні (гру́дня)', 'сі́чень = frost-slicing (сікти́); лю́тий = fierce cold (declines like adj.!); гру́день = frozen clods (гру́да)'],
+            ['навесні́ (in spring)', 'бе́резень (Mar), кві́тень (Apr), тра́вень (May)', 'у бе́резні (бе́резня), у кві́тні (кві́тня), у тра́вні (тра́вня)', 'бе́резень = birch sap (бере́за); кві́тень = blooming flowers (кві́тка); тра́вень = green grass (трава́)'],
+            ['влі́тку (in summer)', 'че́рвень (Jun), ли́пень (Jul), се́рпень (Aug)', 'у че́рвні (че́рвня), у ли́пні (ли́пня), у се́рпні (се́рпня)', 'че́рвень = red berries (черво́ний); ли́пень = linden blossom (ли́па); се́рпень = harvest sickle (серп)'],
+            ['восени́ (in autumn)', 'ве́ресень (Sep), жо́втень (Oct), листопа́д (Nov)', 'у ве́ресні (ве́ресня), у жо́втні (жо́втня), у листопа́ді (листопа́да!)', 'ве́ресень = heather (ве́рес); жо́втень = yellow leaves (жо́втий); листопа́д = falling leaves (hard stem!)'],
+          ],
+          footnote: 'Watch two special month declensions: лю́тий is an adjective (у лю́тому, пе́ршого лю́того), and листопа́д is a hard masculine noun (у листопа́ді, пе́ршого листопа́да), while the other 10 months are soft masculine nouns (-ні / -ня)!',
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Look Forward to the Next Hour for :01 to :30',
+          explanation:
+            'Whenever the minute hand is between :01 and :30, name the minutes passed (or чверть / пів) + на + the NEXT ordinal hour in the Accusative feminine (-у/-ю). So 6:15 is "a quarter toward the 7th" (чверть на сьо́му), and 6:30 is "halfway toward the 7th" (пів на сьо́му).',
+          examples: [
+            { uk: 'За́раз де́сять хвили́н на шо́сту (5:10). Зустрі́немося о пів на во́сьму (at 7:30).', en: 'Right now it is 5:10. Let’s meet at 7:30.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Read Historical Years by Declining Only the Final Word',
+          explanation:
+            'To say "in 1991" or "in 2026", read all thousands, hundreds, and tens as unchanged cardinal numbers, and turn ONLY the final digit/word into an ordinal adjective in the Locative singular (-ому/-ім ро́ці) or Genitive (-ого ро́ку).',
+          examples: [
+            { uk: 'Перша кав’я́рня у Льво́ві відкри́лася у ти́сяча вісімсо́т два́дцять дев’я́тому (1829) ро́ці.', en: 'The first coffeehouse in Lviv opened in 1829.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Flip Noun + Number to Say "Approximately"',
+          explanation:
+            'Standard order (Number + Noun: п’ятдеся́т до́ларів, де́сять хвили́н) states an exact number. Flipping the noun in front of the number (до́ларів п’ятдеся́т, хвили́н де́сять) immediately means "about 50 dollars / about 10 minutes"!',
+          examples: [
+            { uk: 'Почека́йте хвили́н п’ять — мені́ тре́ба поміня́ти є́вро сто.', en: 'Wait about five minutes — I need to exchange about a hundred euros.' },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Visualizing the Ukrainian Clock & Time Expressions',
+          subtitle: 'How the two halves of the clock face and key time prepositions work',
+          nodes: [
+            {
+              label: 'Right Half (:01–:30) → на + Acc. Next Hour',
+              value: '5:15 = чверть на шо́сту • 5:30 = пів на шо́сту',
+              description: 'Looks forward toward the upcoming hour (parallel forms: де́сять по п’я́тій, пів шо́стої).',
+              tone: 'blue',
+            },
+            {
+              label: 'Left Half (:31–:59) → за + Acc. + Nom. Next Hour',
+              value: '5:45 = за чверть шо́ста • 5:50 = за де́сять шо́ста',
+              description: 'Counts remaining minutes until the next hour (parallel form: без чве́рті шо́ста).',
+              tone: 'emerald',
+            },
+            {
+              label: 'за + Acc. (Span) vs. під час + Gen. (During)',
+              value: 'ви́конали за два ти́жні vs. обговори́ли під час обі́ду',
+              description: 'за + Acc. = accomplished within a time span; під час + Gen. = during an event.',
+              tone: 'violet',
+            },
+            {
+              label: '"Last Night" = учо́ра вве́чері',
+              value: 'Що ти роби́в учо́ра вве́чері?',
+              description: 'Ukrainian ніч means strictly after midnight (sleeping hours); evening before bed is учо́ра вве́чері!',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'За́раз пів на сьо́му = 7:30.',
+          right: 'За́раз пів на сьо́му = 6:30 (halfway to the 7th hour); 7:30 = пів на во́сьму.',
+          why: 'English "half past seven" looks back at 7:00, whereas Ukrainian "пів на во́сьму" looks forward to the 8th hour (7:30).',
+        },
+        {
+          wrong: 'оди́н ти́сяча і дві ти́сяч',
+          right: 'одна́ ти́сяча, дві ти́сячі, п’ять ти́сяч',
+          why: 'Ти́сяча is a grammatically feminine noun: it requires feminine одна́ (1,000), дві + Nominative plural ти́сячі (2,000), and 5+ Genitive plural ти́сяч (5,000).',
+        },
+        {
+          wrong: 'Що ви ди́вилися мину́лої но́чі? (asking about a play at 8 PM)',
+          right: 'Що ви ди́вилися вчо́ра вве́чері?',
+          why: 'Use учо́ра вве́чері ("yesterday evening") for English "last night" before bedtime; вночі́ refers only to the middle of the night after midnight.',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Watch Accuracy, Counterfactual «тре́ба було́», «що-» Adverbs & Official Weather Broadcasts',
+          summary: 'Expand for watch idioms (поспіша́є/відстає́), stress in копі́йка, counterfactual тре́ба було́, and Hydrometeorological Center weather forecasts',
+          blocks: [
+            {
+              heading: '1. Watch Accuracy, Stress in «копі́йка» & «що-» Frequency Adverbs',
+              items: [
+                'Watch Accuracy: Мій годи́нник іде́ то́чно (keeps exact time), поспіша́є на п’ять хвили́н (is 5 minutes fast), відстає́ на де́сять хвили́н (is 10 minutes slow).',
+                'Stress Shift in копі́йка: After 2, 3, 4 (Nom. pl.), stress stays on the stem: дві копі́йки; after 5+ (Gen. pl.), stress shifts to the final syllable: п’ять копійо́к, со́рок копійо́к.',
+                '«що-» + Genitive Singular Adverbs: щодня́ (every day), щоти́жня (every week), щоро́ку (every year), щора́нку (every morning), щосубо́ти (every Saturday).',
+                'Relative Days: позавчо́ра (day before yesterday) → учо́ра (yesterday) → сього́дні (today) → за́втра (tomorrow) → післяза́втра (day after tomorrow).',
+              ],
+            },
+            {
+              heading: '2. Counterfactual Past Obligation («тре́ба було́ + Infinitive» = "Should Have Done")',
+              items: [
+                'When тре́ба було́ (or слід було́ / ва́рто було́) is followed by a perfective infinitive in a past context, it expresses gentle regret ("should have done X, but didn’t"): Мені́ тре́ба було́ здогада́тися! (I should have guessed!); Тобі́ тре́ба було́ взя́ти парасо́льку (You should have taken an umbrella).',
+              ],
+            },
+            {
+              heading: '3. Official Ukrainian Weather Forecast Register («Прогно́з пого́ди Гідрометце́нтру»)',
+              items: [
+                'Sunrise, Sunset & Day Length: Со́нце зі́йде о 7-й годи́ні 14 хвили́н і за́йде о 17-й годи́ні 42 хвили́ни. Трива́лість дня — 10 годи́н 28 хвили́н.',
+                'Sky & Precipitation: хма́рно з проя́сненнями (cloudy with sunny intervals), мінли́ва хма́рність (variable cloudiness), без істо́тних о́падів (no significant precipitation), місця́ми невели́кий дощ, мря́чить (light rain in places, drizzling), надвечі́р шви́дко смерка́є (dusk falls quickly toward evening).',
+                'Temperatures: температу́ра пові́тря вночі́ від 2 гра́дусів моро́зу до 3 гра́дусів тепла́, вдень 8–12 гра́дусів ви́ще нуля́ за Це́льсієм.',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'How do you express "8:15" and "8:45" in standard Ukrainian?',
+          options: [
+            '8:15 = чверть на дев’я́ту; 8:45 = за чверть дев’я́та',
+            '8:15 = чверть на во́сьму; 8:45 = за чверть во́сьма',
+            '8:15 = за чверть дев’я́та; 8:45 = пів на дев’я́ту',
+          ],
+          correctIndex: 0,
+          explanation: 'Both 8:15 and 8:45 reference the upcoming 9th hour: 8:15 is чверть на дев’я́ту (Acc.), and 8:45 is за чверть дев’я́та (Nom.).',
+        },
+        {
+          question: 'How do you read "у 1829 ро́ці" (in the year 1829) aloud in Ukrainian?',
+          options: [
+            'у ти́сяча вісімсо́т два́дцять дев’я́тому ро́ці (only the final word declines as a Locative ordinal)',
+            'у ти́сячному вісімсо́тному двадця́тому дев’я́тому ро́ці',
+            'у ти́сяча вісімсо́т два́дцять де́в’ять ро́ці',
+          ],
+          correctIndex: 0,
+          explanation: 'In compound years, all thousands, hundreds, and tens remain cardinal numbers, and only the final word becomes a declined ordinal (дев’я́тому ро́ці).',
+        },
+      ],
+      takeaways: [
+        'Tell time by looking ahead to the next hour: :01–:29 uses на + Acc. (чверть на дев’я́ту = 8:15), :30 uses пів на + Acc. (пів на дев’я́ту = 8:30), and :31–:59 uses за + Acc. minutes + Nom. hour (за чверть дев’я́та = 8:45).',
+        'Count hundreds (сто, дві́сті, три́ста, чоти́риста, п’ятсо́т–дев’ятсо́т) and feminine ти́сяча (одна́ ти́сяча, дві ти́сячі, п’ять ти́сяч), and invert noun + numeral for approximations (до́ларів п’ятдеся́т).',
+        'In compound years, decline only the final word as an ordinal (у ти́сяча дві́сті сімдеся́т дру́гому ро́ці), and use учо́ра вве́чері for "last night".',
+      ],
+    },
     examples: [
       { uk: 'Котра́ за́раз годи́на? — За́раз чверть на дев’я́ту, а по́їзд відправля́ється о пів на деся́ту.', en: 'What time is it right now? — Right now it is 8:15 (a quarter toward the 9th), and the train departs at 9:30.' },
       { uk: 'Зустрі́немося бі́ля теа́тру за де́сять сьо́ма або́ рівно о сьо́мій ве́чора.', en: 'Let’s meet near the theater at 6:50 (ten to seven) or at 7:00 PM sharp.' },
@@ -843,6 +1993,264 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>8. Aspectual Contrast «запі́знюватися» vs. «запізни́тися», Public Transit Etiquette & Railway Station Announcements</b>:<ul><li><b>Running Late vs. Missing a Train («запі́знюватися / спі́знюватися» vs. «запізни́тися / спізни́тися на + Acc.»)</b>:<ul><li>Imperfective <b>запі́знюватися на по́їзд / на уро́к</b> means "to be running late for the train/class" (you are hurrying and may still make it!): <b>Ми вже запі́знюємося на по́їзд, візьмі́мо таксі́!</b></li><li>Perfective <b>запізни́тися на по́їзд / літа́к</b> means the result is complete—you <b>missed</b> the train/plane (<i>Ми запізни́лися на по́їзд</i>), OR with a time duration in <b>на + Accusative</b>, that someone arrived X minutes late (<i>По́їзд запізни́вся на п’ятна́дцять хвили́н</i>).</li></ul></li><li><b>Authentic Ukrainian Public Transit Etiquette (Tram, Trolleybus, Bus, Metro)</b>:<ul><li>Passing a paper ticket (<b>тало́н</b>) down a crowded car to be punched in the mechanical puncher (<b>компо́стер</b>): <b>Переда́йте, будь ла́ска, тало́н на компо́стер!</b> (Must be punched before the ticket inspector — <b>контроле́р</b> — checks, otherwise you pay a fine — <b>штраф</b>!).</li><li>Preparing to step off at the next stop: ask the person standing in front of you <b>Ви за́раз вихо́дите?</b> ("Are you getting off at this stop?") and <b>Дозво́льте, будь ла́ска, пройти́!</b> ("Allow me to pass through, please!").</li><li>Using a monthly transit pass (<b>проїзни́й квито́к</b>), metro token/card (<b>жето́н / ка́ртка</b>), or transferring lines (<b>пересіда́ти / пересі́сти на і́ншу лі́нію</b>; taxi meter: <b>плати́ти за лічи́льником</b>).</li></ul></li><li><b>Railway Station Loudspeaker Announcements</b>: Listen for key station terms: <b>Швидки́й по́тяг № 29 сполу́ченням Ки́їв — Сімферо́поль прибува́є на пе́ршу ко́лію</b> ("Express train No. 29 running on the Kyiv–Simferopol route arrives at Track 1") and <b>Нумера́ція ваго́нів почина́ється з голови́ / з хвоста́ по́їзда</b> ("Car numbering starts from the front [head] / rear [tail] of the train").</li></ul>',
       '<b>9. Public Door & Station Signage («ДО СЕ́БЕ» vs. «ВІД СЕ́БЕ»), Train Carriage Classes, & Car/Bicycle Breakdowns</b>:<ul><li><b>Essential Ukrainian Public Signs</b>:<ul><li>On doors: <b>ДО СЕ́БЕ</b> = <b>Pull</b> (literally "toward yourself") vs. <b>ВІД СЕ́БЕ</b> = <b>Push</b> (literally "away from yourself"); <b>ВХІД</b> (Entry) / <b>ВИ́ХІД</b> (Exit) / <b>НЕМА́Є ВХО́ДУ</b> (No Entry); <b>ВІДЧИ́НЕНО</b> (Open — of doors/hours) vs. <b>ЗАЧИ́НЕНО</b> (Closed).</li><li>At stations & airports: <b>ДОВІ́ДКОВЕ БЮРО́</b> (Information Desk), <b>КА́МЕРА СХО́ВУ</b> (Left Luggage / Baggage Storage), <b>БЮРО́ ЗНАХІ́ДОК</b> (Lost Property Office), <b>ЗАЛ ОЧІ́КУВАННЯ</b> (Waiting Room).</li></ul></li><li><b>Four Ukrainian Train Carriage Classes</b>: <b>«СВ» (спа́льний ваго́н)</b> (1st-class 2-berth sleeper), <b>купе́йний ваго́н</b> (2nd-class 4-berth compartment with <b>ни́жня / ве́рхня поли́ця</b> = lower/upper berth), <b>плацка́ртний ваго́н</b> (open-plan reserved bunks), and <b>зага́льний ваго́н</b> (unreserved seating car), plus commuter <b>приміськи́й по́їзд / електри́чка</b>.</li><li><b>Car & Bicycle Rental and Breakdowns</b>:<ul><li>Renting & refueling: <b>взя́ти маши́ну / велосипе́д на прока́т</b> (to rent a car / bike), <b>права́ водія́</b> (driver’s license), <b>техні́чний па́спорт</b> (vehicle registration), <b>запра́вка / бензоколо́нка</b> (gas station), <b>Запо́вніть / Зали́йте по́вний бак!</b> (Fill it up!), <b>переві́рити тиск у ка́мері</b> (to check tire pressure).</li><li>Roadside troubleshooting: <b>У ме́не полама́лася маши́на</b> (My car has broken down), <b>В ме́не спусти́ла ши́на / проко́лина</b> (I have a flat tire / puncture), <b>У нас сів акумуля́тор</b> (Our battery is dead), <b>Двигу́н перегріва́ється</b> (The engine is overheating), <b>Радіа́тор тече́</b> (The radiator is leaking), and bicycle parts <b>кермо́</b> (handlebars/steering wheel), <b>ланцю́г</b> (chain), <b>педа́ль</b>, <b>шоло́м</b> (helmet), <b>насо́с</b> (pump).</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'When English speakers say "I am going," they use one verb for walking down the street, riding a train to Lviv, or flying to Rome every summer. Ukrainian asks two simple questions first: (1) How are you moving (on foot, by vehicle, by water, or by air)? and (2) Are you heading in ONE direction right now (Unidirectional: іти́, ї́хати), or talking about round trips and habits (Multidirectional: ходи́ти, ї́здити)? Once you know those base pairs, snapping a spatial prefix onto the front (при-, ви-, в-, пере-, до-, під-, від-) lets you express "arrive, exit, enter, cross, reach, approach" with laser precision.',
+      whyItMatters:
+        'Mastering motion verbs also gives you the transitive pairs for carrying, transporting, and leading (нести́/носи́ти, везти́/вози́ти, вести́/води́ти), quick single-errand round-trip verbs (сходи́ти, збі́гати, з’ї́здити), and real-life Ukrainian transit and railway vocabulary.',
+      seeItInAction: [
+        {
+          uk: 'За́раз я ї́ду на робо́ту в метро́, але́ зазвича́й ходжу́ пі́шки.',
+          en: 'Right now I am riding to work on the metro, but usually I walk on foot.',
+          highlight: 'ї́ду (one-way vehicle now) vs. ходжу́ (habitual foot)',
+          SpotlightNote: 'Notice both axes at work: ї́ду = riding in one direction right now; ходжу́ = walking back and forth as a daily habit.',
+        },
+        {
+          uk: 'Ура́нці я швиде́нько сходи́в до пека́рні по сві́жий хліб, а за́втра ми пої́демо до Льво́ва.',
+          en: 'In the morning I quickly walked to the bakery and back for fresh bread, and tomorrow we will set off by vehicle to Lviv.',
+          highlight: 'сходи́в ... по сві́жий хліб ... пої́демо',
+          SpotlightNote: 'с- + multidirectional ходи́ти = сходи́ти (one quick round-trip errand, already back!); по + Accusative = "to fetch/get".',
+        },
+        {
+          uk: 'Переда́йте, будь ла́ска, тало́н на компо́стер! Ви за́раз вихо́дите? Бо ми запі́знюємося на по́тяг.',
+          en: 'Please pass the ticket to the puncher! Are you getting off right now? Because we are running late for the train.',
+          highlight: 'вихо́дите ... запі́знюємося',
+          SpotlightNote: 'Imperfective запі́знюватися means "to be running late" (you can still catch the train!), whereas perfective запізни́тися means you missed it.',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Complete Matrix of Ukrainian Motion Verb Pairs (Intransitive & Transitive)',
+          subtitle: 'Every mode of movement has a One-Way (Unidirectional) verb and a Multi-Way / Habitual (Multidirectional) verb',
+          headers: ['Mode of Motion', 'One-Way Right Now (Unidirectional)', 'Habitual / Round-Trip (Multidirectional)', 'Single Quick Round-Trip (Pf. с-/з-)', 'Set Off (Pf. по-) / Arrive (Pf. при-)'],
+          rows: [
+            ['Walking on Foot', 'іти́ / йти (іду́, іде́ш; past ішо́в, ішла́)', 'ходи́ти (ходжу́, хо́диш; ходи́в)', 'сходи́ти (в апте́ку по лі́ки)', 'піти́ / прийти́'],
+            ['Riding by Vehicle', 'ї́хати (ї́ду, ї́деш; past ї́хав)', 'ї́здити (ї́жджу, ї́здиш; ї́здив)', 'з’ї́здити (до Ки́єва на вихідні́)', 'пої́хати / приї́хати'],
+            ['Running', 'бі́гти (біжу́, біжи́ш, біжа́ть; біг)', 'бі́гати (бі́гаю, бі́гаєш)', 'збі́гати (в магази́н по молоко́)', 'побі́гти / прибі́гти'],
+            ['Flying by Air', 'леті́ти (лечу́, лети́ш; леті́в)', 'літа́ти (літа́ю, літа́єш)', 'зліта́ти', 'полеті́ти / прилеті́ти'],
+            ['Sailing / Swimming', 'плисти́ / пливти́ (пливу́; плив, пливла́)', 'пла́вати (пла́ваю, пла́ваєш)', 'спла́вати', 'поплисти́ / приплисти́'],
+            ['Carrying on Foot (Transitive)', 'нести́ (несу́; past ніс, несла́, несли́)', 'носи́ти (ношу́, но́сиш)', '—', 'понести́ / принести́ (impf. прино́сити)'],
+            ['Transporting by Vehicle (Trans.)', 'везти́ (везу́; past віз, везла́, везли́)', 'вози́ти (вожу́, во́зиш)', '—', 'повезти́ / привезти́ (impf. приво́зити)'],
+            ['Leading on Foot (Transitive)', 'вести́ (веду́; past вів, вела́, вели́)', 'води́ти (вожу́, во́диш)', '—', 'повести́ / привести́ (impf. приво́дити)'],
+          ],
+          footnote: 'Notice how вво́зити / ввезти́ means "to import (bring in by vehicle)" and виво́зити / ви́везти means "to export (take out by vehicle)"!',
+        },
+        {
+          title: '2. Power Prefixes for Motion Verbs (Walking vs. Riding)',
+          subtitle: 'Attach the prefix to іти́/ї́хати for a single completed action (Perfective) and to ходи́ти/ї́здити (or -їжджа́ти) for the Imperfective',
+          headers: ['Prefix & Core Meaning', 'On Foot (Pf. / Impf.)', 'By Vehicle (Pf. / Impf.)', 'Typical Preposition & Example'],
+          rows: [
+            ['при- (arrive / come)', 'прийти́ / прихо́дити', 'приї́хати / приїжджа́ти (приїзди́ти)', 'до + Gen. / у, на + Acc.: приї́хати до Льво́ва'],
+            ['по- (set off / head out)', 'піти́ (note root change!)', 'пої́хати', 'піти́ в кіно́; пої́хати в Оде́су'],
+            ['в- / у- (enter inside)', 'увійти́ / вхо́дити', 'в’ї́хати / в’їжджа́ти (note apostrophe!)', 'у/в + Acc.: увійти́ в за́лу'],
+            ['за- (drop by / stop in)', 'зайти́ / захо́дити', 'заї́хати / заїжджа́ти', 'до + Gen. / у + Acc.: зайти́ до дру́га / в апте́ку'],
+            ['ви- (exit / leave / take off)', 'ви́йти / вихо́дити', 'ви́їхати / виїжджа́ти (air: ви́летіти)', 'з/із + Gen.: ви́йти з ваго́на'],
+            ['під- (approach up to)', 'підійти́ / підхо́дити', 'під’ї́хати / під’їжджа́ти', 'до + Gen.: підійти́ до вікна́'],
+            ['від- (move/step away from)', 'відійти́ / відхо́дити', 'від’ї́хати / від’їжджа́ти', 'від + Gen.: по́тяг віді́йде від перо́ну'],
+            ['до- (reach all the way to)', 'дійти́ / дохо́дити', 'дої́хати / доїжджа́ти', 'до + Gen.: дої́хати до вокза́лу'],
+            ['пере- (cross / move house / transfer)', 'перейти́ / перехо́дити', 'переї́хати / переїжджа́ти', 'перейти́ ву́лицю; переї́хати в нову́ кварти́ру'],
+            ['об- (go around) / про- (pass by)', 'обійти́ / пройти́', 'об’ї́хати / прої́хати', 'пройти́ повз теа́тр; обійти́ буди́нок'],
+          ],
+        },
+        {
+          title: '3. Ukrainian Public Transit, Railway & Roadside Survival Guide',
+          subtitle: 'Authentic phrases for trams, trains, station signs, and car/bike rentals',
+          headers: ['Situation', 'Ukrainian Expressions & Signs', 'English Meaning & Cultural Note'],
+          rows: [
+            ['Door & Station Signs', 'ДО СЕ́БЕ vs. ВІД СЕ́БЕ • ВІДЧИ́НЕНО / ЗАЧИ́НЕНО', 'PULL ("toward yourself") vs. PUSH ("away from yourself") • OPEN / CLOSED'],
+            ['Station Facilities', 'ДОВІ́ДКОВЕ БЮРО́ • КА́МЕРА СХО́ВУ • БЮРО́ ЗНАХІ́ДОК • ЗАЛ ОЧІ́КУВАННЯ', 'Information Desk • Left Luggage • Lost Property • Waiting Room'],
+            ['City Transit Etiquette', 'Переда́йте тало́н на компо́стер! • Ви за́раз вихо́дите? • Дозво́льте пройти́!', 'Pass the ticket to the puncher! (before the контроле́р checks!) • Are you getting off now?'],
+            ['Train Announcements', 'Швидки́й по́тяг сполу́ченням Ки́їв — Львів прибува́є на пе́ршу ко́лію. Нумера́ція з голови́ / з хвоста́ по́їзда.', 'Express train on the Kyiv–Lviv route arrives at Track 1. Car numbering starts from the front / rear.'],
+            ['4 Train Carriage Classes', 'СВ (спа́льний) • купе́йний (ни́жня/ве́рхня поли́ця) • плацка́ртний • зага́льний • електри́чка', '1st-class 2-berth • 4-berth compartment (lower/upper berth) • open sleeper • seating • commuter train'],
+            ['Car & Bike Troubleshooting', 'взя́ти на прока́т • Зали́йте по́вний бак! • спусти́ла ши́на • сів акумуля́тор • двигу́н перегріва́ється', 'to rent • Fill the tank! • flat tire • dead battery • engine is overheating'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Choose Foot vs. Vehicle First—Especially for Intercity Travel',
+          explanation:
+            'In English you can say "We are going to Lviv next week." In Ukrainian, unless you are literally hiking on foot across the country, traveling to another city or country ALWAYS requires a vehicle verb (ї́хати, ї́здити, пої́хати, приї́хати) or flying verb (леті́ти, полеті́ти).',
+          examples: [
+            { uk: 'За́втра ми пої́демо до Льво́ва по́їздом (NOT *підемо до Львова).', en: 'Tomorrow we will go to Lviv by train.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Use «сходи́ти / збі́гати / з’ї́здити + по + Accusative» for Quick Errands',
+          explanation:
+            'Attaching с-/з- to a multidirectional verb (ходи́ти → сходи́ти, бі́гати → збі́гати, ї́здити → з’ї́здити) creates a single completed round-trip verb ("went there and came right back"). Pair it with по + Accusative to say what you went to fetch!',
+          examples: [
+            { uk: 'Я сходи́в у пека́рню по сві́жий хліб, а брат пої́хав на вокза́л по квитки́.', en: 'I walked to the bakery and back for fresh bread, and my brother drove to the station for tickets.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Distinguish Running Late («запі́знюватися») from Missing a Train («запізни́тися»)',
+          explanation:
+            'Aspect makes a critical difference when you are in a hurry: imperfective запі́знюватися на по́їзд means "to be running late" (you can still make it if you hurry!), while perfective запізни́тися на по́їзд means the action is complete—you missed the train (or arrived X minutes late: на п’ять хвили́н).',
+          examples: [
+            { uk: 'Ми вже запі́знюємося на по́їзд — візьмі́мо таксі́, щоб не запізни́тися!', en: 'We are already running late for the train — let’s take a taxi so we don’t miss it!' },
+          ],
+        },
+      ],
+      explorers: [
+        {
+          title: 'Interactive Conjugation Explorer: Intransitive & Transitive Motion Verbs',
+          subtitle: 'Compare the present and irregular past forms of іти́, ї́хати, нести́, везти́, and вести́',
+          tabs: [
+            {
+              label: 'іти́ / йти (walk now)',
+              verb: 'іти́ (йти)',
+              conjugationType: 'Unidirectional Foot (Irregular Past ішо́в)',
+              forms: [
+                { pronoun: 'я', form: 'іду́ (йду)', en: 'I am walking' },
+                { pronoun: 'ти', form: 'іде́ш (йдеш)', en: 'you are walking' },
+                { pronoun: 'він / вона́', form: 'іде́ (йде)', en: 'he / she is walking' },
+                { pronoun: 'ми', form: 'ідемо́ (йдемо́)', en: 'we are walking' },
+                { pronoun: 'ви', form: 'ідете́ (йдете́)', en: 'you are walking' },
+                { pronoun: 'вони́', form: 'іду́ть (йдуть)', en: 'they are walking' },
+              ],
+              note: 'Past tense: він ішо́в (йшов), вона́ ішла́ (йшла), воно́ ішло́, вони́ ішли́. Perfective "set off": піти́ (піду́, пі́деш; past пішо́в, пішла́).',
+            },
+            {
+              label: 'ї́хати (ride now)',
+              verb: 'ї́хати',
+              conjugationType: 'Unidirectional Vehicle (d-stem present)',
+              forms: [
+                { pronoun: 'я', form: 'ї́ду', en: 'I am riding / driving' },
+                { pronoun: 'ти', form: 'ї́деш', en: 'you are riding' },
+                { pronoun: 'він / вона́', form: 'ї́де', en: 'he / she is riding' },
+                { pronoun: 'ми', form: 'ї́демо', en: 'we are riding' },
+                { pronoun: 'ви', form: 'ї́дете', en: 'you are riding' },
+                { pronoun: 'вони́', form: 'ї́дуть', en: 'they are riding' },
+              ],
+              note: 'Past: ї́хав, ї́хала, ї́хали. Imperative: їдь! ї́дьмо! ї́дьте! Habitual partner: ї́здити (я ї́жджу, ти ї́здиш, вони́ ї́здять).',
+            },
+            {
+              label: 'нести́ / везти́ / вести́',
+              verb: 'нести́ (carry) • везти́ (transport) • вести́ (lead)',
+              conjugationType: 'Unidirectional Transitive Motion Triads',
+              forms: [
+                { pronoun: 'я', form: 'несу́ • везу́ • веду́', en: 'I carry • transport • lead' },
+                { pronoun: 'ти', form: 'несе́ш • везе́ш • веде́ш', en: 'you carry • transport • lead' },
+                { pronoun: 'він (Past!)', form: 'ніс • віз • вів', en: 'he carried • transported • led' },
+                { pronoun: 'вона́ (Past!)', form: 'несла́ • везла́ • вела́', en: 'she carried • transported • led' },
+                { pronoun: 'вони́ (Past!)', form: 'несли́ • везли́ • вели́', en: 'they carried • transported • led' },
+                { pronoun: 'Habitual Partner', form: 'носи́ти • вози́ти • води́ти', en: 'я ношу́/но́сиш • вожу́/во́зиш • вожу́/во́диш' },
+              ],
+              note: 'Notice the masculine singular past forms: ніс, віз, вів!',
+            },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Visualizing the 4 Motion Trajectories in Ukrainian',
+          subtitle: 'How direction and prefixes map onto real movement',
+          nodes: [
+            {
+              label: '1. Unidirectional (One-Way Now)',
+              value: 'Я за́раз іду́ в бібліоте́ку / ї́ду в метро́.',
+              description: 'Single arrow → moving toward a destination at this moment.',
+              tone: 'blue',
+            },
+            {
+              label: '2. Multidirectional (Habit / Multi-Trip)',
+              value: 'Я щодня́ ходжу́ пі́шки / ча́сто ї́жджу у Львів.',
+              description: 'Double arrows ⇄ repeated round trips or general motion.',
+              tone: 'emerald',
+            },
+            {
+              label: '3. Single Errand Round-Trip (с-/з-)',
+              value: 'Я швиде́нько сходи́в в апте́ку по лі́ки.',
+              description: 'Boomerang ↺ went there on one errand and is already back.',
+              tone: 'violet',
+            },
+            {
+              label: '4. Departure (по-) vs. Arrival (при-)',
+              value: 'Він пішо́в до дру́га vs. Він прийшо́в до дру́га.',
+              description: 'пішо́в/пої́хав = set off (not here); прийшо́в/приї́хав = arrived (is there now).',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Мину́лого лі́та ми ішли́ в Карпа́ти.',
+          right: 'Мину́лого лі́та ми ї́здили в Карпа́ти.',
+          why: 'First, traveling to another region uses a vehicle verb (ї́хати/ї́здити). Second, a completed vacation where you went and returned home is a round trip, requiring multidirectional ї́здили.',
+        },
+        {
+          wrong: 'Я сходи́в у магази́н за хлі́бом.',
+          right: 'Я сходи́в у магази́н по хліб.',
+          why: 'In authentic Ukrainian, going to fetch or buy something uses по + Accusative (піти́ по хліб, по во́ду, по лі́каря), not за + Instrumental.',
+        },
+        {
+          wrong: 'Ми ї́демо метром.',
+          right: 'Ми ї́демо в (на) метро́. (vs. ї́демо трамва́єм, авто́бусом, по́їздом)',
+          why: 'Declined vehicles take the bare Instrumental (трамва́єм, по́їздом), but метро́ (and таксі́) is an indeclinable loanword in standard Ukrainian—say ї́хати в/на метро́.',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Destinations with «у/в» vs. «на», Apostrophe Before «ї», & Roadside Breakdown Terms',
+          summary: 'Expand for у/в vs. на destination list, prefixed vehicle imperfectives (від’їжджа́ти), and car/bicycle repair vocabulary',
+          blocks: [
+            {
+              heading: '1. Destinations with «у / в» vs. «на» (+ Accusative)',
+              items: [
+                'Use у/в (+ Acc.) or до (+ Gen.) for enclosed buildings, cities, countries, forests, and mountain ranges: іти́ в теа́тр, у музе́й, у бібліоте́ку, в інститу́т, у ліс; ї́хати в Украї́ну, у Крим, у Карпа́ти.',
+                'Use на (+ Acc.) for events, shows, open spaces, service hubs, waterfronts, and historical regions: іти́ на конце́рт, на ви́ставку, на бале́т, на стадіо́н, на по́шту, на вокза́л, на пло́щу, на пляж; ї́хати на мо́ре, на Полта́вщину, на Кавка́з, на екску́рсію.',
+              ],
+            },
+            {
+              heading: '2. Prefixed Vehicle Imperfectives & Apostrophe Rule Before «ї»',
+              items: [
+                'After any prefix ending in a consonant (в-, від-, під-, з-, об-, роз-), always write an apostrophe before ї́хати / ї́здити / їжджа́ти: в’ї́хати, від’ї́хати, під’ї́хати, з’ї́здити, об’ї́хати.',
+                'Parallel Imperfectives: Both приїзди́ти / від’їзди́ти and приїжджа́ти / від’їжджа́ти / доїжджа́ти are standard in Ukrainian.',
+              ],
+            },
+            {
+              heading: '3. Car & Bicycle Rental, Refueling & Breakdown Vocabulary',
+              items: [
+                'Rental & Documents: взя́ти маши́ну / велосипе́д на прока́т (rent a car/bike), права́ водія́ (driver’s license), техні́чний па́спорт (registration), запра́вка / бензоколо́нка (gas station), Запо́вніть / Зали́йте по́вний бак! (Fill the tank!), переві́рити тиск у ка́мері (check tire pressure).',
+                'Breakdowns: У ме́не полама́лася маши́на (My car broke down), В ме́не спусти́ла ши́на / проко́лина (I have a flat tire / puncture), У нас сів акумуля́тор (Our battery died), Двигу́н перегріва́ється (Engine is overheating), Радіа́тор тече́ (Radiator is leaking); bicycle parts: кермо́ (handlebars/steering wheel), ланцю́г (chain), педа́ль, шоло́м (helmet), насо́с (pump).',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Which sentence correctly says "I quickly walked to the bakery and back for fresh bread"?',
+          options: [
+            'Я швиде́нько сходи́в до пека́рні по сві́жий хліб.',
+            'Я швиде́нько ішо́в до пека́рні за сві́жим хлі́бом.',
+            'Я швиде́нько ї́здив до пека́рні про сві́жий хліб.',
+          ],
+          correctIndex: 0,
+          explanation: 'Сходи́ти expresses a single completed round trip on foot, and по + Accusative (по сві́жий хліб) expresses what you went to fetch.',
+        },
+        {
+          question: 'When you see the sign «ДО СЕ́БЕ» on a Ukrainian station door, what should you do?',
+          options: [
+            'Pull the door toward yourself ("toward oneself")',
+            'Push the door away from yourself (that is ВІД СЕ́БЕ)',
+            'Do not enter (that is НЕМА́Є ВХО́ДУ)',
+          ],
+          correctIndex: 0,
+          explanation: 'ДО СЕ́БЕ literally means "toward oneself" (Pull), while ВІД СЕ́БЕ means "away from oneself" (Push).',
+        },
+      ],
+      takeaways: [
+        'Distinguish walking (іти́/ходи́ти), riding (ї́хати/ї́здити), flying (леті́ти/літа́ти), and sailing/swimming (плисти́/пла́вати)—plus transitive carrying (нести́/носи́ти), transporting (везти́/вози́ти), and leading (вести́/води́ти).',
+        'Use с-/з- + multidirectional verb (сходи́ти, збі́гати, з’ї́здити) for a quick single round trip, and по + Accusative (піти́ по хліб) for going to fetch something.',
+        'Contrast imperfective запі́знюватися (running late) with perfective запізни́тися (missed the train / arrived late).',
+      ],
+    },
     examples: [
       { uk: 'За́раз я ї́ду на робо́ту в метро́, але зазвича́й ходжу́ пі́шки.', en: 'Right now I am riding to work on the metro, but usually I walk on foot.' },
       { uk: 'По́їзд із Ки́єва щойно приї́хав на пе́ршу платфо́рму.', en: 'The train from Kyiv has just arrived at platform one.' },
@@ -1000,6 +2408,188 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>8. The Stress-Based Imperative Table (Stressed «-и́ / -і́мо / -і́ть» vs. Unstressed Endings) & Three Ways to Say "Let’s Go!"</b>:<ul><li><b>How Stress Determines Imperative Endings for ти / ми / ви</b>:<ul><li><b>When the Ending Is Under Stress (1st sg. ends in stressed -у́/-ю́ after a consonant)</b>: Use <b>-и́</b> (ти), <b>-і́мо</b> (ми), <b>-і́ть</b> (ви): <b>писа́ти (пишу́) → пиши́, пиші́мо, пиші́ть!</b>; <b>сказа́ти (скажу́) → скажи́, скажі́мо, скажі́ть!</b>; <b>сиді́ти (сиджу́) → сиди́, сиді́мо, сиді́ть!</b>; <b>роби́ти (роблю́) → роби́, робі́мо, робі́ть!</b>; <b>принести́ (принесу́) → принеси́, принесі́мо, принесі́ть!</b>. (After a vowel stem: <b>стоя́ти → стій, сті́ймо, сті́йте!</b>; <b>да́ти → дай, да́ймо, да́йте!</b>).</li><li><b>Other Cases (Unstressed Ending)</b>: After a vowel stem, use <b>-й, -ймо, -йте</b> (<b>зна́ти → знай, зна́ймо, зна́йте!</b>; <b>чита́ти → чита́й, чита́ймо, чита́йте!</b>; <b>руша́ти → руша́й, руша́ймо, руша́йте!</b>). After a soft dental consonant, use <b>-ь, -ьмо, -ьте</b> (<b>сі́сти [ся́ду] → сядь, ся́дьмо, ся́дьте!</b>; <b>прихо́дити [прихо́джу] → прихо́дь, прихо́дьмо, прихо́дьте!</b>; <b>ї́хати [ї́ду] → їдь, ї́дьмо, ї́дьте!</b>).</li></ul></li><li><b>Three Everyday Ways to Say "Let’s Go!"</b>:<ul><li><b>Ході́мо!</b> (or <b>Іді́мо!</b>) = Let’s go on foot! (<i>Ході́мо в кав’я́рню по́руч!</i>)</li><li><b>Ї́дьмо!</b> = Let’s go by vehicle/transport! (<i>Тоді́ ї́дьмо в центр Ки́єва!</i>)</li><li><b>Руша́ймо!</b> (or <b>Вируша́ймо!</b>) = Let’s set off / get moving / head out on our trip! (<i>Гара́зд, руша́ймо в Дуна́йський запові́дник!</i>)</li></ul></li></ul>',
       '<b>9. Aspect in Polite Requests («Ти мо́жеш...?» & «Дава́йте...»), Surnames in the Vocative, & Patronymics («по ба́тькові»)</b>:<ul><li><b>Positive Requests Use Perfective; Negative Requests Switch to Imperfective!</b>:<ul><li>When politely asking someone to do a single action with <b>Ти мо́жеш / Ви мо́жете + infinitive?</b> or proposing a joint action with <b>Дава́й / Дава́йте + 1st pl. perfective future</b>, use the <b>Perfective</b>: <b>Ви мо́жете зачини́ти вікно́?</b> (Can you close the window?); <b>Дава́йте замо́вимо деруни́ зі смета́ною!</b> (Let’s order potato pancakes with sour cream!).</li><li>When asking someone <b>NOT</b> to do something, switch to the <b>Imperfective infinitive</b> (and put a negated direct object in the Genitive): <b>Ти мо́жеш не відчиня́ти вікна́?</b> (Could you not open the window?); <b>Дава́йте не каза́ти цьо́го!</b> (Let’s not say this!).</li></ul></li><li><b>Surnames in the Vocative & Warm Address «Добро́дію! / Добро́дійко!»</b>: When <b>па́не</b> or <b>па́ні</b> is followed by a first name or title, both take the Vocative (<b>па́не Іва́не!, па́не профе́соре!, па́ні Окса́но!</b>). However, Ukrainian surnames in <b>-енко / -ко</b> and feminine surnames remain in the <b>Nominative</b> after <i>па́не / па́ні</i>: <b>Добри́день, па́не Са́вченко! / па́ні І́вченко!</b> You will also hear the warm, traditional Ukrainian honorifics <b>добро́дій → Добро́дію!</b> (Sir!), <b>добро́дійка → Добро́дійко!</b> (Madam!), and plural <b>Шано́вні добро́дії!</b></li><li><b>Ukrainian Patronymics («ім’я́ по ба́тькові»)</b>: Formed from the father’s first name with <b>-ович</b> for men (Vocative <b>-овичу!</b>: <i>Петро́ Васи́льович → Петро́ Васи́льовичу!</i>; note <i>Григо́рій → Григо́рович, Ілля́ → Іллі́ч, Лука́ → Луки́ч</i>) and <b>-івна / -ївна</b> for women (Vocative <b>-івно! / -ївно!</b>: <i>Окса́на Васи́лівна → Окса́но Васи́лівно!, Марі́я Сергі́ївна → Марі́є Сергі́ївно!, Я́ків → Я́ківна</i>).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Ukrainian is famous for preserving the warm, musical 7th case: the Vocative case (Кличний відмінок). Whenever you call or address someone directly—whether it is "Oksana!" (Окса́но!), "My friend!" (Дру́же!), "Dear Grandmother!" (Лю́ба бабу́сю!), or "Mr. Director!" (Па́не дире́кторе!)—the noun changes its ending to show direct personal connection. Pair the Vocative with Ukrainian’s stress-based Imperative mood (Скажі́ть! Ході́мо! Ї́дьмо! Руша́ймо!) to make polite requests, invitations, and wishes.',
+      whyItMatters:
+        'Using the Vocative case is one of the clearest markers of authentic, respectful Ukrainian speech, and understanding how aspect flips between positive requests (Ви мо́жете зачини́ти вікно́? — Perfective) and negative requests or prohibitions (Не відчиня́йте вікна́! — Imperfective; vs. warning Не забу́дьте! — Perfective) gives you native-like command of register.',
+      seeItInAction: [
+        {
+          uk: 'Добри́день, па́ні Окса́но! Скажі́ть, будь ла́ска, коли́ почне́ться зу́стріч?',
+          en: 'Good day, Ms. Oksana! Tell me, please, when will the meeting start?',
+          highlight: 'па́ні Окса́но! Скажі́ть',
+          SpotlightNote: 'па́ні stays invariable while Окса́на takes the hard feminine Vocative -о (Окса́но!). Скажі́ть is the polite formal imperative.',
+        },
+        {
+          uk: 'Дру́же, зачека́й хвили́нку і подиви́ся-но на це фо́то! Ході́мо в кав’я́рню або́ ї́дьмо в центр!',
+          en: 'My friend, wait a minute and just take a look at this photo! Let’s walk to the café or ride to the center!',
+          highlight: 'Дру́же ... подиви́ся-но ... Ході́мо ... ї́дьмо',
+          SpotlightNote: 'друг → дру́же! (г → ж); -но adds a warm friendly nudge; Ході́мо! = let’s go on foot vs. Ї́дьмо! = let’s go by vehicle.',
+        },
+        {
+          uk: 'Я б хоті́в, щоб Ви подзвони́ли мені́ вве́чері. І не забу́дьте взя́ти квитки́!',
+          en: 'I would like you to call me in the evening. And mind you don’t forget to take the tickets!',
+          highlight: 'щоб Ви подзвони́ли ... не забу́дьте',
+          SpotlightNote: 'When you want someone else to do something, use щоб + Past Tense (щоб Ви подзвони́ли). And while general prohibitions use Imperfective, a friendly warning against an accidental slip uses Perfective (Не забу́дьте!).',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Complete Vocative Case (Кличний відмінок) Reference Table',
+          subtitle: 'Used whenever calling, greeting, or addressing a person (or personified nature/animal) directly',
+          headers: ['Noun Group', 'Nominative (Хто?)', 'Vocative Ending', 'Vocative Examples', 'Consonant Mutation / Special Rule'],
+          rows: [
+            ['Feminine Hard (-а)', 'Окса́на, ма́ма, сестра́, добро́дійка', '-о', 'Окса́но!, ма́мо!, се́стро!, добро́дійко!', 'All hard -а nouns take -о'],
+            ['Feminine Soft (-я)', 'Ната́ля, земля́, мату́ся, бабу́ся', '-е OR -ю', 'Ната́лю!, зе́мле!, мату́сю!, бабу́сю!', 'Affectionate -ся/-ня names & kin take -ю'],
+            ['Feminine in -ія', 'Марі́я, Софі́я, Соломі́я', '-іє', 'Марі́є!, Софі́є!, Соломі́є!', 'Always -іє (never *-ії!)'],
+            ['Masculine Hard General', 'Тара́с, Богда́н, пан, профе́сор, Петро́', '-е', 'Тара́се!, Богда́не!, па́не профе́соре!, Пе́тре!', 'Default ending for hard masculine stems'],
+            ['Masculine Velars (г, к, х)', 'друг, Бог, коза́к, птах', '-е (with mutation)', 'дру́же!, Бо́же!, коза́че!, пта́ше!', 'г → ж, к → ч, х → ш before -е'],
+            ['Masculine in -ець', 'хло́пець, украї́нець, молоде́ць, оте́ць', '-че OR -цю', 'хло́пче! (хло́пцю!), украї́нче!, моло́дче!, о́тче!', 'Fleeting е drops; ц → ч + -е (боє́ць → бійцю́!)'],
+            ['Masculine in -у / -ю', 'Андрі́й, добро́дій, та́то, син, лі́кар, Іва́сик', '-у / -ю', 'Андрі́ю!, добро́дію!, та́ту!, си́ну!, лі́карю!, Іва́сику!', 'Soft -й/-р, diminutives in -к, plus та́ту!, си́ну!'],
+            ['Titles, Patronymics & Surnames', 'пан Са́вченко, Петро́ Васи́льович, Окса́на Васи́лівна', 'Mixed Rule', 'па́не Са́вченко!, Пе́тре Васи́льовичу!, Окса́но Васи́лівно!', 'Surnames in -енко/-ко and fem. surnames stay Nominative after па́не/па́ні!'],
+          ],
+        },
+        {
+          title: '2. Stress-Based Imperative Mood Table (ти / ми / ви)',
+          subtitle: 'Look at the 1st-person singular present/future stem to pick the right imperative endings',
+          headers: ['Imperative Pattern', 'ти (Informal Sg.)', 'ми ("Let’s...")', 'ви (Formal / Pl.)', 'Key Verbs in This Group'],
+          rows: [
+            ['1. Stressed Ending (-у́/-ю́ after consonant)', '-и́', '-і́мо', '-і́ть', 'писа́ти → пиши́, пиші́мо, пиші́ть! • сказа́ти → скажи́, скажі́мо, скажі́ть! • роби́ти → роби́, робі́мо, робі́ть! • сиді́ти → сиди́, сиді́мо, сиді́ть! • принести́ → принеси́, принесі́ть!'],
+            ['2. Vowel Stem (Unstressed or monosyllabic)', '-й', '-ймо', '-йте', 'чита́ти → чита́й, чита́ймо, чита́йте! • зна́ти → знай, зна́ймо, зна́йте! • да́ти → дай, да́ймо, да́йте! • стоя́ти → стій, сті́ймо, сті́йте! • руша́ти → руша́ймо!'],
+            ['3. Unstressed Dental Consonant Stem (д, т, з, с, л, н)', '-ь', '-ьмо', '-ьте', 'сі́сти (ся́ду) → сядь, ся́дьмо, ся́дьте! • ї́хати (ї́ду) → їдь, ї́дьмо, ї́дьте! • заходи́ти → захо́дь, захо́дьмо, захо́дьте!'],
+            ['4. Three Ways to Say "Let’s Go!"', '—', 'Ході́мо! • Ї́дьмо! • Руша́ймо!', 'Ході́ть! • Ї́дьте! • Руша́йте!', 'Ході́мо! (on foot) • Ї́дьмо! (by vehicle) • Руша́ймо! (let’s set off / get moving)'],
+            ['5. 3rd-Person Wish & Friendly -но', 'Подиви́ся-но! Скажи́-но!', 'Хай / Неха́й + 3rd Sg./Pl.', 'Хай він за́йде! Неха́й щасти́ть!', '-но softens a request; хай/неха́й = "let him/her/them..."'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Decline Both Title and First Name in the Vocative (Except «па́ні» and «-енко» Surnames)',
+          explanation:
+            'When addressing someone as Па́не + First Name/Title, BOTH words take the Vocative: Па́не Андрі́ю!, Па́не профе́соре!, Добро́дію! With Па́ні, the word па́ні stays unchanged while the first name takes the Vocative: Па́ні Оле́но!, Па́ні Марі́є! Surnames in -енко/-ко remain in the Nominative: Па́не Са́вченко!',
+          examples: [
+            { uk: 'Добри́день, па́ні Софі́є! Дя́кую вам, па́не дире́кторе!', en: 'Good day, Ms. Sofiia! Thank you, Mr. Director!' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Switch Aspect Between Positive Requests (Perfective) and Prohibitions (Imperfective)',
+          explanation:
+            'When asking someone to perform a single action (Зачині́ть вікно́! / Ви мо́жете зачини́ти вікно́? / Дава́йте замо́вимо ка́ву!), use the Perfective. When telling or asking someone NOT to do an action (Не зачиня́йте вікна́! / Ти мо́жеш не відчиня́ти вікна́? / Дава́йте не каза́ти цьо́го!), switch to the Imperfective!',
+          examples: [
+            { uk: 'Будь ла́ска, відкри́йте (pf.) вікно́! — Прошу́, не відкрива́йте (impf.) вікна́!', en: 'Please open the window! — Please do not open the window!' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Use «Не + Perfective Imperative» Only for Friendly Warnings ("Be Careful Not To...")',
+          explanation:
+            'The one exception where Не takes a Perfective imperative is a caring warning against an unintentional mistake ("Mind you don’t forget / fall / be late!"): Не забу́дь! / Не забу́дьте! (Don’t forget!), Не запізни́ся! (Don’t be late!), Не впади́! (Careful not to fall!).',
+          examples: [
+            { uk: 'Окса́но, не забу́дьте взя́ти па́спорт і не запізні́ться на по́їзд!', en: 'Oksana, don’t forget to take your passport and don’t be late for the train!' },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'How Aspect & «щоб» Work in Requests, Prohibitions, Warnings & Wishes',
+          subtitle: 'Four rules that make your requests sound 100% natural',
+          nodes: [
+            {
+              label: 'Positive Single Request → Perfective',
+              value: 'Зачині́ть вікно́! / Ви мо́жете зачини́ти?',
+              description: 'Asking for one concrete result uses Perfective.',
+              tone: 'emerald',
+            },
+            {
+              label: 'Negative Prohibition → Imperfective',
+              value: 'Не зачиня́йте вікна́! / Дава́йте не каза́ти цьо́го!',
+              description: 'Asking someone NOT to perform an action switches to Imperfective.',
+              tone: 'rose',
+            },
+            {
+              label: 'Accidental Slip Warning → Не + Perfective',
+              value: 'Не забу́дьте квитки́! Не запізни́ся!',
+              description: 'Warning against an accidental slip uses Perfective.',
+              tone: 'amber',
+            },
+            {
+              label: 'Wanting Someone Else to Act → щоб + Past',
+              value: 'Я б хоті́в, щоб Ви подзвони́ли мені́.',
+              description: 'Different subjects after хоті́ти/сказа́ти require щоб + past tense.',
+              tone: 'blue',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Добри́день, па́не Андрі́й і па́ні Марі́я!',
+          right: 'Добри́день, па́не Андрі́ю і па́ні Марі́є!',
+          why: 'First names in direct address always take the Vocative case in Ukrainian: Андрі́й → Андрі́ю!, Марі́я → Марі́є!.',
+        },
+        {
+          wrong: 'Я хо́чу вас подзвони́ти мені́.',
+          right: 'Я хо́чу, щоб ви подзвони́ли мені́.',
+          why: 'Unlike English ("I want you to call me"), Ukrainian cannot use an object + infinitive after хоті́ти; always use хо́чу, щоб + subject + past tense.',
+        },
+        {
+          wrong: 'Будь ла́ска, не купі́ть це!',
+          right: 'Будь ла́ска, не купу́йте цьо́го (це)!',
+          why: 'General prohibitions ("Don’t buy this!") require the Imperfective imperative (не купу́йте, не кажі́ть, не ро́біть).',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Ukrainian Patronymics («по ба́тькові») & Affectionate Folk Diminutives',
+          summary: 'Expand for patronymic formation (-ович / -івна / -ївна) and warm diminutives (-еньк-, -ечк-, -очк-)',
+          blocks: [
+            {
+              heading: '1. Forming & Addressing Ukrainian Patronymics («ім’я́ по ба́тькові»)',
+              items: [
+                'Male Patronymics (-ович, Vocative -овичу!): Василь → Васи́льович (Voc. Петро́ Васи́льовичу!), Сергі́й → Сергі́йович, Григо́рій → Григо́рович; special stems: Ілля́ → Іллі́ч, Лука́ → Луки́ч, Я́ків → Я́кович.',
+                'Female Patronymics (-івна / after й -ївна, Vocative -івно! / -ївно!): Василь → Васи́лівна (Voc. Окса́но Васи́лівно!), Сергі́й → Сергі́ївна (Voc. Марі́є Сергі́ївно!), Я́ків → Я́ківна, Григо́рій → Григо́рівна.',
+              ],
+            },
+            {
+              heading: '2. Affectionate Diminutives (Пестли́ві фо́рми) in Family Speech & Folk Songs',
+              items: [
+                'Names & Kinship: Іва́н → Іва́сик / Іва́ненько (Voc. Іва́сику!), Ва́ля → Ва́ленька (Voc. Ва́ленько!), ма́ма → мату́ся / маму́ня (Voc. мату́сю!), та́то → тату́сь (Voc. тату́сю!), сестра́ → сестри́чка, брат → бра́тик, ону́ка → ону́ченька.',
+                'Poetic Nature Diminutives: птах → пта́шка → пташе́нька (little bird), ла́стівка → ласті́вочка (little swallow, as in «Ще́дрик, ще́дрик, щедрі́вочка, прилеті́ла ласті́вочка»), зозу́ля → зозу́ленька (cuckoo), земля́ → земле́нька, рука́ → ру́чка → руче́нька.',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'How do you address "Mr. Kozak" (or a young Cossack) and "Ms. Sofiia" in the Vocative case?',
+          options: [
+            'коза́че! і па́ні Софі́є!',
+            'коза́ку! і па́но Софі́я!',
+            'коза́к! і па́ні Софі́ї!',
+          ],
+          correctIndex: 0,
+          explanation: 'In коза́к → коза́че!, к mutates to ч before -е; па́ні is invariable and Софі́я (-ія) takes -іє (Софі́є!).',
+        },
+        {
+          question: 'Which of the three "Let’s go!" imperatives should you use when inviting friends to ride into town by car or bus?',
+          options: [
+            'Ї́дьмо!',
+            'Ході́мо!',
+            'Сті́ймо!',
+          ],
+          correctIndex: 0,
+          explanation: 'Ї́дьмо! means "Let’s go by vehicle!", whereas Ході́мо! means "Let’s go on foot!" and Руша́ймо! means "Let’s set off!".',
+        },
+      ],
+      takeaways: [
+        'Use the Vocative case whenever addressing someone directly: Окса́но!, Марі́є!, мату́сю!, Тара́се!, Андрі́ю!, дру́же!, коза́че!, хло́пче!, па́не дире́кторе!',
+        'Form imperatives according to stem and stress: stressed -и́/-і́мо/-і́ть (скажі́ть!), vowel-stem -й/-ймо/-йте (чита́йте!), or soft dental -ь/-ьмо/-ьте (ся́дьте!, ї́дьмо!).',
+        'Use Perfective for positive single requests (Зачині́ть вікно́!) and accidental-slip warnings (Не забу́дьте!), and Imperfective for prohibitions (Не зачиня́йте вікна́!).',
+      ],
+    },
     examples: [
       { uk: 'Добри́день, па́ні Окса́но! Скажі́ть, будь ла́ска, коли́ почне́ться зу́стріч?', en: 'Good day, Ms. Oksana! Tell me, please, when will the meeting start?' },
       { uk: 'Дру́же, зачека́й хвили́нку і подиви́ся-но на це фо́то!', en: 'My friend, wait a minute and just take a look at this photo!' },
@@ -1157,6 +2747,247 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>8. Numerical Approximation by Word-Order Inversion, Special Instrumental Plurals («-ьми / -има»), & Compound Subordinating Conjunctions</b>:<ul><li><b>Inverting Noun + Numeral for "Approximately"</b>: In Ukrainian, placing the noun (in the <b>Genitive plural</b>!) <i>before</i> the numeral neatly changes an exact number into an approximation ("about / around"):<ul><li><b>два дні</b> (two days) → <b>днів два</b> (about two days); <b>чоти́ри ро́ки</b> (four years) → <b>ро́ків чоти́ри</b> (about four years); <b>п’ять домі́в</b> → <b>домі́в п’ять</b> (about five houses). If a preposition is present, it stays right before the numeral: <b>на дві годи́ни</b> → <b>годи́н на дві</b> (for about two hours)! You can also express approximation with <b>бі́ля + Gen.</b>, <b>прибли́зно</b>, <b>десь</b>, or <b>з + Acc.</b> (<i>з два́дцять чолові́к, з дві га́льби пи́ва</i>).</li></ul></li><li><b>Special Instrumental Plurals (-ьми & -и́ма)</b>: While most nouns take <b>-ами / -ями</b> in the Instrumental plural, memorize <b>дітьми́</b> (children), <b>людьми́</b> (people), <b>гістьми́ / гостя́ми</b> (guests), <b>кіньми́</b> (horses), and the stressed dual ending <b>-и́ма</b> on <b>о́чі → очи́ма</b> (with eyes), <b>пле́чі → плечи́ма</b> (with shoulders), <b>две́рі → двери́ма / дверми́</b> (doors), and <b>гро́ші → гроши́ма / грі́шми</b> (money).</li><li><b>Compound Subordinating Conjunctions («те, що» & Time Clauses)</b>: Prepositions cannot stand directly before a verb clause, so Ukrainian bridges them with the neuter pronoun <b>те</b> (declined for the preposition’s case!) + <b>що</b> or <b>як</b>: <b>че́рез те, що</b> (because of the fact that), <b>завдяки́ то́му, що</b> (thanks to the fact that), <b>вна́слідок то́го, що</b> (as a result of the fact that), <b>незважа́ючи на те, що</b> (in spite of the fact that), <b>пе́ред тим, як / до то́го, як</b> (before + verb), <b>пі́сля то́го, як</b> (after + verb), <b>з то́го ча́су, як</b> (since + verb), and <b>по́ки не / до́ки не</b> (until).</li></ul>',
       '<b>9. Irregular & «-янин» Nouns Taking Genitive Singular After 2–4, Dual Genitive Plurals («чоловікі́в» vs. «чолові́к»), Declining «бага́то», & All 4 Comparative "Than" Patterns</b>:<ul><li><b>Genitive Singular After 2, 3, 4 on Stem-Changing Nouns</b>: While regular nouns take Nominative plural after <b>два/дві, три, чоти́ри</b>, nouns whose plural stem differs from their singular stem take the <b>Genitive singular</b> after 2, 3, and 4! Memorize:<ul><li><b>дити́на</b> (pl. <i>ді́ти</i>) → <b>дві дити́ни</b> (two children)</li><li><b>ді́вчина</b> (pl. <i>дівча́та</i>) → <b>дві ді́вчини</b> (two young women)</li><li><b>люди́на</b> (pl. <i>лю́ди</i>) → <b>три люди́ни</b> (three people)</li><li><b>ім’я́</b> (pl. <i>імена́</i>) → <b>чоти́ри і́мені</b> (four names)</li><li><b>друг</b> (pl. <i>дру́зі</i>) → <b>два дру́га / два дру́зі</b></li><li>Nouns in <b>-янин / -анин</b> (which drop <i>-ин</i> in the plural): <b>кия́нин → два кия́нина</b> (two Kyivans), <b>селя́нин → три селя́нина</b> (three villagers), <b>громадя́нин → чоти́ри громадя́нина</b> (four citizens), <b>львів’я́нин → два львів’я́нина</b>.</li></ul></li><li><b>Dual Genitive Plural of «чолові́к» & Mountain Chains</b>: In the Genitive plural, <b>чолові́к</b> takes <b>чоловікі́в</b> when meaning "men / husbands" (<b>гру́па молоди́х чоловікі́в</b>), but takes the zero-ending <b>чолові́к</b> after numerals when counting people in general: <b>п’ять чолові́к</b> (five people), <b>скі́льки чолові́к?</b> Plural-only mountain chains take a zero-ending Genitive plural: <b>Карпа́ти → се́ред Карпа́т</b>, <b>А́льпи → бі́ля Альп</b>.</li><li><b>Declining «бага́то» Across All Cases</b>: When <b>бага́то</b> (many) is governed by a verb or preposition in an oblique case, it declines like a plural adjective with <b>-ьо-</b>: Gen./Acc.(anim.) <b>багатьо́х дру́зів</b>, Dat. <b>багатьо́м студе́нтам</b>, Inst. <b>з багатьма́ коле́гами</b>, Loc. <b>у багатьо́х міста́х</b>.</li><li><b>Comparative Intensifiers, Semantic Pairs & All 4 "Than" Constructions</b>:<ul><li>Intensify a comparative adjective or adverb with <b>ще</b> (even), <b>набага́то / зна́чно / куди́ / дале́ко</b> (much / far more), or <b>помі́тно</b> (noticeably): <b>ще кра́щий, набага́то деше́вший, зна́чно ціка́віший</b>.</li><li>Distinguish semantic comparative pairs: <b>моло́дший</b> (younger in age/rank) vs. <b>молоді́ший</b> (more youthful), <b>ста́рший</b> (older in age / senior) vs. <b>старі́ший</b> (more ancient/worn), <b>кра́щий</b> (better in quality) vs. <b>добрі́ший</b> (kinder in heart).</li><li>Express "than" in four ways: <b>ніж + Nom.</b> (<i>Львів старі́ший, ніж Доне́цьк</i>), <b>як + Nom.</b> (colloquial: <i>ви́щий, як брат</i>), <b>від + Gen.</b> (<i>Окса́на моло́дша від сестри́</i>), or <b>за + Acc.</b> (<i>Дніпро́ до́вший за Дністе́р на 800 кіломе́трів</i>).</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'To build fluent B1 sentences, you combine two power tools: (1) Ukrainian’s 3-tier counting rhythm (1 + Nominative Singular, 2–4 + Nominative Plural, 5+ / бага́то + Genitive Plural—plus the fascinating Genitive Singular rule after 2–4 for stem-changing nouns like дві ді́вчини, три люди́ни, два кия́нина!) and (2) clause connectors like яки́й ("who/which/that"), щоб ("in order to / so that"), and compound conjunctions built with те, що ("because of the fact that", "before/after doing X").',
+      whyItMatters:
+        'Knowing how relative pronoun яки́й changes its case inside its own clause—and why stem-changing nouns like дити́на, ді́вчина, люди́на, and кия́нин take Genitive singular after 2, 3, and 4—immediately elevates your Ukrainian from basic phrases to natural storytelling.',
+      seeItInAction: [
+        {
+          uk: 'У на́шій гру́пі два́дцять оди́н уча́сник, дві ді́вчини зі Льво́ва, три кия́нина і ві́сім спі́керів.',
+          en: 'In our group there are 21 participants, two young women from Lviv, three Kyivans, and eight speakers.',
+          highlight: 'два́дцять оди́н уча́сник • дві ді́вчини • три кия́нина • ві́сім спі́керів',
+          SpotlightNote: '21 ends in оди́н (+ Nom. sg.); ді́вчина (pl. дівча́та) and кия́нин (pl. кия́ни) change stems in the plural, so after 2–4 they take Genitive singular (дві ді́вчини, три кия́нина); 8 takes Genitive plural (спі́керів).',
+        },
+        {
+          uk: 'Ось кав’я́рня, у які́й ми ба́чилися власними очи́ма пе́ред тим, як сі́сти в по́їзд.',
+          en: 'Here is the coffeehouse in which we met with our own eyes before boarding the train.',
+          highlight: 'у які́й ... очи́ма ... пе́ред тим, як',
+          SpotlightNote: 'у які́й agrees with feminine кав’я́рня in gender/number and takes Locative after у; очи́ма uses the dual Instrumental plural -и́ма; пе́ред тим, як links "before" to a verb clause.',
+        },
+        {
+          uk: 'У багатьо́х міста́х на зу́стріч прийшло́ бага́то люде́й, щоб поспілкува́тися з дітьми́.',
+          en: 'In many cities many people came to the meeting in order to chat with the children.',
+          highlight: 'У багатьо́х міста́х ... прийшло́ бага́то люде́й ... з дітьми́',
+          SpotlightNote: 'бага́то declines in oblique cases (у багатьо́х міста́х), takes neuter singular past прийшло́ when subject, and ді́ти has the Instrumental plural дітьми́!',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Complete Ukrainian Counting & Case Government Matrix (1 vs. 2–4 vs. 5+)',
+          subtitle: 'Check the LAST word of a compound number (except 11–19, which are always in the 5+ group!)',
+          headers: ['Number Group', 'Case Required', 'Regular Examples', 'Special / Stem-Changing Nouns & Stress Rules'],
+          rows: [
+            ['1, 21, 31, 41... (ends in оди́н/одна́/одне́)', 'Nominative Singular', 'оди́н рік, одна́ гри́вня, одне́ вікно́, два́дцять оди́н день', 'Plural-only nouns use одні́: одні́ окуля́ри, одні́ две́рі, одні́ но́жиці'],
+            ['2, 3, 4, 22–24... (regular stems)', 'Nominative Plural (with dual stress shift!)', 'два ро́ки, три гри́вні, чоти́ри вікна́', 'Dual stress shifts to match Gen. sg.: дві сестри́ (vs. се́стри), два брати́ (vs. бра́ти), три книжки́ (vs. кни́жки), дві гори́'],
+            ['2, 3, 4 + Stem-Changing Nouns', 'Genitive Singular!', 'дві дити́ни, дві ді́вчини, три люди́ни, чоти́ри і́мені', 'Also -янин/-анин nouns: два кия́нина, три селя́нина, чоти́ри громадя́нина, два дру́га (or дру́зі)'],
+            ['5–20, 25–30, 100, бага́то, скі́льки', 'Genitive Plural', 'п’ять ро́ків, де́сять гри́вень, п’ять книжо́к, бага́то ві́кон', 'Counted people: п’ять чолові́к (vs. гру́па молоди́х чоловікі́в = men); mountains: се́ред Карпа́т'],
+            ['Collective (дво́є, тро́є, обо́є)', 'Genitive Plural', 'дво́є діте́й, тро́є дру́зів, дво́є сане́й', 'Compare gender-specific оби́два брати́ (m.) and оби́дві сестри́ (f.) vs. collective обо́є'],
+            ['1.5 (півтора́ m./n. vs. півтори́ f.)', 'Genitive Singular', 'півтора́ ро́ку / дня; півтори́ годи́ни / скля́нки', 'Matches gender of the counted noun + Genitive singular!'],
+          ],
+        },
+        {
+          title: '2. Relative Pronoun «яки́й» & Compound Subordinating Conjunctions',
+          subtitle: 'How to link clauses smoothly across every case and logical relationship',
+          headers: ['Connector / Pronoun', 'Grammar Rule', 'Ukrainian Examples', 'English Translation'],
+          rows: [
+            ['яки́й, яка́, яке́, які́', 'Gender/number from noun; Case from role in its own clause', 'студе́нтка, яка́ (Nom.) ви́ступила / які́й (Dat.) я допомі́г / з яко́ю (Inst.) ми працю́ємо', 'the student who spoke / whom I helped / with whom we work'],
+            ['щоб + Infinitive vs. щоб + Past', 'Same subject = Inf.; Different subjects = Past tense', 'Я прийшо́в, щоб допомогти́ vs. Я хо́чу, щоб ти прийшо́в', 'I came to help vs. I want you to come'],
+            ['че́рез те, що / бо / тому́ що', 'Obstacle/fact cause vs. conversational "because"', 'Ми затрима́лися че́рез те, що поча́вся дощ.', 'We were delayed because it started raining.'],
+            ['завдяки́ то́му, що', 'Positive cause ("thanks to the fact that")', 'Завдяки́ то́му, що ми ви́йшли ра́но, ми всти́гли.', 'Thanks to the fact that we left early, we made it.'],
+            ['незважа́ючи на те, що', 'Concession ("despite the fact that")', 'Незважа́ючи на те, що було́ хо́лодно, ми гуля́ли.', 'Despite the fact that it was cold, we walked.'],
+            ['пе́ред тим, як / пі́сля то́го, як / по́ки не', 'Time clauses ("before / after / until")', 'Пе́ред тим, як сі́сти в по́їзд, купи́ квито́к.', 'Before getting on the train, buy a ticket.'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Find the Right Form of «яки́й» in Two Steps',
+          explanation:
+            'Step A: Look backward at the noun being described to get the Gender and Number (кни́жка = feminine singular). Step B: Look forward inside the relative clause to get the Case (я купи́в що? → Accusative яку́; у чому́? → Locative у які́й).',
+          examples: [
+            { uk: 'Це кни́жка, яка́ (Nom.) лежи́ть на столі́. → Це кни́жка, яку́ (Acc.) я купи́в. → Це кни́жка, у які́й (Loc.) є ма́па.', en: 'This is the book that lies on the table / that I bought / in which there is a map.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Remember the Stem-Changing Nouns After 2, 3, and 4',
+          explanation:
+            'Whenever a noun uses a completely different stem in the plural (дити́на → ді́ти, ді́вчина → дівча́та, люди́на → лю́ди, ім’я́ → імена́, кия́нин → кия́ни), Ukrainian uses the Genitive Singular after два/дві, три, чоти́ри: дві дити́ни, дві ді́вчини, три люди́ни, чоти́ри і́мені, два кия́нина.',
+          examples: [
+            { uk: 'У кімна́ті сиді́ли дві ді́вчини і три кия́нина, а на вули́ці гра́лися п’ять дівча́т.', en: 'In the room sat two young women and three Kyivans, and outside five girls were playing.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Decline «бага́то» and Irregular Plurals in Oblique Cases',
+          explanation:
+            'When бага́то stands in a prepositional or verbal phrase, it declines just like a plural adjective with -ьо-: багатьо́х (Gen./Loc.), багатьо́м (Dat.), багатьма́ (Inst.). Also memorize the special Instrumental plurals дітьми́, людьми́, очи́ма, плечи́ма, двери́ма, гроши́ма.',
+          examples: [
+            { uk: 'Я розмовля́в із багатьма́ людьми́ і ба́чив це вла́сними очи́ма.', en: 'I spoke with many people and saw this with my own eyes.' },
+          ],
+        },
+      ],
+      explorers: [
+        {
+          title: 'Interactive Declension Explorer: Irregular Plurals, Special Instrumental Plurals & «бага́то»',
+          subtitle: 'Click each tab to master ді́вчина/дівча́та, дити́на/ді́ти, люди́на/лю́ди, and declined бага́то',
+          tabs: [
+            {
+              label: 'ді́вчина → дівча́та',
+              noun: 'ді́вчина (young woman / girl)',
+              gender: 'Feminine Sg. → -ат- Stem Plural',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто?', sg: 'ді́вчина', pl: 'дівча́та', note: 'After 2–4: дві, три, чоти́ри ді́вчини!' },
+                { caseName: 'Genitive', question: 'Кого́?', sg: 'ді́вчини', pl: 'дівча́т', note: 'п’ять дівча́т (zero ending)' },
+                { caseName: 'Dative', question: 'Кому́?', sg: 'ді́вчині', pl: 'дівча́там', note: 'допомага́ти дівча́там' },
+                { caseName: 'Accusative', question: 'Кого́?', sg: 'ді́вчину', pl: 'дівча́т (or дівча́та)', note: 'Animate plural Acc. = Gen. дівча́т' },
+                { caseName: 'Instrumental', question: 'Ким?', sg: 'з ді́вчиною', pl: 'з дівча́тами', note: 'пиша́тися дівча́тами' },
+                { caseName: 'Vocative', question: 'Кличний', sg: 'ді́вчино!', pl: 'дівча́та!', note: 'Direct address' },
+              ],
+            },
+            {
+              label: 'дити́на → ді́ти',
+              noun: 'дити́на (child) / люди́на (person)',
+              gender: 'Suppletive Plural Stems (ді́ти, лю́ди)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто?', sg: 'дити́на / люди́на', pl: 'ді́ти / лю́ди', note: 'After 2–4: дві дити́ни, три люди́ни!' },
+                { caseName: 'Genitive / Acc.', question: 'Кого́?', sg: 'дити́ни / люди́ни', pl: 'діте́й / люде́й', note: 'бага́то діте́й і люде́й (-е́й)' },
+                { caseName: 'Dative', question: 'Кому́?', sg: 'дити́ні / люди́ні', pl: 'ді́тям / лю́дям', note: 'дарува́ти ді́тям' },
+                { caseName: 'Instrumental', question: 'Ким?', sg: 'дити́ною / люди́ною', pl: 'дітьми́ / людьми́', note: 'Special -ьми ending! (also гістьми́, кіньми́)' },
+                { caseName: 'Locative', question: 'На ко́му?', sg: 'на дити́ні / люди́ні', pl: 'на ді́тях / лю́дях', note: 'турбува́тися про діте́й' },
+              ],
+            },
+            {
+              label: 'о́чі / пле́чі / гро́ші (-и́ма)',
+              noun: 'о́чі (eyes), пле́чі (shoulders), две́рі (doors), гро́ші (money)',
+              gender: 'Dual & Plural-Only Instrumental Forms',
+              forms: [
+                { caseName: 'Nominative Pl.', question: 'Що?', sg: 'о́ко / плече́', pl: 'о́чі / пле́чі / две́рі / гро́ші', note: 'две́рі & гро́ші are plural-only' },
+                { caseName: 'Genitive Pl.', question: 'Чого́?', sg: 'о́ка / плеча́', pl: 'оче́й / плече́й / двере́й / гроше́й', note: 'All four take -е́й in Genitive plural!' },
+                { caseName: 'Instrumental Pl.', question: 'Чим?', sg: 'о́ком / плече́м', pl: 'очи́ма / плечи́ма / двери́ма / гроши́ма (грі́шми)', note: 'Distinctive stressed -и́ма ending!' },
+              ],
+            },
+            {
+              label: 'бага́то (many)',
+              noun: 'бага́то (declined in oblique cases)',
+              gender: 'Quantifier Declension',
+              forms: [
+                { caseName: 'Nominative', question: 'Скі́льки?', sg: '—', pl: 'бага́то (+ Gen. pl. дру́зів)', note: 'Past verb takes neuter -ло: прийшло́ бага́то люде́й' },
+                { caseName: 'Genitive / Loc.', question: 'У скілько́х?', sg: '—', pl: 'багатьо́х (у багатьо́х міста́х)', note: 'Agrees with plural noun in Locative!' },
+                { caseName: 'Dative', question: 'Скілько́м?', sg: '—', pl: 'багатьо́м (багатьо́м студе́нтам)', note: 'допомогти́ багатьо́м лю́дям' },
+                { caseName: 'Instrumental', question: 'Зі скількома́?', sg: '—', pl: 'багатьма́ (з багатьма́ коле́гами)', note: 'Takes -ма just like двома́/п’ятьма́!' },
+              ],
+            },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Semantic Comparative Pairs & Word-Order Approximation',
+          subtitle: 'Look closely at how Ukrainian distinguishes age vs. quality and exact vs. approximate numbers',
+          nodes: [
+            {
+              label: 'моло́дший vs. молоді́ший',
+              value: 'моло́дший брат vs. вигляда́ти молоді́шим',
+              description: 'моло́дший = younger in age/junior in rank; молоді́ший = more youthful in appearance.',
+              tone: 'blue',
+            },
+            {
+              label: 'ста́рший vs. старі́ший',
+              value: 'ста́рша сестра́ vs. старі́ше мі́сто',
+              description: 'ста́рший = older in age/senior (of people); старі́ший = older/more ancient (of things/cities).',
+              tone: 'emerald',
+            },
+            {
+              label: 'кра́щий vs. добрі́ший',
+              value: 'кра́щий варіа́нт vs. добрі́ша люди́на',
+              description: 'кра́щий = better in quality; добрі́ший = kinder / more kind-hearted.',
+              tone: 'violet',
+            },
+            {
+              label: 'Exact vs. Approximate Inversion',
+              value: 'на дві годи́ни vs. годи́н на дві',
+              description: 'Put the noun (in Genitive plural!) before the preposition + number to mean "for about two hours".',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'У кімна́ті були́ дві ді́вчата і три лю́ди.',
+          right: 'У кімна́ті були́ дві ді́вчини і три люди́ни.',
+          why: 'Nouns whose plural stem differs from their singular stem (ді́вчина → дівча́та, люди́на → лю́ди, дити́на → ді́ти, кия́нин → кия́ни) take the Genitive singular after 2, 3, and 4!',
+        },
+        {
+          wrong: 'Одина́дцять рік / двана́дцять гри́вні.',
+          right: 'Одина́дцять ро́ків / двана́дцять гри́вень (vs. два́дцять оди́н рік / два́дцять дві гри́вні).',
+          why: 'All teen numbers (11–19) are single words in the 5–20 group and ALWAYS take the Genitive plural (ро́ків, гри́вень). Only compound numbers ending in the separate word оди́н/одна́ (21, 31, 41) take Nominative singular.',
+        },
+        {
+          wrong: 'Ми розмовля́ли пе́ред сі́сти в по́їзд.',
+          right: 'Ми розмовля́ли пе́ред тим, як сі́сти в по́їзд.',
+          why: 'In Ukrainian, a preposition like пе́ред, пі́сля, or че́рез cannot stand directly in front of a verb—bridge it with the declined neuter pronoun те + як/що (пе́ред тим, як; пі́сля то́го, як; че́рез те, що).',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Productive Verbal Nouns («-ння / -ття») & Dual Genitive Plurals («чолові́к» vs. «чоловікі́в»)',
+          summary: 'Expand for verbal noun formation (-ння/-ття), zero-ending Genitive plurals with fleeting vowels, and comparative intensifiers',
+          blocks: [
+            {
+              heading: '1. Productive Verbal Nouns in «-ння / -ття» (Neuter Soft Group)',
+              items: [
+                'Ukrainian forms neuter nouns denoting processes or concepts from verb stems with doubled consonants + -я: чита́ти → чита́ння (reading), навча́ти → навча́ння (study/education), писа́ти → писа́ння / краснописа́ння (writing / calligraphy), вишива́ти → вишива́ння (embroidery), збага́чувати → збага́чування / збага́чення (enrichment), жи́ти → життя́ (life), зна́ти → знання́ (knowledge).',
+              ],
+            },
+            {
+              heading: '2. Genitive Plural Vowel Insertion & «чолові́к» vs. «чоловікі́в»',
+              items: [
+                'Fleeting Vowel Insertion in Zero-Ending Genitive Plurals: кни́жка → книжо́к, вікно́ → ві́кон, крі́сло → крі́сел, сестра́ → сесте́р.',
+                'чолові́к in Genitive Plural: Use чоловікі́в when meaning "men / husbands" (гру́па молоди́х чоловікі́в), and zero-ending чолові́к after numbers when counting people (п’ять чолові́к, з два́дцять чолові́к).',
+              ],
+            },
+            {
+              heading: '3. Comparative Intensifiers & All 4 Ways to Say "Than"',
+              items: [
+                'Intensifiers before a comparative: ще кра́щий (even better), набага́то / зна́чно / куди́ / дале́ко ціка́віший (much / far more interesting), помі́тно теплі́ший (noticeably warmer).',
+                'Four "Than" Patterns: (1) ніж + Nom. (with comma: старі́ший, ніж...), (2) як + Nom. (colloquial: ви́щий, як брат), (3) від + Gen. (моло́дша від сестри́), (4) за + Acc. (до́вший за Дністе́р).',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Which phrase correctly translates "two young women, three Kyivans, and five girls"?',
+          options: [
+            'дві ді́вчини, три кия́нина і п’ять дівча́т',
+            'дві дівча́та, три кия́ни і п’ять ді́вчини',
+            'два ді́вчини, три кия́нин і п’ять дівча́та',
+          ],
+          correctIndex: 0,
+          explanation: 'Stem-changing nouns like ді́вчина (pl. дівча́та) and кия́нин (pl. кия́ни) take Genitive singular after 2–4 (дві ді́вчини, три кия́нина) and Genitive plural after 5+ (п’ять дівча́т).',
+        },
+        {
+          question: 'How do you say "with my own eyes" and "with the children" in the Instrumental plural?',
+          options: [
+            'вла́сними очи́ма і з дітьми́',
+            'вла́сними о́чами і з ді́тами',
+            'вла́сних оче́й і з діте́й',
+          ],
+          correctIndex: 0,
+          explanation: 'О́чі takes the dual Instrumental ending очи́ма (like плечи́ма, двери́ма, гроши́ма), and ді́ти takes дітьми́ (like людьми́).',
+        },
+      ],
+      takeaways: [
+        'Follow the 1 (Nom. sg.) / 2–4 (Nom. pl. with dual stress shift, OR Gen. sg. for stem-changing дві дити́ни, дві ді́вчини, три люди́ни, два кия́нина) / 5+ (Gen. pl.) counting rule.',
+        'Match relative pronoun яки́й in gender/number to the noun it describes, and in case to its role inside the relative clause.',
+        'Bridge prepositions to verb clauses with те, що / як (че́рез те, що; пе́ред тим, як; пі́сля то́го, як) and use щоб + past tense when the subject changes.',
+      ],
+    },
     examples: [
       { uk: 'У на́шій гру́пі оди́н виклада́ч, три студе́нтки і ві́сім студе́нтів.', en: 'In our group there is one instructor, three female students, and eight male students.' },
       { uk: 'Ось кав’я́рня, у які́й ми зазвича́й п’ємо́ ранко́ву ка́ву.', en: 'Here is the coffee shop in which we usually drink morning coffee.' },
@@ -1321,6 +3152,204 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>3. Cause, Substitution & Concession (завдяки́, че́рез, за́мість, по́при)</b>:<ul><li><b>завдяки́ + Dative</b> = thanks to (positive cause): <b>Завдяки́ ва́шій пора́ді ми знайшли́ рі́шення</b>.</li><li><b>че́рез + Accusative</b> = because of / due to (obstacle or unwanted cause): <b>Ми запізни́лися че́рез дощ і тума́н</b>.</li><li><b>за́мість + Genitive</b> = instead of: <b>За́мість ка́ви я ви́пив узва́р</b>.</li><li><b>по́при + Accusative</b> (or <b>незважа́ючи на + Acc.</b>) = despite / in spite of: <b>По́при пі́зній час, кав’я́рня ще працюва́ла</b>.</li></ul>',
       '<b>4. Official, Temporal & Relational Prepositions (про́тягом, що́до, згі́дно з, по)</b>:<ul><li><b>про́тягом + Genitive</b> = during / throughout a time period: <b>про́тягом ти́жня / ро́ку</b> (never use *на протязі* for time!).</li><li><b>за + Accusative (of time)</b> = within / in the span of OR "ago" with <i>тому́</i>: <b>вивчи́ти вірш за годи́ну</b> (learn a poem in an hour); contrast <b>два дні тому́</b> (two days ago — literally "two days to that").</li><li><b>що́до + Genitive</b> = regarding / concerning: <b>пита́ння що́до но́вого ро́зкладу</b>.</li><li><b>згі́дно з + Instrumental</b> (or <b>відпові́дно до + Genitive</b>) = according to / in accordance with: <b>згі́дно з ро́зкладом</b>.</li><li><b>по + Locative (plural or singular)</b> = across / through / after: <b>ходи́ти по ву́лицях</b> (walk through the streets), <b>по обі́ді</b> (after lunch); <b>по + Accusative</b> = to go fetch (<b>піти́ по во́ду</b>) or up to (<b>по колі́на у воді́</b> = knee-deep in water).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Ukrainian prepositions form a crystal-clear 3D coordinate system. Every location has a symmetrical triad for Where To? (Куди́?), Where At? (Де?), and Where From? (Зві́дки?)—including compound prepositions like з-під ("from under") and з-за ("from behind / from at a table"). Even better, Ukrainian uses different prepositions and cases to separate positive help (завдяки́ + Dative = "thanks to") from an obstacle (че́рез + Accusative = "because of"), or crossing a street (че́рез ву́лицю) from walking through a dense forest (крізь ліс).',
+      whyItMatters:
+        'Mastering this preposition-and-case matrix eliminates guesswork when navigating cities, explaining causes, or using official/academic connectors like про́тягом ("during"), за́мість ("instead of"), по́при ("despite"), що́до ("regarding"), and згі́дно з ("in accordance with").',
+      seeItInAction: [
+        {
+          uk: 'Со́нце ви́йшло з-за хмар, кіт ви́стрибнув з-під столу́, і ми пішли́ гуля́ти вздо́вж Дніпра́.',
+          en: 'The sun came out from behind the clouds, the cat jumped out from under the table, and we went for a walk along the Dnipro.',
+          highlight: 'з-за хмар • з-під столу́ • вздо́вж Дніпра́',
+          SpotlightNote: 'Notice how з-за ("from behind") and з-під ("from under") govern the Genitive case, just like вздо́вж ("along").',
+        },
+        {
+          uk: 'Завдяки́ но́вому мосту́ ми дої́хали за два́дцять хвили́н і не запізни́лися че́рез затори́.',
+          en: 'Thanks to the new bridge we arrived in 20 minutes and weren’t late because of traffic jams.',
+          highlight: 'Завдяки́ мосту́ (Dat.) vs. че́рез затори́ (Acc.)',
+          SpotlightNote: 'Positive, helpful cause = завдяки́ + Dative; negative obstacle/delay = че́рез + Accusative!',
+        },
+        {
+          uk: 'Згі́дно з но́вим ро́зкладом, обговоре́ння що́до проє́кту трива́тиме про́тягом двох годи́н.',
+          en: 'According to the new schedule, the discussion regarding the project will last for two hours.',
+          highlight: 'Згі́дно з ро́зкладом (Inst.) • що́до проє́кту (Gen.) • про́тягом двох годи́н (Gen.)',
+          SpotlightNote: 'Three essential B1 register prepositions: згі́дно з (+ Inst.), що́до (+ Gen.), and про́тягом (+ Gen.).',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. The Complete 5-Row Spatial Symmetry Matrix (Куди́? → Де? → Зві́дки?)',
+          subtitle: 'Every destination and static location has an exact origin partner',
+          headers: ['Spatial Domain', 'Куди́? (Where To? — Motion)', 'Де? (Where At? — Static)', 'Зві́дки? (Where From? — Origin)', 'Authentic Triad Example'],
+          rows: [
+            ['1. Enclosed Spaces & Cities', 'у / в (+ Acc.) OR до (+ Gen.)', 'у / в (+ Locative)', 'з / із / зі (+ Genitive)', 'пої́хати до Льво́ва → бу́ти у Льво́ві → приї́хати зі Льво́ва'],
+            ['2. Surfaces, Events & Hubs', 'на (+ Accusative)', 'на (+ Locative)', 'з / із / зі (+ Genitive)', 'піти́ на конце́рт → бу́ти на конце́рті → поверну́тися з конце́рту'],
+            ['3. People (Visiting Someone)', 'до (+ Genitive)', 'у / в / бі́ля (+ Genitive)', 'від (+ Genitive)', 'піти́ до лі́каря → бу́ти у лі́каря → прийти́ від лі́каря'],
+            ['4. Under (під → під → з-під)', 'під (+ Accusative)', 'під (+ Instrumental)', 'з-під (+ Genitive)', 'покла́сти під стіл → лежа́ти під столо́м → ви́лізти з-під столу́'],
+            ['5. Behind / At Table (за → за → з-за)', 'за (+ Accusative)', 'за (+ Instrumental)', 'з-за (+ Genitive)', 'сі́сти за стіл → сиді́ти за столо́м → вста́ти з-за столу́'],
+          ],
+          footnote: 'Notice how під and за take the Accusative when moving into position (сі́сти за стіл = sit down at the table) and the Instrumental when stationary (сиді́ти за столо́м = be sitting at the table)!',
+        },
+        {
+          title: '2. Spatial Movement Prepositions: Across, Through, Past & Along',
+          subtitle: 'Four prepositions that paint a precise picture of your path',
+          headers: ['Preposition', 'Case Required', 'Core Spatial Meaning', 'Authentic Ukrainian Example'],
+          rows: [
+            ['че́рез', '+ Accusative', 'across (a street, bridge, river)', 'перейти́ че́рез ву́лицю / че́рез міст'],
+            ['крізь', '+ Accusative', 'penetrating right through a dense medium or opening', 'пройти́ крізь густи́й ліс; промі́ння світи́ло крізь ли́стя'],
+            ['повз', '+ Accusative (or Gen.)', 'past / by (without entering)', 'Авто́бус прої́хав повз на́шу зупи́нку і теа́тр.'],
+            ['вздо́вж (уздо́вж)', '+ Genitive', 'along (a line, shore, street)', 'Ми довго гуля́ли вздо́вж бе́рега Дніпра́.'],
+            ['по', '+ Locative / + Accusative', 'around/through (+ Loc. pl.) • after (+ Loc.) • to fetch / up to (+ Acc.)', 'ходи́ти по ву́лицях • по обі́ді • піти́ по во́ду • по колі́на у воді́'],
+          ],
+        },
+        {
+          title: '3. Cause, Time, Substitution, Concession & Official Register',
+          subtitle: 'High-frequency B1 prepositions and the exact case each one governs',
+          headers: ['Preposition', 'Case Governed', 'Meaning', 'Ukrainian Example & Usage Tip'],
+          rows: [
+            ['завдяки́', '+ Dative', 'thanks to (positive, helpful cause)', 'Завдяки́ ва́шій пора́ді ми знайшли́ рі́шення.'],
+            ['че́рез', '+ Accusative', 'because of / due to (obstacle) • in [time]', 'запізни́тися че́рез тума́н • приї́демо че́рез ти́ждень (in a week)'],
+            ['за́мість', '+ Genitive', 'instead of', 'За́мість ка́ви я замо́вив те́плий узва́р.'],
+            ['по́при (незважа́ючи на)', '+ Accusative', 'despite / in spite of', 'По́при пі́зній час, кав’я́рня ще працюва́ла.'],
+            ['про́тягом', '+ Genitive', 'during / throughout (a time period)', 'про́тягом ти́жня / ро́ку (NEVER say *на протязі for time!)'],
+            ['за (+ Acc.) vs. тому́', '+ Accusative', 'within [time span] vs. [time] ago', 'вивчи́ти вірш за годи́ну (in/within an hour) vs. два дні тому́ (two days ago)'],
+            ['що́до', '+ Genitive', 'regarding / concerning / as for', 'Ма́ю пропози́цію що́до но́вого ро́зкладу.'],
+            ['згі́дно з (відпові́дно до)', '+ Inst. (+ Gen.)', 'according to / in accordance with', 'ді́яти згі́дно з пра́вилами (or відпові́дно до пра́вил)'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Check Motion (Accusative) vs. Static Location (Instrumental) After «під» and «за»',
+          explanation:
+            'When an object moves to a spot under or behind something, під and за take the Accusative (сі́сти за стіл, покла́сти під кни́жку). Once it is resting there, під and за take the Instrumental (сиді́ти за столо́м, лежа́ти під кни́жкою). When it comes out from there, use з-під or з-за + Genitive (вста́ти з-за столу́, ви́лізти з-під столу́)!',
+          examples: [
+            { uk: 'Вона́ сі́ла за стіл (Acc.), пообі́дала за столо́м (Inst.) і вста́ла з-за столу́ (Gen.).', en: 'She sat down at the table, had lunch at the table, and stood up from the table.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Separate Positive Help («завдяки́ + Dat.») from Obstacles («че́рез + Acc.»)',
+          explanation:
+            'Before translating English "because of / thanks to," ask whether the cause helped or hindered: if it helped, use завдяки́ + Dative; if it caused a problem or delay, use че́рез + Accusative.',
+          examples: [
+            { uk: 'Ми запізни́лися че́рез си́льну зли́ву, але́ завдяки́ тобі́ не проґа́вили по́їзд.', en: 'We were late because of the heavy downpour, but thanks to you we didn’t miss the train.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Contrast Time Expressions: «за годи́ну», «че́рез годи́ну», «годи́ну тому́», and «про́тягом годи́ни»',
+          explanation:
+            'Ukrainian distinguishes four time relationships cleanly: за годи́ну = accomplished within an hour; че́рез годи́ну = after an hour has passed (in an hour from now); годи́ну тому́ = an hour ago; про́тягом годи́ни = continuously throughout an hour.',
+          examples: [
+            { uk: 'Два ро́ки тому́ він вивчи́в базову грама́тику за мі́сяць, а че́рез ти́ждень складе́ і́спит.', en: 'Two years ago he learned basic grammar within a month, and in a week he will pass the exam.' },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'Four Time Expressions Every B1 Speaker Should Contrast',
+          subtitle: 'How Ukrainian expresses "throughout", "within", "in [future]", and "ago"',
+          nodes: [
+            {
+              label: 'про́тягом + Genitive',
+              value: 'про́тягом двох годи́н / ро́ку',
+              description: 'Throughout / during the entire duration of a time period.',
+              tone: 'blue',
+            },
+            {
+              label: 'за + Accusative',
+              value: 'дої́хали за два́дцять хвили́н',
+              description: 'Completed within X amount of time.',
+              tone: 'emerald',
+            },
+            {
+              label: 'че́рез + Accusative',
+              value: 'поверне́мося че́рез ти́ждень',
+              description: 'In a week’s time (after a week elapses).',
+              tone: 'violet',
+            },
+            {
+              label: '[Accusative Time] + тому́',
+              value: 'два ро́ки тому́ / ти́ждень тому́',
+              description: 'Two years ago / a week ago (тому́ stands AFTER the time noun!).',
+              tone: 'amber',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'На про́тязі ро́ку ми вивча́ли украї́нську мо́ву.',
+          right: 'Про́тягом ро́ку (or: упродо́вж ро́ку) ми вивча́ли украї́нську мо́ву.',
+          why: 'In Ukrainian, про́тяг means a cold draft of air between open windows (so на про́тязі means "sitting in a draft"!). For time ("during the year"), always use про́тягом + Genitive or упродо́вж + Genitive.',
+        },
+        {
+          wrong: 'Я поверта́юся з лі́каря.',
+          right: 'Я поверта́юся від лі́каря.',
+          why: 'When talking about a person (doctor, friend, sister), the 3-way spatial triad is до лі́каря (to) → у лі́каря (at) → від лі́каря (from).',
+        },
+        {
+          wrong: 'Завдяки́ дощу́ ми спізни́лися.',
+          right: 'Че́рез дощ ми спізни́лися.',
+          why: 'Завдяки́ (+ Dative) is reserved for positive, helpful causes ("thanks to"). Unwanted obstacles take че́рез (+ Accusative).',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Preposition Case Governance Quick-Lookup & Idiomatic Uses of «по»',
+          summary: 'Expand for a grouped case-by-case preposition dictionary and all meanings of по (+ Loc. vs. + Acc.)',
+          blocks: [
+            {
+              heading: '1. Prepositions Grouped by the Case They Govern',
+              items: [
+                'Always + Genitive: без (without), бі́ля (near), від (from), вздо́вж/уздо́вж (along), для (for), до (to/until), з/із/зі (from/out of), з-за (from behind), з-під (from under), за́мість (instead of), крім/окрі́м (except), на́вколо (around), пі́сля (after), про́тягом/упродо́вж (during), се́ред (among), що́до (regarding).',
+                'Always + Dative: завдяки́ (thanks to), всу́переч (contrary to), назу́стріч (toward to meet).',
+                'Always + Accusative: про (about), че́рез (across / because of / in [time]), крізь (penetrating through), по́при (despite).',
+                'Always + Instrumental: з/із/зі (together with), згі́дно з (according to), між (between/among), пе́ред (in front of / before), над (above).',
+                'Dual-Case Spatial Prepositions: у/в, на (+ Acc. motion → + Loc. static); під, за (+ Acc. motion → + Inst. static).',
+              ],
+            },
+            {
+              heading: '2. Idiomatic Uses of «по» (+ Locative vs. + Accusative)',
+              items: [
+                'по + Locative Plural/Singular (across / through / by means of / after): гуля́ти по ву́лицях (stroll through the streets), плисти́ по Дніпру́ (sail along the Dnipro), говори́ти по телефо́ну (speak on the phone), по обі́ді / по закінче́нні (after lunch / upon completion).',
+                'по + Accusative (to go fetch / up to / distribution): піти́ по во́ду / по хліб / по гриби́ (go fetch water/bread/mushrooms), стоя́ти по колі́на у воді́ (stand knee-deep in water), по два квитки́ (two tickets each).',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Which sentence correctly translates "The sun came out from behind the clouds, and we walked along the shore"?',
+          options: [
+            'Со́нце ви́йшло з-за хмар, і ми пішли́ вздо́вж бе́рега.',
+            'Со́нце ви́йшло за хма́рами, і ми пішли́ крізь бе́рег.',
+            'Со́нце ви́йшло від хмар, і ми пішли́ що́до бе́рега.',
+          ],
+          correctIndex: 0,
+          explanation: 'З-за + Genitive means "from behind", and вздо́вж + Genitive means "along".',
+        },
+        {
+          question: 'Why is "На про́тязі ти́жня" a mistake when you want to say "during the week"?',
+          options: [
+            'Because "про́тяг" means a draft of wind; "during the week" is "про́тягом ти́жня" (or "упродо́вж ти́жня").',
+            'Because "ти́ждень" cannot be used in the Genitive case.',
+            'Because you must use "що́до ти́жня".',
+          ],
+          correctIndex: 0,
+          explanation: 'Always use the adverbial preposition про́тягом + Genitive (or упродо́вж + Genitive) for time duration.',
+        },
+      ],
+      takeaways: [
+        'Use the 3-way spatial matrix: до/у → у → з (places), на → на → з (surfaces/events), до → у → від (people), під/за (+ Acc.) → під/за (+ Inst.) → з-під/з-за (+ Gen.).',
+        'Contrast завдяки́ + Dative (positive "thanks to") with че́рез + Accusative (obstacle "because of").',
+        'Use про́тягом + Gen. (during), за́мість + Gen. (instead of), вздо́вж + Gen. (along), що́до + Gen. (regarding), and згі́дно з + Inst. (according to).',
+      ],
+    },
     examples: [
       { uk: 'Со́нце ви́йшло з-за хмар, і ми пішли́ гуля́ти вздо́вж Дніпра́.', en: 'The sun came out from behind the clouds (з-за + Gen.), and we went for a walk along the Dnipro (вздо́вж + Gen.).' },
       { uk: 'Завдяки́ но́вому мосту́ ми дої́хали за два́дцять хвили́н, а не запізни́лися че́рез затори́.', en: 'Thanks to the new bridge (завдяки́ + Dat.) we arrived in 20 minutes and weren’t late because of traffic jams (че́рез + Acc.).' },
@@ -1490,6 +3519,244 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. Possessive Pronouns («мій, твій, свій, наш, ваш, їхній») vs. Invariable «його́, її́»</b>:<ul><li><b>мій, твій, свій</b> contract their stem to <b>мо-, тво-, сво-</b> in oblique cases:<ul><li>Masc./Neut. Sg.: Gen. <b>мого́, твого́, свого́</b>; Dat. <b>моє́му, твоє́му, своє́му</b>; Inst. <b>мої́м, твої́м, свої́м</b>; Loc. <b>на моє́му / мої́м</b>.</li><li>Feminine Sg.: Gen. <b>моє́ї, твоє́ї, своє́ї</b>; Dat./Loc. <b>мої́й, твої́й, свої́й</b>; Acc. <b>мою́, твою́, свою́</b>; Inst. <b>моє́ю, твоє́ю, своє́ю</b>.</li><li>Plural: Nom. <b>мої́, твої́, свої́</b>; Gen./Loc. <b>мої́х, твої́х, своїх</b>; Dat. <b>мої́м</b>; Inst. <b>мої́ми</b>.</li></ul></li><li><b>наш, ваш</b> decline like hard adjectives (<i>на́шого, на́шому, на́шим; на́шої, на́шій, на́шою; на́ших, на́шим, на́шими</i>), and <b>їхній</b> ("their": <i>їхня кімна́та, їхнє мі́сто, їхні дру́зі, їхнього, їхньому, їхньою</i>) declines like a soft adjective in <b>-ій</b>!</li><li><b>Watch Out</b>: Third-person singular <b>його́</b> ("his / its") and <b>її́</b> ("her") NEVER change by gender, number, or case: <i>у <b>його́</b> новій кни́жці; з <b>її́</b> ста́ршим бра́том</i>.</li></ul>',
       '<b>5. High-Frequency Case Government Verbs (Instrumental & Dative)</b>:<ul><li><b>Verbs Governing the Instrumental Case (Ким? Чим?)</b>: <b>керува́ти</b> (to direct/drive/manage: <i>керува́ти теплохо́дом, автомобі́лем, заво́дом</i>), <b>користува́тися</b> (to use: <i>користува́тися словнико́м, путівнико́м</i>), <b>захо́плюватися</b> (to be passionate about / fascinated by: <i>захо́плюватися мисте́цтвом, астроно́мією</i>), <b>ціка́витися</b> (to be interested in), <b>пиша́тися</b> (to be proud of), <b>займати́ся</b> (to practice / do: <i>займати́ся спо́ртом</i>), <b>милува́тися</b> (to admire: <i>милува́тися Дніпро́м, кру́чею</i>).</li><li><b>Verbs Governing the Dative Case (Кому́? Чому́?)</b>: <b>аплодува́ти</b> (to applaud: <i>аплодува́ти акто́рам і митця́м</i>), <b>подо́батися / сподо́батися</b> (to be pleasing to), <b>належа́ти</b> (to belong to: <i>Ці карти́ни нале́жать на́шому музе́єві</i>), <b>раді́ти</b> (to rejoice at), <b>заважа́ти</b> (to disturb/hinder).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea:
+        'Seeing all 7 Ukrainian cases side by side reveals a remarkably logical system: every noun belongs to one of three stem groups—Hard (hard consonant stem: брат, кни́жка, мі́сто), Soft (soft consonant or -й: учи́тель, музе́й, земля́, мо́ре), or Mixed (sibilant stem ж, ч, ш, щ: това́риш, дощ, гляда́ч, пло́ща, ти́ша, прі́звище). Once you pair those three groups with the full 7-case declension of цей/той ("this/that") and possessive pronouns (мій, твій, свій, наш, ваш, їхній vs. invariable його́/її́), you can build any phrase in Ukrainian effortlessly.',
+      whyItMatters:
+        'The Mixed Group explains why sibilant nouns like пло́ща ("square"), ти́ша ("silence"), дощ ("rain"), and ніж ("knife") take -ею / -ем in the Instrumental singular (пло́щею, ти́шею, доще́м, ноже́м) and -і in the Nominative plural (пло́щі, дощі́, ножі́, глядачі́)!',
+      seeItInAction: [
+        {
+          uk: 'Ми йшли широ́кою пло́щею під те́плим лі́тнім доще́м і милува́лися вечі́рньою ти́шею над Дніпро́м.',
+          en: 'We walked across the wide square in the warm summer rain and admired the evening silence over the Dnipro.',
+          highlight: 'пло́щею ... доще́м ... ти́шею',
+          SpotlightNote: 'All three nouns (пло́ща, дощ, ти́ша) end in a sibilant (щ, ш) and belong to the Mixed Group: they take soft-vowel Instrumental endings (-ею, -ем)!',
+        },
+        {
+          uk: 'У ціє́ї студе́нтки є ціка́вий путівни́к, і ми охо́че користу́ємося цим путівнико́м.',
+          en: 'This female student has an interesting guidebook, and we gladly use this guidebook.',
+          highlight: 'У ціє́ї студе́нтки ... користу́ємося цим путівнико́м',
+          SpotlightNote: 'Notice how ця becomes ціє́ї in the feminine Genitive, while цей becomes цим in the masculine Instrumental after користува́тися.',
+        },
+        {
+          uk: 'Ми розмовля́ли з їхніми дру́зями, а по́тім познайо́милися з її́ бра́том та його́ сестро́ю.',
+          en: 'We spoke with their friends, and then met her brother and his sister.',
+          highlight: 'з їхніми дру́зями vs. з її́ бра́том та його́ сестро́ю',
+          SpotlightNote: 'їхній ("their") declines like a soft adjective across all cases (їхніми), whereas її́ ("her") and його́ ("his") never change!',
+        },
+      ],
+      visualTables: [
+        {
+          title: '1. Hard, Soft & Mixed Declension Groups Across Masculine, Neuter & Feminine Nouns',
+          subtitle: 'Look at the final consonant of the stem to know which vowel set (-о-/-и vs. -е-/-і) a noun takes',
+          headers: ['Group & Stem Type', 'Masculine & Neuter Examples', 'Masc./Neut. Key Endings (Dat. / Inst. / Nom. Pl.)', 'Feminine Examples (-а / -я)', 'Feminine Key Endings (Gen. / Dat.-Loc. / Inst. / Nom. Pl.)'],
+          rows: [
+            ['1. Hard Group (hard non-sibilant)', 'брат, інститу́т, путівни́к, мі́сто, вікно́', 'Dat. -ові (-у) • Inst. -ом (бра́том, мі́стом) • Pl. -и / -а', 'кни́жка, сестра́, па́луба, шко́ла', 'Gen. -и • Dat./Loc. -і (к→ц, г→з, х→с) • Inst. -ою • Pl. -и'],
+            ['2. Soft Group (-й, -ь, -ець, soft -е/-я)', 'учи́тель, музе́й, мите́ць, мо́ре, знання́', 'Dat. -еві / -єві (-ю) • Inst. -ем / -єм / -нням • Pl. -і / -я', 'земля́, пі́сня, ву́лиця, аудито́рія', 'Gen. -і / -ї • Dat./Loc. -і / -ї • Inst. -ею / -єю • Pl. -і / -ї'],
+            ['3. Mixed Group (sibilant ж, ч, ш, щ + -яр)', 'това́риш, гляда́ч, дощ, ніж, школя́р, прі́звище', 'Dat. -еві (-у) • Inst. -ем (това́ришем, доще́м, ноже́м) • Pl. -і (глядачі́, дощі́!)', 'пло́ща, ти́ша, гру́ша, кру́ча, межа́', 'Nom. -а, Acc. -у, BUT Gen./Dat./Loc./Pl. -і (пло́щі, у ти́ші) & Inst. -ею (пло́щею!)'],
+          ],
+          footnote: 'Key memory hook for the Mixed Group: after sibilants ж, ч, ш, щ, Ukrainian switches from -ою/-ом to -ею/-ем in the Instrumental and from -и to -і in the plural!',
+        },
+        {
+          title: '2. Complete 7-Case Declension of «цей» (this) & «мій / твій / свій» vs. «їхній / його́ / її́»',
+          subtitle: 'Notice how цей contracts to цьо- (m./n.) and ці- (f./pl.), and мій/твій/свій contract to мо-/тво-/сво-',
+          headers: ['Case', 'Masc. Sg. (цей / мій)', 'Neuter Sg. (це / моє́)', 'Feminine Sg. (ця / моя́)', 'Plural All Genders (ці / мої́ / їхні)'],
+          rows: [
+            ['Nominative (Хто? Що?)', 'цей / той • мій, наш, їхній', 'це / те • моє́, на́ше, їхнє', 'ця / та • моя́, на́ша, їхня', 'ці / ті • мої́, на́ші, їхні'],
+            ['Genitive (Кого́? Чого́?)', 'цього́ / того́ • мого́, їхнього', 'цього́ / того́ • мого́, їхнього', 'цієї́ / тієї́ • моє́ї, їхньої', 'цих / тих • мої́х, на́ших, їхніх'],
+            ['Dative (Кому́? Чому́?)', 'цьому́ / тому́ • моє́му, їхньому', 'цьому́ / тому́ • моє́му, їхньому', 'цій / тій • мої́й, на́шій, їхній', 'цим / тим • мої́м, на́шим, їхнім'],
+            ['Accusative (Кого́? Що?)', '= Nom. (inan.) / Gen. (anim.)', 'це / те • моє́, їхнє', 'цю / ту • мою́, твою́, свою́, їхню', '= Nom. (inan.) / Gen. (anim.)'],
+            ['Instrumental (Ким? Чим?)', 'цим / тим • мої́м, свої́м, їхнім', 'цим / тим • мої́м, свої́м, їхнім', 'ціє́ю / тіє́ю • моє́ю, своє́ю, їхньою', 'ци́ми / ти́ми • мої́ми, свої́ми, їхніми'],
+            ['Locative (На ко́му/чо́му?)', 'на цьо́му (цім) • на моє́му (мої́м)', 'на цьо́му (цім) • на моє́му', 'на цій / тій • на мої́й, свої́й, їхній', 'на цих / тих • на мої́х, своїх, їхніх'],
+          ],
+          footnote: 'Remember: його́ ("his/its") and її́ ("her") NEVER change their ending in any case: з його́ дру́гом, у її́ новій кни́жці!',
+        },
+        {
+          title: '3. High-Frequency Verbs Governing the Instrumental vs. Dative Case',
+          subtitle: 'In English these verbs take direct objects or various prepositions; in Ukrainian they govern a specific case directly',
+          headers: ['Case Governed', 'Verb (Impf. / Pf.)', 'Meaning', 'Authentic Ukrainian Example'],
+          rows: [
+            ['Instrumental (Ким? Чим?)', 'користува́тися / скориста́тися', 'to use / make use of', 'Ми охо́че користу́ємося цим но́вим путівнико́м і словнико́м.'],
+            ['Instrumental (Ким? Чим?)', 'керува́ти', 'to steer / drive / direct / manage', 'Досві́дчений капіта́н керу́є бі́лим теплохо́дом і корабле́м.'],
+            ['Instrumental (Ким? Чим?)', 'захо́плюватися / захопи́тися', 'to be passionate about / fascinated by', 'Вони́ захо́плюються украї́нським мисте́цтвом і поезі́єю.'],
+            ['Instrumental (Ким? Чим?)', 'милува́тися / помилува́тися', 'to admire / gaze at with pleasure', 'Тури́сти милува́лися зеле́ними кру́чами над Дніпро́м.'],
+            ['Instrumental (Ким? Чим?)', 'пиша́тися • ціка́витися • займати́ся', 'be proud of • be interested in • practice/do', 'Вона́ займа́ється спо́ртом і пиша́ється своє́ю бібліоте́кою.'],
+            ['Dative (Кому́? Чому́?)', 'аплодува́ти / зааплодува́ти', 'to applaud', 'Глядачі́ стоячи аплодува́ли молоди́м украї́нським митця́м.'],
+            ['Dative (Кому́? Чому́?)', 'належа́ти • раді́ти • заважа́ти', 'belong to • rejoice at • disturb/hinder', 'Ці карти́ни нале́жать на́шому музе́єві. Ми раді́ємо цій по́дорожі!'],
+          ],
+        },
+      ],
+      stepByStep: [
+        {
+          stepNumber: 1,
+          title: 'Spot Sibilant Stems (ж, ч, ш, щ) to Apply Mixed-Group Endings Automatically',
+          explanation:
+            'Whenever a noun’s stem ends in ж, ч, ш, or щ (like дощ, ніж, гляда́ч, това́риш, пло́ща, ти́ша, кру́ча, прі́звище), it belongs to the Mixed Group: use -ем / -ею in the Instrumental singular (доще́м, глядаче́м, пло́щею, кру́чею) and -і in the Nominative plural (дощі́, глядачі́, пло́щі, кру́чі).',
+          examples: [
+            { uk: 'Ми йшли широ́кою пло́щею під те́плим доще́м, а глядачі́ милува́лися кру́чами.', en: 'We walked across the wide square in the warm rain, and the spectators admired the river bluffs.' },
+          ],
+        },
+        {
+          stepNumber: 2,
+          title: 'Use Soft «-еві / -єві» for Soft and Mixed Masculine Datives',
+          explanation:
+            'While hard masculine nouns take -ові (бра́тові, студе́нтові, па́م’ятникові), soft-group and mixed-group masculine nouns take -еві (учи́телеві, кобзаре́ві, митце́ві, това́ришеві, глядаче́ві), and stems in -й take -єві (музе́єві, Андрі́єві).',
+          examples: [
+            { uk: 'Ми вклони́лися па́м’ятникові Вели́кому Кобзаре́ві у Ка́неві.', en: 'We bowed before the monument to the Great Kobzar in Kaniv.' },
+          ],
+        },
+        {
+          stepNumber: 3,
+          title: 'Watch Neuter «-ння / -ття» Nouns Across Singular and Plural',
+          explanation:
+            'In neuter nouns ending in doubled consonants + -я (завда́ння, оповіда́ння, пита́ння, знання́), the Nominative singular, Genitive singular, and Nominative/Accusative plural all look and sound identical! Look at the accompanying adjective or demonstrative (це ціка́ве оповіда́ння vs. ці ціка́ві оповіда́ння) to tell singular from plural.',
+          examples: [
+            { uk: 'Це нове́ завда́ння (Nom. sg.) → немає цьо́го но́вого завда́ння (Gen. sg.) → ці нові́ завда́ння (Nom. pl.).', en: 'This new assignment → of this new assignment → these new assignments.' },
+          ],
+        },
+      ],
+      explorers: [
+        {
+          title: 'Interactive Declension Explorer: Mixed-Group Nouns & Demonstrative/Possessive Pronouns',
+          subtitle: 'Click through пло́ща (Mixed Fem.), гляда́ч / дощ (Mixed Masc.), цей/ця/ці, and свій/їхній',
+          tabs: [
+            {
+              label: 'пло́ща (Mixed Fem.)',
+              noun: 'пло́ща (square) / ти́ша (silence)',
+              gender: 'Feminine Mixed Group (Sibilant щ, ш, ч, ж + -а)',
+              forms: [
+                { caseName: 'Nominative', question: 'Що?', sg: 'пло́ща / ти́ша', pl: 'пло́щі', note: 'Nom. sg. -а, Nom. pl. -і!' },
+                { caseName: 'Genitive', question: 'Чого́?', sg: 'пло́щі / ти́ші', pl: 'площ', note: 'Gen. sg. takes -і (not -и!)' },
+                { caseName: 'Dative / Locative', question: 'Чому́? На чо́му?', sg: 'на пло́щі / у ти́ші', pl: 'на пло́щах', note: '-і in Dative & Locative singular' },
+                { caseName: 'Accusative', question: 'Що?', sg: 'пло́щу / ти́шу', pl: 'пло́щі', note: 'перейти́ пло́щу' },
+                { caseName: 'Instrumental', question: 'Чим?', sg: 'пло́щею / ти́шею', pl: 'пло́щами', note: 'Takes -ею after sibilant (never *-ою!)' },
+              ],
+            },
+            {
+              label: 'гляда́ч / дощ (Mixed Masc.)',
+              noun: 'гляда́ч (spectator) / дощ (rain)',
+              gender: 'Masculine Mixed Group (Sibilant ч, щ, ж, ш)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто? Що?', sg: 'гляда́ч / дощ', pl: 'глядачі́ / дощі́', note: 'Nom. pl. ends in -і!' },
+                { caseName: 'Genitive', question: 'Кого́? Чого́?', sg: 'глядача́ / дощу́', pl: 'глядачі́в / дощі́в', note: 'Hard vowel in Gen. sg.' },
+                { caseName: 'Dative', question: 'Кому́? Чому́?', sg: 'глядаче́ві (-у) / доще́ві (-у)', pl: 'глядача́м / доща́м', note: 'Soft vowel -еві in Dative sg.' },
+                { caseName: 'Instrumental', question: 'Ким? Чим?', sg: 'глядаче́м / доще́м', pl: 'глядача́ми / доща́ми', note: '-ем in Instrumental sg. (під доще́м, ноже́м)' },
+                { caseName: 'Locative', question: 'На ко́му/чо́му?', sg: 'на глядаче́ві / у дощі́', pl: 'на глядача́х / у доща́х', note: 'Soft endings' },
+              ],
+            },
+            {
+              label: 'цей, ця, це, ці (this)',
+              noun: 'цей (m.), це (n.), ця (f.), ці (pl.)',
+              gender: 'Demonstrative Pronoun (Full 7-Case)',
+              forms: [
+                { caseName: 'Nominative', question: 'Хто? Що?', sg: 'цей (m.) / це (n.) / ця (f.)', pl: 'ці', note: 'той, те, та, ті follow the same pattern' },
+                { caseName: 'Genitive', question: 'Кого́? Чого́?', sg: 'цього́ (m./n.) / цієї́ (f.)', pl: 'цих', note: 'цієї́ но́вої кни́жки' },
+                { caseName: 'Dative', question: 'Кому́? Чому́?', sg: 'цьому́ (m./n.) / цій (f.)', pl: 'цим', note: 'раді́ти цій по́дорожі' },
+                { caseName: 'Instrumental', question: 'Ким? Чим?', sg: 'цим (m./n.) / ціє́ю (f.)', pl: 'ци́ми', note: 'користува́тися цим путівнико́м; з ціє́ю по́другою' },
+                { caseName: 'Locative', question: 'На ко́му/чо́му?', sg: 'на цьо́му (цім) / на цій (f.)', pl: 'на цих', note: 'у цій сві́тлій аудито́рії' },
+              ],
+            },
+          ],
+        },
+      ],
+      diagrams: [
+        {
+          title: 'How to Choose Possessive Pronouns in Ukrainian',
+          subtitle: 'Contrast declined свій / їхній with invariable його́ / її́',
+          nodes: [
+            {
+              label: 'свій, своя́, своє́, свої́',
+              value: 'Вона́ пиша́ється своє́ю дочко́ю.',
+              description: 'Refers back to the subject of the clause ("her own") and declines in all 7 cases.',
+              tone: 'emerald',
+            },
+            {
+              label: 'їхній, їхня, їхнє, їхні',
+              value: 'Ми розмовля́ли з їхніми дру́зями.',
+              description: '"Their" is a soft-group adjective (-ій) in Ukrainian and declines across all genders and cases!',
+              tone: 'blue',
+            },
+            {
+              label: 'його́ ("his / its") — Invariable!',
+              value: 'з його́ бра́том • у його́ кни́жці',
+              description: 'Never changes its ending regardless of the noun’s gender, number, or case.',
+              tone: 'amber',
+            },
+            {
+              label: 'її́ ("her") — Invariable!',
+              value: 'з її́ сестро́ю • про її́ дру́зів',
+              description: 'Never changes its ending (contrast reflexive своє́ю when she acts on her own item!).',
+              tone: 'violet',
+            },
+          ],
+        },
+      ],
+      commonMistakes: [
+        {
+          wrong: 'Ми гуля́ли під дощо́м широ́кою пло́щою.',
+          right: 'Ми гуля́ли під доще́м широ́кою пло́щею.',
+          why: 'Nouns whose stem ends in a sibilant (ж, ч, ш, щ) belong to the Mixed Group and take -ем / -ею in the Instrumental singular: доще́м, пло́щею, ти́шею, кру́чею.',
+        },
+        {
+          wrong: 'На уро́ці ми користу́ємося украї́нський словни́к.',
+          right: 'На уро́ці ми користу́ємося украї́нським словнико́м.',
+          why: 'The verb користува́тися (to use) always governs the Instrumental case (Ким? Чим? → словнико́м, путівнико́м).',
+        },
+        {
+          wrong: 'Глядачі́ аплодува́ли молоди́х митці́в.',
+          right: 'Глядачі́ аплодува́ли молоди́м митця́м.',
+          why: 'In Ukrainian, аплодува́ти (to applaud) governs the Dative case (Кому́? → молоди́м митця́м, акто́рам, співа́чці).',
+        },
+      ],
+      referenceSections: [
+        {
+          title: 'Complete Reference: Fleeting Vowels in Soft Masculine Stems («мите́ць → митця́», «корабе́ль → корабле́м») & Kaniv Cultural Vocabulary',
+          summary: 'Expand for fleeting vowels in soft stems, full paradigm of мій/твій/свій/наш/ваш/їхній, and Tarasova Hora excursion terms',
+          blocks: [
+            {
+              heading: '1. Fleeting «е / о» in Masculine Soft & Hard Nouns',
+              items: [
+                'мите́ць (artist/creator) → Gen. митця́, Dat. митце́ві, Inst. митце́м, Nom. pl. митці́, Dat. pl. митця́м.',
+                'корабе́ль (ship) → Gen. корабля́, Inst. корабле́м, Nom. pl. кораблі́.',
+                'хло́пець → Gen. хло́пця, Dat. хло́пцеві, Inst. хло́пцем, Nom. pl. хло́пці.',
+              ],
+            },
+            {
+              heading: '2. Excursion to Kaniv & Tarasova (Chernecha) Hora Vocabulary',
+              items: [
+                'Key Cultural Terms: Вели́кий Кобза́р (Taras Shevchenko, Dat. Вели́кому Кобзаре́ві), Черне́ча (Тара́сова) гора́ у Ка́неві, теплохі́д (motor cruise vessel), ве́рхня па́луба (upper deck), зеле́ні кру́чі (green river bluffs above the Dnipro), літерату́рний музе́й, путівни́к (guidebook).',
+              ],
+            },
+          ],
+        },
+      ],
+      inlineChecks: [
+        {
+          question: 'Why do we say «милува́лися вечі́рньою ти́шею» with «-ею» on «ти́шею»?',
+          options: [
+            'Because «ти́ша» ends in the sibilant «ш» (Mixed Group), which takes -ею in the Instrumental singular, and «милува́тися» governs the Instrumental case.',
+            'Because «ти́ша» is masculine.',
+            'Because «милува́тися» governs the Accusative case.',
+          ],
+          correctIndex: 0,
+          explanation: 'Mixed-group feminine nouns (ending in ж, ч, ш, щ + -а) take -ею in the Instrumental singular: ти́шею, пло́щею, кру́чею, гру́шею.',
+        },
+        {
+          question: 'How do you say "in this bright lecture hall" using the Locative singular of «ця сві́тла аудито́рія»?',
+          options: [
+            'у цій сві́тлій аудито́рії',
+            'у цьо́му сві́тлій аудито́рії',
+            'у ціє́ю сві́тлою аудито́рією',
+          ],
+          correctIndex: 0,
+          explanation: 'Feminine Locative singular of ця is цій, adjective takes -ій (сві́тлій), and soft -ія becomes -ії (в аудито́рії).',
+        },
+      ],
+      takeaways: [
+        'Classify nouns into Hard, Soft, and Mixed (sibilant ж, ч, ш, щ) groups: Mixed-group nouns take -ем/-ею in the Instrumental (доще́м, пло́щею, ти́шею) and -і in the Nominative plural (глядачі́, дощі́, пло́щі).',
+        'Decline цей/той (цього́, цьому́, цим; ціє́ї, цій, ціє́ю; цих, цим, ци́ми) and мій/твій/свій/наш/ваш/їхній across all 7 cases, while keeping його́ and її́ invariable.',
+        'Use the Instrumental case after користува́тися, керува́ти, захо́плюватися, милува́тися, пиша́тися and the Dative case after аплодува́ти, належа́ти, раді́ти.',
+      ],
+    },
     examples: [
       { uk: 'Ми йшли широ́кою пло́щею повз нову́ буді́влю й милува́лися вечі́рньою ти́шею над Дніпро́м.', en: 'We walked across the wide square (Mixed-group Inst. пло́щею) past the new building and admired the evening silence (Mixed-group Inst. ти́шею) over the Dnipro.' },
       { uk: 'У ціє́ї студе́нтки є ціка́вий путівни́к, і ми охо́че користу́ємося цим путівнико́м.', en: 'This female student (Gen. ціє́ї) has an interesting guidebook, and we gladly use (користу́ємося + Inst.) this guidebook (цим путівнико́м).' },
@@ -1674,6 +3941,204 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>6. Declining Collective Numerals («дво́є — три́дцятеро»), «оби́два / оби́дві / обо́є», «кі́лька», & «уве́сь → усіма́»</b>:<ul><li><b>Collective Numerals (дво́є, тро́є, че́тверо ... два́дцятеро)</b>: Used with plural-only nouns (<i>дво́є двере́й, тро́є сане́й</i>), groups of people (<i>нас було́ тро́є; п’я́теро дру́зів</i>), and young offspring. In the Nominative (and inanimate Accusative), they govern the <b>Genitive plural</b> (<i>У кімна́ті ми ба́чили тро́є двере́й</i>). In all oblique cases (and animate Accusative!), they decline just like the corresponding cardinal numbers: <b>двох, двома́, двом; трьох, трьома́, трьом; п’ятьо́х, п’ятьма́, п’ятьо́м; сімо́х, сімома́, сімо́м</b>.</li><li><b>«оби́два» (m./n.), «оби́дві» (f.), and «обо́є» (mixed m.+f.)</b>:<ul><li>In the Nominative (and inanimate Accusative), distinguish masculine/neuter <b>оби́два зо́шити / вікна́</b>, feminine <b>оби́дві книжки́ / сестри́</b>, and mixed-gender <b>обо́є</b>.</li><li>In ALL oblique cases (and animate Accusative!), all three merge into the <b>об-</b> stem: Gen./Acc.(anim.)/Loc. <b>обо́х</b> (<i>Ми ба́чили обо́х студе́нтів і обо́х студе́нток; в обо́х газе́тах</i>), Dative <b>обо́м</b> (<i>обо́м зятя́м</i>), Instrumental <b>обома́</b> (<i>з обома́ брата́ми і сестра́ми</i>).</li></ul></li><li><b>Declining «кі́лька» (a few / several) & «уве́сь / уся́ / усе́ / усі́» (all)</b>:<ul><li><b>кі́лька</b> declines like <i>два</i>: Gen./Acc.(anim.)/Loc. <b>кілько́х</b> (<i>Ми зустрі́ли кілько́х чолові́ків у теа́трі</i>), Dat. <b>кілько́м</b>, Inst. <b>кількома́</b>!</li><li><b>уве́сь (ввесь), уся́ (вся), усе́ (все), усі́ (всі)</b> has the special Instrumental plural <b>усіма́ (всіма́)</b>: <i>між усіма́ нашими дітьми́; з усіма́ дру́зями</i>!</li></ul></li></ul>',
       '<b>7. Origins of Ukrainian Surnames («-енко, -ук, -чук, -ів») & Zaporozhian Cossack Nickname Surnames</b>:<ul><li><b>Patronymic, Occupational & Regional Surnames</b>:<ul><li>Patronymic suffixes meaning "son/descendant of": <b>-енко / -єнко</b> (most widespread across central Ukraine: <i>Іва́н → Іване́нко, кова́ль → Ковале́нко, швець [cobbler] → Шевче́нко</i>), <b>-ук / -юк / -чук</b> (<i>Іваню́к, Іванчу́к, Кравчу́к, Ковальчу́к</i>), and possessive <b>-ів / -ин</b> (<i>Іва́нів, Івани́шин</i>).</li><li>Regional & ethnic origin surnames: <b>Поліщу́к</b> ("from Polissia"), <b>Бо́йко</b>, <b>Гуцуля́к</b>, <b>Дончи́к</b> ("from the Don"), <b>Тата́рин</b>.</li></ul></li><li><b>Zaporozhian Cossack Compound Surnames</b>: A unique treasure of Ukrainian onomastics is the compound surname coined by the Zaporozhian Cossacks from humorous nicknames—combining an <b>imperative verb + direct object noun</b> or a <b>numeral + noun</b>:<ul><li><b>Непийпи́во</b> (<i>не пий пи́во</i> = "Drink-no-beer"), <b>Загубико́лесо</b> (<i>загуби́ ко́лесо</i> = "Lose-a-wheel"), <b>Перебийні́с</b> ("Break-a-nose"), <b>Убийво́вк</b> ("Slay-a-wolf"), and <b>Півторакожу́ха</b> (<i>півтора́ кожу́ха</i> = "One-and-a-half-sheepskin-coats")!</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Numbers in Action, Living Holiday Traditions & Ukrainian Onomastics',
+        explanation:
+          'In real conversation, numbers rarely stay in the Nominative case: you travel "with two friends" (з двома́ дру́зями), visit "five cities" (у п’яти́ / п’ятьо́х міста́х), or admire a library with "over five hundred early printed books" (по́над п’ятсо́т стародру́ків). When a number phrase enters the Dative, Instrumental, or Locative case, the numeral and the noun become teammates that wear the exact same case! Alongside numeral declension, this module explores Ukraine’s Christmas (Різдво́) and Easter (Вели́кдень) traditions, postal conventions, and the fascinating origins of Ukrainian surnames.',
+        whyItMatters:
+          'Mastering oblique numerals lets you handle dates, budgets, historical spans, and group travel smoothly, while knowing the cultural vocabulary of діду́х, «Ще́дрик», пи́санка, and Cossack surnames connects you to the heart of Ukrainian heritage.',
+        keyTakeaway:
+          'In oblique cases (Dative, Instrumental, Locative), both the numeral and the noun take that plural case (з двома́ дру́зями, з п’ятьма́ дру́зями); 5–20 & 30 have two parallel patterns (-и/-ма and -ьох/-ьома), while 40, 90, 100 simply take -а (сорока́, дев’яно́ста, ста)!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Ми щи́ро пиша́ємося двома́ сина́ми, трьома́ дочка́ми і п’ятьма́ (п’ятьома́) таланови́тими учня́ми.',
+          en: 'We are sincerely proud of two sons, three daughters, and five talented pupils.',
+          highlight: 'двома́ сина́ми, трьома́ дочка́ми і п’ятьма́ учня́ми',
+          annotation: 'After пиша́тися (+ Instrumental), both the numerals (двома́, трьома́, п’ятьма́/п’ятьома́) and the nouns stand in the Instrumental plural.',
+        },
+        {
+          uk: 'На Святи́й ве́чір госпо́дар вно́сить золоти́стого дідуха́, а ді́ти співа́ють коля́дки та «Ще́дрик».',
+          en: 'On Christmas Eve the host brings in the golden didukh wheat sheaf, and the children sing Christmas carols and "Shchedryk."',
+          highlight: 'золоти́стого дідуха́ ... коля́дки та «Ще́дрик»',
+          annotation: 'The braided wheat sheaf (діду́х) honors ancestors and the harvest on Christmas Eve (Святи́й ве́чір).',
+        },
+        {
+          uk: 'Майстри́ня розпи́сує велико́дні пи́санки писачко́м і гаря́чим во́ском, а бабу́ся пече́ запашну́ па́ску.',
+          en: 'The artisan decorates Easter pysanky with a pysachok stylus and hot wax, while grandmother bakes a fragrant paska.',
+          highlight: 'пи́санки писачко́м і гаря́чим во́ском ... па́ску',
+          annotation: 'Symbolic wax-resist пи́санки are written with a brass funnel stylus (писачо́к) and beeswax (віск), distinct from solid-dyed boiled кра́шанки.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b16-numeral-declension',
+          title: '1. Declining Cardinal Numerals (1 to 900) & Oblique Noun Agreement',
+          idea: 'Remember the golden rule of oblique cases: while Nominative 2–4 take Nominative plural and 5+ take Genitive plural, as soon as the phrase enters the Dative, Instrumental, or Locative case, BOTH the numeral and the noun stand in that same plural case (двом дру́зям, з двома́/п’ятьма́ дру́зями, у трьох/п’яти́ міста́х)!',
+          explanation:
+            'Ukrainian cardinal numerals fall into four distinct declension patterns: 1) оди́н (одна́, одне́, одні́) declines like a hard demonstrative (одно́го, одно́му, одни́м; fem. одніє́ї/одно́ї, одній, одніє́ю/одно́ю); 2) два/дві, три, чоти́ри take -ох (Gen./Loc.), -ом (Dat.), and -ома́/-ма́ (Inst.: двома́, трьома́, чотирма́ — no soft sign in чотирма́!); 3) 5–20, 30, and 50–80 offer two equally standard parallel sets: concise -и / -ма (п’яти́, п’ятьма́) and expressive -ьох / -ьома (п’ятьо́х, п’ятьома́), with root vowel alternation і → е/о in 6, 7, 8 (шести́/шістьо́х, семи́/сімо́х, восьми́/вісьмо́х); 4) 40, 90, 100 take stressed -а across all oblique cases (сорока́, дев’яно́ста, ста), while 200–900 decline both parts (двохсо́т, двомста́м, двомаста́ми, на двохста́х).',
+          tables: [
+            {
+              title: '7-Case Declension of Cardinal Numerals (2–900)',
+              caption: 'Notice the parallel concise (-и/-ма) and expressive (-ьох/-ьома) forms for 5–20 & 30, the vowel alternation in 6/7/8, and invariant oblique -а in 40/90/100.',
+              headers: ['Numeral Group', 'Nom. / Inanim. Acc.', 'Genitive / Locative', 'Dative', 'Instrumental'],
+              rows: [
+                ['2, 3, 4', 'два (дві), три, чоти́ри', 'двох, трьох, чотирьо́х', 'двом, трьом, чотирьо́м', 'двома́, трьома́, чотирма́'],
+                ['5, 9–20, 30', 'п’ять, де́сять, два́дцять', 'п’яти́ / п’ятьо́х, десяти́ / десятьо́х', 'п’яти́ / п’ятьо́м', 'п’ятьма́ / п’ятьома́'],
+                ['6, 7, 8 (і → е/о!)', 'шість, сім, ві́сім', 'шести́ / шістьо́х, семи́ / сімо́х, восьми́ / вісьмо́х', 'шести́ / шістьо́м, семи́ / сімо́м, восьми́ / вісьмо́м', 'шістьма́ / шістьома́, сьома́ / сімома́, вісьма́ / вісьмома́'],
+                ['50, 60, 70, 80', 'п’ятдеся́т — вісімдеся́т', 'п’ятдесяти́ / п’ятдесятьо́х', 'п’ятдесяти́ / п’ятдесятьо́м', 'п’ятдесятьма́ / п’ятдесятьома́'],
+                ['40, 90, 100 (-а!)', 'со́рок, дев’яно́сто, сто', 'сорока́, дев’яно́ста, ста', 'сорока́, дев’яно́ста, ста', 'сорока́, дев’яно́ста, ста'],
+                ['200–900 (both parts)', 'дві́сті, три́ста, п’ятсо́т', 'двохсо́т, трьохсо́т, п’ятисо́т (Loc. на двохста́х)', 'двомста́м, трьомста́м, п’ятиста́м', 'двомаста́ми, трьомаста́ми, п’ятьмаста́ми'],
+              ],
+            },
+          ],
+          declensionGroups: [
+            {
+              title: 'Interactive Declension Explorer: Numeral Groups Across Cases',
+              description: 'Click each numeral group to inspect how the numeral and accompanying noun decline together.',
+              paradigms: [
+                {
+                  noun: 'два дру́зі (2 friends)',
+                  gender: 'plural',
+                  subType: '2–4 Pattern (двох / двом / двома́)',
+                  rows: [
+                    { caseName: 'Nominative (Хто?)', singular: '—', plural: 'два дру́зі (дві по́други)', note: 'Nominative plural after 2–4' },
+                    { caseName: 'Genitive (Кого́?)', singular: '—', plural: 'двох дру́зів (двох по́друг)', note: '-ох + Genitive plural' },
+                    { caseName: 'Dative (Кому́?)', singular: '—', plural: 'двом дру́зям (двом по́другам)', note: '-ом + Dative plural' },
+                    { caseName: 'Accusative (Кого́?)', singular: '—', plural: 'двох дру́зів (inanim. два столи́)', note: 'Animate = Gen.; Inanimate = Nom.' },
+                    { caseName: 'Instrumental (З ким?)', singular: '—', plural: 'з двома́ дру́зями (чотирма́!)', note: '-ома́ + Instrumental plural' },
+                    { caseName: 'Locative (На ко́му?)', singular: '—', plural: 'при двох дру́зях (у двох міста́х)', note: '-ох + Locative plural' },
+                    { caseName: 'Vocative', singular: '—', plural: 'два дру́зі!', note: 'Same as Nominative' },
+                  ],
+                },
+                {
+                  noun: 'п’ять міст (5 cities)',
+                  gender: 'plural',
+                  subType: '5–20 & 30 Parallel Pattern (-и/-ма or -ьох/-ьома)',
+                  rows: [
+                    { caseName: 'Nominative (Що?)', singular: '—', plural: 'п’ять міст', note: '5+ governs Genitive plural in Nom./Acc.' },
+                    { caseName: 'Genitive (Чого́?)', singular: '—', plural: 'п’яти́ / п’ятьо́х міст', note: 'Both -и́ and -ьо́х are standard' },
+                    { caseName: 'Dative (Чому́?)', singular: '—', plural: 'п’яти́ / п’ятьо́м міста́м', note: 'Noun switches to Dative plural!' },
+                    { caseName: 'Accusative (Що?)', singular: '—', plural: 'п’ять міст (anim. п’ятьо́х дру́зів)', note: 'Inanimate = Nom.; Animate = п’ятьо́х / п’ять' },
+                    { caseName: 'Instrumental (Чим?)', singular: '—', plural: 'п’ятьма́ / п’ятьома́ міста́ми', note: 'Noun switches to Instrumental plural!' },
+                    { caseName: 'Locative (У чо́му?)', singular: '—', plural: 'у п’яти́ / п’ятьо́х міста́х', note: 'Noun switches to Locative plural!' },
+                    { caseName: 'Vocative', singular: '—', plural: 'п’ять міст', note: 'Same as Nominative' },
+                  ],
+                },
+                {
+                  noun: 'оби́два / оби́дві / кі́лька',
+                  gender: 'plural',
+                  subType: 'Both (об-) & Several (кільк-)',
+                  rows: [
+                    { caseName: 'Nominative', singular: 'оби́два брати́ / оби́дві сестри́', plural: 'кі́лька студе́нтів', note: 'оби́два (m./n.) vs. оби́дві (f.)' },
+                    { caseName: 'Genitive', singular: 'обо́х браті́в / обо́х сесте́р', plural: 'кілько́х студе́нтів', note: 'All genders merge into об-!' },
+                    { caseName: 'Dative', singular: 'обо́м брата́м / обо́м сестра́м', plural: 'кілько́м студе́нтам', note: '-ом + Dative plural' },
+                    { caseName: 'Accusative (Anim.)', singular: 'обо́х браті́в / обо́х сесте́р', plural: 'кілько́х студе́нтів', note: 'Animate takes Genitive form' },
+                    { caseName: 'Instrumental', singular: 'з обома́ брата́ми / сестра́ми', plural: 'з кількома́ студе́нтами', note: 'Compare з усіма́ дру́зями!' },
+                    { caseName: 'Locative', singular: 'в обо́х міста́х / книжка́х', plural: 'у кілько́х міста́х', note: '-ох + Locative plural' },
+                    { caseName: 'Vocative', singular: 'оби́два брати́!', plural: '—', note: 'Same as Nominative' },
+                  ],
+                },
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'У бібліоте́ці зберіга́ється по́над п’ятсо́т стародру́ків і бі́ля ста рідкі́сних руко́писів.',
+              en: 'Over five hundred early printed books and around a hundred rare manuscripts are preserved in the library.',
+              highlight: 'по́над п’ятсо́т ... бі́ля ста',
+            },
+            {
+              uk: 'Вона́ пообі́дала з обома́ брата́ми, подзвони́ла обо́м сестра́м і порозмовля́ла з кількома́ студе́нтами та всіма́ викладача́ми.',
+              en: 'She had lunch with both brothers, called both sisters, and spoke with several students and all the instructors.',
+              highlight: 'з обома́ брата́ми ... обо́м сестра́м ... з кількома́ ... всіма́',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Ми подорожува́ли з п’ять дру́зів.',
+              right: 'Ми подорожува́ли з п’ятьма́ (п’ятьома́) дру́зями.',
+              explanation: 'After an Instrumental preposition like з, both the numeral and the noun must stand in the Instrumental plural (п’ятьма́ дру́зями).',
+            },
+          ],
+          microCheck: {
+            question: 'Which oblique form is used for 40 (со́рок), 90 (дев’яно́сто), and 100 (сто) across the Genitive, Dative, Instrumental, and Locative cases?',
+            options: [
+              'сорока́, дев’яно́ста, ста (ending in stressed -а across all oblique cases)',
+              'сорокі́в, дев’яно́стів, стів',
+              'They never change their endings',
+            ],
+            correctIndex: 0,
+            explanation: 'All three numerals—со́рок, дев’яно́сто, and сто—simply take stressed -а (сорока́, дев’яно́ста, ста) in every oblique case!',
+          },
+        },
+        {
+          id: 'b16-holidays-postal-surnames',
+          title: '2. Ukrainian Christmas & Easter Traditions, Postal Etiquette & Surname Origins',
+          idea: 'Ukraine’s winter and spring ritual cycle—and its expressive surname system—carry centuries of living cultural memory.',
+          explanation:
+            'At Christmas (Різдво́ Христо́ве) and Christmas Eve (Святи́й ве́чір), the host brings in the braided wheat sheaf (діду́х), families share 12 meatless dishes (кутя́, узва́р) with braided ritual breads (кола́ч, книш), and carolers sing коля́дки and Epiphany/New Year щедрі́вки (including Mykola Leontovych’s world-famous «Ще́дрик» about the little swallow ласті́вочка). At Easter (Вели́кдень), baskets hold tall cylindrical па́ска bread alongside wax-resist symbolic пи́санки (written with hot beeswax віск and a brass stylus писачо́к) and solid-dyed boiled кра́шанки.',
+          tables: [
+            {
+              title: 'Ukrainian Holiday Cycle, Greetings & Postal Conventions',
+              headers: ['Category', 'Key Ukrainian Terms & Symbols', 'Greetings & Usage'],
+              rows: [
+                ['Christmas (Різдво́)', 'Святи́й ве́чір, діду́х (wheat sheaf), кутя́, узва́р, кола́ч, книш, коля́дки, щедрі́вки («Ще́дрик»)', '«Христо́с рожда́ється!» — «Сла́вімо Його́!»'],
+                ['Easter (Вели́кдень)', 'Вели́кий піст, Страсни́й ти́ждень, па́ска, пи́санка (писачо́к + віск) vs. кра́шанка, весня́нки / гаї́вки', '«Христо́с воскре́с!» — «Воі́стину воскре́с!»'],
+                ['Letter & Date Format', 'Vocative salutation (Дороги́й Богда́не! Шано́вна па́ні Марі́є!); strict Day.Month.Year (29.05.2026)', 'Closings: На все до́бре! З пова́гою, Щи́ро Ваш'],
+                ['Postal Abbreviations', 'обл. (о́бласть), м. (мі́сто), с. (село́), вул. (ву́лиця), буд. (буди́нок), кв. (кварти́ра)', 'вул. Іва́на Франка́, буд. 18, кв. 7, м. Полта́ва'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Адре́са на конверті: вул. Іва́на Франка́, буд. 18, кв. 7, м. Полта́ва, Полта́вська обл.',
+              en: 'Address on the envelope: 18 Ivan Franko St., Apt. 7, city of Poltava, Poltava Oblast.',
+              highlight: 'вул. ... буд. 18, кв. 7, м. Полта́ва, Полта́вська обл.',
+            },
+            {
+              uk: 'Від сло́ва «кова́ль» похо́дять прі́звища Кова́ль, Ковальчу́к і Ковале́нко, а від коза́цьких прі́звиськ — Непийпи́во, Загубико́лесо та Півторакожу́ха.',
+              en: 'From the word «кова́ль» (blacksmith) come the surnames Koval, Kovalchuk, and Kovalenko, and from Cossack nicknames come Nepyipyvo, Zahubykoleso, and Pivtorakozhukha.',
+              highlight: 'Кова́ль, Ковальчу́к і Ковале́нко ... Непийпи́во, Загубико́лесо та Півторакожу́ха',
+            },
+          ],
+          microCheck: {
+            question: 'What is the difference between a Ukrainian «пи́санка» and a «кра́шанка» at Easter?',
+            options: [
+              'A «пи́санка» is an un-eaten symbolic egg written with hot beeswax (віск) using a stylus (писачо́к), whereas a «кра́шанка» is a boiled egg dyed a single solid color and eaten at the Easter meal',
+              'They are two words for braided Christmas bread',
+              'Both mean an Easter basket',
+            ],
+            correctIndex: 0,
+            explanation: 'Пи́санка comes from писа́ти ("to write" symbolic patterns in beeswax), while кра́шанка comes from кра́сити ("to dye" a boiled egg one solid color).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Collective Numerals (дво́є–три́дцятеро) & Zaporozhian Cossack Surnames',
+          summary: 'Expand to review how collective numerals govern Genitive plural in the Nominative, how Pysanka symbols are read, and how Ukrainian surnames are formed.',
+          blocks: [
+            {
+              heading: 'Collective Numerals (дво́є, тро́є, че́тверо...)',
+              items: [
+                'Used with plural-only nouns (дво́є двере́й, тро́є сане́й), groups of people (нас було́ тро́є, п’я́теро дру́зів), and young animals.',
+                'In the Nominative and inanimate Accusative, collective numerals govern the Genitive plural (тро́є двере́й). In all oblique cases, they switch to standard cardinal oblique forms (двох, двома́, трьох, трьома́, п’ятьо́х, сімо́х).',
+              ],
+            },
+            {
+              heading: 'Ukrainian Surname Suffixes & Cossack Compound Surnames',
+              items: [
+                'Patronymic & occupational: -енко/-єнко (Іване́нко, Ковале́нко, Шевче́нко from швець "cobbler"), -ук/-юк/-чук (Кравчу́к, Ковальчу́к), -ів/-ин (Іва́нів, Івани́шин).',
+                'Regional: Поліщу́к (from Polissia), Бо́йко, Гуцуля́к, Дончи́к.',
+                'Zaporozhian Cossack compound nicknames (imperative + direct object or numeral + noun): Непийпи́во ("Drink-no-beer"), Загубико́лесо ("Lose-a-wheel"), Перебийні́с ("Break-a-nose"), Убийво́вк ("Slay-a-wolf"), Півторакожу́ха ("One-and-a-half-sheepskin-coats").',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Ми щи́ро пиша́ємося двома́ сина́ми, трьома́ дочка́ми і п’ятьма́ (п’ятьома́) таланови́тими учня́ми.', en: 'We are sincerely proud of two sons (двома́), three daughters (трьома́), and five (п’ятьма́ / п’ятьома́) talented pupils.' },
       { uk: 'У бібліоте́ці зберіга́ється по́над п’ятсо́т стародру́ків і бі́ля ста рідкі́сних руко́писів.', en: 'Over five hundred (по́над п’ятсо́т) early printed books and around a hundred (бі́ля ста) rare manuscripts are preserved in the library.' },
@@ -1856,6 +4321,142 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>2. How Ukrainian Surnames Decline, Extended Family & In-Laws («Свояки́»), and Meat Names in «-ина»</b>:<ul><li><b>Declining Ukrainian Surnames by Gender</b>:<ul><li><b>Surnames in -енко, -ко, or a consonant (-ук/-юк, -чук, -ак, -ич, -ець)</b>: Names like <b>Бондаре́нко, Шевче́нко, Франко́, Кравчу́к, Савчу́к, Прокопо́вич, Швець</b> decline like regular <b>masculine nouns</b> when referring to a <b>man</b> (Gen./Acc. <b>Тара́са Шевче́нка, Іва́на Кравчука́</b>, Dat. <b>Тара́сові Шевче́нку / Шевче́нкові</b>, Inst. <b>з Тара́сом Шевче́нком</b>), but are <b>COMPLETELY INDECLINABLE when referring to a woman</b>: <i>Ми розмовля́ли з Окса́ною Бондаре́нко і па́ні Прокопо́вич; лист для Марі́ї Кравчу́к</i>!</li><li><b>Adjectival Surnames in -ський / -цький / -зький</b>: Decline like regular adjectives in masculine, feminine, and plural: <b>Миха́йло Груше́вський</b> (Gen. <i>Груше́вського</i>), <b>Оле́на Груше́вська</b> (Gen. <i>Груше́вської</i>, Inst. <i>з Груше́вською</i>), pl. <b>Груше́вські</b>.</li><li><b>Possessive-Style Surnames in -ів / -їв, -ов, -ин</b>: Take noun endings in Gen./Dat. (<i>Микола́єва, Га́ршина</i>) but adjectival <b>-им</b> in the masculine Instrumental singular (<i>з Микола́євим, із Га́ршиним</i>).</li></ul></li><li><b>Extended Family & In-Laws</b>: Ukrainian distinguishes a man’s in-laws from a woman’s in-laws:<ul><li>A husband calls his wife’s parents <b>те́ща</b> (wife’s mother) and <b>тесть</b> (wife’s father).</li><li>A wife calls her husband’s parents <b>свекру́ха</b> (husband’s mother) and <b>све́кор</b> (Gen. <i>све́кра</i>, husband’s father).</li><li>Both families call a son-in-law (or sister’s husband) <b>зять</b> (Gen. <i>зя́тя</i>) and a daughter-in-law (or brother’s wife) <b>неві́стка</b> (Dat./Loc. <i>неві́стці</i>). Grandchildren are <b>ону́к / внук</b> (grandson), <b>ону́ка / вну́чка</b> (granddaughter), pl. <b>ону́ки</b>; first cousins are <b>двою́рідний брат</b> and <b>двою́рідна сестра́</b>.</li></ul></li><li><b>Animal → Meat Derivation in -ина</b>: Adding <b>-ина / -тина</b> derives the culinary meat noun: <b>свиня́ → свини́на</b> (pork), <b>теля́ → теля́тина</b> (veal), <b>бара́н → бара́нина</b> (lamb/mutton), <b>гу́ска → гуся́тина</b> (goose meat), <b>осете́р → осетри́на</b> (sturgeon), <b>лосо́сь → лососи́на</b> (salmon), alongside <b>я́ловичина</b> (beef) and <b>ку́рка / куря́тина</b> (chicken).</li></ul>',
       '<b>3. Succeeding («Мені́ вдало́ся»), Applying & Enrolling, and Nuanced Emotion Verbs</b>:<ul><li><b>"Managed To / Succeeded In" (вдава́тися / вда́тися)</b>: To say someone managed or succeeded in doing something, use the Dative of the person + <b>вда́ється</b> (present) / <b>вдало́ся</b> (past) / <b>вда́сться</b> (future) + infinitive: <b>Нам вдало́ся купи́ти квитки́!</b> (We managed to buy tickets!), <b>Чи тобі́ вдало́ся поговори́ти з дека́ном?</b> (Did you manage to speak with the dean?).</li><li><b>Applying, Enrolling & Joining</b>:<ul><li><b>пода́ти зая́ву</b> = to submit a written application; <b>запо́внити бланк / анке́ту</b> = to fill out a form.</li><li><b>зверта́тися / зверну́тися до + Genitive (за + Instrumental)</b> = to apply / turn to someone (for help/advice): <i>Зверні́ться до консульта́нта за пора́дою</i>.</li><li><b>запи́суватися / записа́тися на + Accusative</b> = to enrol in a course or book an appointment: <i>записа́тися на ку́рси украї́нської мо́ви / на прийо́м до лі́каря</i>.</li><li><b>вступа́ти / вступи́ти до + Genitive (or у/в + Accusative)</b> = to enter a university or join an organization: <i>вступи́ти до університе́ту / до спі́лки письме́нників</i>.</li></ul></li><li><b>Nuanced Emotion Verbs & Their Cases</b>: <b>за́здрити + Dative</b> (to envy someone/something: <i>я за́здрю його́ терпі́нню</i>; noun <b>за́здрість</b>), <b>ревнува́ти + Acc. до + Gen.</b> (to be jealous; noun <b>ре́внощі</b>), <b>нена́видіти + Acc.</b> (to hate: <i>нена́виджу, нена́видиш</i>; noun <b>нена́висть</b>), <b>підозріва́ти + Acc. у + Loc.</b> (to suspect; noun <b>підо́зра</b>), and <b>стражда́ти від + Gen.</b> (to suffer from).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Placing vs. Resting vs. Moving Yourself, Declining Surnames & Extended Family',
+        explanation:
+          'English uses a single verb like "stand" or "lie" in multiple ways, or uses generic "put" for everything. Ukrainian organizes posture and placement into a crystal-clear 3-column system: 1) Placing an object somewhere (+ Accusative: кла́сти, ста́вити, сади́ти, ві́шати), 2) Being at rest in that position (+ Locative: лежа́ти, стоя́ти, сиді́ти, висі́ти), and 3) Moving your own body into that posture (+ Accusative: ляга́ти/лягти́, става́ти/ста́ти, сіда́ти/сі́сти). You will also learn how Ukrainian surnames decline differently for men and women and how Ukrainian distinguishes a husband’s in-laws from a wife’s in-laws!',
+        whyItMatters:
+          'Knowing why Petro Bondarenko declines (з Петро́м Бондаре́нком) while Oksana Bondarenko stays unchanged (з Окса́ною Бондаре́нко) is essential for every formal introduction, document, and conversation in Ukraine.',
+        keyTakeaway:
+          'Match horizontal objects with кла́сти/покла́сти → лежа́ти and upright objects with ста́вити/поста́вити → стоя́ти; decline consonant and -енко/-ко surnames for men, but keep them indeclinable for women!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Окса́на покла́ла пошті́вку в конве́рт, поста́вила ва́зу з бузко́м на стіл і пові́сила пальто́ у ша́фу.',
+          en: 'Oksana put the postcard into the envelope (flat), stood the vase with lilacs on the table (upright), and hung her coat in the wardrobe (suspended).',
+          highlight: 'покла́ла ... поста́вила ... пові́сила',
+          annotation: 'Ukrainian chooses the placement verb according to the object’s orientation: flat (покла́ла), upright (поста́вила), or hanging (пові́сила), all followed by Куди́? (+ Accusative).',
+        },
+        {
+          uk: 'Ми передали́ докуме́нти Петру́ Бондаре́нкові та поспілкува́лися з Марі́єю Бондаре́нко й Іри́ною Груше́вською.',
+          en: 'We handed the documents to Petro Bondarenko and spoke with Mariya Bondarenko and Iryna Hrushevska.',
+          highlight: 'Петру́ Бондаре́нкові ... з Марі́єю Бондаре́нко й Іри́ною Груше́вською',
+          annotation: 'Surnames in -енко/-ко/-чук decline for men (Петру́ Бондаре́нкові) but are completely indeclinable for women (з Марі́єю Бондаре́нко), while adjectival -ський/-ська surnames decline for both.',
+        },
+        {
+          uk: 'Наре́шті мені́ вдало́ся заздалегі́дь пода́ти зая́ву, запо́внити бланк і записа́тися на лі́тні ку́рси!',
+          en: 'Finally I managed to submit an application ahead of time, fill out the form, and enrol in the summer courses!',
+          highlight: 'мені́ вдало́ся ... пода́ти зая́ву, запо́внити бланк і записа́тися',
+          annotation: 'Dative + вда́ється / вдало́ся / вда́сться + infinitive is the natural Ukrainian way to say "managed to / succeeded in".',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b17-positional-verbs',
+          title: '1. The 3-Way Positional Verb Matrix (Placing vs. Resting vs. Moving Yourself)',
+          idea: 'Ask two questions: 1) What orientation is the object or person (flat, upright, seated, hanging)? 2) Are you placing an object (Куди́? + Acc.), describing where it is resting (Де? + Loc.), or moving your own body into that posture (Куди́? + Acc.)?',
+          explanation:
+            'Never use non-standard *положити—the authentic Ukrainian pair for laying something flat is кла́сти / покла́сти (я кладу́ / покладу́, past покла́в). Notice also that сади́ти / посади́ти means both "to seat a guest" and "to plant a tree or garden" (посади́ти ви́шні)! And pay special attention to the irregular perfective stems of лягти́ (я ля́жу, ти ля́жеш, past ліг, лягла́, imp. ляж!) and сі́сти (я ся́ду, ти ся́деш, past сів, сі́ла, imp. ся́дьте!).',
+          tables: [
+            {
+              title: 'Complete 4 × 3 Positional & Posture Matrix',
+              caption: 'Columns 1 and 3 answer Куди́? (на/в + Accusative); Column 2 answers Де? (на/в + Locative).',
+              headers: ['Orientation', '1. Place an Object (+ Acc.)', '2. Be in Position (+ Loc.)', '3. Assume Posture Oneself (+ Acc.)'],
+              rows: [
+                ['Horizontal (Lying flat)', 'кла́сти / покла́сти (кладу́, покла́в)', 'лежа́ти (лежи́ть, лежа́ть)', 'ляга́ти / лягти́ (ля́жу; past ліг, лягла́)'],
+                ['Vertical (Standing upright)', 'ста́вити / поста́вити (ста́влю, поста́вив)', 'стоя́ти (стої́ть, стоя́ть)', 'става́ти / ста́ти (стаю́ / ста́ну) & встава́ти / вста́ти'],
+                ['Seated (or Planting)', 'сади́ти / посади́ти (саджу́, посади́в)', 'сиді́ти (сиджу́, сиди́ш, сидя́ть)', 'сіда́ти / сі́сти (ся́ду; past сів, сі́ла)'],
+                ['Suspended (Hanging)', 'ві́шати / пові́сити (ві́шаю / пові́шу)', 'висі́ти (виси́ть, вися́ть)', '—'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Навесні́ діду́сь посади́в бі́ля ха́ти молоді́ ви́шні, а по́тім сів відпочи́ти на ла́вці.',
+              en: 'In spring grandfather planted young cherry trees near the house, and then sat down to rest on the bench.',
+              highlight: 'посади́в ... сів',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Я покла́в ва́зу на столі́.',
+              right: 'Я поста́вив ва́зу на стіл (Acc.) — і тепе́р ва́за стої́ть на столі́ (Loc.).',
+              explanation: 'A standing vase takes поста́вив (upright) + на стіл (Accusative of destination Куди́?), and then стої́ть + на столі́ (Locative of location Де?).',
+            },
+          ],
+          microCheck: {
+            question: 'What are the 1st-person singular future and masculine past forms of perfective «лягти́» (to lie down) and «сі́сти» (to sit down)?',
+            options: [
+              'лягти́ → я ля́жу, він ліг (вона́ лягла́); сі́сти → я ся́ду, він сів (вона́ сі́ла)',
+              'лягти́ → я лягту́, він лягти́в; сі́сти → я сі́стю, він сі́стив',
+              'Both verbs are indeclinable',
+            ],
+            correctIndex: 0,
+            explanation: 'Perfective лягти́ has future ля́жу, ля́жеш and past ліг, лягла́; perfective сі́сти has future ся́ду, ся́деш and past сів, сі́ла.',
+          },
+        },
+        {
+          id: 'b17-surnames-inlaws-applying',
+          title: '2. Declining Ukrainian Surnames by Gender, In-Laws & Enrolling',
+          idea: 'In Ukrainian, whether a surname declines depends on both its ending AND whether the bearer is male or female!',
+          explanation:
+            'Surnames ending in -енко, -ко, or a consonant (-ук, -чук, -ак, -ич, -ець) decline like regular masculine nouns when referring to a man (Тара́са Шевче́нка, з Іва́ном Кравчуко́м), but are 100% INDECLINABLE when referring to a woman (лист для Марі́ї Кравчу́к, з Окса́ною Бондаре́нко). By contrast, adjectival surnames in -ський / -цький / -зький decline like regular adjectives in both masculine (Груше́вський → Груше́вського) and feminine (Груше́вська → Груше́вської, з Груше́вською). Meanwhile, Ukrainian has distinct words for a husband’s in-laws (те́ща = wife’s mother, тесть = wife’s father) and a wife’s in-laws (свекру́ха = husband’s mother, све́кор = husband’s father), while both families use зять (son-in-law) and неві́стка (daughter-in-law).',
+          tables: [
+            {
+              title: 'Surname Declension by Gender & Extended Family Terms',
+              headers: ['Category', 'Masculine Bearer / Husband’s Side', 'Feminine Bearer / Wife’s Side'],
+              rows: [
+                ['Surnames in -енко, -ко, -чук, cons.', 'Declines! (Петра́ Бондаре́нка, з Іва́ном Кравчуко́м)', 'INDECLINABLE! (Марі́ї Бондаре́нко, з Окса́ною Кравчу́к)'],
+                ['Adjectival Surnames (-ський / -цький)', 'Declines as masc. adj. (Миха́йла Груше́вського)', 'Declines as fem. adj. (Оле́ни Груше́вської, з Груше́вською)'],
+                ['Possessive Surnames (-ів / -їн / -ов)', 'Gen. Микола́єва, Inst. з Микола́євим (-им!)', 'Fem. Микола́єва (Gen. Микола́євої)'],
+                ['Parents-in-Law («Свояки́»)', 'Husband calls wife’s parents: те́ща (mother) & тесть (father)', 'Wife calls husband’s parents: свекру́ха (mother) & све́кор (father)'],
+                ['Children-in-Law, Grandchildren & Cousins', 'зять (son-in-law), ону́к (grandson), двою́рідний брат (male cousin)', 'неві́стка (daughter-in-law), ону́ка (granddaughter), двою́рідна сестра́'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'На родинне свя́то приї́хали те́ща з те́стем, свекру́ха зі све́кром, зять, неві́стка та двою́рідні брати́.',
+              en: 'The wife’s parents, husband’s parents, son-in-law, daughter-in-law, and cousins came to the family holiday.',
+              highlight: 'те́ща з те́стем, свекру́ха зі све́кром, зять, неві́стка',
+            },
+          ],
+          microCheck: {
+            question: 'How do you say "We spoke with Petro Bondarenko and Oksana Bondarenko" in standard Ukrainian?',
+            options: [
+              'Ми розмовля́ли з Петро́м Бондаре́нком і з Окса́ною Бондаре́нко.',
+              'Ми розмовля́ли з Петро́м Бондаре́нко і з Окса́ною Бондаре́нкою.',
+              'Neither surname changes.',
+            ],
+            correctIndex: 0,
+            explanation: 'Surnames in -енко decline like masculine nouns for men (з Петро́м Бондаре́нком) and remain completely invariable for women (з Окса́ною Бондаре́нко).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Positional Idioms, Meat Derivation in -ина & Enrolling/Emotion Verbs',
+          summary: 'Expand to review idioms with кла́сти/ста́вити/стоя́ти, culinary meat derivation in -ина, and case government of applying and emotion verbs.',
+          blocks: [
+            {
+              heading: 'Idioms with Positional Verbs & Meat Derivation in -ина',
+              items: [
+                'Positional idioms: покла́сти край + Dat. (put an end to), відклада́ти / відкла́сти (postpone), ста́вити запита́ння (ask a question), ста́вити пе́ред собо́ю завда́ння (set oneself a task), стоя́ти в че́рзі за + Inst. (stand in line for), стоя́ти за + Acc. (defend/stand up for), йому́ не сиди́ться (he cannot sit still), ви́сіти на волоску́ (hang by a thread).',
+                'Animal → Meat derivation in -ина/-тина: свиня́ → свини́на (pork), теля́ → теля́тина (veal), бара́н → бара́нина (lamb/mutton), гу́ска → гуся́тина (goose), осете́р → осетри́на (sturgeon), лосо́сь → лососи́на (salmon), alongside я́ловичина (beef) and куря́тина (chicken).',
+              ],
+            },
+            {
+              heading: 'Enrolling, Applying & Nuanced Emotion Verbs',
+              items: [
+                'Applying & enrolling: пода́ти зая́ву (submit an application), запо́внити бланк / анке́ту (fill out a form), зверну́тися до + Gen. за + Inst. (turn to someone for help/advice), записа́тися на + Acc. (sign up for a course/appointment), вступи́ти до + Gen. (enter a university / join an organization).',
+                'Emotion verbs: за́здрити + Dat. (to envy; noun за́здрість), ревнува́ти + Acc. до + Gen. (be jealous; noun ре́внощі), нена́видіти + Acc. (hate: нена́виджу, нена́видиш; noun нена́висть), підозріва́ти + Acc. у + Loc. (suspect; noun підо́зра), стражда́ти від + Gen. (suffer from).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Окса́на покла́ла пошті́вку в конве́рт, поста́вила ва́зу з бузко́м на стіл і пові́сила пальто́ у ша́фу.', en: 'Oksana put the postcard into the envelope (покла́ла), stood the vase with lilacs on the table (поста́вила), and hung her coat in the wardrobe (пові́сила).' },
       { uk: 'Навесні́ діду́сь посади́в бі́ля ха́ти молоді́ ви́шні, а по́тім сів відпочи́ти на ла́вці.', en: 'In spring grandfather planted (посади́в) young cherry trees near the house, and then sat down (сів) to rest on the bench.' },
@@ -2037,6 +4638,140 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>3. The Black Sea («Чо́рне мо́ре») & the Danube Biosphere Reserve («Дуна́йський запові́дник»)</b>:<ul><li><b>Maritime Geography & Marine Life</b>: Ancient Greeks called the Black Sea <b>Гости́нне</b> ("Hospitable"). Below 200 meters (<b>на глибині́ ни́жче двохсо́т ме́трів</b>), the sea is saturated with hydrogen sulfide (<b>наси́чене сірково́днем</b>), while the upper waters teem with <b>во́дорості</b> (algae), <b>меду́зи</b> (jellyfish), <b>молю́ски</b> (<b>мі́дії</b> = mussels, <b>у́стриці</b> = oysters), <b>ракоподі́бні</b> (<b>кра́би, креве́тки</b>), three species of <b>дельфі́ни</b> (dolphins), and rare <b>тюле́ні</b> (seals). The Black Sea also holds major reserves (<b>вели́кі запа́си</b>) of <b>приро́дний газ</b> and is a vital route for transporting <b>зерно́, залі́зна руда́, кори́сні копа́лини</b>.</li><li><b>The Danube Reserve</b>: Located where the Danube meets the Black Sea, the <b>Дуна́йський запові́дник</b> is famous for bird colonies in the shallow waters (<b>коло́нії птахі́в на мілково́дді</b>), especially <b>рідкі́сні роже́ві пеліка́ни</b> (rare pink pelicans), where <b>мо́ре та рі́чка, степ та ліс</b> meet.</li></ul>',
       '<b>4. Ukraine’s Three Natural Vegetation Bands («ліс, лісосте́п, степ»), Fertile «чорнозе́м», Estuaries («лима́ни»), & Folk Music and Dress</b>:<ul><li><b>Three Ecological Zones, Estuaries & Rapids</b>:<ul><li>Stretching from north to south are three great natural bands: mixed and coniferous forest in the north (<b>ліс</b>, especially the marshlands of <b>Полі́сся</b>), a central transition zone of forest-steppe (<b>лісосте́п</b>), and the southern grassland steppe (<b>степ</b>) famous for its deep, fertile black soil (<b>чорнозе́м</b>).</li><li>Where great rivers like the <b>Дніпро́</b>, <b>Дністе́р</b>, and <b>Півде́нний Буг</b> meet the Black Sea, they form long coastal estuaries called <b>лима́ни</b> (sg. <b>лима́н</b>: <i>Дніпро́вський лима́н</i>). Downstream from the historic Dnipro rapids (<b>поро́ги</b> — hence the city name <b>Запорі́жжя</b>, "beyond the rapids"), the Zaporozhian Cossacks built their fortress headquarters, the <b>Січ (Запорі́зька Січ)</b>, while salt-traders (<b>чумаки́</b>) traveled by ox wagon from the Black Sea coast across the steppes.</li></ul></li><li><b>Ukrainian Folk Songs, Dances, Instruments & Attire</b>:<ul><li>Oral epic & lyric traditions: historical Cossack epic recitatives (<b>ду́ми</b>, sg. <b>ду́ма</b>) performed by a minstrel (<b>кобза́р</b>) on a <b>ко́бза</b> or 60-string <b>банду́ра</b>, midsummer <b>купа́льські пісні́</b>, and lullabies (<b>колиско́ві пісні́</b>).</li><li>Folk instruments & dances: <b>банду́ра</b>, <b>цимба́ли</b> (hammered dulcimer), <b>лі́ра</b> (hurdy-gurdy), <b>сопі́лка</b> (wooden flute), <b>дри́мба</b> (jaw harp), and the 2.5-meter Carpathian alpine horn <b>трембі́та</b>; dances include the acrobatic <b>гопа́к</b>, <b>мете́лиця</b> ("snowstorm"), ritual <b>хорово́ди</b>, and the Hutsul men’s circle dance <b>арка́н</b>.</li><li>Traditional folk costume: over an embroidered shirt (<b>вишива́нка / соро́чка</b>), women wear a woven wrap skirt (<b>пла́хта</b>), embroidered apron (<b>фарту́х</b>), sleeveless bodice (<b>керсе́тка</b>), coral necklace (<b>кора́лі / нами́сто</b>), and floral wreath with ribbons (<b>віно́к зі стрічка́ми</b>); men wear wide trousers (<b>шарова́ри</b>) and a wide sash (<b>по́яс</b>); in the Carpathians, the Hutsuls (<b>гуцу́ли</b>) wear an embroidered sheepskin waistcoat called a <b>кепта́р</b>.</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Describing Ukraine’s Iconic Cities, Carpathian Polonynas, the Black Sea & Living Folk Culture',
+        explanation:
+          'Talking about a country’s history, landscapes, and cultural heritage requires a set of high-utility grammatical frames: "dedicated to" (присвя́чений + Dative), "founded by" (засно́ваний + Instrumental), "divided into" (поділя́тися на + Accusative), "originate in" (бра́ти поча́ток у + Locative), and "covered / saturated with" (вкри́тий / наси́чений + Instrumental). In this module, you will use these structures to explore Kyiv, Lviv, the Carpathian Mountains, the Black Sea coast, Ukraine’s three ecological zones (ліс, лісосте́п, степ), and traditional folk instruments and attire.',
+        whyItMatters:
+          'Cultural and geographical fluency lets you understand travel guides, historical inscriptions, museum tours, and conversations with Ukrainians about their regions and traditions.',
+        keyTakeaway:
+          'Distinguish па́м’ятник (a sculpted statue/memorial) from па́м’ятка архітекту́ри (an architectural heritage landmark), and pair passive participles like засно́ваний, вкри́тий, and наси́чений with the Instrumental case!',
+      },
+      seeItInAction: [
+        {
+          uk: 'На пло́щі Ри́нок у Льво́ві навко́ло ра́туші стої́ть со́рок чоти́ри ренеса́нсні кам’яни́ці, і ко́жна з них є па́м’яткою архітекту́ри.',
+          en: 'On Rynok Square in Lviv around the City Hall stand forty-four Renaissance stone townhouses, and each of them is an architectural monument.',
+          highlight: 'ра́туші ... ренеса́нсні кам’яни́ці ... па́м’яткою архітекту́ри',
+          annotation: 'Кам’яни́ці are historic stone townhouses around Lviv’s ра́туша (City Hall), each designated a па́м’ятка архітекту́ри.',
+        },
+        {
+          uk: 'Найви́ща верши́на Украї́нських Карпа́т — гора́ Гове́рла (2061 метр), а навесні́ гірські́ полони́ни вкри́ті яскра́вими едельве́йсами, фіа́лками та сокови́тими тра́вами.',
+          en: 'The highest peak of the Ukrainian Carpathians is Mount Hoverla (2,061 m), and in spring the alpine meadows are covered with bright edelweisses, violets, and lush grasses.',
+          highlight: 'гора́ Гове́рла ... полони́ни вкри́ті яскра́вими едельве́йсами',
+          annotation: 'Вкри́тий (+ Instrumental) describes what a landscape is covered with.',
+        },
+        {
+          uk: 'Від лісосте́пу й родю́чого чорнозе́му до Дніпро́вського лима́ну луна́ють кобза́рські ду́ми під банду́ру, а в Карпа́тах гуцу́ли в кептаря́х гра́ють на трембі́ті й сопі́лці.',
+          en: 'From the forest-steppe and fertile black soil to the Dnipro estuary, kobzar dumas resound to the bandura, and in the Carpathians Hutsuls in keptar waistcoats play the trembita and sopilka.',
+          highlight: 'лісосте́пу й родю́чого чорнозе́му ... ду́ми під банду́ру ... на трембі́ті й сопі́лці',
+          annotation: 'Connects Ukraine’s ecological zones (ліс, лісосте́п, степ, чорнозе́м, лима́н) with its musical heritage.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b18-cities-geography-grammar',
+          title: '1. Cultural Landmarks, Culinary Symbols & Geographical Grammar Frames',
+          idea: 'Every major region of Ukraine has its own architectural treasures, natural wonders, and culinary calling card (візи́тна ка́ртка).',
+          explanation:
+            'According to legend, Kyiv was founded by the three brothers Kyi, Shchek, and Khoriv and their sister Lybid (Кий, Щек, Хори́в і Ли́бідь) and features the open-air museum in Pyrohiv (музе́й про́сто не́ба в Пирого́ві — literally "museum right under the sky"). Lviv was founded by King Danylo (коро́ль Дани́ло) in the 1230s and became capital of the Kingdom of Ruthenia (Королі́вство Ру́ське). The Ukrainian Carpathians are divided into three ranges (поділя́ються на Бески́ди, Горга́ни й Чорного́ру), crowned by Mount Hoverla (гора́ Гове́рла, 2,061 m) and high alpine meadows (полони́ни). Where the Danube meets the Black Sea (Чо́рне мо́ре, whose depths below 200 m are saturated with hydrogen sulfide — наси́чене сірково́днем), the Danube Biosphere Reserve (Дуна́йський запові́дник) shelters rare pink pelicans (роже́ві пеліка́ни) on the shallow waters (на мілково́дді).',
+          tables: [
+            {
+              title: 'Regions of Ukraine: Landmarks, Nature & Culinary Calling Cards',
+              headers: ['Region', 'Historical & Natural Landmarks', 'Signature Dish («Фі́рмова стра́ва»)', 'Key Grammar Construction'],
+              rows: [
+                ['Ки́їв', 'Ки́ївська Русь (Кий, Щек, Хори́в, Ли́бідь); Пирогі́в — музе́й про́сто не́ба', 'котле́та по-ки́ївськи (ку́ряче філе́, вершко́ве ма́сло, зе́лень)', 'присвя́чений + Dat. (dedicated to)'],
+                ['Львів', 'Королі́вство Ру́ське (коро́ль Дани́ло, 1230-ті); пло́ща Ри́нок, ра́туша, 44 кам’яни́ці', 'льві́вська ка́ва в бе́злічі кав’я́рень скрізь по мі́сту', 'засно́ваний + Inst. (founded by)'],
+                ['Карпа́ти', 'Бески́ди, Горга́ни, Чорного́ра; гора́ Гове́рла (2061 м); полони́ни; Центр Євро́пи', 'ба́нуш (кукуру́дзяна ка́ша на вершка́х із бри́нзою та бі́лими гриба́ми)', 'поділя́тися на + Acc.; бра́ти поча́ток у + Loc.'],
+                ['Оде́са і Чо́рне мо́ре', 'Чо́рне мо́ре (наси́чене сірково́днем ни́жче 200 м); Дуна́йський запові́дник (роже́ві пеліка́ни)', 'сві́жий уло́в: барабу́лька, камбала́, оде́ські бички́, кефа́ль, мі́дії', 'вкри́тий / наси́чений + Inst.; насолоди́тися + Inst.'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Котле́та по-ки́ївськи — фі́рмова стра́ва столи́ці, а музе́й про́сто не́ба в Пирого́ві знайо́мить із наро́дною архітекту́рою та по́бутом Украї́ни.',
+              en: 'Chicken Kyiv is the signature dish of the capital, and the open-air museum in Pyrohiv introduces Ukraine’s folk architecture and traditional way of life.',
+              highlight: 'Котле́та по-ки́ївськи ... музе́й про́сто не́ба в Пирого́ві',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Старови́нна кам’яни́ця є відо́мим па́м’ятником архітекту́ри.',
+              right: 'Старови́нна кам’яни́ця є відо́мою па́м’яткою архітекту́ри.',
+              explanation: 'Use masculine па́м’ятник for a sculpted statue/memorial (па́м’ятник Шевче́нкові), and feminine па́м’ятка for an architectural or historical heritage landmark (па́м’ятка архітекту́ри).',
+            },
+          ],
+          microCheck: {
+            question: 'What does the idiomatic Ukrainian expression «музе́й про́сто не́ба» mean?',
+            options: [
+              'An open-air museum (literally "a museum right under the open sky")',
+              'An astronomy planetarium',
+              'An underground gallery',
+            ],
+            correctIndex: 0,
+            explanation: 'Про́сто не́ба means "in the open air / right under the sky", so музе́й про́сто не́ба is an open-air folk architecture museum.',
+          },
+        },
+        {
+          id: 'b18-zones-folk-culture',
+          title: '2. Ecological Bands (ліс, лісосте́п, степ), Folk Music & Traditional Attire',
+          idea: 'From north to south, Ukraine transitions across three natural vegetation zones, each shaping its history and folk traditions.',
+          explanation:
+            'Northern Ukraine features mixed forests and the marshlands of Polissia (ліс, Полі́сся); central Ukraine spans the forest-steppe (лісосте́п); and southern Ukraine opens into the vast grassland steppe (степ) with its world-famous fertile black soil (чорнозе́м) and coastal river estuaries (лима́ни). Downstream from the historic Dnipro rapids (поро́ги — hence Запорі́жжя, "beyond the rapids") stood the Cossack fortress Запорі́зька Січ, while salt-traders (чумаки́) crossed the steppes by ox wagon.',
+          tables: [
+            {
+              title: 'Ukrainian Ecological Geography, Folk Instruments, Dances & Traditional Costume',
+              headers: ['Domain', 'Ukrainian Terms', 'Cultural Meaning & Context'],
+              rows: [
+                ['Ecological Zones & Estuaries', 'ліс (Полі́сся), лісосте́п, степ, чорнозе́м, лима́н, поро́ги (Запорі́жжя, Запорі́зька Січ), чумаки́', '3 north-to-south vegetation bands; fertile black earth; river estuaries & Dnipro rapids'],
+                ['Oral Epic & Folk Songs', 'ду́ма (pl. ду́ми), кобза́р, купа́льські пісні́, колиско́ві пісні́', 'Heroic Cossack epic recitatives performed by a kobzar; midsummer and lullaby songs'],
+                ['Folk Instruments & Dances', 'банду́ра (60 strings), ко́бза, цимба́ли, лі́ра, сопі́лка, дри́мба, трембі́та (2.5 m); гопа́к, мете́лиця, арка́н', 'Acrobatic гопа́к and Hutsul men’s circle dance арка́н'],
+                ['Traditional Folk Attire', 'вишива́нка, пла́хта (woven wrap skirt), фарту́х, керсе́тка (bodice), кора́лі, віно́к зі стрічка́ми; шарова́ри, по́яс; кепта́р', 'Women’s and men’s festive attire; Hutsul embroidered sheepskin waistcoat (кепта́р)'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'В Оде́сі ми насолоди́лися сві́жим морськи́м уло́вом, а у вихідні́ ви́рушили в Дуна́йський запові́дник подиви́тися на рідкі́сних роже́вих пеліка́нів.',
+              en: 'In Odesa we enjoyed the fresh sea catch, and on the weekend we set off for the Danube Reserve to look at the rare pink pelicans.',
+              highlight: 'насолоди́лися сві́жим морськи́м уло́вом ... роже́вих пеліка́нів',
+            },
+          ],
+          microCheck: {
+            question: 'Which 2.5-meter alpine horn is played by Hutsuls in the Carpathian Mountains, and what is their embroidered sheepskin waistcoat called?',
+            options: [
+              'трембі́та (Carpathian alpine horn) and кепта́р (embroidered sheepskin waistcoat)',
+              'кам’яни́ця and ра́туша',
+              'лима́н and чорнозе́м',
+            ],
+            correctIndex: 0,
+            explanation: 'In the Carpathians, Hutsuls play the long wooden alpine horn (трембі́та) and wear the decorated sheepskin vest (кепта́р).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Black Sea Marine Life & Carpathian Flora',
+          summary: 'Expand to review the complete marine, botanical, and mineral vocabulary of the Carpathians and Black Sea.',
+          blocks: [
+            {
+              heading: 'Carpathian Rivers & Alpine Flora',
+              items: [
+                'Rivers originating in the Carpathians (беру́ть поча́ток у Карпа́тах): Дністе́р, Прут, Ти́са, Черемо́ш.',
+                'Alpine polonyna flowers: едельве́йси, фіа́лки (violets), а́йстри (asters), ма́ки (poppies), густі́ та сокови́ті тра́ви.',
+              ],
+            },
+            {
+              heading: 'Black Sea Marine Life & Natural Resources',
+              items: [
+                'Marine flora & fauna: во́дорості (algae), меду́зи (jellyfish), молю́ски (мі́дії = mussels, у́стриці = oysters), ракоподі́бні (кра́би, креве́тки), три ви́ди дельфі́нів, рідкі́сні тюле́ні (seals).',
+                'Resources & trade routes: вели́кі запа́си приро́дного га́зу, зерно́ (grain), залі́зна руда́ (iron ore), кори́сні копа́лини (minerals).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Котле́та по-ки́ївськи — фі́рмова стра́ва столи́ці, а музе́й про́сто не́ба в Пирого́ві знайо́мить із наро́дною архітекту́рою та по́бутом Украї́ни.', en: 'Chicken Kyiv is the signature dish of the capital, and the open-air museum in Pyrohiv introduces Ukraine’s folk architecture and traditional way of life.' },
       { uk: 'На пло́щі Ри́нок у Льво́ві навко́ло ра́туші стої́ть со́рок чоти́ри ренеса́нсні кам’яни́ці, і ко́жна з них є па́м’яткою архітекту́ри.', en: 'On Rynok Square in Lviv around the City Hall stand forty-four Renaissance stone townhouses, and each of them is an architectural monument.' },
@@ -2219,6 +4954,140 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. University Life, Specialties («за фа́хом»), & Expressing Personal Opinions</b>:<ul><li><b>Academic & Professional Vocabulary</b>: <b>вступи́ти до університе́ту</b> (to enter/be admitted to university), <b>жити́ в студе́нтському гурто́житку</b> (to live in a student dormitory), <b>навча́льний семе́стр</b> (academic semester), <b>фах</b> (profession/specialty → <b>Хто ви за фа́хом?</b> = What is your profession/field?), <b>фахіве́ць / фахівчи́ня</b> (specialist/expert), <b>науко́вець</b> (scholar/researcher).</li><li><b>Expressing & Responding to Opinions Naturally</b>:<ul><li><b>Я вважа́ю, що... / На мою́ ду́мку,... / Як на ме́не,...</b> = I consider that... / In my opinion,... / As for me,...</li><li><b>Як ви гада́єте (вважа́єте)?</b> = What do you think?</li><li><b>Я цілко́м зго́ден (m.) / зго́дна (f.) з Ва́ми!</b> (or <b>Я погоджу́юся з Ва́ми</b>) = I completely agree with you!</li><li><b>Певно́ю мі́рою це так, але́...</b> = To a certain extent that’s true, but...</li></ul></li></ul>',
       '<b>5. Past Counterfactual Conditionals («був би + Past Tense») & Two-Word «що б» ("What Would") vs. One-Word «щоб» ("So That")</b>:<ul><li><b>Explicit Past Counterfactual («був / була́ / було́ / були́» + Past Tense + «би/б»)</b>: When you want to emphasize that an opportunity in the past has already passed and can no longer be fulfilled ("If they <i>had</i> gotten married, he <i>would have</i> bought them a house"), Ukrainian adds the past tense of <b>бу́ти</b> (<b>був, була́, було́, були́</b>) alongside the past-tense main verb:<ul><li><b>Якби́ вони́ були́ одружи́лися, він би був купи́в їм ха́ту.</b> (If they had got married, he would have bought them a house.)</li><li><b>Якби́ він був хоті́в жи́ти тут, він му́сив би був працюва́ти.</b> (If he had wanted to live here, he would have had to work.)</li></ul></li><li><b>Never Confuse Two-Word «що б» with One-Word «щоб»!</b>:<ul><li><b>що б</b> (two separate words) = the interrogative/relative pronoun <b>що</b> ("what") serving as the subject or direct object of a conditional clause + the conditional particle <b>б</b> ("would"): <b>Якби́ вона́ пішла́ до крамни́ці, що б вона́ купи́ла?</b> (If she went to the store, <b>what would</b> she buy?); <b>Якби́ фе́рмер зора́в по́ле, що б на ньо́му росло́?</b> (If the farmer plowed the field, <b>what would</b> grow on it?).</li><li><b>щоб</b> (one word) = the subordinating conjunction meaning "in order that / so that / that" (followed by an infinitive when the subject is the same, or a past-tense verb when the subjects differ): <b>Я гово́рю пові́льно, щоб студе́нти мене́ розумі́ли</b>; <b>Вона́ про́сить, щоб студе́нти слу́хали</b>.</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Real vs. Hypothetical Conditionals (якщо́ vs. якби́), Medical Care & Expressing Opinions',
+        explanation:
+          'In English, we use the present tense after "if" even when talking about tomorrow ("If the weather is nice tomorrow, we will go"). In Ukrainian, a real future condition requires the Future tense in BOTH clauses: «Якщо́ за́втра бу́де га́рна пого́да, ми пі́демо на прогу́лянку»! Conversely, when you are imagining a hypothetical or counterfactual scenario ("If I had time, I would go"), Ukrainian switches to «Якби́ + Past tense, ... б/би + Past tense». This module pairs conditionals with medical care (personal бо́лить vs. impersonal Accusative Мене́ моро́зить / ну́дить), university life, and opinion formulas.',
+        whyItMatters:
+          'Separating якщо́ (+ Future) from якби́ (+ Past) is one of the clearest markers of confident B1–B2 Ukrainian, and knowing how to describe symptoms accurately at a clinic or pharmacy is vital in real life.',
+        keyTakeaway:
+          'Use Якщо́ + Future for real future conditions, Якби́ + Past (... б/би + Past) for hypothetical conditions, and Accusative Мене́ моро́зить / ну́дить for chills and nausea!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Якщо́ за́втра не бу́де дощу́, ми пі́демо гуля́ти по Андрі́ївському узво́зі.',
+          en: 'If there is no rain tomorrow, we will go walking along Andriyivskyi Descent.',
+          highlight: 'Якщо́ за́втра не бу́де ... ми пі́демо',
+          annotation: 'Real future conditional: both the якщо́ clause (не бу́де) and the result clause (пі́демо) stand in the Future tense.',
+        },
+        {
+          uk: 'Якби́ я знав про цю ви́ставку рані́ше, я б обов’язко́во купи́в квитки́ для всіє́ї роди́ни.',
+          en: 'If I had known about this exhibition earlier, I would definitely have bought tickets for the whole family.',
+          highlight: 'Якби́ я знав ... я б обов’язко́во купи́в',
+          annotation: 'Hypothetical/counterfactual conditional: Якби́ + past tense (знав) in the condition clause, and б + past tense (купи́в) in the result clause.',
+        },
+        {
+          uk: 'Учо́ра я перестуди́вся: у ме́не бо́лить го́рло, висо́ка температу́ра і мене́ тро́хи моро́зить.',
+          en: 'Yesterday I caught a chill: my throat hurts, I have a high temperature, and I have the chills a bit.',
+          highlight: 'у ме́не бо́лить го́рло ... мене́ тро́хи моро́зить',
+          annotation: 'Го́рло is the Nominative subject of бо́лить, whereas impersonal моро́зить takes the Accusative experiencer мене́.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b19-conditionals',
+          title: '1. Real Conditionals (якщо́ + Future) vs. Hypothetical Conditionals (якби́ + Past)',
+          idea: 'Choose якщо́ when the condition is genuinely open and possible; choose якби́ when you are imagining an unreal present or counterfactual past!',
+          explanation:
+            'After якщо́, як ті́льки ("as soon as"), коли́, or за умо́ви, що ("on condition that"), always use the Future tense when referring to a future event. By contrast, якби́ already contains the conditional particle би (never add a second б/би inside the якби́ clause!) and is always followed by a Past-tense verb form (-в, -ла, -ло, -ли), while the main result clause uses б (after a vowel) or би (after a consonant) + a Past-tense verb. To emphasize that a past opportunity is completely over (explicit past counterfactual), Ukrainian can add past-tense був/була́/були́ alongside the main past verb (Якби́ вони́ були́ одружи́лися, він би був купи́в їм ха́ту). Finally, never confuse two-word що б ("what would" = pronoun що + particle б) with one-word щоб ("in order to / so that")!',
+          tables: [
+            {
+              title: 'Three Types of Conditional Clauses & «що б» vs. «щоб»',
+              headers: ['Conditional Type', 'Condition Clause ("If...")', 'Result Clause', 'Authentic Example'],
+              rows: [
+                ['Real Future Condition', 'Якщо́ / Як ті́льки / За умо́ви, що + FUTURE', 'FUTURE or Imperative', 'Якщо́ за́втра бу́де пого́да, ми пі́демо в парк.'],
+                ['Hypothetical (Unreal Present / Past)', 'Якби́ + PAST tense (no extra б!)', 'PAST tense + б (after vowel) / би (after cons.)', 'Якби́ я мав бі́льше ча́су, я б пої́хав з ва́ми.'],
+                ['Explicit Past Counterfactual', 'Якби́ + був/була́/були́ + PAST tense', 'би/б + був/була́/були́ + PAST tense', 'Якби́ вони́ були́ одружи́лися, він би був купи́в їм ха́ту.'],
+                ['Two-Word «що б» vs. One-Word «щоб»', 'що б = "what would" (interrogative pronoun + б)', 'щоб = "so that / in order to" (conjunction)', 'Якби́ вона́ пішла́ до книга́рні, що б вона́ купи́ла, щоб поті́шити діте́й?'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Якби́ вона́ була́ пішла́ до книга́рні вчо́ра, що б вона́ там купи́ла, щоб поті́шити діте́й?',
+              en: 'If she had gone to the bookstore yesterday, what would she have bought there in order to delight the children?',
+              highlight: 'Якби́ вона́ була́ пішла́ ... що б вона́ там купи́ла, щоб поті́шити',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Якщо́ ти ма́єш час за́втра, подзвони́ мені́! / Якби́ я б мав час...',
+              right: 'Якщо́ ти ма́тимеш (бу́деш ма́ти) час за́втра, подзвони́ мені́! / Якби́ я мав час...',
+              explanation: 'Use the Future tense after якщо́ for tomorrow’s condition, and never repeat б inside the якби́ clause (якби́ already contains би!).',
+            },
+          ],
+          microCheck: {
+            question: 'Why is «що б» written as two words in «Якби́ фе́рмер зора́в по́ле, що б на ньо́му росло́?»?',
+            options: [
+              'Because «що» is the interrogative pronoun "what" (the subject of росло́) followed by the conditional particle «б» ("would"), meaning "what would grow on it?"',
+              'Because one-word «щоб» does not exist in Ukrainian',
+              'Because «зора́в» is in the future tense',
+            ],
+            correctIndex: 0,
+            explanation: 'Two-word що б means "what would" (pronoun що + particle б), whereas one-word щоб means "in order to / so that".',
+          },
+        },
+        {
+          id: 'b19-medical-university-opinions',
+          title: '2. At the Doctor’s (Personal vs. Impersonal Symptoms), University & Opinions',
+          idea: 'Ukrainian separates localized pain (where the body part is the Nominative subject of бо́лить / боля́ть) from systemic chills, fever, and nausea (where the person stands in the Accusative case)!',
+          explanation:
+            'Say У ме́не бо́лить голова́, го́рло, шлу́нок (singular) and У ме́не боля́ть зу́би, о́чі (plural). For chills, nausea, and feverish shivers, put the person in the Accusative case (мене́, тебе́, його́, її́) with 3rd-person singular neuter verbs: Мене́ моро́зить (I have the chills), Мене́ ну́дить (I feel nauseous), Його́ лихома́нить (He feels feverish). In academic and professional contexts, use за фа́хом ("by profession/specialty"), фахіве́ць / фахівчи́ня ("specialist"), and introduce opinions with На мою́ ду́мку, Я вважа́ю, що..., or Як на ме́не.',
+          tables: [
+            {
+              title: 'Medical Symptoms, Diagnoses, University Life & Opinion Formulas',
+              headers: ['Category', 'Ukrainian Structure / Vocabulary', 'English Meaning & Grammar Note'],
+              rows: [
+                ['Localized Pain (+ Nom. subject)', 'У ме́не бо́лить го́рло / шлу́нок; боля́ть зу́би / о́чі', 'бо́лить (1 body part) vs. боля́ть (2+ body parts)'],
+                ['Systemic Chills & Nausea (+ Acc.)', 'Мене́ моро́зить; Мене́ ну́дить; Його́ лихома́нить', 'Person in Accusative (мене́, його́); past моро́зило, нуди́ло'],
+                ['Diagnoses & Remedies', 'перестуди́тися, ангі́на, запа́лення леге́нів, харчове́ отру́єння, печія́, висо́кий/низьки́й тиск, знебо́лююче, сноді́йне', 'Оду́жуйте швидше без жо́дних ускла́днень! (Get well without complications!)'],
+                ['University & Profession', 'вступи́ти до університе́ту, студе́нтський гурто́житок, семе́стр, за фа́хом, фахіве́ць / фахівчи́ня, науко́вець', 'Хто ви за фа́хом? (What is your profession/specialty?)'],
+                ['Expressing Opinions', 'На мою́ ду́мку,... / Я вважа́ю, що... / Як на ме́не,... / Я цілко́м зго́ден (зго́дна) з Ва́ми! / Певно́ю мі́рою це так, але́...', 'Polite agreement and nuanced qualification'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'За фа́хом Окса́на — молоди́й науко́вець; на мою́ ду́мку, вона́ чу́довий фахіве́ць.',
+              en: 'By profession Oksana is a young scholar; in my opinion, she is a wonderful specialist.',
+              highlight: 'За фа́хом ... науко́вець; на мою́ ду́мку ... фахіве́ць',
+            },
+          ],
+          microCheck: {
+            question: 'Which case is used for "I" in the Ukrainian symptom expressions «___ моро́зить» (I have the chills) and «___ ну́дить» (I feel nauseous)?',
+            options: [
+              'The Accusative case («Мене́ моро́зить і ну́дить»)',
+              'The Nominative case («Я моро́зить»)',
+              'The Vocative case',
+            ],
+            correctIndex: 0,
+            explanation: 'Impersonal physical sensation verbs моро́зити, ну́дити, and лихома́нити take an Accusative experiencer (Мене́ моро́зить).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Conversational «як / коли́» in Real Conditionals & Pharmacy Vocabulary',
+          summary: 'Expand to review conversational conditional connectors and medical/pharmacy terms.',
+          blocks: [
+            {
+              heading: 'Conversational Real Conditionals',
+              items: [
+                'Alongside якщо́, spoken Ukrainian frequently uses як or коли́ with the Future tense for open conditions: Як ма́тимеш вільну́ хвили́ну, за́йди до книга́рні.',
+                'Use як ті́льки for "as soon as" and за умо́ви, що for "on condition that / provided that".',
+              ],
+            },
+            {
+              heading: 'Additional Medical & Recovery Vocabulary',
+              items: [
+                'помі́ряти тиск (to measure blood pressure), ви́писати лі́ки від ангі́ни (to prescribe medicine for tonsillitis), проно́с (diarrhea), печія́ (heartburn), знебо́лююче (painkiller), сноді́йне (sleeping pill).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Якщо́ за́втра не бу́де дощу́, ми пі́демо гуля́ти по Андрі́ївському узво́зі.', en: 'If there is no rain tomorrow (future бу́де!), we will go walking along Andriyivskyi Descent.' },
       { uk: 'Якби́ я знав про цю ви́ставку рані́ше, я б обов’язко́во купи́в квитки́ для всіє́ї роди́ни.', en: 'If I had known (якби́ + past знав) about this exhibition earlier, I would definitely have bought (я б купи́в) tickets for the whole family.' },
@@ -2407,6 +5276,133 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>3. At the Dentist («У стомато́лога») & Optometrist («В окулі́ста»)</b>:<ul><li><b>Dental Care</b>:<ul><li><b>У ме́не бо́лить зуб</b> (I have a toothache); <b>У ме́не ви́пала пло́мба</b> (A filling has fallen out; <b>пло́мба</b> = dental filling); <b>я́сна</b> (gums).</li><li><b>Зробі́ть, будь ла́ска, знебо́лювання!</b> (Please give me an anesthetic!); <b>Цей зуб тре́ба ви́далити, але́ я не хо́чу його́ вирива́ти</b> (This tooth has to be extracted, but I don’t want it pulled).</li></ul></li><li><b>Optical Care</b>: <b>Мені́ потрі́бно полаго́дити (замо́вити) окуля́ри / конта́ктні лі́нзи</b> (I need to get my glasses / contact lenses repaired [ordered]); <b>Коли́ бу́дуть гото́ві мої́ окуля́ри?</b> (When will my glasses be ready?).</li></ul>',
       '<b>4. Sustainable Travel, Recycling & Environmental Protection («Навко́лишнє середо́вище»)</b>:<ul><li><b>Eco-Friendly Travel & Community Benefit</b>:<ul><li><b>Де мені́ мо́жна оце́ зда́ти на переро́бку?</b> (Where can I hand this in for recycling?); <b>не тре́ба міня́ти по́стіль</b> (there is no need to change the bedsheets); <b>вимкнути кондиціоне́р і відчини́ти вікно́</b> (to turn off the air conditioner and open the window).</li><li><b>това́ри та сувені́ри місце́вого виробни́цтва</b> (locally produced goods and souvenirs); <b>справедли́ва торгі́вля</b> (Fair Trade); <b>жертвува́ти гро́ші на доброді́йні ці́лі</b> (to donate money to charitable causes); <b>добро́вольці / волонте́ри</b> (volunteers).</li></ul></li><li><b>Climate, Energy & Biosphere Reserves</b>: <b>альтернати́вні джерела́ ене́ргії</b> (alternative energy sources), <b>а́томна / теплова́ / гідроелектроста́нція (ГЕС)</b> (nuclear / thermal / hydroelectric power station), <b>вуглеки́слий газ</b> (carbon dioxide), <b>парнико́вий ефе́кт</b> (greenhouse effect), <b>забру́днення пові́тря та води́</b> (air and water pollution), and <b>вид, що знахо́диться під загро́зою</b> (endangered species, protected in reserves like <i>Аска́нія-Но́ва, Чорномо́рський, Карпа́тський, Ша́цький</i>, and <i>Дуна́йський</i>).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Safe Travel, Emergency Calls, Dental & Optical Care, and Sustainable Ecology',
+        explanation:
+          'When traveling in Ukraine, three verbs of "losing" must never be mixed up: 1) «Я загуби́в / загуби́ла па́спорт» means you accidentally misplaced an object yourself; 2) «У ме́не вкра́ли су́мку» (literally "From me they stole a bag") is the natural 3rd-person plural impersonal structure for reporting a theft; and 3) «Я заблука́в / заблука́ла» means you lost your way on foot or on the road! This final B1 module equips you to handle urgent emergencies, visits to a dentist or optometrist, and conversations about recycling, renewable energy, and environmental protection.',
+        whyItMatters:
+          'Knowing how to call an ambulance (Ви́кличте швидку́ допомо́гу!), ask a dentist for local anesthesia when a filling falls out (У ме́не ви́пала пло́мба — зробі́ть, будь ла́ска, знебо́лювання!), or discuss green tourism makes you a resilient, self-sufficient traveler.',
+        keyTakeaway:
+          'Distinguish загуби́ти щось (misplace an item), У ме́не вкра́ли щось (have an item stolen), and заблука́ти (lose one’s way); use пло́мба and знебо́лювання at the dentist; and use зда́ти на переро́бку for recycling!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Я випадко́во загуби́в ключі́ від но́мера, а в моє́ї по́други на вокза́лі вкра́ли гамане́ць, тож ми зверну́лися до бюро́ знахі́док і полі́ції.',
+          en: 'I accidentally lost my room keys, and my friend had her wallet stolen at the station, so we turned to the lost-property office and the police.',
+          highlight: 'загуби́в ключі́ ... в моє́ї по́други ... вкра́ли гамане́ць',
+          annotation: 'Active загуби́в = misplaced oneself; 3rd plural impersonal у кого́сь вкра́ли = someone’s item was stolen.',
+        },
+        {
+          uk: 'У стомато́лога: «У ме́не ви́пала пло́мба і си́льно бо́лить зуб. Зробі́ть, будь ла́ска, знебо́лювання!»',
+          en: 'At the dentist’s: "A filling has fallen out and my tooth hurts badly. Please give me an anesthetic!"',
+          highlight: 'ви́пала пло́мба ... знебо́лювання',
+          annotation: 'Пло́мба is a dental filling, and знебо́лювання is local anesthesia.',
+        },
+        {
+          uk: 'Під час екологі́чної мандрі́вки ми здаємо́ пластик на переро́бку, купу́ємо сувені́ри місце́вого виробни́цтва й підтри́муємо альтернати́вні джерела́ ене́ргії.',
+          en: 'During our eco-trip we hand in plastic for recycling, buy locally produced souvenirs, and support alternative energy sources.',
+          highlight: 'здаємо́ пластик на переро́бку ... місце́вого виробни́цтва ... альтернати́вні джерела́ ене́ргії',
+          annotation: 'Essential B1 vocabulary for sustainable travel and environmental stewardship.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b110-emergencies-dentist-optometrist',
+          title: '1. Emergencies, Lost vs. Stolen Property, and Dental & Optical Care',
+          idea: 'In urgent situations, Ukrainian uses crisp perfective imperatives (Ви́кличте швидку́ допомо́гу! Допоможі́ть!) and precise verbs for misplacing items, theft, and getting lost.',
+          explanation:
+            'To summon emergency services, use Ви́кличте + Accusative: Ви́кличте швидку́ допомо́гу! (Call an ambulance!), Ви́кличте лі́каря! (Call a doctor!), Ви́кличте полі́цію! (Call the police!). At a dentist’s office (у стомато́лога), distinguish ви́далити / вирива́ти зуб (to extract/pull a tooth) from поста́вити пло́мбу (to put in a filling) and зроби́ти знебо́лювання (to administer anesthesia). At an optometrist’s (в окулі́ста), use полаго́дити окуля́ри (to repair glasses) and замо́вити конта́ктні лі́нзи (to order contact lenses).',
+          tables: [
+            {
+              title: 'Emergency, Legal, Dental & Optical Survival Guide',
+              headers: ['Situation', 'Ukrainian Expression', 'English Meaning & Grammar Note'],
+              rows: [
+                ['Urgent Emergency Calls', 'Ряту́йте! Допоможі́ть! Ви́кличте швидку́ допомо́гу / полі́цію!', 'Це крити́чна ситуа́ція! У ме́не є меди́чне страхува́ння.'],
+                ['Misplaced vs. Stolen vs. Lost Way', 'Я загуби́в (-ла) па́спорт vs. У ме́не вкра́ли су́мку vs. Я заблука́в (-ла)', 'Active загуби́ти (item) vs. 3rd pl. У ме́не вкра́ли (theft) vs. заблука́ти (way)'],
+                ['Consular & Legal Assistance', 'зателефонува́ти до посо́льства (консу́льства); Мені́ потрі́бен адвока́т / переклада́ч', 'У чому́ мене́ звинува́чують? (What am I accused of?)'],
+                ['At the Dentist («У стомато́лога»)', 'У ме́не бо́лить зуб / ви́пала пло́мба; Зробі́ть знебо́лювання!; поста́вити пло́мбу; ви́далити зуб; я́сна', 'пло́мба = filling; знебо́лювання = anesthesia; я́сна = gums'],
+                ['At the Optometrist («В окулі́ста»)', 'Мені́ потрі́бно полаго́дити (замо́вити) окуля́ри / конта́ктні лі́нзи', 'Коли́ бу́дуть гото́ві мої́ окуля́ри?'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Це крити́чна ситуа́ція! Будь ла́ска, ви́кличте швидку́ допомо́гу! У ме́не є меди́чне страхува́ння.',
+              en: 'It is an emergency! Please call an ambulance! I have medical insurance.',
+              highlight: 'ви́кличте швидку́ допомо́гу ... меди́чне страхува́ння',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Я загуби́вся у лі́сі, і я вкрав мою́ креди́тну ка́ртку.',
+              right: 'Я заблука́в у лі́сі, і в ме́не вкра́ли креди́тну ка́ртку.',
+              explanation: 'Use заблука́ти (or заблуди́тися) for losing your way, and У ме́не вкра́ли + Accusative when someone steals something from you.',
+            },
+          ],
+          microCheck: {
+            question: 'How do you say "My credit card was stolen" and "A dental filling fell out" in natural Ukrainian?',
+            options: [
+              'У ме́не вкра́ли креди́тну ка́ртку. / У ме́не ви́пала пло́мба.',
+              'Я заблука́в креди́тну ка́ртку. / У ме́не ви́пали окуля́ри.',
+              'Я вкрав ка́ртку. / Я загуби́в пло́мбу.',
+            ],
+            correctIndex: 0,
+            explanation: 'У ме́не вкра́ли + Accusative reports a theft, and У ме́не ви́пала пло́мба reports that a dental filling has fallen out.',
+          },
+        },
+        {
+          id: 'b110-sustainable-ecology',
+          title: '2. Sustainable Travel, Recycling & Environmental Protection («Навко́лишнє середо́вище»)',
+          idea: 'Green tourism (зеле́ний тури́зм) and environmental protection use productive neuter verbal nouns in -ння (забру́днення, страхува́ння) and Genitive attribute phrases (місце́вого виробни́цтва, джерела́ ене́ргії).',
+          explanation:
+            'To ask where to recycle glass, paper, or plastic, say: Де мо́жна зда́ти це на переро́бку? Support local artisans and communities by purchasing това́ри та сувені́ри місце́вого виробни́цтва (locally produced goods and souvenirs), supporting справедли́ва торгі́вля (Fair Trade), and donating to charity (жертвува́ти гро́ші на доброді́йні ці́лі). When discussing climate and conservation across Ukraine’s biosphere reserves (Аска́нія-Но́ва, Чорномо́рський, Карпа́тський, Ша́цький, Дуна́йський), use навко́лишнє середо́вище (or довкі́лля = environment), забру́днення пові́тря та води́ (air and water pollution), парнико́вий ефе́кт (greenhouse effect), вуглеки́слий газ (carbon dioxide), and альтернати́вні джерела́ ене́ргії (alternative energy sources).',
+          tables: [
+            {
+              title: 'Ecology, Energy & Sustainable Travel Vocabulary',
+              headers: ['Theme', 'Ukrainian Expression', 'English Translation'],
+              rows: [
+                ['Recycling & Hotel Conservation', 'зда́ти на переро́бку; не тре́ба міня́ти по́стіль; вимкнути кондиціоне́р', 'hand in for recycling; no need to change bedsheets; turn off A/C'],
+                ['Local Economy & Charity', 'сувені́ри місце́вого виробни́цтва; справедли́ва торгі́вля; жертвува́ти на доброді́йні ці́лі; волонте́ри / добро́вольці', 'locally produced souvenirs; Fair Trade; donate to charitable causes; volunteers'],
+                ['Climate & Pollution', 'навко́лишнє середо́вище; забру́днення пові́тря та води́; парнико́вий ефе́кт; вуглеки́слий газ', 'environment; air and water pollution; greenhouse effect; carbon dioxide'],
+                ['Power Plants & Conservation', 'альтернати́вні джерела́ ене́ргії; со́нячна / вітрова́ / гідроелектроста́нція (ГЕС); вид під загро́зою', 'alternative energy sources; solar / wind / hydroelectric power plant; endangered species'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'В окулі́ста мені́ швидко полаго́дили окуля́ри та замо́вили но́ві конта́ктні лі́нзи.',
+              en: 'At the optometrist’s they quickly repaired my glasses and ordered new contact lenses.',
+              highlight: 'полаго́дили окуля́ри ... конта́ктні лі́нзи',
+            },
+          ],
+          microCheck: {
+            question: 'What does the question «Де мені́ мо́жна оце́ зда́ти на переро́бку?» mean?',
+            options: [
+              'Where can I hand this in for recycling?',
+              'Where can I exchange foreign currency?',
+              'Where can I buy a train ticket?',
+            ],
+            correctIndex: 0,
+            explanation: 'Зда́ти на переро́бку is the standard Ukrainian phrase for handing in materials for recycling.',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Ukraine’s Major Biosphere & Nature Reserves',
+          summary: 'Expand to review Ukraine’s major protected biosphere reserves and emergency phrases.',
+          blocks: [
+            {
+              heading: 'Major Biosphere & Nature Reserves of Ukraine («Запові́дники»)',
+              items: [
+                'Аска́нія-Но́ва (virgin steppe biosphere reserve in Kherson Oblast), Чорномо́рський біосфе́рний запові́дник, Дуна́йський біосфе́рний запові́дник, Карпа́тський біосфе́рний запові́дник, and Ша́цький націона́льний приро́дний парк (famous for Lake Svityaz in Volyn).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Це крити́чна ситуа́ція! Будь ла́ска, ви́кличте швидку́ допомо́гу! У ме́не є меди́чне страхува́ння.', en: 'It is an emergency! Please call an ambulance! I have medical insurance.' },
       { uk: 'Я випадко́во загуби́в ключі́ від но́мера, а в моє́ї по́други на вокза́лі вкра́ли гамане́ць, тож ми зверну́лися до бюро́ знахі́док і полі́ції.', en: 'I accidentally lost my room keys, and my friend had her wallet stolen at the station, so we turned to the lost-property office and the police.' },
@@ -2595,6 +5591,139 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>5. Translating English Perception Participles («Я ба́чив, як...») & Aspectual Prefix Nuances</b>:<ul><li>In English, we say "I saw him crossing the street" or "I heard her singing" with an <i>-ing</i> participle. Because Ukrainian adverbial participles (<i>перехо́дячи, співа́ючи</i>) can ONLY refer to the subject of the sentence ("I"), Ukrainian translates perception objects with a <b>як</b> clause: <b>Я ба́чив, як він перехо́див ву́лицю</b>; <b>Ми чу́ли, як вона́ співа́ла</b>.</li><li>Notice how different prefixes on a single verb root like <b>писа́ти</b> (to write) create distinct perfective meanings—which then form their own secondary imperfective in <b>-увати/-ювати</b>: <b>написа́ти</b> (write to completion), <b>записа́ти → запи́сувати</b> (write down / record), <b>переписа́ти → перепи́сувати</b> (rewrite / copy), <b>підписа́ти → підпи́сувати</b> (sign), <b>ви́писати → випи́сувати</b> (write out / subscribe), <b>описа́ти → опи́сувати</b> (describe), <b>дописа́ти → допи́сувати</b> (finish writing to the end), <b>відписа́ти → відпи́сувати</b> (reply in writing), <b>надписа́ти → надпи́сувати</b> (inscribe), <b>приписа́ти → припи́сувати</b> (prescribe / ascribe), <b>списа́ти → спи́сувати</b> (make a list / copy), <b>уписа́ти/вписа́ти → упи́сувати</b> (register / enter).</li><li><b>Attenuative «по-» ("for a while") vs. Ingressive «за-» ("begin to")</b>: Adding <b>по-</b> to many verbs creates a perfective meaning "to do for a little while" (<b>посмія́тися</b> = laugh for a while, <b>посиді́ти</b> = sit for a while, <b>поле́жати</b> = lie down for a while, <b>поговори́ти</b> = chat for a while), whereas adding <b>за-</b> means "to begin / burst into doing" (<b>засмія́тися</b> = burst out laughing, <b>запла́кати</b> = start crying, <b>заспіва́ти</b> = begin to sing, <b>замовча́ти</b> = fall silent)!</li></ul>',
       '<b>6. Word-Building Prefix Chains on «ста́вити / ставля́ти» & «роби́ти / робля́ти» + Noun Suffixes («-ник», «-ар/-яр», «-ість»)</b>:<ul><li><b>The «ста́вити» Family (Imperfective «-ставля́ти» vs. Perfective «-ста́вити»)</b>:<ul><li><b>доста́вити / доставля́ти</b> = to deliver (noun: <b>доста́вка</b> = delivery);</li><li><b>ви́ставити / виставля́ти</b> = to exhibit, display, or put forward (nouns: <b>ви́ставка</b> = exhibition vs. <b>виста́ва</b> = theatrical performance!);</li><li><b>предста́вити / представля́ти</b> = to introduce, present, or represent (nouns: <b>представни́к / представни́ця</b> = representative, <b>представни́цтво</b> = representative office);</li><li><b>зіста́вити / зіставля́ти</b> = to compare / juxtapose; <b>вста́вити / вставля́ти</b> = to insert; <b>переста́вити / переставля́ти</b> = to rearrange / move.</li></ul></li><li><b>The «роби́ти» Family (Imperfective «-робля́ти» vs. Perfective «-роби́ти»)</b>:<ul><li><b>ви́робити / виробля́ти</b> = to manufacture / produce (nouns: <b>ви́ріб</b> [Gen. <i>ви́робу</i>] = product/article, <b>виробни́цтво</b> = production/manufacturing, <b>виробни́к</b> = producer);</li><li><b>зароби́ти / заробля́ти</b> = to earn (noun: <b>заробі́ток</b> [Gen. <i>заробі́тку</i>] = earnings);</li><li><b>розроби́ти / розробля́ти</b> = to develop / design (a plan, software, or collection: <b>розро́бка</b>);</li><li><b>перероби́ти / переробля́ти</b> = to redo, alter, or recycle; <b>дороби́ти / доробля́ти</b> = to finish making; <b>пророби́ти</b> = to work through; <b>нароби́ти</b> = to make a lot of (and reflexive <b>нароби́тися</b> = to work oneself to exhaustion!).</li></ul></li><li><b>High-Frequency Noun Suffixes</b>:<ul><li>Agent suffixes: <b>-ник / -ниця</b> (<i>робітни́к / робітни́ця, керівни́к, замовник, представни́к</i>) and <b>-ар / -яр</b> (<i>лі́кар, пе́кар, сто́ляр, му́ляр, школя́р</i>).</li><li>Abstract feminine quality suffix <b>-ість</b> (3rd declension, Gen. <b>-ості</b>, Inst. <b>-істю</b>): <i>можли́вий → можли́вість</i> (possibility/opportunity), <i>трива́лий → трива́лість</i> (duration), <i>стри́маний → стри́маність</i> (restraint/reserve), <i>відве́ртий → відве́ртість</i> (frankness/openness).</li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Ukrainian’s Signature Impersonal Passive (-но / -то), Verbal Adverbs & Prefix Families',
+        explanation:
+          'At the B2 level, two structures give Ukrainian journalism, signage, and literature their unmistakable crispness: 1) Invariant impersonal resultative predicates ending in -но or -то (Зро́блено в Украї́ні, Замо́влення вже опла́чено, Кни́жку напи́сано), which express a completed passive result while keeping the direct object in the Accusative case! 2) Adverbial participles (дієприслі́вники), invariant verb forms meaning "while doing X" (-учи/-ючи, -ачи/-ячи) or "having finished doing X" (-вши/-ши). You will also master how prefixes transform verb families like писа́ти, ста́вити, and роби́ти.',
+        whyItMatters:
+          'Every Ukrainian website, package label, news broadcast, and novel uses -но/-то resultatives and adverbial participles—understanding them makes upper-intermediate texts effortless to read.',
+        keyTakeaway:
+          'Impersonal -но/-то forms take an Accusative direct object (Цю статтю́ напи́сано; add бу́ло/бу́де for past/future), while adverbial participles (-ючи / -вши) must ALWAYS share the same grammatical subject as the main verb!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Проє́кт успі́шно заве́ршено, а результа́ти опубліко́вано на са́йті.',
+          en: 'The project has been successfully completed, and the results have been published on the website.',
+          highlight: 'заве́ршено ... опубліко́вано',
+          annotation: 'Invariant -но resultative predicates express a completed action without naming who performed it.',
+        },
+        {
+          uk: 'Гуля́ючи вечі́рнім Ки́євом, ми зустрі́ли да́вніх дру́зів і чу́ли, як ву́личний музика́нт грав на банду́рі.',
+          en: 'While strolling through evening Kyiv, we met old friends and heard a street musician playing the bandura.',
+          highlight: 'Гуля́ючи ... ми зустрі́ли ... чу́ли, як ву́личний музика́нт грав',
+          annotation: 'Гуля́ючи ("while strolling") shares the subject ми; for the musician we heard playing, Ukrainian uses a як clause (як музика́нт грав).',
+        },
+        {
+          uk: 'Прочита́вши весе́ле оповіда́ння, дру́зі споча́тку голосно засмія́лися, а по́тім ще тро́хи посиді́ли й поговори́ли.',
+          en: 'Having read the funny short story, the friends first burst out laughing, and then sat for a little while longer and chatted.',
+          highlight: 'Прочита́вши ... засмія́лися ... посиді́ли й поговори́ли',
+          annotation: 'Past perfective participle прочита́вши ("having read"), ingressive за- (засмія́лися = burst out laughing), and attenuative по- (посиді́ли = sat for a while).',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b21-impersonal-no-to-participles',
+          title: '1. Impersonal Resultatives (-но / -то) & Adverbial Participles (-ючи vs. -вши)',
+          idea: 'Use -но / -то to focus on the completed result of an action (+ Accusative object!), and use adverbial participles (-ючи for simultaneous actions, -вши for prior completed actions) when the doer of both actions is the exact same subject.',
+          explanation:
+            'Unlike English passive sentences where the object becomes the Nominative subject ("The article was written"), Ukrainian -но / -то predicates are grammatically impersonal and keep their direct object in the Accusative case: Цю статтю́ напи́сано (past: Цю статтю́ бу́ло напи́сано; future: Статтю́ бу́де напи́сано). Meanwhile, present adverbial participles are formed from the 3rd-person plural present stem of imperfective verbs by replacing -ть with -чи (чита́ють → чита́ючи, іду́ть → ідучи́, гово́рять → гово́рячи), while past adverbial participles attach -вши (or -ши after a consonant; -вшись for reflexives) to the past stem of perfective verbs (прочита́в → прочита́вши, поверну́вся → поверну́вшись). Because an adverbial participle can ONLY refer to the grammatical subject of the main verb, English perception sentences like "I saw him crossing the street" must be translated with a як clause: Я ба́чив, як він перехо́див ву́лицю!',
+          tables: [
+            {
+              title: 'Impersonal -но/-то Resultatives & Present vs. Past Adverbial Participles',
+              headers: ['Structure', 'How It Is Formed', 'Meaning & Syntax Rule', 'Authentic Example'],
+              rows: [
+                ['Impersonal -но / -то Resultative', 'Replace passive participle -ний/-тий with invariant -но/-то', 'Completed passive result; keeps direct object in Accusative! Add бу́ло (past) or бу́де (future).', 'Кни́жку напи́сано украї́нською. Нови́й музе́й бу́ло відкри́то.'],
+                ['Present Adverbial Participle (Дієприслі́вник тепе́рішнього ча́су)', 'Imperfective 3rd pl. present stem + -учи/-ючи (-ачи/-ячи); refl. -ючись', '"While doing X" (simultaneous action by the same subject)', 'Слу́хаючи подка́ст, я готува́в сніда́нок.'],
+                ['Past Adverbial Participle (Дієприслі́вник мину́лого ча́су)', 'Perfective masc. past stem + -вши (after vowel) / -ши (after cons.); refl. -вшись', '"Having done X" (prior completed action by the same subject)', 'Закі́нчивши університе́т, вона́ відкри́ла вла́сну спра́ву.'],
+                ['Perception Clause («Я ба́чив, як...»)', 'Verb of seeing/hearing + як + finite verb', 'Used when the person perceived is NOT the subject of the main verb', 'Я ба́чив, як він перехо́див ву́лицю.'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Закі́нчивши університе́т, вона́ відкри́ла вла́сну спра́ву.',
+              en: 'Having graduated from university, she opened her own business.',
+              highlight: 'Закі́нчивши ... вона́ відкри́ла',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Ідучи́ додо́му, почався́ си́льний дощ.',
+              right: 'Коли́ я ішо́в додо́му, почався́ си́льний дощ. (OR: Ідучи́ додо́му, я потра́пив під дощ.)',
+              explanation: 'In «Ідучи́ додо́му, почався́ дощ», the grammatical subject is дощ—which makes it sound as if the rain was walking home! The participle must share the subject of the main clause.',
+            },
+          ],
+          microCheck: {
+            question: 'In the sentence «Цю статтю́ напи́сано відо́мим журналі́стом», what case is «цю статтю́»?',
+            options: [
+              'Accusative singular (direct object of the impersonal predicate напи́сано)',
+              'Nominative singular',
+              'Locative singular',
+            ],
+            correctIndex: 0,
+            explanation: 'Ukrainian -но / -то predicates are grammatically impersonal and govern a direct object in the Accusative case (цю статтю́).',
+          },
+        },
+        {
+          id: 'b21-prefix-families-wordbuilding',
+          title: '2. Aspectual Prefixes (по- vs. за-) & Word Families (писа́ти, ста́вити, роби́ти)',
+          idea: 'Ukrainian builds entire vocabulary networks by attaching spatial and aspectual prefixes to core verb roots like писа́ти, ста́вити, and роби́ти.',
+          explanation:
+            'Adding attenuative по- to a verb creates a perfective meaning "to do for a little while" (посиді́ти = sit for a while, поговори́ти = chat for a while, посмія́тися = laugh for a while), whereas adding ingressive за- means "to begin / burst into doing" (засмія́тися = burst out laughing, запла́кати = start crying, заспіва́ти = begin to sing, замовча́ти = fall silent). Notice also how prefixed perfectives form secondary imperfectives in -увати/-ювати or -ля́ти (записа́ти → запи́сувати; доста́вити → доставля́ти; розроби́ти → розробля́ти), and watch the stress contrast between ви́ставка ("exhibition/trade show") and виста́ва ("theatrical performance/play")!',
+          tables: [
+            {
+              title: 'Word-Building Families: писа́ти, ста́вити / ставля́ти & роби́ти / робля́ти',
+              headers: ['Root Family', 'Key Prefixed Pairs (Pf. / Impf.)', 'Derived Nouns & Distinctions'],
+              rows: [
+                ['по- vs. за- Aspectual Prefixes', 'посиді́ти, поговори́ти, посмія́тися (for a while) vs. засмія́тися, запла́кати, заспіва́ти, замовча́ти (burst into)', 'по- = attenuative ("a bit"); за- = ingressive ("begin suddenly")'],
+                ['писа́ти (12 Prefixes)', 'записа́ти/запи́сувати (record), підписа́ти/підпи́сувати (sign), описа́ти/опи́сувати (describe), переписа́ти (rewrite), дописа́ти (finish), відписа́ти (reply)', 'написа́ти, ви́писати, надписа́ти, приписа́ти, списа́ти, уписа́ти'],
+                ['ста́вити / -ставля́ти', 'доста́вити/доставля́ти (deliver), ви́ставити/виставля́ти (exhibit), предста́вити/представля́ти (present/represent), зіста́вити (compare)', 'доста́вка (delivery); ви́ставка (exhibition) vs. виста́ва (theater play!); представни́к'],
+                ['роби́ти / -робля́ти', 'ви́робити/виробля́ти (produce), зароби́ти/заробля́ти (earn), розроби́ти/розробля́ти (develop/design), перероби́ти (redo/recycle)', 'ви́ріб (product), виробни́цтво (production), заробі́ток (earnings), розро́бка'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Представни́к на́шого виробни́цтва розроби́в нову́ коле́кцію ви́робів і доста́вив зразки́ на міжнаро́дну ви́ставку.',
+              en: 'The representative of our production facility developed a new collection of products and delivered samples to the international exhibition.',
+              highlight: 'Представни́к ... виробни́цтва розроби́в ... ви́робів і доста́вив ... ви́ставку',
+            },
+          ],
+          microCheck: {
+            question: 'What is the difference between «ви́ставка» and «виста́ва»?',
+            options: [
+              '«ви́ставка» (stress on ви́-) is an exhibition or trade show, whereas «виста́ва» (stress on -ста́-) is a theatrical performance or play',
+              'They mean the exact same thing',
+              '«ви́ставка» is a verb and «виста́ва» is an adjective',
+            ],
+            correctIndex: 0,
+            explanation: 'Stress distinguishes ви́ставка (an art or trade exhibition) from виста́ва (a theatrical stage performance).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Euphony of «б / би» & Productive Noun Suffixes (-ник, -ар, -ість)',
+          summary: 'Expand to review when to use б vs. би and how agent and abstract nouns are formed.',
+          blocks: [
+            {
+              heading: 'Conditional Particle Euphony: «б» vs. «би»',
+              items: [
+                'Use б after a word ending in a vowel (Я б з ра́дістю пішо́в; Вона́ хоті́ла б запита́ти) and би after a word ending in a consonant (Він би допомі́г; Ми хоті́ли б / Він хоті́в би).',
+              ],
+            },
+            {
+              heading: 'Productive Noun Suffixes (-ник/-ниця, -ар/-яр, -ість)',
+              items: [
+                'Agent nouns: -ник / -ниця (робітни́к, керівни́к, замо́вник, представни́к) and -ар / -яр (лі́кар, пе́кар, сто́ляр, му́ляр, школя́р).',
+                '3rd-declension abstract feminine nouns in -ість (Gen. -ості, Inst. -істю): можли́вість (opportunity), трива́лість (duration), стри́маність (restraint), відве́ртість (frankness).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Якби́ я знав про це рані́ше, я б обов’язко́во тобі́ сказа́в.', en: 'If I had known about this earlier, I would definitely have told you.' },
       { uk: 'Проє́кт успі́шно заве́ршено, а результа́ти опубліко́вано на са́йті.', en: 'The project has been successfully completed, and the results have been published on the website.' },
@@ -2758,6 +5887,137 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. Parenthetical Modal Words (Вставні́ слова́)</b>: Native speakers weave parenthetical words into conversation to show certainty, probability, or topic shifts (always set off by commas in writing): <b>ма́буть</b> (probably / most likely), <b>безумо́вно</b> (undoubtedly), <b>між і́ншим / до ре́чі</b> (by the way), <b>зре́штою</b> (after all / ultimately), <b>щопра́вда</b> (admittedly / to be sure).',
       '<b>5. Accusative vs. Dative Experiencers in Health Verbs & Sensory «Па́хне + Instrumental»</b>:<ul><li><b>Accusative Experiencer («мене́, його́, її́») for Physical Chills, Fever & Nausea</b>: While general state words take the Dative (<b>Мені́ хо́лодно, Мені́ не спи́ться, Мені́ здає́ться</b>), three high-frequency impersonal sickness verbs put the person in the <b>Accusative case</b>: <b>Мене́ ну́дить</b> (I feel nauseous), <b>Його́ лихома́нить</b> (He feels feverish), and <b>Мене́ моро́зить</b> (I feel chilled/shivery; past: <i>Тара́са нуди́ло</i>, future: <i>мене́ моро́зитиме</i>).</li><li><b>Impersonal Sensory «Па́хне + Instrumental» ("It Smells Of...")</b>: To say "There is a smell of X / It smells of X", Ukrainian uses impersonal <b>па́хне</b> (past: neuter <b>па́хло</b>) + the <b>Instrumental case</b>: <b>У са́ду па́хне кві́тами</b> (It smells of flowers in the garden); <b>У кав’я́рні па́хло сві́жою ка́вою</b> (It smelled of fresh coffee in the café).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Subjectless Impersonal Sentences, Proportional Correlatives (чим... тим) & Modal Connectors',
+        explanation:
+          'English requires a dummy grammatical subject ("it" or "there") even when nobody is performing an action: "It is getting dark", "It is a pity", "There is not enough time". Ukrainian syntax is far more direct: one-member impersonal sentences express twilight, weather shifts, luck, sufficiency, lack, and sensory atmosphere without any Nominative subject at all (Сутені́є! Мені́ пощасти́ло! Нам вистача́є ча́су! У са́ду па́хне кві́тами!). Combined with proportional correlatives (Чим бі́льше..., тим кра́ще...) and parenthetical modal words (ма́буть, безумо́вно, між і́ншим, зре́штою), these patterns make your Ukrainian sound effortless and native.',
+        whyItMatters:
+          'Translating English "It is getting dark" as *Воно сутеніє or "I got lucky" as *Я пощастив immediately sounds unnatural. Impersonal syntax is one of the defining signatures of authentic Ukrainian.',
+        keyTakeaway:
+          'Never add dummy воно́ to nature or state predicates (Світа́є, Сутені́є, Мені́ пощасти́ло, Нам вистача́є/браку́є ча́су); pair Чим + comparative with тим + comparative for "The more..., the more...".',
+      },
+      seeItInAction: [
+        {
+          uk: 'Восени́ сутені́є ра́но, тож нам слід ви́йти з до́му завча́сно.',
+          en: 'In autumn it gets dark early, so we ought to leave the house ahead of time.',
+          highlight: 'сутені́є ра́но ... нам слід ви́йти',
+          annotation: 'Сутені́є ("it grows dark") and нам слід ("we ought to") are subjectless impersonal clauses.',
+        },
+        {
+          uk: 'Чим часті́ше ми спілку́ємося украї́нською, тим природні́ше звуча́ть на́ші фра́зи.',
+          en: 'The more often we communicate in Ukrainian, the more natural our phrases sound.',
+          highlight: 'Чим часті́ше ... тим природні́ше',
+          annotation: 'Proportional correlative Чим + comparative ..., тим + comparative.',
+        },
+        {
+          uk: 'Уве́чері в са́ду чу́дово па́хло кві́тами, але́ хво́рого тро́хи моро́зило й лихома́нило.',
+          en: 'In the evening it smelled wonderfully of flowers in the garden, but the patient felt slightly chilled and feverish.',
+          highlight: 'па́хло кві́тами ... хво́рого тро́хи моро́зило й лихома́нило',
+          annotation: 'Impersonal па́хло takes Instrumental кві́тами, while моро́зило/лихома́нило take Accusative хво́рого.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b22-impersonal-sentences',
+          title: '1. Subjectless Impersonal Sentences: Nature, Luck, Sufficiency & Short Predicates',
+          idea: 'Drop dummy "it" completely! Use 3rd-person singular neuter verbs for nature transitions, Dative + Genitive for sufficiency/lack, and short masculine adjectives (пе́вен, по́вен, ви́нен, рад) in predicates.',
+          explanation:
+            'In Ukrainian, nature transitions stand alone as complete one-word clauses: Світа́є (It is dawning), Вечорі́є (Evening is falling), Сутені́є (Dusk is falling), Похолода́ло (It has gotten colder). Verbs of luck and disposition take a Dative experiencer: Мені́ пощасти́ло! (I got lucky!), Мені́ добре спи́ться (I sleep well). Verbs of sufficiency and lack take a Dative person + Genitive thing: Нам вистача́є ча́су (We have enough time), Мені́ браку́є слів (I am at a loss for words). And four masculine adjectives have a crisp short predicate form without -ий: пе́вен (sure), по́вен + Gen. (full of: ко́шик по́вен я́блук), ви́нен (owes / guilty), and рад (glad).',
+          tables: [
+            {
+              title: 'Ukrainian Impersonal Constructions & Short Predicative Adjectives',
+              headers: ['Semantic Group', 'Ukrainian Pattern', 'Case Government', 'Example Sentence'],
+              rows: [
+                ['Nature & Twilight', 'Світа́є, Вечорі́є, Сутені́є, Похолода́ло', 'No subject (never use воно́!)', 'На дво́рі вже вечорі́є і сутені́є.'],
+                ['Luck & Disposition', 'Мені́ щасти́ть / пощасти́ло; Мені́ не спи́ться', 'Dative of person', 'Нам ду́же пощасти́ло з пого́дою!'],
+                ['Sufficiency & Lack', 'вистача́є / браку́є', 'Dative of person + Genitive of thing', 'Нам цілко́м вистача́є ча́су. Мені́ браку́є слів.'],
+                ['State & Obligation Words', 'Мені́ бо́ляче; Шкода́ / Жаль, що...; Вам слід + inf.', 'Dative of person + infinitive', 'Вам слід відпочи́ти. Шкода́ втрача́ти наго́ду.'],
+                ['Sensory & Sickness Impersonals', 'па́хне / па́хло чим; моро́зить / ну́дить / лихома́нить кого́', 'Instrumental after па́хне; Accusative with chills/nausea', 'У са́ду па́хне кві́тами. Хво́рого моро́зило.'],
+                ['Short Masculine Predicates', 'пе́вен (f. пе́вна), по́вен + Gen., ви́нен, рад', 'Used predicatively for masculine singular', 'Я пе́вен у на́шому у́спіху. Ко́шик був по́вен я́блук.'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Мені́ ду́же пощасти́ло, і я цілко́м пе́вен, що проє́кт бу́де успі́шним.',
+              en: 'I was very lucky, and I am completely certain that the project will be successful.',
+              highlight: 'Мені́ ду́же пощасти́ло ... я цілко́м пе́вен',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Ми не вистача́ємо час. / Я пощасти́в.',
+              right: 'Нам не вистача́є ча́су. / Мені́ пощасти́ло.',
+              explanation: 'Both вистача́ти and пощасти́ти are impersonal: put the person in the Dative case (нам, мені́) and the thing in the Genitive case (ча́су).',
+            },
+          ],
+          microCheck: {
+            question: 'Which cases are used with «вистача́ти» (to have enough) and «бракува́ти» (to lack) in «Нам браку́є ві́льного ча́су»?',
+            options: [
+              'Dative for the person («нам») and Genitive for what is lacking or sufficient («ві́льного ча́су»)',
+              'Nominative for both',
+              'Vocative and Instrumental',
+            ],
+            correctIndex: 0,
+            explanation: 'Impersonal verbs of sufficiency and lack (вистача́є, браку́є) take a Dative experiencer and a Genitive object.',
+          },
+        },
+        {
+          id: 'b22-correlatives-modals',
+          title: '2. Proportional Correlatives («Чим..., тим...») & Parenthetical Modal Words',
+          idea: 'Connect proportional comparisons with «Чим + comparative..., тим + comparative...» and weave parenthetical modal words (set off by commas) into your speech.',
+          explanation:
+            'Where English uses "The more..., the more...", Ukrainian pairs Чим + comparative in the first clause with тим + comparative in the second clause: Чим бі́льше, тим кра́ще (The more, the better). You can also link complex clauses with correlative pronouns like Той, хто... (The one who...) and Туди́, де... (To the place where...). To express probability, certainty, or conversational transitions, use parenthetical modal words (вставні́ слова́), always enclosed in commas: ма́буть (probably / most likely), безумо́вно (undoubtedly), між і́ншим / до ре́чі (by the way), зре́штою (ultimately / after all), and щопра́вда (admittedly / to be sure).',
+          tables: [
+            {
+              title: 'Correlative Connectors & Parenthetical Modal Words (Вставні́ слова́)',
+              headers: ['Expression', 'Category', 'English Meaning & Punctuation Rule'],
+              rows: [
+                ['Чим + comp. ..., тим + comp. ...', 'Proportional Correlative', '"The more..., the more..." (comma before тим)'],
+                ['Той, хто... / Туди́, де...', 'Correlative Pronoun / Adverb', '"He who / The one who..." / "To the place where..."'],
+                ['ма́буть', 'Parenthetical Modal (probability)', '"probably / most likely" (always set off by commas)'],
+                ['безумо́вно', 'Parenthetical Modal (certainty)', '"undoubtedly / certainly"'],
+                ['між і́ншим / до ре́чі', 'Parenthetical Discourse Marker', '"by the way / incidentally"'],
+                ['зре́штою / щопра́вда', 'Parenthetical Discourse Marker', '"ultimately, after all" / "admittedly, to be sure"'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Між і́ншим, нам тро́хи браку́є ча́су, але́, ма́буть, ми все всти́гнемо.',
+              en: 'By the way, we are slightly short of time, but most likely we will manage everything in time.',
+              highlight: 'Між і́ншим ... браку́є ча́су ... ма́буть',
+            },
+          ],
+          microCheck: {
+            question: 'How does Ukrainian build proportional comparisons like "The earlier we leave, the sooner we will arrive"?',
+            options: [
+              'Чим рані́ше ми ви́йдемо, тим шви́дше приї́демо. (Чим + comparative ..., тим + comparative)',
+              'Як рані́ше..., так шви́дше...',
+              'Якщо́ рані́ше..., бо шви́дше...',
+            ],
+            correctIndex: 0,
+            explanation: 'Чим + comparative ..., тим + comparative ... is the standard Ukrainian pattern for "The more..., the more...".',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Reflexive Disposition Verbs («Мені́ добре спи́ться») & «по́вен + Genitive»',
+          summary: 'Expand to review reflexive disposition impersonals and short predicate adjective governance.',
+          blocks: [
+            {
+              heading: 'Dative + Reflexive Disposition Verbs',
+              items: [
+                'Adding -ся to an intransitive verb with a Dative experiencer expresses how easily or naturally an activity goes for someone: Мені́ ту́т до́бре спи́ться / працю́ється / живе́ться (I sleep / work / live well here); Йому́ не сиди́ться вдо́ма (He can’t sit still at home).',
+                'Short masculine predicate по́вен ("full of") governs the Genitive case: Ко́шик був по́вен я́блук; Зал був по́вен люде́й.',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Восени́ сутені́є ра́но, тож нам слід ви́йти з до́му завча́сно.', en: 'In autumn it gets dark early, so we ought to leave the house ahead of time.' },
       { uk: 'Мені́ ду́же пощасти́ло, і я цілко́м пе́вен, що проє́кт бу́де успі́шним.', en: 'I was very lucky, and I am completely certain that the project will be successful.' },
@@ -2932,6 +6192,136 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. «уве́сь» ("all / the whole") vs. «ці́лий» ("an entire") & «оби́два / оби́дві» ("both")</b>:<ul><li><b>уве́сь / ввесь</b> (f. <b>уся́ / вся</b>, n. <b>усе́ / все</b>, pl. <b>усі́ / всі</b>; Gen. sg. m/n <b>усього́</b>, f. <b>усіє́ї</b>; Gen./Loc. pl. <b>усі́х</b>, Dat. pl. <b>усі́м</b>, Inst. pl. <b>усіма́</b>) means "all of a definite item" (<b>Я ви́п’ю всю пля́шку води́</b> = I’ll drink the whole bottle), whereas <b>ці́лий</b> emphasizes magnitude ("an entire / a whole": <b>Я зміг би ви́пити ці́лу пля́шку!</b> = I could drink a whole bottle!).</li><li><b>"Both" matches gender in the Nominative</b>: <b>оби́два</b> for masculine/neuter (<b>оби́два брати́</b>) and <b>оби́дві</b> for feminine (<b>оби́дві сестри́</b>). In all other cases, both share the stem <b>об-</b>: Gen./Loc. <b>обо́х</b>, Dat. <b>обо́м</b>, Inst. <b>обома́</b>.</li></ul>',
       '<b>5. High-Frequency Passive Participles in Cultural & Geographical Descriptions</b>:<ul><li>Notice the cases governed by these essential passive participles in Ukrainian cultural guides:<ul><li><b>присвя́чений + Dative</b> (dedicated to / devoted to): <i>Цей розді́л <b>присвя́чений ціка́вим місця́м</b> Украї́ни.</i></li><li><b>засно́ваний + Instrumental</b> (founded by): <i>Львів був <b>засно́ваний короле́м Дани́лом</b>.</i></li><li><b>на́званий + Instrumental</b> (named / called): <i>буди́нки з ка́меню, <b>на́звані кам’яни́цями</b>.</i></li><li><b>вкри́тий / укри́тий + Instrumental</b> (covered with): <i>Полони́ни <b>вкри́ті яскра́вими кві́тами й сокови́тими тра́вами</b>.</i></li><li><b>наси́чений + Instrumental</b> (saturated / filled with): <i>На глибині́ мо́ре <b>наси́чене сірково́днем</b>.</i></li><li><b>вра́жений + Instrumental</b> (impressed / amazed by): <i>Я просто <b>вра́жений красо́ю</b> Карпа́тського запові́дника!</i></li></ul></li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Four-Tier Indefinite Pronouns, Stress-Shift Negatives (ніко́ли vs. ні́коли) & Passive Participles',
+        explanation:
+          'Ukrainian gives you extraordinary precision when speaking about unknown things and absence: 1) Four distinct indefinite markers distinguish a specific unknown (-сь: хтось, щось) from an open choice in questions/imperatives (-не́будь: хто-не́будь, що-не́будь), a certain subset (де́-: де́хто, де́що), and free choice (будь-: будь-хто́, будь-яки́й). 2) A single shift of stress from the root to the prefix ні́- completely transforms negative words: «Я ніко́ли не відпочива́ю» means "I never rest", whereas «Мені́ ні́коли відпочива́ти» (stress on ні́-, Dative experiencer, no не!) means "I have no time to rest"! You will also master passive past participles (-ний / -тий) and the contrast between уве́сь ("all of") and ці́лий ("an entire").',
+        whyItMatters:
+          'Hearing the difference between ніко́ли ("never") and ні́коли ("no time"), or ніко́го ("nobody") and мені́ ні́кого запита́ти ("I have no one to ask"), unlocks one of the most expressive mechanisms in Slavic grammar.',
+        keyTakeaway:
+          'Use -сь for specific unknowns in statements and -не́будь for open questions/requests; stress the root in standard negatives (ніко́го не зна́ю, ніко́ли = never) and stress ні́- in Dative + infinitive predicative negatives (мені́ ні́кого запита́ти, мені́ ні́коли = no time)!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Чи ти знайшо́в що-не́будь ціка́ве в книга́рні? — Так, я купи́в щось ду́же ціка́ве!',
+          en: 'Did you find anything interesting at the bookshop? — Yes, I bought something very interesting!',
+          highlight: 'що-не́будь ... щось',
+          annotation: 'Open question uses що-не́будь ("anything or other"); affirmative past statement about a real item uses щось ("something specific").',
+        },
+        {
+          uk: 'Я тут ніко́го не зна́ю, тому́ мені́ ні́кого запита́ти про доро́гу.',
+          en: 'I don’t know anyone here, so I have no one to ask about the way.',
+          highlight: 'ніко́го не зна́ю ... мені́ ні́кого запита́ти',
+          annotation: 'Standard negative ніко́го (+ не + finite verb) vs. predicative negative ні́кого (first-syllable stress + Dative мені́ + infinitive, no не!).',
+        },
+        {
+          uk: 'Ви́бач, сього́дні мені́ зо́всім ні́коли гуля́ти, але́ я ніко́ли не забува́ю про дру́зів.',
+          en: 'Sorry, today I have no time at all to go for a walk, but I never forget about friends.',
+          highlight: 'мені́ зо́всім ні́коли ... ніко́ли не забува́ю',
+          annotation: 'First-syllable stress ні́коли = "have no time"; second-syllable stress ніко́ли = "never"!',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b23-indefinites-stress-negatives',
+          title: '1. Four-Tier Indefinites (-сь, -не́будь, де́-, будь-) & Stress-Shift Negatives (ніко́ли vs. ні́коли)',
+          idea: 'Match the indefinite particle to how specific the item is, and watch the stress jump to the first syllable (ні́-) when expressing "there is no one / nothing / nowhere / no time to do X"!',
+          explanation:
+            'In standard negative sentences with a finite verb and не, stress falls on the root: ніко́го (nobody), нічо́го (nothing), ніде́ (nowhere), ніку́ди (to nowhere), ніко́ли (never). Remember that prepositions split ні from the pronoun into three words (ні з ким, ні про що). By contrast, when a Dative person has no one, nothing, nowhere, or no time to perform an infinitive action, stress shifts onto the prefix ні́- and no не is used: Мені́ ні́кого запита́ти (I have no one to ask), Мені́ ні́чого роби́ти (I have nothing to do), Йому́ ні́де жи́ти (He has nowhere to live), Мені́ ні́коли! (I have no time!).',
+          tables: [
+            {
+              title: 'Indefinite Markers & Meaning-Changing Stress Shift in Negatives',
+              headers: ['System / Contrast', 'Forms & Stress Placement', 'Meaning & Grammar Rule', 'Authentic Example'],
+              rows: [
+                ['-сь (Specific Unknown)', 'хтось, щось, десь, куди́сь, яки́йсь, коли́сь', 'A specific person/thing exists (statements)', 'Учо́ра я купи́в щось смачне́.'],
+                ['-не́будь (Open Choice)', 'хто-не́будь, що-не́будь, де-не́будь, коли́-не́будь', '"Any / some ... or other" (questions, imperatives, future)', 'Подзвони́ мені́ коли́-не́будь! Чи ти знайшо́в що-не́будь?'],
+                ['де́- vs. будь-', 'де́хто, де́що, де́який vs. будь-хто́, будь-що́, будь-яки́й', 'де́- = certain/some (or "somewhat": де́що бі́льше); будь- = any at all', 'Будь-хто́ мо́же приєдна́тися до нас.'],
+                ['Standard Negatives (Root Stress)', 'ніко́го, нічо́го, ніде́, ніку́ди, ніко́ли ("never")', 'Used with не + finite verb; prepositions split (ні з ким)', 'Я тут ніко́го не зна́ю. Я ніко́ли не спі́знююся.'],
+                ['Predicative Negatives (Stress on ні́-!)', 'ні́кого, ні́чого, ні́де, ні́куди, ні́коли ("no time!")', 'Used with Dative + infinitive (NO не!)', 'Мені́ ні́кого запита́ти. Сього́дні мені́ зо́всім ні́коли!'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'У ме́не є ці́ла су́мка проду́ктів, куплена ще вранці, але́ весь день мені́ бу́ло ні́коли пообі́дати.',
+              en: 'I have a whole bag of groceries bought back in the morning, but all day I had no time to have lunch.',
+              highlight: 'ці́ла су́мка ... весь день мені́ бу́ло ні́коли пообі́дати',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Ви́бач, сього́дні я ніко́ли гуля́ти.',
+              right: 'Ви́бач, сього́дні мені́ ні́коли гуля́ти. (I have no time to go for a walk today.)',
+              explanation: 'For "I have no time", use Dative мені́ + first-syllable stressed ні́коли + infinitive.',
+            },
+          ],
+          microCheck: {
+            question: 'What is the difference between «Я ніко́ли не відпочива́ю» and «Мені́ ні́коли відпочива́ти»?',
+            options: [
+              '«Я ніко́ли не відпочива́ю» means "I never rest", whereas «Мені́ ні́коли відпочива́ти» (stress on ні́-) means "I have no time to rest"',
+              'Both mean "I never rest"',
+              '«Мені́ ні́коли» means "I always rest"',
+            ],
+            correctIndex: 0,
+            explanation: 'Shifting stress to the first syllable (ні́коли + Dative + infinitive) changes the meaning from "never" (ніко́ли) to "have no time" (ні́коли)!',
+          },
+        },
+        {
+          id: 'b23-participles-uves-tsilyi',
+          title: '2. Passive Past Participles (-ний / -тий) & «уве́сь» ("all") vs. «ці́лий» ("an entire")',
+          idea: 'Passive past participles turn completed transitive actions into agreeing adjectives (-ний or -тий), while уве́сь vs. ці́лий distinguishes "all of a definite item" from "an entire / a whole".',
+          explanation:
+            'Most perfective transitive verbs form their passive past participle with -ний (-на, -не, -ні): написа́ти → напи́саний (written), прочита́ти → прочи́таний (read), збудува́ти → збудо́ваний (built), відчини́ти → відчи́нений (open/opened), зроби́ти → зро́блений (done/made). Monosyllabic and root-vowel stems take -тий: взя́ти → взя́тий (taken), ви́пити → ви́питий (drunk up), забу́ти → забу́тий (forgotten), поча́ти → поча́тий (begun), вкри́ти → вкри́тий (covered). Finally, distinguish уве́сь / уся́ / усе́ / усі́ ("all of a specific thing": ви́пити всю пля́шку води́ = drink all the water in the bottle) from ці́лий ("an entire / a whole", emphasizing magnitude: ви́пити ці́лу пля́шку = drink a whole bottle!).',
+          tables: [
+            {
+              title: 'Passive Past Participles (-ний / -тий) & «уве́сь» vs. «ці́лий»',
+              headers: ['Pattern / Word', 'Forms & Examples', 'Case / Usage Note'],
+              rows: [
+                ['Participles in -ний', 'напи́саний, прочи́таний, збудо́ваний, відчи́нений, зачи́нений, зро́блений', 'Agree in gender, number, and case like hard adjectives'],
+                ['Participles in -тий', 'взя́тий, ви́питий, забу́тий, поча́тий, вкри́тий', 'Formed from monosyllabic and vowel-final roots'],
+                ['Participles + Governed Cases', 'присвя́чений + Dat.; засно́ваний / на́званий / вкри́тий / наси́чений / вра́жений + Inst.', 'вра́жений красо́ю; засно́ваний короле́м Дани́лом'],
+                ['уве́сь (уся́, усе́, усі́) vs. ці́лий', 'уве́сь день, уся́ пля́шка (Inst. pl. усіма́!) vs. ці́лий день, ці́ла пля́шка', 'уве́сь = all of a definite item; ці́лий = an entire / a whole'],
+                ['оби́два (m./n.) vs. оби́дві (f.)', 'оби́два брати́, оби́дві сестри́ → Gen./Loc. обо́х, Dat. обо́м, Inst. обома́', 'Merges into об- in all oblique cases'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Ми були́ вра́жені полони́нами, вкри́тими яскра́вими кві́тами, та мі́стом, засно́ваним короле́м Дани́лом.',
+              en: 'We were impressed by the alpine meadows covered with bright flowers and by the city founded by King Danylo.',
+              highlight: 'вра́жені полони́нами, вкри́тими ... засно́ваним короле́м Дани́лом',
+            },
+          ],
+          microCheck: {
+            question: 'What are the passive past participles of «взя́ти» (to take) and «забу́ти» (to forget)?',
+            options: [
+              'взя́тий and забу́тий (formed with the suffix -тий)',
+              'взя́вши and забу́вши',
+              'бе́ручи and забува́ючи',
+            ],
+            correctIndex: 0,
+            explanation: 'Monosyllabic and root-vowel stems like взя́ти, забу́ти, ви́пити, поча́ти form their passive past participles with -тий: взя́тий, забу́тий.',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Declension of «уве́сь / ввесь» & Word-Building Suffixes (-ник, -ість)',
+          summary: 'Expand to review the full declension of уве́сь and high-value noun suffixes.',
+          blocks: [
+            {
+              heading: 'Full Declension of «уве́сь (ввесь), уся́ (вся), усе́ (все), усі́ (всі)»',
+              items: [
+                'Singular Masc./Neut.: Nom. уве́сь / усе́, Gen. усього́, Dat. усьому́, Inst. усі́м, Loc. на усьому́ / усі́м.',
+                'Singular Feminine: Nom. уся́, Gen. усіє́ї, Dat./Loc. усій, Acc. усю́, Inst. усіє́ю.',
+                'Plural: Nom. усі́, Gen./Loc. усі́х, Dat. усі́м, Inst. усіма́ (всіма́)!',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Чи ти знайшо́в що-не́будь ціка́ве в книга́рні? — Так, я купи́в щось ду́же ціка́ве!', en: 'Did you find anything interesting at the bookshop (-не́будь in a question)? — Yes, I bought something very interesting (-сь in a past statement)!' },
       { uk: 'Я тут ніко́го не зна́ю, тому́ мені́ ні́кого запита́ти про доро́гу.', en: 'I don’t know anyone here (ніко́го + не + зна́ю), so I have no one to ask about the way (мені́ ні́кого запита́ти).' },
@@ -3106,6 +6496,171 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. Common-Gender [m/f] vs. Masculine-Only [m] Nouns Ending in «-а / -я»</b>:<ul><li><b>Common-Gender Nouns [m/f] (Refer to Both Males and Females)</b>: Nouns like <b>сирота́</b> (orphan), <b>листоно́ша</b> (letter carrier), <b>калі́ка</b>, <b>п’яни́ця</b>, <b>неро́ба</b> (lazybones/idler), <b>приче́па</b> (nuisance), and <b>нечепу́ра</b> (slob) decline like feminine nouns in <i>-а/-я</i> (note Gen. pl. <b>сирі́т</b>!), but <b>modifying adjectives agree with the actual person’s gender</b>: <b>Він неща́сний сирота́</b> vs. <b>Вона́ неща́сна сирота́</b>; <b>наш приві́тний листоно́ша</b> vs. <b>на́ша приві́тна листоно́ша</b>.</li><li><b>Masculine-Only Nouns [m] in «-а / -я» (Traditional Occupations & Roles)</b>: Nouns like <b>суддя́</b> (judge), <b>те́сля</b> (carpenter), <b>ста́роста</b> (wedding elder / matchmaker / group leader), and <b>дру́жба</b> (groom’s best man; cf. feminine <b>дру́жка</b> = bridesmaid) decline like feminine nouns in the singular, but differ in two crucial ways:<ul><li><b>1) Genitive/Accusative Plural in «-ів»</b>: <b>суддя́ → су́ддів</b>, <b>дру́жба → дру́жбів</b>, <b>те́сля → те́слів</b>, <b>ста́роста → ста́ростів / ста́рост</b>.</li><li><b>2) Masculine Adjective Agreement Even for Women</b>: <b>Він до́брий суддя́</b> AND <b>Вона́ до́брий суддя́</b>!</li></ul></li></ul>',
       '<b>5. Three Functions of Intensive «сам / сами́й» & Relative Clauses with «чий / котри́й»</b>:<ul><li><b>Intensive Pronoun «сам (сами́й), сама́, саме́, самі́»</b> (declined like a Hard adjective: Gen. <b>само́го, само́ї, сами́х</b>, Dat. <b>само́му, самі́й, сами́м</b>, Inst. <b>сами́м, само́ю, сами́ми</b>):<ul><li><b>1) Emphatic "Himself / Herself / Themselves"</b>: <b>Він сам мо́же зла́годити а́вто; Вона́ сама́ ба́чила ава́рію</b>.</li><li><b>2) Reinforcing Reflexive «себе́»</b>: <b>Ді́ти самі́ себе́ мо́жуть догляда́ти; Вона́ сама́ собі́ поши́ла блу́зку; Він сам із собо́ю гово́рить</b>.</li><li><b>3) Meaning "Alone / By Oneself"</b>: <b>Ді́ти самі́ вдо́ма</b> (The children are home alone); <b>Чому́ ти сам ходи́в у кіно́?</b> (Why did you go to the movies by yourself?).</li></ul></li><li><b>Relative Clauses with «котри́й, яки́й, чий, хто, що»</b>: Always set off relative clauses with commas! While <b>яки́й</b> and <b>котри́й</b> agree in gender and number with their antecedent noun in the main clause, <b>чий (чия́, чиє́, чиї́)</b> ("whose") agrees in gender, number, and case with the <b>noun it modifies inside the relative clause</b>: <b>Студе́нтка, чиї́м а́втом ми сюди́ приї́хали, ви́грала лотере́ю</b> (Instrumental <i>чиї́м а́втом</i> = "by whose car"!).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Possessive Adjectives (-ин/-їн & -ів/-їв), Short Adjectives, Masculine -а/-я Nouns & Intensive «сам»',
+        explanation:
+          'One of the warmest, most idiomatic features of Ukrainian is its system of personal possessive adjectives: instead of saying "the book of my sister" or "the car of Yuriy", native speakers turn kinship nouns and first names directly into agreeing adjectives—ма́мина ви́шивка, О́льжине заня́ття, бра́тів комп’ю́тер, бра́това кни́жка, Ю́рієве а́вто! In this module, you will master how feminine (-ин/-їн) and masculine (-ів/-їв → -ов-/-ев-/-єв-) possessive adjectives are formed and declined, how short masculine predicate adjectives work (пови́нен, ви́нен, пе́вен, ко́жен, потрі́бен), how common-gender [m/f] nouns (сирота́) differ from masculine role nouns (суддя́), and how intensive сам and relative чий operate.',
+        whyItMatters:
+          'Possessive adjectives appear in nearly every Ukrainian family conversation and literary text—and understanding why бра́тів changes to бра́това while Ю́ріїв changes to Ю́рієве makes the entire closed-to-open syllable rule click into place.',
+        keyTakeaway:
+          'Feminine nouns form possessive adjectives with -ин/-їн (with к→ч, г→ж, х→ш: до́ччин, О́льжин, Марі́їн); masculine nouns add -ів/-їв in the closed masculine singular and alternate to -ов- (hard: бра́това), -ев- (mixed/soft: зя́тева), or -єв- (after й: Ю́рієва) whenever a vowel ending is added!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Це Марі́їн хрест, ма́мина ви́шивка, О́льжине улю́блене заня́ття та бабу́сині велико́дні пи́санки.',
+          en: 'This is Mariya’s cross, mother’s embroidery, Olha’s favorite hobby, and grandmother’s Easter pysanky.',
+          highlight: 'Марі́їн ... ма́мина ... О́льжине ... бабу́сині',
+          annotation: 'Feminine possessive adjectives in -ин / -їн: notice bare masculine Марі́їн (no -ий!) and velar mutation г → ж in О́льжине.',
+        },
+        {
+          uk: 'Ось бра́тів комп’ю́тер і бра́това кни́жка, зя́тів мета́л і зя́тева різьба́, а бі́ля ха́ти стої́ть Ю́рієве нове́ а́вто.',
+          en: 'Here is my brother’s computer and brother’s book, my son-in-law’s metal and carving, and by the house stands Yuriy’s new car.',
+          highlight: 'бра́тів ... бра́това ... зя́тів ... зя́тева ... Ю́рієве',
+          annotation: 'Closed syllable -ів / -їв alternates in open syllables to -ов- (hard бра́това), -ев- (soft зя́тева), or -єв- (after й: Ю́рієве).',
+        },
+        {
+          uk: 'На́ша сусі́дка — ду́же справедли́вий суддя́; вона́ сама́ собі́ поши́ла святко́ву су́кню.',
+          en: 'Our female neighbor is a very fair judge; she sewed a festive dress for herself by herself.',
+          highlight: 'справедли́вий суддя́ ... сама́ собі́',
+          annotation: 'Masculine occupational суддя́ takes a masculine adjective even for a woman, and сама́ собі́ reinforces reflexive собі́.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b24-possessive-adjectives',
+          title: '1. Feminine (-ин / -їн) & Masculine (-ів / -їв → -ов- / -ев- / -єв-) Possessive Adjectives',
+          idea: 'Notice that masculine Nominative singular possessive adjectives end in bare -ин/-їн or -ів/-їв (never *-иний or *-івий!), while all other forms decline like regular hard adjectives!',
+          explanation:
+            'From feminine nouns (and masculine names in -а like Мико́ла), drop -а/-я and add -ин after a consonant (ма́ма → ма́мин, ма́мина, ма́мине, ма́мині; сестра́ → сестри́н) or -їн after a vowel (Марі́я → Марі́їн, Марі́їна, Марі́їне, Марі́їні). Remember velar mutation before -ин: к → ч (дочка́ → до́ччин, ті́тка → ті́тчин), г → ж (О́льга → О́льжин), х → ш (свекру́ха → свекру́шин). From masculine nouns, add -ів after a consonant or -їв after -й. Because -ів / -їв is a closed syllable, adding ANY vowel ending (-а, -е, -і, -ого, -ому, -им) opens the syllable and triggers vowel alternation: 1) Hard stems: -ів → -ов- (бра́тів → бра́това, бра́тове, бра́тові, бра́тового); 2) Mixed & Soft 1 stems: -ів → -ев- (зя́тів → зя́тева, діду́сів → діду́сева, това́ришів → това́ришева); 3) Soft 2 stems in -й: -їв → -єв- (Ю́ріїв → Ю́рієва, Ю́рієве, Андрі́їв → Андрі́єва)!',
+          tables: [
+            {
+              title: 'Formation & Alternation of Ukrainian Possessive Adjectives',
+              headers: ['Source Noun Type', 'Masc. Nom. Sg. (Closed)', 'Fem. (-а), Neut. (-е), Pl. (-і) (Open)', 'Genitive / Instrumental Sg.'],
+              rows: [
+                ['Fem. Consonant Stem (-ин)', 'ма́мин, бабу́син, сестри́н', 'ма́мина, ма́мине, ма́мині', 'ма́миного / ма́миної; ма́миним / ма́миною'],
+                ['Fem. Velar Stem (к→ч, г→ж, х→ш)', 'до́ччин, ті́тчин, О́льжин, свекру́шин', 'О́льжина, О́льжине, О́льжині', 'О́льжиного / О́льжиної; О́льжиним'],
+                ['Fem. Vowel Stem (-їн)', 'Марі́їн, Софі́їн, Наді́їн', 'Марі́їна, Марі́їне, Марі́їні', 'Марі́їного / Марі́їної; Марі́їним'],
+                ['Masc. Hard Stem (-ів → -ов-)', 'бра́тів, ба́тьків, сусі́дів', 'бра́това, бра́тове, бра́тові', 'бра́тового / бра́тової; бра́товим'],
+                ['Masc. Mixed/Soft 1 (-ів → -ев-)', 'зя́тів, діду́сів, това́ришів', 'зя́тева, зя́теве, зя́теві', 'зя́тевого / зя́тевої; зя́тевим'],
+                ['Masc. Soft 2 in -й (-їв → -єв-)', 'Ю́ріїв, Андрі́їв, Сергі́їв', 'Ю́рієва, Ю́рієве, Ю́рієві', 'Ю́рієвого / Ю́рієвої; Ю́рієвим'],
+              ],
+            },
+          ],
+          declensionGroups: [
+            {
+              title: 'Interactive Declension Explorer: Possessive Adjectives Across Cases',
+              description: 'Compare feminine-derived ма́мин and masculine-derived бра́тів & Ю́ріїв across all 7 cases.',
+              paradigms: [
+                {
+                  noun: 'бра́тів / бра́това (brother’s)',
+                  gender: 'masculine',
+                  subType: 'Hard Masculine Possessive (-ів → -ов-)',
+                  rows: [
+                    { caseName: 'Nominative', singular: 'бра́тів (m.) / бра́това (f.) / бра́тове (n.)', plural: 'бра́тові', note: '-ів only in closed masc. Nom./Acc. sg.!' },
+                    { caseName: 'Genitive', singular: 'бра́тового (m./n.) / бра́тової (f.)', plural: 'бра́тових', note: 'Open syllable → -ов- + hard adj. ending' },
+                    { caseName: 'Dative', singular: 'бра́товому (m./n.) / бра́товій (f.)', plural: 'бра́товим', note: '-овому / -овій / -овим' },
+                    { caseName: 'Accusative', singular: 'бра́тів (inanim.) / бра́тового (anim.) / бра́тову (f.)', plural: 'бра́тові (inanim.) / бра́тових (anim.)', note: 'Masc. inanim. = бра́тів' },
+                    { caseName: 'Instrumental', singular: 'бра́товим (m./n.) / бра́товою (f.)', plural: 'бра́товими', note: '-овим / -овою / -овими' },
+                    { caseName: 'Locative', singular: 'на бра́товому (бра́товім) / на бра́товій', plural: 'на бра́тових', note: 'Standard hard adjective endings' },
+                    { caseName: 'Vocative', singular: 'бра́тів! / бра́това!', plural: 'бра́тові!', note: 'Same as Nominative' },
+                  ],
+                },
+                {
+                  noun: 'Ю́ріїв / Ю́рієва (Yuriy’s)',
+                  gender: 'masculine',
+                  subType: 'Soft 2 Masculine Possessive (-їв → -єв-)',
+                  rows: [
+                    { caseName: 'Nominative', singular: 'Ю́ріїв (m.) / Ю́рієва (f.) / Ю́рієве (n.)', plural: 'Ю́рієві', note: '-їв in closed syllable → -єв- in open syllables' },
+                    { caseName: 'Genitive', singular: 'Ю́рієвого (m./n.) / Ю́рієвої (f.)', plural: 'Ю́рієвих', note: 'Compare зя́тів → зя́тевого (-ев-)' },
+                    { caseName: 'Dative', singular: 'Ю́рієвому (m./n.) / Ю́рієвій (f.)', plural: 'Ю́рієвим', note: '-євому / -євій / -євим' },
+                    { caseName: 'Accusative', singular: 'Ю́ріїв (inanim.) / Ю́рієвого (anim.) / Ю́рієву (f.)', plural: 'Ю́рієві / Ю́рієвих', note: 'Ю́рієве а́вто' },
+                    { caseName: 'Instrumental', singular: 'Ю́рієвим (m./n.) / Ю́рієвою (f.)', plural: 'Ю́рієвими', note: '-євим / -євою / -євими' },
+                    { caseName: 'Locative', singular: 'на Ю́рієвому / на Ю́рієвій', plural: 'на Ю́рієвих', note: 'Hard endings after -єв-' },
+                    { caseName: 'Vocative', singular: 'Ю́ріїв!', plural: 'Ю́рієві!', note: 'Same as Nominative' },
+                  ],
+                },
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Марі́я сама́ собі́ ви́шила блу́зку за бабу́синим узо́ром, а Ю́рієва сестра́ вже забра́ла кві́ти.',
+              en: 'Mariya embroidered the blouse for herself by herself following grandmother’s pattern, and Yuriy’s sister has already picked up the flowers.',
+              highlight: 'сама́ собі́ ... за бабу́синим узо́ром, а Ю́рієва сестра́',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Це ма́миний теле́фон і бра́тіва кни́жка.',
+              right: 'Це ма́мин теле́фон і бра́това кни́жка.',
+              explanation: 'Never add -ий to masculine ма́мин, and remember to alternate і → о in open syllables (бра́тів → бра́това).',
+            },
+          ],
+          microCheck: {
+            question: 'What happens to the stem consonant when forming possessive adjectives from «дочка́», «О́льга», and «свекру́ха»?',
+            options: [
+              'к → ч (до́ччин), г → ж (О́льжин), and х → ш (свекру́шин) before the suffix -ин',
+              'No consonant change occurs',
+              'They add -ів instead of -ин',
+            ],
+            correctIndex: 0,
+            explanation: 'Before the feminine possessive suffix -ин, velar consonants mutate: к → ч (до́ччин), г → ж (О́льжин), х → ш (свекру́шин).',
+          },
+        },
+        {
+          id: 'b24-short-adj-masculine-nouns-sam',
+          title: '2. Short Adjectives (пови́нен, ви́нен, пе́вен), Common vs. Masculine -а/-я Nouns & «сам / чий»',
+          idea: 'Distinguish common-gender nouns [m/f] (сирота́, листоно́ша) from masculine-only occupational nouns [m] in -а/-я (суддя́, те́сля, ста́роста, дру́жба), and master the three uses of сам!',
+          explanation:
+            'Five high-frequency adjectives drop -ий in the masculine singular: пови́нен (ought to / must), ви́нен (1. owes + Dative of person, за + Acc. of item; 2. guilty / at fault), пе́вен (sure / certain), ко́жен (every / everyone), and потрі́бен (needed). For nouns ending in -а/-я: common-gender [m/f] nouns like сирота́ (orphan, Gen. pl. сирі́т!), листоно́ша (letter carrier), and неро́ба (idler) match adjectives to the person’s gender (Він неща́сний сирота́ / Вона́ неща́сна сирота́), whereas masculine occupational/role nouns like суддя́ (judge), те́сля (carpenter), ста́роста (elder/leader), and дру́жба (best man) take Genitive/Accusative plural -ів (су́ддів, дру́жбів, те́слів) and masculine adjective agreement even for a woman (Вона́ до́брий суддя́!). Finally, intensive сам (сама́, саме́, самі́) means 1) "himself/herself", 2) reinforces reflexive себе́ (сама́ собі́, самі́ себе́), or 3) means "alone / by oneself" (Ді́ти самі́ вдо́ма), while relative чий agrees in gender, number, and case with the noun it modifies inside the relative clause (Студе́нтка, чиї́м а́втом ми приї́хали...).',
+          tables: [
+            {
+              title: 'Short Masculine Adjectives, -а/-я Noun Types & Intensive «сам»',
+              headers: ['Category', 'Ukrainian Forms', 'Key Grammar & Agreement Rule'],
+              rows: [
+                ['5 Short Masculine Adjectives', 'пови́нен (f. пови́нна), ви́нен (f. ви́нна), пе́вен (f. пе́вна), ко́жен (f. ко́жна), потрі́бен (f. потрі́бна)', 'ви́нен = 1) owes (+ Dat. бра́тові за квитки́), 2) guilty (Ніхто́ не ви́нен)'],
+                ['Common-Gender [m/f] in -а/-я', 'сирота́ (Gen. pl. сирі́т), листоно́ша, неро́ба, приче́па, нечепу́ра', 'Adjective matches biological gender: наш листоно́ша / на́ша листоно́ша'],
+                ['Masculine-Only [m] in -а/-я', 'суддя́ (pl. су́дді, су́ддів), те́сля (те́слів), ста́роста, дру́жба (дру́жбів)', 'Gen./Acc. pl. in -ів! Takes masculine adjective even for women: Вона́ до́брий суддя́'],
+                ['Intensive «сам (сама́, саме́, самі́)»', 'Gen. само́го/само́ї, Dat. само́му/самі́й, Inst. сами́м/само́ю', '1) himself/herself; 2) reinforces себе́ (самі́ себе́); 3) alone (Ді́ти самі́ вдо́ма)'],
+                ['Relative «чий (чия́, чиє́, чиї́)»', 'Agrees with the possessed noun inside the relative clause', 'Студе́нтка, чиї́м а́втом ми сюди́ приї́хали, ви́грала лотере́ю.'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Ю́рію, скі́льки гро́шей ти ви́нен бра́тові? — Я пе́вен, що вже ніко́му нічо́го не ви́нен, але́ пови́нен купи́ти квитки́.',
+              en: 'Yuriy, how much money do you owe your brother? — I am sure that I no longer owe anything to anyone, but I ought to buy the tickets.',
+              highlight: 'ви́нен бра́тові ... пе́вен ... пови́нен купи́ти',
+            },
+          ],
+          microCheck: {
+            question: 'What is the Genitive/Accusative plural of the masculine occupational nouns «суддя́» (judge) and «дру́жба» (best man)?',
+            options: [
+              'су́ддів and дру́жбів (taking the masculine ending -ів)',
+              'суддь and дружб',
+              'They have no plural forms',
+            ],
+            correctIndex: 0,
+            explanation: 'Masculine occupational and role nouns in -а/-я (суддя́, дру́жба, те́сля) take the masculine ending -ів in the Genitive/Accusative plural: су́ддів, дру́жбів, те́слів.',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Ukrainian Wedding Roles & Declining «сам» and «чий»',
+          summary: 'Expand to review traditional wedding vocabulary and full declension of сам and чий.',
+          blocks: [
+            {
+              heading: 'Traditional Ukrainian Wedding Vocabulary («Весі́лля та вінча́ння»)',
+              items: [
+                'нарече́ний (groom/fiancé), нарече́на (bride/fiancée), молодя́та (newlyweds), дру́жба (groom’s best man, pl. дру́жби, Gen. pl. дру́жбів), дру́жка (bridesmaid, pl. дру́жки, Gen. pl. дру́жок), ста́роста (wedding elder / matchmaker), вінча́ння (church wedding ceremony), весі́льний корова́й (ornate braided wedding bread).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Це Марі́їн хрест, ма́мина ви́шивка, О́льжине улю́блене заня́ття та бабу́сині велико́дні пи́санки.', en: 'This is Mariya’s cross (Марі́їн), mother’s embroidery (ма́мина), Olha’s favorite hobby (О́льжине with г→ж), and grandmother’s Easter pysanky (бабу́сині).' },
       { uk: 'Ось бра́тів комп’ю́тер і бра́това кни́жка, зя́тів мета́л і зя́тева різьба́, а бі́ля ха́ти стої́ть Ю́рієве нове́ а́вто.', en: 'Here is my brother’s computer (бра́тів) and brother’s book (бра́това, і→о), my son-in-law’s metal (зя́тів) and carving (зя́тева, і→е), and by the house stands Yuriy’s new car (Ю́рієве, ї→є).' },
@@ -3294,6 +6849,134 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>4. Authentic Ukrainian Exclamations & Emotional Reactions</b>:<ul><li><b>Surprise & Amazement</b>: <b>Та ти що! / Та Ви що!</b> ("You don’t say! / Really?!"), <b>Не мо́же бу́ти!</b> ("It can’t be!"), <b>Оце́ так несподі́ванка!</b> ("What a surprise!"), <b>От тобі́ й ма́єш! / От тобі́ й на!</b> ("Well, there you go! / Well I never!"), <b>Хто б міг поду́мати!</b> ("Who would have thought!").</li><li><b>Mild Annoyance or Relief</b>: <b>Хай йому́ грець!</b> ("Darn it! / Bless my soul!" — classic mild Ukrainian exclamation), <b>Отако́ї!</b> ("Well look at that!"), <b>Наре́шті!</b> ("Finally!"), <b>Сла́ва Бо́гу! / Дя́кувати Бо́гові!</b> ("Thank goodness!").</li></ul>',
       '<b>5. Character Traits, Emotional Verbs & Nature Landscapes</b>:<ul><li><b>Character & Expertise</b>: <b>розсу́дливий / розва́жливий</b> (sensible, level-headed, prudent) vs. <b>легкова́жний</b> (frivolous, flighty); <b>своєрі́дний</b> (original, distinctive, peculiar in one’s own way); <b>стри́маність</b> (restraint/composure) vs. <b>відве́ртість</b> (frankness/candor); <b>знаве́ць</b> (Gen. <b>знавця́</b> = connoisseur/expert: <i>спра́вжній знаве́ць украї́нського мисте́цтва</i>) vs. <b>дилета́нт</b> (amateur/dilettante).</li><li><b>Expressive Verbs</b>: <b>збагну́ти / осягну́ти</b> (to grasp, fathom, comprehend: <i>Ва́жко збагну́ти, як швидко мина́є час</i>), <b>нава́житися / нава́жуватися + inf.</b> (to dare / pluck up courage to do), <b>зашарі́тися</b> (to blush / flush crimson), <b>перебі́льшувати / перебі́льшити</b> (to exaggerate: <i>Не перебі́льшуй!</i>).</li><li><b>Landscape Nouns</b>: <b>су́ша</b> (dry land / terra firma), <b>вузька́ сму́жка бе́рега</b> (narrow strip of shore), <b>крута́ ске́ля</b> (steep cliff/crag), <b>густи́й очере́т</b> (dense reeds along a river or lake).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'Professional Negotiations, Semantic Contrasts (спі́льний vs. зага́льний) & Conversational Tactics',
+        explanation:
+          'Whether you are negotiating a joint venture (спі́льне підприє́мство) in Kyiv, reviewing capital investments (капіталовкла́дення) and equipment modernization (модерніза́ція обла́днання), or debating ideas with colleagues, B2 Ukrainian combines exact lexical distinctions with warm, expressive conversational formulas. You will learn why Ukrainian separates спі́льний ("joint / shared between partners") from зага́льний ("general / overall / total"), why потребува́ти ("to require") always governs the Genitive case, and how to use natural discourse markers like Річ у тім, що... ("The thing is that...") and lively exclamations like Та Ви що! ("You don’t say!").',
+        whyItMatters:
+          'In professional and academic Ukrainian, precise case government (потребува́ти ново́го обла́днання, спеціалізува́тися на пошитті́, вважа́ти на обста́вини) and tactful discourse formulas set apart fluent speakers.',
+        keyTakeaway:
+          'Use спі́льний for shared/joint ventures (спі́льне підприє́мство) and зага́льний for total/general concepts (зага́льна су́ма ви́трат); always follow потребува́ти with the Genitive case!',
+      },
+      seeItInAction: [
+        {
+          uk: 'На́ше спі́льне підприє́мство спеціалізу́ється на пошитті́ суча́сного о́дягу й потребу́є додатко́вого фінансува́ння для модерніза́ції обла́днання.',
+          en: 'Our joint venture specializes in sewing modern clothing and requires additional financing for equipment modernization.',
+          highlight: 'спі́льне підприє́мство спеціалізу́ється на пошитті́ ... потребу́є додатко́вого фінансува́ння',
+          annotation: 'Спі́льне підприє́мство = joint venture; спеціалізува́тися на + Locative; потребува́ти + Genitive.',
+        },
+        {
+          uk: 'Річ у тім, що зага́льна су́ма ви́трат на рекла́му та страхува́ння тро́хи переви́щує попере́дній розраху́нок.',
+          en: 'The thing is that the total sum of expenses on advertising and insurance slightly exceeds the preliminary calculation.',
+          highlight: 'Річ у тім, що зага́льна су́ма ви́трат ... розраху́нок',
+          annotation: 'Річ у тім, що... introduces a clarification, and зага́льна су́ма means the overall/total sum.',
+        },
+        {
+          uk: 'Та Ви що! Оце́ так несподі́ванка! Хто б міг поду́мати, що ваш коле́га — таки́й глибо́кий знаве́ць бота́ніки!',
+          en: 'You don’t say! What a surprise! Who would have thought that your colleague is such a deep connoisseur of botany!',
+          highlight: 'Та Ви що! Оце́ так несподі́ванка! ... знаве́ць',
+          annotation: 'Authentic Ukrainian exclamations of warm surprise and admiration.',
+        },
+      ],
+      concepts: [
+        {
+          id: 'b25-business-semantic-contrasts',
+          title: '1. Business Ukrainian, Joint Ventures & Crucial Case/Semantic Distinctions',
+          idea: 'Separate спі́льний ("joint/shared") from зага́льний ("general/total"), and master the cases governed by потребува́ти (+ Gen.), спеціалізува́тися (на + Loc.), and вважа́ти!',
+          explanation:
+            'In Ukrainian business and professional life, спі́льний describes what partners or friends share together (спі́льне підприє́мство = joint venture, спі́льна спра́ва = common cause, спі́льні дру́зі = mutual friends, ма́ємо бага́то спі́льного), whereas зага́льний means "general" or "total" (зага́льна су́ма ви́трат = total sum of expenses, у зага́льних ри́сах = in general outline, зага́льні збо́ри = general meeting). The verb потребува́ти (потребу́ю, потребу́єш = to require / be in need of) ALWAYS governs the Genitive case (потребу́є ново́го обла́днання та фінансува́ння). Finally, distinguish вважа́ти на + Accusative ("to take into consideration / pay heed to": вважа́ючи на ці обста́вини) from вважа́ти кого́сь/щось + Instrumental ("to consider someone/something to be X")!',
+          tables: [
+            {
+              title: 'Professional Ukrainian: Semantic Contrasts, Governance & Financial Terms',
+              headers: ['Contrast / Domain', 'Ukrainian Expressions', 'Meaning & Case Governance'],
+              rows: [
+                ['спі́льний vs. зага́льний', 'спі́льне підприє́мство, спі́льні дру́зі vs. зага́льна су́ма ви́трат, у зага́льних ри́сах', 'спі́льний = joint / mutual / shared; зага́льний = general / overall / total'],
+                ['потребува́ти (+ Genitive!)', 'потребува́ти ново́го обла́днання / фінансува́ння / рете́льного ро́згляду', 'Always governs the Genitive case!'],
+                ['спеціалізува́тися (на + Loc.)', 'спеціалізува́тися на пошитті́ жіно́чого о́дягу з натура́льних ткани́н', 'Takes на + Locative ("specialize in")'],
+                ['вважа́ти на + Acc. vs. вважа́ти + Inst.', 'вважа́ючи на ці обста́вини (taking into account) vs. вважа́ти пропози́цію слу́шною', 'на + Acc. = mind/take into account; + Inst. = consider to be'],
+                ['Investments, Costs & Courier', 'капіталовкла́дення, джерело́ фінансува́ння, взя́ти по́зику, за вла́сний кошт, розраху́нок, доручи́ти поси́льному доста́вити пере́лік на ро́згляд', 'Complete toolkit for business negotiations and settlements (розрахува́тися з + Inst.)'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Ми доручи́ли поси́льному доста́вити пере́лік но́вих това́рів замовникові на ро́згляд ще до обі́ду.',
+              en: 'We entrusted a courier with delivering the itemized list of new goods to the client for review before lunch.',
+              highlight: 'доручи́ли поси́льному доста́вити пере́лік ... на ро́згляд',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Цех потребу́є нове́ обла́днання для зага́льного підприє́мства.',
+              right: 'Цех потребу́є ново́го обла́днання (Gen.) для спі́льного підприє́мства.',
+              explanation: 'Use the Genitive case after потребу́є (ново́го обла́днання) and спі́льне підприє́мство for a joint venture.',
+            },
+          ],
+          microCheck: {
+            question: 'Which case must follow the verb «потребува́ти» ("to require / need") in «На́ша фа́брика потребу́є ___»?',
+            options: [
+              'Genitive case (ново́го обла́днання та додатко́вого фінансува́ння)',
+              'Dative case (но́вому обла́днанню)',
+              'Locative case (на но́вому обла́днанні)',
+            ],
+            correctIndex: 0,
+            explanation: 'Потребува́ти always governs the Genitive case: потребува́ти ново́го обла́днання, фінансува́ння, допомо́ги.',
+          },
+        },
+        {
+          id: 'b25-tactics-exclamations-character',
+          title: '2. Conversational Tactics, Emotional Exclamations & Character Traits',
+          idea: 'Guide discussions smoothly with Ukrainian clarifying formulas (Річ у тім, що..., Йде́ться про...) and react with authentic emotional exclamations.',
+          explanation:
+            'When explaining the core of an issue, native speakers open with Річ у тім, що... (or Спра́ва в то́му, що... = "The thing/point is that..."), Йде́ться про + Accusative ("It is a matter of / We are talking about..."), or Ма́ється на ува́зі... ("What is meant is..."). Express polite doubt or reservation with Навряд чи! ("Hardly! / I doubt it!"), Це ще під пита́нням ("That is still in question"), or Дозво́льте не пого́дитися з Ва́ми ("Allow me to disagree with you"). And enrich your character and landscape descriptions with pairs like розсу́дливий / розва́жливий (sensible, prudent) vs. легкова́жний (frivolous), знаве́ць (connoisseur) vs. дилета́нт, and expressive verbs like збагну́ти (fathom/grasp), нава́житися (dare), and зашарі́тися (blush).',
+          tables: [
+            {
+              title: 'Conversational Tactics, Exclamations & Character Vocabulary',
+              headers: ['Function', 'Ukrainian Expressions', 'English Equivalents'],
+              rows: [
+                ['Clarifying & Structuring', 'Річ у тім, що...; Йде́ться про + Acc.; Ма́ється на ува́зі...; З одно́го бо́ку..., а з і́ншого бо́ку...; Ма́ло то́го,...', 'The thing is that...; It’s about...; What is meant is...; On the one hand...; Moreover...'],
+                ['Agreement vs. Reservation', 'Ма́єте ра́цію! Са́ме так! Безпере́чно! vs. Навряд чи! Це ще під пита́нням; Дозво́льте не пого́дитися', 'You’re right! Precisely! vs. Hardly! Still in question; Allow me to disagree'],
+                ['Surprise & Amazement', 'Та ти що! / Та Ви що! Не мо́же бу́ти! Оце́ так несподі́ванка! От тобі́ й ма́єш! Хто б міг поду́мати!', 'You don’t say! It can’t be! What a surprise! Well there you go! Who would have thought!'],
+                ['Mild Annoyance vs. Relief', 'Хай йому́ грець! Отако́ї! vs. Наре́шті! Сла́ва Бо́гу! / Дя́кувати Бо́гові!', 'Darn it! Well look at that! vs. Finally! Thank goodness!'],
+                ['Character & Expressive Verbs', 'розсу́дливий / розва́жливий vs. легкова́жний; знаве́ць vs. дилета́нт; збагну́ти, нава́житися, зашарі́тися, перебі́льшувати', 'sensible vs. flighty; connoisseur; fathom, dare, blush, exaggerate'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'На пе́рший по́гляд він здає́ться тро́хи легкова́жним, але́ наспра́вді це ду́же розсу́дливий і розва́жливий фахіве́ць.',
+              en: 'At first glance he seems a bit lighthearted, but in reality he is a very sensible and prudent specialist.',
+              highlight: 'легкова́жним ... розсу́дливий і розва́жливий фахіве́ць',
+            },
+          ],
+          microCheck: {
+            question: 'What does the adjective «розсу́дливий» (or «розва́жливий») mean in contrast to «легкова́жний»?',
+            options: [
+              'Sensible / level-headed / prudent in contrast to frivolous / flighty (легкова́жний)',
+              'Tall in contrast to short',
+              'Ancient in contrast to modern',
+            ],
+            correctIndex: 0,
+            explanation: 'Розсу́дливий / розва́жливий describes a sensible, prudent person, whereas легкова́жний means frivolous or flighty.',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Landscape & Shoreline Vocabulary',
+          summary: 'Expand to review natural shoreline and river vocabulary from B2 literary narratives.',
+          blocks: [
+            {
+              heading: 'Shoreline & River Landscape Terms',
+              items: [
+                'су́ша (dry land / terra firma), вузька́ сму́жка бе́рега (narrow strip of shore), крута́ ске́ля (steep cliff/crag), скеля́стий (rocky), густи́й очере́т (dense reeds along a river or lake).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'На́ше спі́льне підприє́мство спеціалізу́ється на пошитті́ суча́сного о́дягу й потребу́є додатко́вого фінансува́ння для модерніза́ції обла́днання.', en: 'Our joint venture specializes in sewing modern clothing and requires additional financing (+ Gen.) for equipment modernization.' },
       { uk: 'Річ у тім, що зага́льна су́ма ви́трат на рекла́му та страхува́ння тро́хи переви́щує попере́дній розраху́нок.', en: 'The thing is that the total sum (зага́льна су́ма) of expenses on advertising and insurance slightly exceeds the preliminary calculation.' },
@@ -3527,6 +7210,134 @@ export const COURSE_MODULES_A2_C1: CourseModule[] = [
       '<b>6. Word-Initial Euphony in Verbs & Nouns («вчи́тися / учи́тися», «іти́ / йти») & Avoiding Non-Standard Calques</b>:<ul><li><b>Word-Initial «у- / в-» and «і- / й-» in Verbs & Nouns</b>: Ukrainian euphony applies not only to prepositions and conjunctions, but also to the initial sound of common verbs and nouns!<ul><li>After a word ending in a <b>vowel</b>, prefer initial <b>в-</b> or <b>й-</b>: <b>Я вчу́ся</b>, <b>Вона́ встає́ ра́но</b>, <b>на́ша вчи́телька</b>, <b>Ка́тя йде додо́му</b>, <b>Вона́ йшла па́рком</b>, <b>тре́ба йти</b>.</li><li>After a word ending in a <b>consonant</b> or at the start of a sentence after a pause, prefer initial <b>у-</b> or <b>і-</b>: <b>Він учи́ться</b>, <b>Брат устає́ о сьо́мій</b>, <b>наш учи́тель</b>, <b>Іва́н іде́ до шко́ли</b>, <b>Він ішо́в пі́шки</b>, <b>ча́с іти́</b>.</li></ul></li><li><b>Standard Literary Ukrainian vs. Diaspora & Archaic Forms</b>:<ul><li>To say "to become a doctor / president", always use <b>ста́ти + Instrumental</b> (<b>Він хо́че ста́ти лі́карем / президе́нтом</b> — never <i>*попасти лікарем</i>, as <i>потра́пити / попа́сти</i> means "to land in / get into a place").</li><li>To say "I am interested in Ukraine", use active reflexive <b>Я ціка́влюся Украї́ною</b> (+ Instrumental) or impersonal <b>Мені́ ціка́во</b> (never <i>*Мені цікавується</i>).</li><li>For "around the house / table", use <b>навко́ло / довко́ла / навкруги́ + Genitive</b> (<b>навко́ло ха́ти, довко́ла столу́</b> — never <i>*покруги</i>).</li></ul></li></ul>',
       '<b>7. High-Style Verbal Adverbs («бу́дучи», Reflexive «-чись / -шись»), Parenthetical «че́сно ка́жучи», & Translating English "Without -ing" («не + Дієприслі́вник»)</b>:<ul><li><b>«бу́дучи + Instrumental» ("Being...") & Reflexive Verbal Adverbs in «-чись / -шись»</b>:<ul><li>From <b>бу́ти</b> (to be), the present verbal adverb is <b>бу́дучи</b> ("being"), which takes an <b>Instrumental</b> complement: <b>Бу́дучи студе́нтом Ки́ївського університе́ту, він ба́гато подорожува́в Украї́ною</b> (Being a student at Kyiv University, he traveled around Ukraine a lot).</li><li>Reflexive verbs contract <i>-ся</i> to <b>-сь</b> on verbal adverbs: present imperfective <b>-учись / -ючись / -ачись / -ячись</b> (<b>ди́влячись</b> = while looking, <b>навча́ючись</b> = while studying, <b>сподіва́ючись</b> = while hoping) and past perfective <b>-вшись / -шись</b> (<b>поверну́вшись</b> = having returned, <b>зустрі́вшись</b> = having met, <b>домо́вившись</b> = having agreed, <b>посміхну́вшись</b> = having smiled).</li></ul></li><li><b>Translating English "Without Doing X" («не + Verbal Adverb»)</b>: Where English uses a preposition + gerund ("without hurrying", "without saying a word", "without being boring", "without waiting for an answer"), Ukrainian uses <b>не + a present or past verbal adverb</b>: <b>Ми йшли́ вечі́рньою ву́лицею не поспіша́ючи</b> (We walked along the evening street without hurrying); <b>Вона́ ви́йшла, не сказа́вши ні сло́ва</b> (She left without saying a word); <b>Кни́жка вчить, не бу́дучи нудно́ю</b> (The book teaches without being boring).</li><li><b>Parenthetical Discourse Participles</b>: <b>че́сно ка́жучи / щи́ро ка́жучи / правду ка́жучи</b> (honestly / frankly speaking), <b>м’я́ко ка́жучи</b> (mildly speaking), <b>су́дячи з усього́</b> (judging by everything), <b>не ка́жучи вже про + Accusative</b> (not to mention...).</li></ul>',
     ],
+    structuredLesson: {
+      bigIdea: {
+        title: 'The Laws of Ukrainian Euphony (Милозву́чність), Vivid Idioms & High-Style Register',
+        explanation:
+          'Ukrainian is renowned across the Slavic world for its musicality, known as милозву́чність (euphony). To maintain an effortless alternating rhythm of consonants and vowels (C–V–C–V) and avoid harsh consonant clusters or vowel hiatuses, Ukrainian dynamically alternates prepositions (у / в and з / із / зі), conjunctions (і / й / та), and even the initial letters of common verbs and nouns (учи́тель / вчи́тель, учи́тися / вчи́тися, іти́ / йти, ішо́в / йшла, уже́ / вже)! At the C1 level, mastering euphony goes hand in hand with authentic Ukrainian idioms (ма́ти ра́цію, бра́ти у́часть, не па́сти за́дніх, лови́ти гав, діста́ти гарбуза́), stress minimal pairs, and high-style verbal adverbs (бу́дучи + Inst., не поспіша́ючи).',
+        whyItMatters:
+          'Knowing why native speakers say «Вона́ була́ в Оде́сі» but «Вона́ була́ у Льво́ві» (and «у ваго́ні») and why «не сказа́вши ні сло́ва» translates "without saying a word" gives your spoken and written Ukrainian true C1 polish.',
+        keyTakeaway:
+          'Alternate у/в, і/й/та, and з/із/зі according to surrounding sounds (always use у before в-/ф- or clusters like Льв-, and зі before мн-/шк-/Льв-); use бра́ти у́часть and ма́ти ра́цію; and translate "without -ing" as не + verbal adverb!',
+      },
+      seeItInAction: [
+        {
+          uk: 'Вона́ вже приї́хала в Оде́су, а він іще́ зали́шився у Льво́ві зі сво́їми дру́зями.',
+          en: 'She has already arrived in Odesa, while he still stayed in Lviv with his friends.',
+          highlight: 'вже приї́хала в Оде́су ... іще́ зали́шився у Льво́ві зі сво́їми',
+          annotation: 'After vowel-final вона́ and приї́хала, в- is used (вже, в Оде́су); after consonant-final він and before cluster Льв- / св-, у/і- and зі are used.',
+        },
+        {
+          uk: 'Вона́ вчи́ться в університе́ті й іде́ на ле́кцію, а її́ брат учи́ться в шко́лі й хоче ста́ти лі́карем.',
+          en: 'She studies at the university and walks to a lecture, while her brother studies at school and wants to become a doctor.',
+          highlight: 'Вона́ вчи́ться ... й іде́ ... брат учи́ться ... ста́ти лі́карем',
+          annotation: 'Word-initial euphony: вчи́ться after vowel-final вона́ vs. учи́ться after consonant-final брат; ста́ти + Instrumental for "to become".',
+        },
+        {
+          uk: 'Че́сно ка́жучи, поверну́вшись додо́му пі́сля конфере́нції, ми йшли́ на́бережною не поспіша́ючи й милува́лися Дніпро́м.',
+          en: 'Frankly speaking, having returned home after the conference, we walked along the embankment without hurrying and admired the Dnipro.',
+          highlight: 'Че́сно ка́жучи, поверну́вшись ... не поспіша́ючи',
+          annotation: 'Parenthetical че́сно ка́жучи, reflexive past verbal adverb поверну́вшись, and не поспіша́ючи ("without hurrying").',
+        },
+      ],
+      concepts: [
+        {
+          id: 'c11-euphony-matrix',
+          title: '1. Complete System of Ukrainian Euphony (Милозву́чність: у/в, і/й/та, з/із/зі & Word-Initial Alternations)',
+          idea: 'Look at BOTH the final sound of the preceding word and the initial sound(s) of the following word to keep syllables flowing smoothly!',
+          explanation:
+            '1) у vs. в (and word-initial у-/в- in учи́тель/вчи́тель, учи́тися/вчи́тися, устава́ти/встава́ти, уже́/вже): Use у between consonants, at the start of a sentence before a consonant, OR before ANY word beginning with в, ф, or a cluster containing в/ф (льв-, св-, тв-, хв-: у ваго́ні, у Франції, у Льво́ві, у сві́ті—even after a vowel!). Use в between two vowels (була́ в Оде́сі) or after a vowel before a single non-labial consonant (пішла́ в кіно́, вона́ вчи́ться). 2) і vs. й vs. та (and word-initial і-/й- in іти́/йти, ішо́в/йшо́в): Use і between consonants or after a pause (брат і сестра́, Іва́н іде́); use й between vowels or after a vowel before a consonant (Оле́на й Андрі́й, ма́ма й та́то, Ка́тя йде); use та for stylistic variety (never after a word ending in -та). 3) з vs. із vs. зі: Use з with vowels/single consonants (ка́ва з молоко́м); use із between consonant clusters or before sibilants с, з, ц, ч, ш, ж (ли́ст із Полта́ви, із сестро́ю); use зі before difficult initial clusters like з-, с-, ш-, мн-, льв- (зі Льво́ва, зі мно́ю, зі шко́ли).',
+          tables: [
+            {
+              title: 'Master Euphony Reference Table (Милозву́чність украї́нської мо́ви)',
+              headers: ['Alternating Set', 'Vowel-Rich Variant (Breaks Up Consonants)', 'Consonant / Glide Variant (Bridges Vowels)', 'Mandatory Special Triggers'],
+              rows: [
+                ['Preposition у / в', 'у (Він був у Ки́єві; сиді́ла у ваго́ні)', 'в (Вона́ була́ в Оде́сі; пішла́ в кіно́)', 'ALWAYS use у before в-, ф-, льв-, св-, тв-, хв- (була́ у Льво́ві, у Франції)!'],
+                ['Word-Initial у- / в-', 'учи́тель, учи́ться, устає́, уже́ (after cons./pause)', 'вчи́телька, вчи́ться, встає́, вже (after vowel)', 'Брат учи́ться vs. Сестра́ вчи́ться'],
+                ['Conjunction і / й / та', 'і (брат і сестра́; Іва́н і Петро́)', 'й (Оле́на й Андрі́й; ма́ма й та́то)', 'Use та to avoid repeating і (never after -та)'],
+                ['Word-Initial і- / й-', 'іти́, іде́, ішо́в, іще́ (after consonant/pause)', 'йти, йде, йшла, ще (after vowel)', 'Час іти́ vs. Тре́ба йти; Він ішо́в vs. Вона́ йшла'],
+                ['Preposition з / із / зі', 'із (before sibilants/clusters: ли́ст із Полта́ви, із сестро́ю)', 'з (adjacent to vowels: з Оде́си, ка́ва з молоко́м)', 'Use зі before clusters мн-, льв-, шк-, з-, с- (зі мно́ю, зі Льво́ва, зі шко́ли)'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Я вже підготува́в допо́відь і домо́вився зі співавто́рами із Варша́ви й Пра́ги.',
+              en: 'I have already prepared a presentation and coordinated with co-authors from Warsaw and Prague.',
+              highlight: 'Я вже ... і домо́вився зі співавто́рами із Варша́ви й Пра́ги',
+            },
+          ],
+          commonMistakes: [
+            {
+              wrong: 'Вона́ була́ в Льво́ві і ї́хала в ваго́ні з мно́ю.',
+              right: 'Вона́ була́ у Льво́ві й ї́хала у ваго́ні зі мно́ю.',
+              explanation: 'Use у before Льв- and в- (у Льво́ві, у ваго́ні), й after vowel-final Льво́ві, and зі before мн- (зі мно́ю).',
+            },
+          ],
+          microCheck: {
+            question: 'Why do we say «Вона́ була́ у Льво́ві» and «сиді́ла у ваго́ні» with «у», even though the preceding words end in a vowel?',
+            options: [
+              'Because Ukrainian always uses «у» before words starting with «в-», «ф-», or clusters containing «в» (like «Льв-», «св-», «хв-») to avoid harsh labial clusters',
+              'Because city names never take «в»',
+              'Because «була́» is past tense',
+            ],
+            correctIndex: 0,
+            explanation: 'Before any word starting with в or ф (or clusters like Льв-, св-, хв-), Ukrainian always uses у regardless of the preceding sound.',
+          },
+        },
+        {
+          id: 'c11-idioms-stress-highstyle',
+          title: '2. Authentic Idioms, Stress Minimal Pairs & High-Style Verbal Adverbs («бу́дучи», «не + Дієприслі́вник»)',
+          idea: 'Polish your C1 Ukrainian with vivid cultural idioms, stress minimal pairs, and concise verbal adverb constructions.',
+          explanation:
+            'Always prefer authentic Ukrainian collocations over calques: бра́ти у́часть (to take part—never *прийма́ти у́часть*), ма́ти ра́цію (to be right), бу́ти на ча́сі (to be timely/relevant right now), насту́пного ти́жня (next week), про́тягом ро́ку (throughout the year), and ста́ти + Instrumental (ста́ти лі́карем = to become a doctor). Enjoy classic idioms like лови́ти гав / проґа́вити наго́ду (daydream and miss an opportunity), би́ти ба́йдики (loaf around), не па́сти за́дніх (never lag behind), діста́ти гарбуза́ / пійма́ти о́близня (be turned down in courtship / walk away empty-handed), and зниза́ти плечи́ма (shrug one’s shoulders). Finally, where English uses "without doing X" ("without hurrying", "without saying a word"), Ukrainian uses не + a verbal adverb: не поспіша́ючи, не сказа́вши ні сло́ва, не бу́дучи нудно́ю!',
+          tables: [
+            {
+              title: 'C1 Idioms, Stress Minimal Pairs & High-Style Verbal Adverbs',
+              headers: ['Category', 'Ukrainian Expressions / Pairs', 'Meaning & Stylistic Nuance'],
+              rows: [
+                ['Authentic Collocations', 'бра́ти у́часть, ма́ти ра́цію, бу́ти на ча́сі, насту́пного ти́жня, про́тягом ро́ку, ста́ти лі́карем, ціка́витися Украї́ною', 'Standard literary norms (avoid *приймати участь, *слідуючий тиждень)'],
+                ['Vivid Cultural Idioms', 'лови́ти гав (проґа́вити), би́ти ба́йдики, не па́сти за́дніх, діста́ти гарбуза́ (пійма́ти о́близня), зниза́ти плечи́ма, пліч-о́-пліч', 'daydream, loaf around, keep up with the best, be refused, shrug shoulders, shoulder to shoulder'],
+                ['Stress Minimal Pairs', 'похо́дити (originate from — impf.) vs. походи́ти (walk for a while — pf.); про́бувати (try) vs. пробува́ти (reside); ви́года (benefit) vs. виго́да (comfort); за́мок (castle) vs. замо́к (lock)', 'Stress alone distinguishes lexical meaning and aspect!'],
+                ['«бу́дучи + Inst.» & Reflexive -чись/-шись', 'Бу́дучи студе́нтом...; навча́ючись, сподіва́ючись; поверну́вшись, домо́вившись', 'бу́дучи ("being") takes Instrumental; reflexives end in -чись / -шись'],
+                ['"Without -ing" & Parentheticals', 'не поспіша́ючи (without hurrying), не сказа́вши ні сло́ва (without saying a word); че́сно ка́жучи, м’я́ко ка́жучи, су́дячи з усього́', 'не + verbal adverb translates English "without + -ing"'],
+              ],
+            },
+          ],
+          examples: [
+            {
+              uk: 'Не лови́ гав, бо проґа́виш чу́дову наго́ду! Моя́ родина́ похо́дить із Черні́гова.',
+              en: 'Don’t daydream, or you will miss a wonderful opportunity! My family originates from Chernihiv.',
+              highlight: 'Не лови́ гав, бо проґа́виш ... похо́дить із Черні́гова',
+            },
+          ],
+          microCheck: {
+            question: 'How does Ukrainian naturally translate English "without hurrying" and "without saying a word"?',
+            options: [
+              'With «не + verbal adverb»: «не поспіша́ючи» and «не сказа́вши ні сло́ва»',
+              'With «без + infinitive»',
+              'With the Vocative case',
+            ],
+            correctIndex: 0,
+            explanation: 'Ukrainian translates English "without doing X" using не + a present or past verbal adverb (не поспіша́ючи, не сказа́вши ні сло́ва).',
+          },
+        },
+      ],
+      reference: [
+        {
+          title: 'Complete Reference: Standard Literary Ukrainian vs. Non-Standard Calques & Archaic Forms',
+          summary: 'Expand to review C1 stylistic norms and standard replacements for calques.',
+          blocks: [
+            {
+              heading: 'Standard Literary Replacements for Common Calques',
+              items: [
+                'Say бра́ти / взя́ти у́часть (never *приймати участь); насту́пного ти́жня / ро́ку (never *слідуючого тижня); про́тягом ро́ку (never *на протязі року); на мою́ ду́мку (in my opinion); ма́ти ра́цію (to be right); ста́ти лі́карем (to become a doctor); Я ціка́влюся Украї́ною / Мені́ ціка́во (I am interested in); навко́ло / довко́ла столу́ (around the table).',
+              ],
+            },
+          ],
+        },
+      ],
+    },
     examples: [
       { uk: 'Вона́ вже приї́хала в Оде́су, а він іще́ зали́шився у Льво́ві зі сво́їми дру́зями.', en: 'She has already arrived in Odesa, while he still stayed in Lviv with his friends.' },
       { uk: 'На мою́ ду́мку, ти цілко́м ма́єш ра́цію: ва́рто взя́ти у́часть у цьо́му проє́кті.', en: 'In my opinion, you are completely right: it is worth taking part in this project.' },
