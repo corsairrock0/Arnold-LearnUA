@@ -1,0 +1,69 @@
+{
+  "feature": "AI Conversation & Ukrainian Language Tutor Tab",
+  "status": "completed",
+  "completedAt": "2026-10-30T11:40:00Z",
+  "navigation": {
+    "tabId": "tab-convo",
+    "buttonId": "btn-convo",
+    "label": "AI Conversation"
+  },
+  "conversationModes": [
+    {
+      "id": "friendly",
+      "titleEn": "Friendly Conversation Partner",
+      "defaultCorrectionIntensity": "discreet",
+      "description": "Practice natural Ukrainian with a friendly conversation partner. Build confidence, discuss everyday life, and improve your fluency."
+    },
+    {
+      "id": "tutor",
+      "titleEn": "Structured Language Tutor",
+      "defaultCorrectionIntensity": "balanced",
+      "description": "Practice Ukrainian with an AI language tutor who teaches grammar, corrects mistakes, and guides your speaking development."
+    }
+  ],
+  "independentGrammarCorrectionOptions": [
+    { "id": "off", "label": "Off — Review After Conversation" },
+    { "id": "discreet", "label": "Discreet — Subtle Corrections" },
+    { "id": "gentle", "label": "Gentle — Important Corrections Only" },
+    { "id": "balanced", "label": "Balanced — Active Learning" },
+    { "id": "intensive", "label": "Intensive — Detailed Correction" }
+  ],
+  "independentStateVerified": {
+    "allTenCombinationsSupported": true,
+    "modeSwitchPreservesUserCorrectionIntensity": true,
+    "intensitySwitchPreservesModeAndTranscript": true,
+    "includeSessionReviewIndependentToggle": true
+  },
+  "serverArchitecture": {
+    "serverFile": "server.ts",
+    "liveVoiceEndpoint": "/api/convo/live",
+    "liveModel": "gemini-3.8-live",
+    "turnEndpoint": "/api/convo/turn",
+    "analyzeEndpoint": "/api/convo/analyze",
+    "ttsEndpoint": "/api/convo/tts",
+    "helpEndpoint": "/api/convo/help",
+    "flashModel": "gemini-3.8-flash",
+    "ttsModel": "gemini-3.8-flash-lite-tts",
+    "apiKeyProtectedServerSide": true
+  },
+  "cefrLevelsSupported": ["A0", "A1", "A2", "B1", "B2", "C1"],
+  "formalityModesSupported": ["informal", "formal", "auto"],
+  "totalScenarios": 29,
+  "structuredScenariosCount": 28,
+  "freeConversationIncluded": true,
+  "manualHelpActionsCount": 9,
+  "explanationDepthLevels": ["simple", "detailed", "advanced"],
+  "naturalAlternativeRegisters": ["casual", "neutral", "formal", "colloquial"],
+  "pronunciationGuides": [
+    "h-vs-g",
+    "y-vs-i",
+    "yi-and-y",
+    "soft-sign-palatalization",
+    "word-stress"
+  ],
+  "langoUAIntegrations": {
+    "courseModulesLinked": true,
+    "sevenCaseGrammarInspectorLinked": true,
+    "fsrsFlashcardsDeduplicated": true
+  }
+}

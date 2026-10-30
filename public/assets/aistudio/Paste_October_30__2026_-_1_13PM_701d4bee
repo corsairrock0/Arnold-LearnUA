@@ -1,0 +1,1327 @@
+LANGO UA — COMPLETE AI UKRAINIAN CONVERSATION & LANGUAGE TUTOR
+
+PRIMARY OBJECTIVE
+
+You are working inside my existing Ukrainian language-learning application:
+
+https://slovo-ua-app.ai.studio/
+
+Create and implement a new primary navigation tab called:
+
+AI Conversation
+
+This feature must let users practice realistic spoken Ukrainian with an AI, receive accurate grammar feedback, explore detailed grammatical breakdowns, learn natural conversational expressions, and review their performance.
+
+The user must choose between two distinct conversation modes:
+
+1. Friendly Conversation Partner
+2. Structured Language Tutor
+
+CRITICAL: Grammar correction preferences must be independently configurable in BOTH modes.
+
+A user who chooses Friendly Conversation Partner must still be able to receive detailed corrections.
+
+A user who chooses Structured Language Tutor must be able to disable corrections during speaking.
+
+Conversation personality and grammar feedback are separate settings.
+
+Build the actual feature into my existing application using its current architecture, navigation, responsive layouts, and visual styling.
+
+Do not create a separate application.
+
+Do not rebuild unrelated features.
+
+Do not restore the previously reverted Material 3 light-only redesign.
+
+Preserve existing educational content, vocabulary, grammar tools, FSRS flashcards, student progress, and the current theme system.
+
+⸻
+
+PART 1 — TWO CONVERSATION MODES
+
+MODE A — FRIENDLY CONVERSATION PARTNER
+
+Description:
+
+“Practice natural Ukrainian with a friendly conversation partner. Build confidence, discuss everyday life, and improve your fluency.”
+
+The AI should behave like a friendly, socially natural Ukrainian-speaking conversation partner.
+
+Its primary objective is spontaneous conversational fluency.
+
+Required behavior
+
+* Speak natural, contemporary Ukrainian.
+* Adapt to the learner’s proficiency.
+* Listen and respond to what the learner actually says.
+* Remember relevant details during the session.
+* Ask thoughtful follow-up questions.
+* Respond naturally to humor, stories, and opinions.
+* Use everyday conversational expressions.
+* Avoid repetitive interview-style questions.
+* Avoid constant compliments.
+* Avoid unnecessarily long answers.
+* Allow the learner to change topics.
+* Make conversations feel spontaneous.
+* Use appropriate formal or informal Ukrainian.
+* Let the learner interrupt or redirect the conversation.
+
+The AI should feel like a realistic conversation partner, not a textbook narrator.
+
+Clearly identify the partner as an AI rather than pretending it is a human.
+
+Example
+
+Learner:
+
+“Я люблю готувати. Учора я приготував борщ.”
+
+AI:
+
+“О, клас! А ти часто готуєш українські страви? Як тобі вдався борщ?”
+
+The AI should build on the actual conversation rather than asking unrelated questions.
+
+Grammar behavior
+
+Grammar corrections depend on the user’s independent correction settings.
+
+When corrections are discreet or disabled, prioritize natural conversational flow.
+
+The AI may model a correct expression naturally without explicitly announcing every mistake.
+
+Do not interrupt the learner with long grammar lectures unless corrections are enabled at the appropriate intensity or the learner requests an explanation.
+
+⸻
+
+MODE B — STRUCTURED LANGUAGE TUTOR
+
+Description:
+
+“Practice Ukrainian with an AI language tutor who teaches grammar, corrects mistakes, and guides your speaking development.”
+
+The AI should behave like an experienced Ukrainian teacher specializing in English-speaking learners.
+
+Its primary objective is systematic improvement in accuracy and fluency.
+
+Required behavior
+
+* Guide conversations around learning objectives.
+* Adapt to CEFR proficiency.
+* Teach grammar through practical examples.
+* Ask targeted questions.
+* Provide relevant corrections according to user settings.
+* Explain grammatical cases.
+* Explain verb aspect and conjugation.
+* Teach natural vocabulary and expressions.
+* Encourage independent sentence production.
+* Offer sentence-repetition practice.
+* Introduce increasingly challenging language.
+* Allow learners to request English explanations.
+* Avoid unnecessary lectures.
+* Respect the learner’s correction preferences.
+
+Teaching sequence
+
+When appropriate:
+
+1. Introduce a concept.
+2. Demonstrate a natural Ukrainian example.
+3. Ask the learner to respond.
+4. Evaluate the response.
+5. Correct or explain according to the selected feedback settings.
+6. Invite the learner to retry if appropriate.
+7. Reinforce the concept through conversation.
+8. Continue naturally.
+
+If the learner has disabled corrections during conversation, the tutor should still guide practice but postpone unsolicited corrective explanations until the session review.
+
+⸻
+
+PART 2 — INDEPENDENT GRAMMAR CORRECTION SETTINGS
+
+THIS IS A REQUIRED CORE FEATURE.
+
+Create a clearly labeled setting:
+
+Corrections During Conversation
+
+This setting must be available in both Friendly Conversation Partner and Structured Language Tutor.
+
+Do not make grammar correction behavior permanently dependent on the selected AI personality.
+
+The learner must be able to customize their preferred learning experience.
+
+Correction options
+
+OFF — REVIEW AFTER CONVERSATION
+
+No unsolicited grammar corrections during the spoken conversation.
+
+The AI continues naturally.
+
+Grammar mistakes can still be analyzed and collected for an end-of-session review, if the learner has enabled review analysis.
+
+The learner may manually request:
+
+* Correct My Last Sentence.
+* Explain My Grammar.
+* Show a More Natural Version.
+
+Do not automatically announce errors during conversation.
+
+Do not display distracting correction notifications.
+
+Do not silently discard grammar-learning opportunities if post-session review is enabled.
+
+DISCREET — SUBTLE CORRECTIONS
+
+This is the default for Friendly Conversation Partner.
+
+The AI continues speaking naturally.
+
+When a meaningful error is detected:
+
+* Display a small, unobtrusive correction indicator beside the relevant transcript message.
+* Do not interrupt spoken dialogue.
+* Do not automatically read grammar explanations aloud.
+* Let the learner open a correction card when interested.
+* Preserve conversation flow.
+
+The learner can view the correction immediately or ignore it until the session ends.
+
+Example:
+
+Learner:
+
+“Я живу в Львів.”
+
+AI:
+
+“О, ти живеш у Львові! А як давно ти там живеш?”
+
+The transcript may display a small grammar indicator beside the learner’s message.
+
+Tapping it opens:
+
+Original: Я живу в Львів.
+
+Correct: Я живу у Львові.
+
+Explanation: The locative form Львові is used when expressing location with у/в.
+
+GENTLE — IMPORTANT CORRECTIONS ONLY
+
+Correct errors that significantly affect meaning or reflect important recurring mistakes.
+
+Keep feedback short.
+
+Allow the learner to continue speaking without lengthy interruptions.
+
+BALANCED — ACTIVE LEARNING
+
+This is the default for Structured Language Tutor.
+
+Correct significant grammar mistakes, unnatural constructions, and important vocabulary errors.
+
+Explain corrections clearly and briefly.
+
+Offer a retry opportunity when it would improve learning.
+
+Do not correct every minor stylistic difference.
+
+INTENSIVE — DETAILED CORRECTION
+
+Provide comprehensive feedback on most meaningful grammar errors.
+
+Include:
+
+* Corrected sentence.
+* Grammar explanation.
+* Relevant case or conjugation pattern.
+* Natural alternatives.
+* Retry opportunity.
+* Additional examples when appropriate.
+
+Even in Intensive mode, avoid interrupting mid-sentence.
+
+Provide corrections between completed conversational turns.
+
+Do not turn every response into an excessively long lecture.
+
+⸻
+
+PART 3 — CORRECTION SETTINGS MUST WORK INDEPENDENTLY
+
+Implement correction preferences separately from conversation personality.
+
+Required combinations include:
+
+* Friendly Partner + Off.
+* Friendly Partner + Discreet.
+* Friendly Partner + Gentle.
+* Friendly Partner + Balanced.
+* Friendly Partner + Intensive.
+* Language Tutor + Off.
+* Language Tutor + Discreet.
+* Language Tutor + Gentle.
+* Language Tutor + Balanced.
+* Language Tutor + Intensive.
+
+All combinations must work.
+
+Do not prevent a learner from selecting any combination.
+
+Default selections
+
+Friendly Conversation Partner:
+
+Corrections During Conversation = Discreet.
+
+Structured Language Tutor:
+
+Corrections During Conversation = Balanced.
+
+Allow saved user preferences to override defaults.
+
+Changing settings during a session
+
+Allow users to modify correction intensity without ending the conversation.
+
+Changes should apply starting with the next completed conversational turn.
+
+Do not erase the transcript or reset conversation history.
+
+If the real-time AI session must be reconfigured, preserve relevant context and reconnect safely.
+
+Correction analysis and visibility
+
+Keep these concepts separate:
+
+1. Whether grammar analysis is performed.
+2. Whether grammar indicators are displayed.
+3. Whether the AI speaks corrections aloud.
+4. Whether corrections appear in the final review.
+
+The correction setting controls interaction behavior.
+
+A separate optional setting may control whether the learner wants automatic post-session grammar analysis.
+
+When corrections are Off, do not display unsolicited live corrections, but allow manual requests and consented session review.
+
+Do not show correction indicators before their analysis is ready.
+
+⸻
+
+PART 4 — REAL-TIME SPOKEN UKRAINIAN
+
+Implement an actual voice conversation experience.
+
+Use a currently supported Gemini Live API model or another verified real-time conversational audio integration compatible with the existing project.
+
+Check current API documentation and model availability before implementation.
+
+Do not guess model names or unsupported options.
+
+Required functionality
+
+* Microphone access.
+* Real-time audio input.
+* Spoken Ukrainian AI responses.
+* Natural turn-taking.
+* AI speech interruption where supported.
+* Start Conversation.
+* End Conversation.
+* Mute Microphone.
+* Connection status.
+* Input transcription.
+* Output transcription.
+* Error handling.
+* Reconnection where supported.
+* Text conversation fallback.
+* Mobile, tablet, and desktop compatibility.
+
+Prioritize genuine real-time spoken interaction.
+
+Do not simulate a Live API session with fake audio indicators.
+
+If a turn-based speech-to-text, language-model, and text-to-speech fallback is necessary, label it accurately rather than claiming full real-time duplex audio.
+
+Spoken language
+
+Default spoken language:
+
+Ukrainian (uk-UA).
+
+The AI should speak predominantly Ukrainian.
+
+English explanations should be available when requested.
+
+In Tutor Mode, English grammar explanations can be delivered according to the correction setting.
+
+In Friendly Mode, Ukrainian conversation should remain the priority.
+
+⸻
+
+PART 5 — NATURAL CONVERSATION QUALITY
+
+The AI should use realistic Ukrainian conversational patterns.
+
+Avoid robotic dialogue.
+
+Required conversational qualities
+
+* Natural follow-up questions.
+* Relevant responses.
+* Appropriate emotional tone.
+* Short and medium-length spoken answers.
+* Natural variation in wording.
+* Contextual memory.
+* Occasional humor where appropriate.
+* Genuine topic continuity.
+* Flexible conversation direction.
+* Appropriate informal expressions.
+
+Do not end every response with a question.
+
+Do not excessively praise ordinary statements.
+
+Do not produce unnecessarily long speeches.
+
+Allow learners to talk more than the AI.
+
+The AI should adapt to the learner’s interests and conversational ability.
+
+Formality preferences
+
+Offer:
+
+* Informal — ти.
+* Formal — Ви.
+* Automatic — context-appropriate.
+
+Use grammatically consistent forms of address.
+
+⸻
+
+PART 6 — CEFR PROFICIENCY SETTINGS
+
+Allow the learner to choose:
+
+* A0 / Pre-A1
+* A1
+* A2
+* B1
+* B2
+* C1
+
+Use the app’s saved proficiency level when reliable, otherwise allow manual selection.
+
+Adapt:
+
+* Vocabulary difficulty.
+* Sentence length.
+* Grammatical complexity.
+* Speaking pace.
+* Conversation topics.
+* Explanation depth.
+* Degree of spontaneous conversation.
+
+A0–A1
+
+Very short sentences, common vocabulary, frequent optional help, simple daily topics.
+
+A2
+
+Everyday conversations, past and future events, practical scenarios, basic explanations.
+
+B1
+
+Longer conversations, experiences, opinions, connected narratives, more varied grammar.
+
+B2
+
+Natural conversations, nuanced expressions, complex ideas, abstract topics.
+
+C1
+
+Sophisticated language, idioms, register differences, advanced discourse and grammar.
+
+Do not assume that a selected CEFR level represents an independently certified proficiency.
+
+⸻
+
+PART 7 — CONVERSATION SCENARIOS
+
+Create a scenario library.
+
+Include:
+
+1. Meeting Someone New.
+2. Introducing Yourself.
+3. Talking About Your Day.
+4. Family and Friends.
+5. Ordering Coffee.
+6. Ordering Food.
+7. Grocery Shopping.
+8. At a Farmers Market.
+9. Asking for Directions.
+10. Public Transportation.
+11. At the Train Station.
+12. At the Airport.
+13. Checking Into a Hotel.
+14. Talking About Hobbies.
+15. Talking About Fitness.
+16. Discussing Books and Movies.
+17. Making Weekend Plans.
+18. Talking About Travel.
+19. Talking About Work.
+20. Talking About Technology.
+21. Making Friends.
+22. Discussing Relationships.
+23. At the Pharmacy.
+24. Scheduling an Appointment.
+25. Talking About Your Home.
+26. Discussing Culture.
+27. Explaining Opinions.
+28. Discussing Philosophy and Ideas.
+
+Also include:
+
+Free Conversation
+
+The learner chooses any topic without a predetermined script.
+
+Roleplay scenarios
+
+Allow the AI to assume a relevant role.
+
+Examples:
+
+* Waiter.
+* Barista.
+* Hotel receptionist.
+* Shop assistant.
+* Train ticket clerk.
+* Friendly acquaintance.
+* Customer-service representative.
+
+Make roleplays interactive and responsive, not scripted.
+
+Each scenario should include a short description, suggested proficiency level, and optional learning objectives.
+
+⸻
+
+PART 8 — LIVE TRANSCRIPT
+
+Show synchronized conversation transcripts.
+
+Each finalized turn should display:
+
+* Speaker.
+* Ukrainian transcript.
+* Optional English translation.
+* Replay option where supported.
+* Grammar indicator if enabled.
+* Vocabulary inspection controls.
+
+Transcription accuracy
+
+Preserve what the learner actually said as closely as possible.
+
+Do not automatically replace incorrect Ukrainian with corrected Ukrainian in the original transcript.
+
+If recognition is uncertain, allow the user to edit or correct the recognized text.
+
+Distinguish transcription errors from actual grammatical mistakes.
+
+Do not invent confidence percentages or acoustic measurements.
+
+Translation controls
+
+Provide:
+
+* Translate Message.
+* Show Translation.
+* Hide Translation.
+* Translate Conversation.
+
+Keep translation optional.
+
+At higher levels, prioritize Ukrainian immersion.
+
+⸻
+
+PART 9 — SEPARATE GRAMMAR-ANALYSIS ENGINE
+
+Implement grammar analysis independently from the real-time voice conversation.
+
+Use a supported Gemini text model with validated structured outputs.
+
+Analyze finalized learner utterances rather than incomplete streaming fragments.
+
+The grammar system should identify:
+
+* Case errors.
+* Incorrect declensions.
+* Verb conjugation mistakes.
+* Verb aspect errors.
+* Agreement.
+* Preposition usage.
+* Word order.
+* Vocabulary mistakes.
+* Unnatural expressions.
+* Formality mismatches.
+* Meaning-changing mistakes.
+
+Distinguish:
+
+* Incorrect grammar.
+* Grammatically correct but unnatural.
+* Correct and natural.
+* Acceptable colloquial variation.
+* Uncertain transcription.
+
+Do not manufacture grammatical mistakes.
+
+Do not label stylistic alternatives as mandatory corrections.
+
+Analysis output
+
+Each result should include suitable structured fields for:
+
+* Utterance ID.
+* Original transcript.
+* Suggested correction.
+* English meaning.
+* Error category.
+* Explanation.
+* Natural alternative.
+* Relevant grammar rule.
+* Additional examples.
+* Related course topic.
+* Optional vocabulary suggestions.
+
+Validate results before rendering.
+
+Attach each analysis to the correct transcript turn.
+
+Do not let delayed analysis overwrite later utterances.
+
+⸻
+
+PART 10 — GRAMMAR CORRECTION CARDS
+
+Show a detailed correction card when the learner requests feedback or when the selected correction setting allows it.
+
+Example:
+
+YOU SAID:
+
+Я живу в Львів.
+
+CORRECT UKRAINIAN:
+
+Я живу у Львові.
+
+ENGLISH:
+
+I live in Lviv.
+
+WHAT CHANGED:
+
+Львів → Львові.
+
+GRAMMAR:
+
+The locative case is used with у/в when expressing location.
+
+ADDITIONAL EXAMPLE:
+
+Я працюю у Львові.
+
+I work in Lviv.
+
+PRACTICE:
+
+Try saying the corrected sentence again.
+
+Buttons:
+
+* Hear Correct Pronunciation.
+* Try Again.
+* Detailed Grammar.
+* More Natural Alternatives.
+* Continue Conversation.
+
+Clearly separate grammatical changes from stylistic improvements such as euphonic preposition choices.
+
+⸻
+
+PART 11 — THREE LEVELS OF GRAMMAR EXPLANATION
+
+Provide progressive disclosure.
+
+SIMPLE
+
+A short explanation in everyday English.
+
+DETAILED
+
+An explanation of the rule, its function, and example sentences.
+
+ADVANCED
+
+Comprehensive grammar patterns, declension or conjugation tables, exceptions, usage restrictions, and grammatical terminology.
+
+Use the existing Grammar Inspector and course components where suitable.
+
+All explanations should be comprehensible to an American high-school student without removing advanced grammatical detail.
+
+Use readable tables, highlighted endings, and diagrams when helpful.
+
+⸻
+
+PART 12 — SAY IT MORE NATURALLY
+
+Add an action:
+
+Say It More Naturally
+
+Provide an appropriate conversational alternative when one exists.
+
+Distinguish between:
+
+* Actual correction.
+* Natural casual expression.
+* Neutral expression.
+* Formal expression.
+* Regional or colloquial variation where appropriate.
+
+Include English translations.
+
+Explain tone differences when important.
+
+Do not mark valid Ukrainian as incorrect simply because another expression is more common.
+
+⸻
+
+PART 13 — PRONUNCIATION PRACTICE
+
+Provide:
+
+* Replay Ukrainian pronunciation.
+* Repeat-after-me practice.
+* Stress guidance where verified.
+* Slower speaking option where supported.
+* Corrected-sentence repetition.
+* Helpful explanations of Ukrainian sounds.
+
+Focus on:
+
+* г versus ґ.
+* и versus і.
+* ї and й.
+* Soft and hard consonants.
+* Palatalization.
+* Word stress.
+
+Do not claim to detect specific pronunciation errors using only speech transcription.
+
+If reliable acoustic pronunciation assessment is unavailable, provide modeling and repetition without inventing accuracy scores.
+
+⸻
+
+PART 14 — TUTOR PRACTICE EXERCISES
+
+In Structured Language Tutor mode, offer exercises based on observed learning needs.
+
+Examples:
+
+* Repeat a corrected sentence.
+* Change a sentence into the past tense.
+* Use the correct noun case.
+* Practice verb aspect.
+* Expand a short answer.
+* Rephrase an expression naturally.
+* Answer a follow-up question using the target grammar.
+
+Only introduce corrective drills according to the user’s correction preferences.
+
+When corrections are Off, do not automatically stop conversation to diagnose mistakes.
+
+The tutor can still guide ordinary learning exercises without framing them as corrections.
+
+Allow users to skip exercises.
+
+⸻
+
+PART 15 — TRANSLATION AND HELP
+
+Provide accessible help actions:
+
+* Translate.
+* Explain in English.
+* Repeat That.
+* Speak More Slowly.
+* Give Me a Hint.
+* How Do I Say This?
+* Correct My Last Sentence.
+* Explain My Grammar.
+* Say It More Naturally.
+
+These actions must be available in BOTH conversation modes.
+
+Manual help requests must work regardless of the Corrections During Conversation setting.
+
+If corrections are Off, a user-triggered correction is still allowed because the learner explicitly requested it.
+
+⸻
+
+PART 16 — SESSION REVIEW
+
+At the end of each session, display a personalized review.
+
+Include:
+
+Session Overview
+
+* Mode.
+* Scenario.
+* Duration.
+* Selected level.
+* Topics discussed.
+* Number of learner turns.
+
+Grammar Review
+
+Display meaningful errors and corrections.
+
+Group repeated errors by topic:
+
+* Grammatical cases.
+* Prepositions.
+* Verb conjugations.
+* Verb aspect.
+* Agreement.
+* Sentence structure.
+* Vocabulary usage.
+
+Corrected Sentences
+
+Show original and corrected forms with explanations.
+
+Natural Expressions
+
+Highlight useful Ukrainian phrases and alternatives.
+
+Vocabulary
+
+List words worth reviewing.
+
+Recommended Practice
+
+Recommend relevant grammar lessons and vocabulary activities.
+
+Try Again
+
+Let the learner practice important corrected sentences.
+
+Correction-setting behavior
+
+If Corrections During Conversation was Off but post-session analysis was enabled, provide corrections in the review without having interrupted the conversation.
+
+If post-session analysis was also disabled, do not secretly perform or display comprehensive grammar analysis.
+
+Do not fabricate performance metrics or CEFR certification.
+
+⸻
+
+PART 17 — CONVERSATION MEMORY
+
+Maintain context throughout the current session.
+
+Remember relevant:
+
+* Topics.
+* Previous questions.
+* Learner responses.
+* Selected scenario.
+* Selected CEFR level.
+* Conversation personality.
+* Grammar correction preferences.
+* Learning goals.
+
+Use compact session summaries where appropriate to manage context length.
+
+Do not invent personal details.
+
+Do not permanently store personal information without an appropriate setting and disclosure.
+
+⸻
+
+PART 18 — INTEGRATION WITH EXISTING LANGO UA FEATURES
+
+Connect the new feature with:
+
+* A0–C1 Course.
+* Ukrainian vocabulary database.
+* Grammar Inspector.
+* Seven-case declension information.
+* Verb conjugation tools.
+* FSRS flashcards.
+* Everyday Vocabulary.
+* Sentence Correction.
+* Pronunciation tools.
+
+Allow learners to save:
+
+* Vocabulary.
+* Useful phrases.
+* Corrected sentences.
+* Grammar examples.
+
+Provide an Add to Flashcards action.
+
+Avoid duplicate entries.
+
+Preserve existing FSRS scheduling and review history.
+
+Do not treat reading a correction as successful independent recall.
+
+For recurring mistakes, recommend actual existing grammar lessons using verified lesson IDs.
+
+⸻
+
+PART 19 — USER INTERFACE
+
+Inspect the CURRENT application design before implementation.
+
+Match existing:
+
+* Colors.
+* Typography.
+* Cards.
+* Buttons.
+* Icons.
+* Navigation.
+* Theme behavior.
+* Desktop layout.
+* Tablet layout.
+* Mobile layout.
+
+Do not restore the previous light-only redesign.
+
+Landing page
+
+Title:
+
+AI Conversation
+
+Subtitle:
+
+“Speak Ukrainian naturally and improve with personalized AI feedback.”
+
+Display two mode cards:
+
+Friendly Conversation Partner
+“Have realistic conversations and build speaking confidence.”
+
+Structured Language Tutor
+“Improve grammar and fluency through guided conversations.”
+
+Below the mode selector, display:
+
+* CEFR Level.
+* Scenario.
+* Correction During Conversation.
+* Correction Intensity.
+* Voice and speaking-speed settings where supported.
+* Start Conversation.
+
+Correction settings UI
+
+Provide a clear section:
+
+Grammar Feedback
+
+Setting:
+
+Corrections During Conversation
+
+Options:
+
+* Off
+* Discreet
+* Gentle
+* Balanced
+* Intensive
+
+Add an explanation for the selected option.
+
+Provide an additional option:
+
+Include Grammar Review After Session
+
+Default: On.
+
+Let learners modify these settings during a session.
+
+Save preferences using existing application settings infrastructure.
+
+Do not make the interface cluttered.
+
+⸻
+
+PART 20 — DESKTOP, TABLET, AND MOBILE LAYOUTS
+
+DESKTOP
+
+Use:
+
+* Existing primary navigation.
+* Central conversation interface.
+* Live transcript.
+* Voice controls.
+* Optional grammar side panel.
+
+The grammar panel should show feedback only when permitted by user settings or explicitly requested.
+
+TABLET
+
+In landscape, allow conversation and grammar panels side by side where appropriate.
+
+In portrait, use a primary conversation view with an accessible grammar drawer or sheet.
+
+Support touch and external keyboard interaction.
+
+MOBILE
+
+Prioritize a voice-first interface.
+
+Display:
+
+* Selected conversation mode.
+* Microphone control.
+* AI speaking indicator.
+* Live transcript.
+* Correction indicators when enabled.
+* Accessible grammar feedback.
+* Translation controls.
+* End Conversation.
+
+Use a bottom sheet or expandable area for detailed grammar explanations.
+
+Support safe areas and mobile microphone permissions.
+
+Prevent the on-screen keyboard from obscuring controls.
+
+⸻
+
+PART 21 — API ARCHITECTURE AND SECURITY
+
+Use currently supported Google Gemini APIs and SDKs.
+
+Implement:
+
+1. Real-time audio conversation.
+2. Separate text-based grammar analysis.
+3. Structured grammar feedback.
+4. Session review generation.
+
+Verify actual Ukrainian language support and available capabilities before selecting models.
+
+Never invent unsupported model names or API parameters.
+
+Authentication
+
+Do not expose permanent Gemini API keys in frontend code.
+
+Use an appropriate trusted backend or securely provisioned short-lived credentials where supported.
+
+If the current hosting environment cannot securely implement the required API architecture, identify the missing infrastructure rather than embedding secrets.
+
+Reliability
+
+Handle:
+
+* Microphone permission denial.
+* Audio connection failures.
+* Network interruptions.
+* Rate limits.
+* Token or session limits.
+* Transcription uncertainty.
+* Grammar-analysis errors.
+* Mode switching.
+* Correction-setting changes.
+* Session termination.
+
+Stop microphone capture and release audio resources when the session ends.
+
+Avoid duplicate concurrent sessions.
+
+Use server-side enforcement for any hard usage quotas.
+
+Do not claim a limit is enforced unless it actually is.
+
+⸻
+
+PART 22 — PRIVACY
+
+Clearly inform learners that conversation audio and transcripts may be processed by an external AI service.
+
+Do not capture audio without microphone permission.
+
+Do not secretly record audio in the background.
+
+Do not retain raw audio by default unless necessary and disclosed.
+
+If session history is saved:
+
+* Explain what is stored.
+* Allow deletion.
+* Provide appropriate retention controls.
+* Preserve privacy where possible.
+
+Clearly distinguish temporary conversation context from permanently saved user information.
+
+Do not make unsupported claims about security or data retention.
+
+⸻
+
+PART 23 — STRUCTURED SETTINGS AND STATE
+
+Keep independent state variables for:
+
+* conversationMode
+* correctionIntensity
+* includeSessionReview
+* cefrLevel
+* scenarioId
+* formalityPreference
+* voicePreference
+* transcriptVisibility
+* translationVisibility
+* microphoneState
+* connectionState
+* sessionId
+
+These are conceptual names. Follow the existing project conventions.
+
+Ensure changing conversationMode does not overwrite correctionIntensity.
+
+Apply initial defaults only when the learner has not saved a preference.
+
+Changing correctionIntensity must not change conversationMode.
+
+Changing conversationMode must not erase the transcript.
+
+Keep grammar feedback associated with the correct utterance ID.
+
+⸻
+
+PART 24 — IMPLEMENTATION PHASES
+
+PHASE 1 — PROJECT INSPECTION
+
+Inspect navigation, framework, styling, API infrastructure, data persistence, Grammar Inspector, Course, vocabulary, and FSRS.
+
+PHASE 2 — AI CONVERSATION TAB
+
+Create the new tab, mode selector, scenario library, CEFR selector, and conversation interface.
+
+PHASE 3 — GRAMMAR FEEDBACK SETTINGS
+
+Implement the independent Corrections During Conversation control with all five settings.
+
+Implement session-review preference.
+
+Verify that both controls work independently of the selected conversation mode.
+
+PHASE 4 — REAL-TIME VOICE
+
+Implement a genuine supported audio conversation connection.
+
+Verify microphone input, spoken Ukrainian output, transcription, and session controls.
+
+PHASE 5 — DISTINCT AI PERSONAS
+
+Implement and test Friendly Conversation Partner and Structured Language Tutor.
+
+Ensure that each mode behaves differently.
+
+PHASE 6 — GRAMMAR ANALYSIS
+
+Implement a separate structured grammar-feedback service.
+
+Provide accurate correction cards and detailed breakdowns.
+
+PHASE 7 — CORRECTION BEHAVIOR
+
+Connect correction intensity to:
+
+* Spoken correction behavior.
+* Live grammar indicators.
+* Feedback panels.
+* Retry exercises.
+* Session review.
+
+Test all correction settings in both conversation modes.
+
+PHASE 8 — EDUCATIONAL INTEGRATION
+
+Connect Grammar Inspector, vocabulary, course recommendations, and FSRS flashcards.
+
+PHASE 9 — SESSION REVIEW
+
+Implement end-of-session reports and recurring mistake summaries.
+
+PHASE 10 — RESPONSIVE DESIGN
+
+Optimize desktop, tablet, and mobile interfaces using current styling.
+
+PHASE 11 — VALIDATION
+
+Test actual API connections, correction behavior, transcripts, session persistence, security, and existing functionality.
+
+Complete verified phases incrementally.
+
+If execution limits are reached, save progress and report exactly what remains.
+
+⸻
+
+PART 25 — REQUIRED TESTS
+
+Verify:
+
+1. AI Conversation appears in navigation.
+2. Both AI modes are selectable.
+3. Friendly Conversation Partner sounds conversational.
+4. Structured Language Tutor provides guided teaching.
+5. Mode switching preserves context.
+6. Corrections During Conversation is independently selectable.
+7. Off works in Friendly Mode.
+8. Off works in Tutor Mode.
+9. Discreet works in both modes.
+10. Gentle works in both modes.
+11. Balanced works in both modes.
+12. Intensive works in both modes.
+13. Saved correction preferences are respected.
+14. Switching modes does not overwrite correction preferences.
+15. Post-session review preference works.
+16. Manual corrections work even when automatic corrections are Off.
+17. Ukrainian microphone input works.
+18. Spoken Ukrainian AI output works.
+19. Live transcript updates correctly.
+20. Final transcript text matches actual recognized utterances.
+21. Grammar feedback attaches to the correct turn.
+22. Real grammar mistakes receive accurate corrections.
+23. Valid colloquial Ukrainian is not incorrectly rejected.
+24. Detailed grammatical breakdowns are available.
+25. English translations work.
+26. Natural alternatives are appropriately labeled.
+27. Tutor retry exercises work.
+28. Session review accurately reflects the interaction.
+29. FSRS scheduling remains unchanged.
+30. Existing course and vocabulary functions remain intact.
+31. Desktop layout works.
+32. Tablet layout works.
+33. Mobile layout works.
+34. Current theme behavior is preserved.
+35. API credentials are secured.
+36. Audio and microphone resources are released after a session.
+37. The application builds successfully.
+
+Only claim a test passed if it was actually performed.
+
+⸻
+
+PART 26 — PROGRESS TRACKING
+
+Maintain a project progress file such as:
+
+ai_conversation_implementation_progress.json
+
+Record:
+
+* Navigation status.
+* Conversation UI status.
+* Real-time audio status.
+* Friendly Partner behavior.
+* Language Tutor behavior.
+* Independent correction controls.
+* Correction intensity implementation.
+* Grammar analysis.
+* Detailed breakdowns.
+* Session reviews.
+* Course integration.
+* FSRS integration.
+* Responsive testing.
+* Security validation.
+* Remaining work.
+
+Use verified statuses.
+
+Do not claim completion for untested API functionality.
+
+Save work after each implementation phase.
+
+⸻
+
+FINAL DIRECTIVE
+
+CREATE A COMPLETE NEW “AI CONVERSATION” TAB IN MY EXISTING LANGO UA APPLICATION.
+
+Provide TWO DISTINCT conversation experiences:
+
+FRIENDLY CONVERSATION PARTNER
+
+Natural, realistic spoken Ukrainian with spontaneous conversations, interesting follow-up questions, and optional feedback.
+
+STRUCTURED LANGUAGE TUTOR
+
+Guided Ukrainian speaking practice with accurate grammar explanations, corrections, exercises, and personalized learning.
+
+MOST IMPORTANT:
+
+THE LEARNER MUST BE ABLE TO INDEPENDENTLY CONTROL CORRECTIONS DURING CONVERSATION IN BOTH MODES.
+
+Provide:
+
+* Off.
+* Discreet.
+* Gentle.
+* Balanced.
+* Intensive.
+
+Default to Discreet in Friendly Conversation Partner and Balanced in Structured Language Tutor for users without saved preferences.
+
+Provide an independent end-of-session grammar review setting.
+
+Never force grammar corrections simply because the learner selected Tutor Mode.
+
+Never prevent grammar corrections simply because the learner selected Friendly Mode.
+
+Preserve realistic spoken interaction.
+
+Include:
+
+* Real-time Ukrainian audio where supported.
+* CEFR-level adaptation.
+* Natural scenarios.
+* Live transcripts.
+* Optional translations.
+* Grammar correction cards.
+* Detailed grammar breakdowns.
+* Natural alternatives.
+* Pronunciation modeling.
+* Tutor retry exercises.
+* Session reviews.
+* Course and FSRS integration.
+* Responsive desktop, tablet, and mobile layouts.
+
+Preserve the existing application’s current design, theme system, user progress, and learning features.
+
+Implement actual functionality, not mockup controls.
+
+Begin implementation now, validate each completed phase, and report any unimplemented capabilities accurately.
