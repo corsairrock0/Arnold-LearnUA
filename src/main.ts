@@ -50,10 +50,6 @@ import {
   addIdentifyWordToFSRS,
   addIdentifySceneWordsToFSRS,
 } from './identifyView';
-import {
-  initAIConversationTab,
-  renderAIConversationTab,
-} from './aiConversationView';
 
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
@@ -2970,7 +2966,7 @@ export function renderEverydayVocabWorkspace(): void {
 // ============================================================================
 export function switchTab(tab: string, btn?: HTMLElement): void {
   triggerHaptic('light');
-  ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'identify', 'reader', 'convo'].forEach(
+  ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'identify', 'reader'].forEach(
     (t) => {
       const el = document.getElementById('tab-' + t);
       if (el) el.classList.add('hidden');
@@ -2991,8 +2987,6 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
     renderEverydayVocabTab();
   } else if (tab === 'identify') {
     renderIdentifyTab();
-  } else if (tab === 'convo') {
-    renderAIConversationTab();
   }
   const mainEl = document.getElementById('main-scroll-container');
   if (mainEl) mainEl.scrollTop = 0;
@@ -3247,23 +3241,6 @@ if (typeof window !== 'undefined') {
     addWordByUkToFSRS: (uk) => addWordByUkToFSRS(uk),
   });
   renderIdentifyTab();
-  initAIConversationTab({
-    speakUkText: (textUk, _rate) => speakUkrainian(textUk),
-    inspectWordIn7Cases: (wordUk) => {
-      inspectCourseWord(wordUk);
-      openInspectorSheet();
-    },
-    addWordToFlashcards: (wordUk, buttonEl) => {
-      const added = addWordByUkToFSRS(wordUk);
-      if (buttonEl) {
-        buttonEl.textContent = added ? '✓ Added to FSRS' : '✓ In Flashcards';
-      }
-    },
-    openCourseModuleById: (moduleId) => {
-      switchTab('course');
-      selectCourseModule(moduleId);
-    },
-  });
   initReader();
   const initialBookWord =
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;

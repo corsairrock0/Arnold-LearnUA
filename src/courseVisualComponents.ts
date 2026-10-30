@@ -194,7 +194,11 @@ export interface StructuredCourseLesson {
 }
 
 function escapeQuote(s: string): string {
-  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return String(s || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;')
+    .replace(/\r?\n/g, ' ');
 }
 
 function highlightSubstring(text: string, target?: string): string {

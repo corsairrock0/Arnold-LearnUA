@@ -38,9 +38,6 @@ test('1. Zero textbook references (Pugh, Press, Routledge, §) across all source
         'src/identifyData.ts',
         'src/identifyEngine.ts',
         'src/identifyView.ts',
-        'src/aiConversationData.ts',
-        'src/aiConversationEngine.ts',
-        'src/aiConversationView.ts',
         'src/main.ts'
     ];
     const forbidden = [/pugh/i, /ian\s+press/i, /pugh\s*&\s*press/i, /routledge/i, /poulard/i, /yurchenko/i, /shevchuk/i, /hippocrene/i, /roma\s+franko/i, /detselig/i, /bekh/i, /dingley/i, /hodder/i, /john\s+murray/i, /teach\s+yourself/i, /pavlyshyn/i, /lonely\s+planet/i, /kandybko/i, /§\s*\d/];
@@ -375,164 +372,13 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographi
     assert.equal(progressRecord.totals.totalScenesDefined, 100);
 });
 
-test('10. AI Conversation & Language Tutor: independent modes & correction intensities, 29 scenarios, grammar accuracy, and session review', async () => {
-    const {
-        CONVERSATION_MODES,
-        CORRECTION_INTENSITY_OPTIONS,
-        CORRECTION_INTENSITY_ORDER,
-        CEFR_LEVEL_CONFIGS,
-        CEFR_LEVEL_ORDER,
-        FORMALITY_OPTIONS,
-        CONVERSATION_SCENARIOS,
-        MANUAL_HELP_ACTIONS,
-        PRONUNCIATION_GUIDES,
-    } = await import('../aiConversationData.ts');
-    const {
-        createInitialConversationState,
-        setConversationMode,
-        setCorrectionIntensity,
-        setIncludeSessionReview,
-        getEffectiveTurnBehavior,
-        shouldSurfaceLiveCorrection,
-        analyzeUkrainianUtterance,
-        attachGrammarAnalysisToTurn,
-        executeManualHelpAction,
-        generateSessionReview,
-    } = await import('../aiConversationEngine.ts');
-
-    // 1. Verify HTML navigation & section exist and no API key prompt exists in client UI
+test('10. Navigation & Core Tabs: AI Conversation tab is removed while all 8 core tabs remain intact', () => {
     const indexHtml = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
-    assert.ok(indexHtml.includes('id="btn-convo"'), 'Primary navigation must contain #btn-convo');
-    assert.ok(indexHtml.includes('AI Conversation'), 'Primary navigation must display AI Conversation');
-    assert.ok(indexHtml.includes('id="tab-convo"'), 'index.html must contain #tab-convo section');
+    assert.equal(indexHtml.includes('id="btn-convo"'), false, 'AI Conversation button must be removed');
+    assert.equal(indexHtml.includes('id="tab-convo"'), false, 'AI Conversation tab section must be removed');
 
-    // 2. Verify both Conversation Modes & all 5 Correction Intensity options
-    assert.equal(CONVERSATION_MODES.friendly.titleEn, 'Friendly Conversation Partner');
-    assert.equal(CONVERSATION_MODES.friendly.defaultCorrectionIntensity, 'discreet');
-    assert.equal(CONVERSATION_MODES.tutor.titleEn, 'Structured Language Tutor');
-    assert.equal(CONVERSATION_MODES.tutor.defaultCorrectionIntensity, 'balanced');
-    assert.deepEqual(CORRECTION_INTENSITY_ORDER, ['off', 'discreet', 'gentle', 'balanced', 'intensive']);
-
-    // 3. Verify all 10 combinations of {friendly, tutor} x {off, discreet, gentle, balanced, intensive}
-    const modes: Array<'friendly' | 'tutor'> = ['friendly', 'tutor'];
-    for (const m of modes) {
-        for (const intensity of CORRECTION_INTENSITY_ORDER) {
-            const behavior = getEffectiveTurnBehavior(m, intensity);
-            assert.equal(behavior.mode, m);
-            assert.equal(behavior.intensity, intensity);
-            if (intensity === 'off') {
-                assert.equal(behavior.shouldDisplayInlineBadge, false, `${m} + off must not show inline badges`);
-                assert.equal(behavior.shouldIncludeSpokenCorrection, false, `${m} + off must not include spoken corrections`);
-            } else if (intensity === 'discreet') {
-                assert.equal(behavior.shouldDisplayInlineBadge, true, `${m} + discreet must show subtle inline badge`);
-                assert.equal(behavior.shouldIncludeSpokenCorrection, false, `${m} + discreet must not lecture aloud`);
-            } else if (intensity === 'intensive') {
-                assert.equal(behavior.shouldAutoOpenCorrectionCard, true, `${m} + intensive must auto-open correction card`);
-                assert.equal(behavior.shouldOfferRetryExercise, true, `${m} + intensive must offer retry exercise`);
-            }
-        }
+    const expectedTabs = ['tab-course', 'tab-en2uk', 'tab-srs', 'tab-vocab', 'tab-identify', 'tab-correction', 'tab-phonetics', 'tab-reader'];
+    for (const tabId of expectedTabs) {
+        assert.ok(indexHtml.includes(`id="${tabId}"`), `Core tab #${tabId} must remain present and functional`);
     }
-
-    // 4. Verify independence: changing mode NEVER overwrites user-customized correctionIntensity or clears transcript
-    let state = createInitialConversationState({
-        conversationMode: 'friendly',
-        correctionIntensity: 'intensive',
-        hasUserCustomizedCorrectionIntensity: true,
-    });
-    state.turns.push({
-        id: 't1',
-        utteranceId: 'utt_1',
-        speaker: 'learner',
-        ukrainianText: 'Я живу в Львів',
-        englishTranslation: 'I live in Lviv.',
-        timestamp: Date.now(),
-        modeAtTurn: 'friendly',
-        intensityAtTurn: 'intensive',
-        cefrAtTurn: 'A1',
-        showTranslation: false,
-    });
-
-    state = setConversationMode(state, 'tutor');
-    assert.equal(state.conversationMode, 'tutor', 'Mode must switch to tutor');
-    assert.equal(state.correctionIntensity, 'intensive', 'Switching mode must NOT overwrite user-selected correctionIntensity');
-    assert.equal(state.turns.length, 1, 'Switching mode must NOT clear conversation transcript');
-
-    state = setCorrectionIntensity(state, 'off');
-    assert.equal(state.correctionIntensity, 'off', 'Correction intensity must switch to off');
-    assert.equal(state.conversationMode, 'tutor', 'Switching correction intensity must NOT change conversationMode');
-    assert.equal(state.turns.length, 1, 'Switching correction intensity must NOT clear conversation transcript');
-
-    // 5. Verify CEFR levels (A0-C1), Formality (informal, formal, auto), and all 29 Scenarios
-    assert.deepEqual(CEFR_LEVEL_ORDER, ['A0', 'A1', 'A2', 'B1', 'B2', 'C1']);
-    for (const lvl of CEFR_LEVEL_ORDER) {
-        assert.ok(CEFR_LEVEL_CONFIGS[lvl].descriptionEn.length > 10);
-    }
-    assert.equal(FORMALITY_OPTIONS.length, 3);
-    assert.equal(CONVERSATION_SCENARIOS.length, 29, 'Must include Free Conversation + 28 structured scenarios (29 total)');
-    const courseIds = new Set(COURSE_MODULES.map((m) => m.id));
-    for (const sc of CONVERSATION_SCENARIOS) {
-        assert.ok(courseIds.has(sc.relatedCourseModuleId), `Scenario ${sc.id} must link to verified course module (${sc.relatedCourseModuleId})`);
-        assert.ok(sc.keyPhrases.length >= 3, `Scenario ${sc.id} must have at least 3 key phrases`);
-    }
-
-    // 6. Verify Grammar Analysis Engine accuracy & utteranceId binding
-    const locativeErr = analyzeUkrainianUtterance('Я живу в Львів', 'utt_loc_1');
-    assert.equal(locativeErr.utteranceId, 'utt_loc_1');
-    assert.equal(locativeErr.status, 'incorrect-grammar');
-    assert.equal(stripStress(locativeErr.correctUkrainian), 'Я живу у Львові');
-    assert.ok(locativeErr.explanationLevels.simple.length > 15);
-    assert.ok(locativeErr.explanationLevels.detailed.length > 15);
-    assert.ok(locativeErr.explanationLevels.advanced.tableRows.length >= 5);
-    assert.ok(courseIds.has(locativeErr.explanationLevels.advanced.relatedCourseModuleId));
-
-    const accErr = analyzeUkrainianUtterance('Я читаю книга', 'utt_acc_2');
-    assert.equal(accErr.status, 'incorrect-grammar');
-    assert.equal(stripStress(accErr.correctUkrainian), 'Я читаю книгу');
-
-    const pastErr = analyzeUkrainianUtterance('Ми йдемо в магазин вчора', 'utt_past_3');
-    assert.equal(pastErr.status, 'incorrect-grammar');
-    assert.equal(stripStress(pastErr.correctUkrainian), 'Учора ми ходили в магазин.');
-
-    const colloqOk = analyzeUkrainianUtterance('О, класно! Давай зустрінемось завтра.', 'utt_colloq_4');
-    assert.equal(colloqOk.status, 'acceptable-colloquial', 'Valid colloquial Ukrainian must NOT be marked as a grammar error');
-    assert.equal(
-        shouldSurfaceLiveCorrection(colloqOk, 'intensive').showInlineBadge,
-        false,
-        'Acceptable colloquial Ukrainian must not trigger an error badge'
-    );
-
-    // Verify attachGrammarAnalysisToTurn binds strictly by utteranceId
-    const twoTurns = [
-        { ...state.turns[0], utteranceId: 'utt_1' },
-        { ...state.turns[0], id: 't2', utteranceId: 'utt_2', ukrainianText: 'Привіт!' },
-    ];
-    const attached = attachGrammarAnalysisToTurn(twoTurns, { ...locativeErr, utteranceId: 'utt_1' });
-    assert.equal(attached[0].grammarAnalysis?.utteranceId, 'utt_1');
-    assert.equal(attached[1].grammarAnalysis, undefined, 'Must not attach utt_1 analysis to utt_2');
-
-    // 7. Verify Manual Help Actions (including on-demand correction when Corrections = Off)
-    assert.equal(MANUAL_HELP_ACTIONS.length, 9);
-    assert.ok(PRONUNCIATION_GUIDES.length >= 5);
-    const helpResWhenOff = executeManualHelpAction('correct-last', state);
-    assert.equal(stripStress(helpResWhenOff.responseUk), 'Я живу у Львові', 'Manual Correct My Last Sentence must work even when Corrections = Off');
-
-    // 8. Verify End-of-Session Review with includeSessionReview = true vs false
-    state = setIncludeSessionReview(state, true);
-    const reviewOn = generateSessionReview(state);
-    assert.equal(reviewOn.includeSessionReview, true);
-    assert.ok(reviewOn.correctedSentences.length >= 1, 'Session review must include corrected sentences when includeSessionReview is true');
-
-    state = setIncludeSessionReview(state, false);
-    const reviewOff = generateSessionReview(state);
-    assert.equal(reviewOff.includeSessionReview, false);
-    assert.equal(reviewOff.correctedSentences.length, 0, 'Session review must omit unsolicited grammar corrections when includeSessionReview is false');
-
-    // 9. Verify persistent progress record exists
-    const convoProgress = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'ai_conversation_implementation_progress.json'), 'utf8'));
-    assert.equal(convoProgress.status, 'completed');
-    assert.equal(convoProgress.totalScenarios, 29);
-    assert.equal(convoProgress.independentStateVerified.allTenCombinationsSupported, true);
 });
-
-
-

@@ -43,7 +43,11 @@ export function registerIdentifyHooks(extHooks: IdentifyExternalHooks): void {
 }
 
 function escapeSingleQuotes(s: string): string {
-  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return String(s || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;')
+    .replace(/\r?\n/g, ' ');
 }
 
 function escapeHtml(s: string): string {
