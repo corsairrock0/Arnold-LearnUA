@@ -28,6 +28,28 @@ import {
   renderKnowledgeCheck,
   type StructuredCourseLesson,
 } from './courseVisualComponents';
+import {
+  registerIdentifyHooks,
+  renderIdentifyTab,
+  selectIdentifyCategory,
+  selectIdentifyScene,
+  setIdentifyExplorationMode,
+  setIdentifyQuizMode,
+  selectIdentifyHotspot,
+  handleIdentifyMCOption,
+  submitIdentifyTypedAnswer,
+  insertIdentifyChar,
+  revealIdentifyAnswer,
+  advanceIdentifyNextTarget,
+  toggleIdentifyCategoryDrawer,
+  toggleIdentifySummaryView,
+  filterIdentifyCategories,
+  retryIdentifyMistakes,
+  resetIdentifyScene,
+  goIdentifyNextScene,
+  addIdentifyWordToFSRS,
+  addIdentifySceneWordsToFSRS,
+} from './identifyView';
 
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
@@ -2944,7 +2966,7 @@ export function renderEverydayVocabWorkspace(): void {
 // ============================================================================
 export function switchTab(tab: string, btn?: HTMLElement): void {
   triggerHaptic('light');
-  ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'reader'].forEach(
+  ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'identify', 'reader'].forEach(
     (t) => {
       const el = document.getElementById('tab-' + t);
       if (el) el.classList.add('hidden');
@@ -2963,9 +2985,30 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
   }
   if (tab === 'vocab') {
     renderEverydayVocabTab();
+  } else if (tab === 'identify') {
+    renderIdentifyTab();
   }
   const mainEl = document.getElementById('main-scroll-container');
   if (mainEl) mainEl.scrollTop = 0;
+}
+
+function addWordByUkToFSRS(uk: string): boolean {
+  const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase().trim();
+  const matched = FREQ_6000_DB.find(
+    (w) => w.ru.replace(/\u0301/g, '').toLowerCase().trim() === cleanTarget
+  );
+  const rank = matched ? matched.rank : 1;
+  if (!db.cards.some((c) => c.rank === rank)) {
+    db.cards.push(createCardRecord(rank));
+    db.xp += 3;
+    saveDB();
+    renderAnkiStage();
+    renderEn2UkStage();
+    renderCorrectionStage();
+    renderSrsCatalog6000();
+    return true;
+  }
+  return false;
 }
 
 export function updateSidebarStats(): void {
@@ -3051,6 +3094,25 @@ declare global {
     initReader: typeof initReader;
     speakStory: typeof speakStory;
     switchTab: typeof switchTab;
+    renderIdentifyTab: typeof renderIdentifyTab;
+    selectIdentifyCategory: typeof selectIdentifyCategory;
+    selectIdentifyScene: typeof selectIdentifyScene;
+    setIdentifyExplorationMode: typeof setIdentifyExplorationMode;
+    setIdentifyQuizMode: typeof setIdentifyQuizMode;
+    selectIdentifyHotspot: typeof selectIdentifyHotspot;
+    handleIdentifyMCOption: typeof handleIdentifyMCOption;
+    submitIdentifyTypedAnswer: typeof submitIdentifyTypedAnswer;
+    insertIdentifyChar: typeof insertIdentifyChar;
+    revealIdentifyAnswer: typeof revealIdentifyAnswer;
+    advanceIdentifyNextTarget: typeof advanceIdentifyNextTarget;
+    toggleIdentifyCategoryDrawer: typeof toggleIdentifyCategoryDrawer;
+    toggleIdentifySummaryView: typeof toggleIdentifySummaryView;
+    filterIdentifyCategories: typeof filterIdentifyCategories;
+    retryIdentifyMistakes: typeof retryIdentifyMistakes;
+    resetIdentifyScene: typeof resetIdentifyScene;
+    goIdentifyNextScene: typeof goIdentifyNextScene;
+    addIdentifyWordToFSRS: typeof addIdentifyWordToFSRS;
+    addIdentifySceneWordsToFSRS: typeof addIdentifySceneWordsToFSRS;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -3120,6 +3182,25 @@ if (typeof window !== 'undefined') {
   window.initReader = initReader;
   window.speakStory = speakStory;
   window.switchTab = switchTab;
+  window.renderIdentifyTab = renderIdentifyTab;
+  window.selectIdentifyCategory = selectIdentifyCategory;
+  window.selectIdentifyScene = selectIdentifyScene;
+  window.setIdentifyExplorationMode = setIdentifyExplorationMode;
+  window.setIdentifyQuizMode = setIdentifyQuizMode;
+  window.selectIdentifyHotspot = selectIdentifyHotspot;
+  window.handleIdentifyMCOption = handleIdentifyMCOption;
+  window.submitIdentifyTypedAnswer = submitIdentifyTypedAnswer;
+  window.insertIdentifyChar = insertIdentifyChar;
+  window.revealIdentifyAnswer = revealIdentifyAnswer;
+  window.advanceIdentifyNextTarget = advanceIdentifyNextTarget;
+  window.toggleIdentifyCategoryDrawer = toggleIdentifyCategoryDrawer;
+  window.toggleIdentifySummaryView = toggleIdentifySummaryView;
+  window.filterIdentifyCategories = filterIdentifyCategories;
+  window.retryIdentifyMistakes = retryIdentifyMistakes;
+  window.resetIdentifyScene = resetIdentifyScene;
+  window.goIdentifyNextScene = goIdentifyNextScene;
+  window.addIdentifyWordToFSRS = addIdentifyWordToFSRS;
+  window.addIdentifySceneWordsToFSRS = addIdentifySceneWordsToFSRS;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,
@@ -3153,6 +3234,13 @@ if (typeof window !== 'undefined') {
   renderCourseSyllabus();
   renderActiveModule();
   renderEverydayVocabTab();
+  registerIdentifyHooks({
+    triggerHaptic: (t) => triggerHaptic(t === 'heavy' ? 'heavy' : 'light'),
+    speakUkrainian,
+    inspectCourseWord,
+    addWordByUkToFSRS: (uk) => addWordByUkToFSRS(uk),
+  });
+  renderIdentifyTab();
   initReader();
   const initialBookWord =
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;

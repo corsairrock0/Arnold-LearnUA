@@ -1,0 +1,1438 @@
+{
+  "feature": "Identify Visual Vocabulary System (Photographic Scenes Edition)",
+  "status": "COMPLETED",
+  "updatedAt": "2026-10-30T11:00:00Z",
+  "totals": {
+    "categoriesDefined": 20,
+    "totalScenesDefined": 100,
+    "totalPhotographicAssetsVerified": 100,
+    "totalVocabularyItemsMapped": 174,
+    "totalHotspotsAnnotatedAndVerified": 788,
+    "allGradientsReplacedWithPhotographs": true,
+    "allScenesVerified": true,
+    "allHotspotsVerified": true,
+    "allQuizzesTested": true
+  },
+  "categories": [
+    {
+      "id": "kitchen",
+      "number": 1,
+      "titleEn": "Kitchen",
+      "titleUk": "Ку́хня",
+      "vocabularyCount": 12,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/kitchen/kitchen_01.webp",
+      "scenes": [
+        {
+          "sceneId": "kitchen-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Modern Home Kitchen",
+          "titleUk": "Суча́сна дома́шня ку́хня",
+          "assetPath": "/assets/identify/kitchen/kitchen_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "kitchen-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Traditional Family Kitchen",
+          "titleUk": "Традиці́йна сіме́йна ку́хня",
+          "assetPath": "/assets/identify/kitchen/kitchen_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "kitchen-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Countertop & Cooking Utensils",
+          "titleUk": "Кухо́нна стільни́ця та по́суд",
+          "assetPath": "/assets/identify/kitchen/kitchen_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "kitchen-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Kitchen During Meal Preparation",
+          "titleUk": "Приготува́ння ї́жі на ку́хні",
+          "assetPath": "/assets/identify/kitchen/kitchen_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 6
+        },
+        {
+          "sceneId": "kitchen-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Kitchen Appliances & Dining Nook",
+          "titleUk": "Кухо́нна те́хніка та обі́дня зо́на",
+          "assetPath": "/assets/identify/kitchen/kitchen_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "bedroom",
+      "number": 2,
+      "titleEn": "Bedroom",
+      "titleUk": "Спа́льня",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/bedroom/bedroom_01.webp",
+      "scenes": [
+        {
+          "sceneId": "bedroom-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Sunlit Master Bedroom",
+          "titleUk": "Со́нячна головна́ спа́льня",
+          "assetPath": "/assets/identify/bedroom/bedroom_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "bedroom-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Cozy Guest Bedroom",
+          "titleUk": "Затишна́ гостьова́ спа́льня",
+          "assetPath": "/assets/identify/bedroom/bedroom_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "bedroom-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Minimalist Loft Bedroom",
+          "titleUk": "Суча́сна спа́льня в сти́лі лофт",
+          "assetPath": "/assets/identify/bedroom/bedroom_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "bedroom-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Morning Routine Bedroom",
+          "titleUk": "Ранко́ва спа́льня бі́ля вікна́",
+          "assetPath": "/assets/identify/bedroom/bedroom_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "bedroom-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Evening Rest Bedroom",
+          "titleUk": "Вечі́рня спа́льня з те́плим сві́тлом",
+          "assetPath": "/assets/identify/bedroom/bedroom_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "bathroom",
+      "number": 3,
+      "titleEn": "Bathroom",
+      "titleUk": "Ва́нна кімна́та",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/bathroom/bathroom_01.webp",
+      "scenes": [
+        {
+          "sceneId": "bathroom-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Modern Tiled Bathroom",
+          "titleUk": "Суча́сна ва́нна кімна́та",
+          "assetPath": "/assets/identify/bathroom/bathroom_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "bathroom-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Vanity Sink & Hygiene Counter",
+          "titleUk": "Умива́льник та засоби гігіє́ни",
+          "assetPath": "/assets/identify/bathroom/bathroom_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "bathroom-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Walk-in Shower & Spa Bath",
+          "titleUk": "Душова́ зо́на та вели́ка ва́нна",
+          "assetPath": "/assets/identify/bathroom/bathroom_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "bathroom-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Morning Routine Washroom",
+          "titleUk": "Ранко́ве вмива́ння у ва́нній",
+          "assetPath": "/assets/identify/bathroom/bathroom_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "bathroom-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Compact Apartment Bathroom",
+          "titleUk": "Компа́ктна кварти́рна ва́нна",
+          "assetPath": "/assets/identify/bathroom/bathroom_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "living-room",
+      "number": 4,
+      "titleEn": "Living Room",
+      "titleUk": "Віта́льня",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/living-room/living-room_01.webp",
+      "scenes": [
+        {
+          "sceneId": "living-room-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Family Living Room Lounge",
+          "titleUk": "Сіме́йна віта́льня для відпочи́нку",
+          "assetPath": "/assets/identify/living-room/living-room_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "living-room-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Reading Corner & Bookshelf",
+          "titleUk": "Куто́чок для чита́ння з книжко́вою поли́цею",
+          "assetPath": "/assets/identify/living-room/living-room_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "living-room-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Modern Apartment Media Room",
+          "titleUk": "Суча́сна віта́льня з телеві́зором",
+          "assetPath": "/assets/identify/living-room/living-room_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "living-room-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Sunny Afternoon Parlor",
+          "titleUk": "Со́нячна віта́льня вде́нь",
+          "assetPath": "/assets/identify/living-room/living-room_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "living-room-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Cozy Evening Living Room",
+          "titleUk": "Затишна́ вечі́рня віта́льня",
+          "assetPath": "/assets/identify/living-room/living-room_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "dining-room",
+      "number": 5,
+      "titleEn": "Dining Room",
+      "titleUk": "Їда́льня",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/dining-room/dining-room_01.webp",
+      "scenes": [
+        {
+          "sceneId": "dining-room-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Formal Dinner Place Setting",
+          "titleUk": "Святко́ве сервірува́ння столу́",
+          "assetPath": "/assets/identify/dining-room/dining-room_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "dining-room-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Family Breakfast Dining Room",
+          "titleUk": "Сіме́йний сніда́нок у їда́льні",
+          "assetPath": "/assets/identify/dining-room/dining-room_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "dining-room-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Holiday Feast Table",
+          "titleUk": "Родинна́ їда́льня для вече́рі",
+          "assetPath": "/assets/identify/dining-room/dining-room_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "dining-room-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Window-Side Dining Nook",
+          "titleUk": "Обі́дній стіл бі́ля вікна́",
+          "assetPath": "/assets/identify/dining-room/dining-room_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "dining-room-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Afternoon Tea & Tableware",
+          "titleUk": "Чаюва́ння в затишні́й їда́льні",
+          "assetPath": "/assets/identify/dining-room/dining-room_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "supermarket",
+      "number": 6,
+      "titleEn": "Supermarket",
+      "titleUk": "Суперма́ркет",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/supermarket/supermarket_01.webp",
+      "scenes": [
+        {
+          "sceneId": "supermarket-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Fresh Grocery & Dairy Aisle",
+          "titleUk": "Відді́л проду́ктів та моло́чних това́рів",
+          "assetPath": "/assets/identify/supermarket/supermarket_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "supermarket-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Supermarket Checkout Lane",
+          "titleUk": "Ка́са в суперма́ркеті",
+          "assetPath": "/assets/identify/supermarket/supermarket_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "supermarket-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Bakery & Cheese Display",
+          "titleUk": "Пека́рня та си́рна вітри́на",
+          "assetPath": "/assets/identify/supermarket/supermarket_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "supermarket-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Shopping Cart & Produce Section",
+          "titleUk": "Візо́к у фрукто́вому ря́ді",
+          "assetPath": "/assets/identify/supermarket/supermarket_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "supermarket-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Express Checkout & Packing Area",
+          "titleUk": "Швидка́ поку́пка проду́ктів",
+          "assetPath": "/assets/identify/supermarket/supermarket_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "farmers-market",
+      "number": 7,
+      "titleEn": "Farmers Market",
+      "titleUk": "Ферме́рський ри́нок",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/farmers-market/farmers-market_01.webp",
+      "scenes": [
+        {
+          "sceneId": "farmers-market-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Fresh Vegetable Market Stall",
+          "titleUk": "Овоче́ва я́тка на ри́нку",
+          "assetPath": "/assets/identify/farmers-market/farmers-market_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "farmers-market-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Orchard Fruit & Flower Stand",
+          "titleUk": "Садо́ві фру́кти та кві́ти",
+          "assetPath": "/assets/identify/farmers-market/farmers-market_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "farmers-market-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Morning Harvest Bazaar",
+          "titleUk": "Ранко́вий ферме́рський база́р",
+          "assetPath": "/assets/identify/farmers-market/farmers-market_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "farmers-market-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Farm-to-Table Produce Counter",
+          "titleUk": "Прила́вок зі сві́жим врожа́єм",
+          "assetPath": "/assets/identify/farmers-market/farmers-market_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "farmers-market-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Weekend Country Market",
+          "titleUk": "Неді́льний я́рмарок",
+          "assetPath": "/assets/identify/farmers-market/farmers-market_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "cafe",
+      "number": 8,
+      "titleEn": "Café",
+      "titleUk": "Кав’я́рня",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/cafe/cafe_01.webp",
+      "scenes": [
+        {
+          "sceneId": "cafe-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Espresso Bar & Barista Counter",
+          "titleUk": "Каво́ва сті́йка та бари́ста",
+          "assetPath": "/assets/identify/cafe/cafe_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "cafe-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Cozy Lviv Coffee Table",
+          "titleUk": "Затишни́й сто́лик у льві́вській кав’я́рні",
+          "assetPath": "/assets/identify/cafe/cafe_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "cafe-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Sunny Sidewalk Café Terrace",
+          "titleUk": "Лі́тня тера́са кав’я́рні",
+          "assetPath": "/assets/identify/cafe/cafe_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "cafe-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Morning Coffee & Bakery Display",
+          "titleUk": "Ранко́ва ка́ва зі сві́жим ті́стечком",
+          "assetPath": "/assets/identify/cafe/cafe_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "cafe-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Afternoon Reading & Coffee Nook",
+          "titleUk": "Каво́ва пере́рва в кав’я́рні",
+          "assetPath": "/assets/identify/cafe/cafe_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "restaurant",
+      "number": 9,
+      "titleEn": "Restaurant",
+      "titleUk": "Рестора́н",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/restaurant/restaurant_01.webp",
+      "scenes": [
+        {
+          "sceneId": "restaurant-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Evening Bistro & Waiter Service",
+          "titleUk": "Вече́ря в рестора́ні з офіціа́нтом",
+          "assetPath": "/assets/identify/restaurant/restaurant_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "restaurant-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Traditional Ukrainian Dinner Table",
+          "titleUk": "Традиці́йна украї́нська стра́ва",
+          "assetPath": "/assets/identify/restaurant/restaurant_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "restaurant-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Chef Signature Dish Presentation",
+          "titleUk": "Пода́ча гаря́чої стра́ви",
+          "assetPath": "/assets/identify/restaurant/restaurant_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "restaurant-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Patio Restaurant Lunch",
+          "titleUk": "Обі́д у місько́му рестора́ні",
+          "assetPath": "/assets/identify/restaurant/restaurant_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "restaurant-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Paying the Restaurant Bill",
+          "titleUk": "Раху́нок пі́сля смачно́ї вече́рі",
+          "assetPath": "/assets/identify/restaurant/restaurant_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "classroom",
+      "number": 10,
+      "titleEn": "Classroom",
+      "titleUk": "Клас і шко́ла",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/classroom/classroom_01.webp",
+      "scenes": [
+        {
+          "sceneId": "classroom-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Front of the Classroom & Board",
+          "titleUk": "Уро́к бі́ля шкільно́ї до́шки",
+          "assetPath": "/assets/identify/classroom/classroom_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "classroom-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Student Desk & Study Supplies",
+          "titleUk": "Шкільна́ па́рта та прила́ддя",
+          "assetPath": "/assets/identify/classroom/classroom_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "classroom-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Interactive Language Lesson",
+          "titleUk": "Заня́ття з украї́нської мо́ви",
+          "assetPath": "/assets/identify/classroom/classroom_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "classroom-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Collaborative Study Desks",
+          "titleUk": "Робо́та в кла́сі за па́ртами",
+          "assetPath": "/assets/identify/classroom/classroom_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "classroom-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Morning Bell & Backpacks",
+          "titleUk": "Підгото́вка до уро́ку в шко́лі",
+          "assetPath": "/assets/identify/classroom/classroom_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "office",
+      "number": 11,
+      "titleEn": "Office",
+      "titleUk": "О́фіс і робо́та",
+      "vocabularyCount": 9,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/office/office_01.webp",
+      "scenes": [
+        {
+          "sceneId": "office-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Modern Workstation Desk",
+          "titleUk": "Суча́сне робо́че мі́сце в о́фісі",
+          "assetPath": "/assets/identify/office/office_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "office-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Home Office & Laptop Setup",
+          "titleUk": "Дома́шній кабіне́т із ноутбу́ком",
+          "assetPath": "/assets/identify/office/office_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "office-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Coworking Studio & Printer Corner",
+          "titleUk": "Відкри́тий о́фіс та оргте́хніка",
+          "assetPath": "/assets/identify/office/office_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "office-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Executive Desk & Communication",
+          "titleUk": "Ділови́й стіл для перего́ворів",
+          "assetPath": "/assets/identify/office/office_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "office-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Tech Support & Printing Station",
+          "titleUk": "Робо́ча зо́на з при́нтером і комп’ю́тером",
+          "assetPath": "/assets/identify/office/office_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "number": 12,
+      "titleEn": "Library",
+      "titleUk": "Бібліоте́ка",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/library/library_01.webp",
+      "scenes": [
+        {
+          "sceneId": "library-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "University Reading Hall",
+          "titleUk": "Університе́тський чита́льний зал",
+          "assetPath": "/assets/identify/library/library_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "library-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Quiet Study Table & Bookshelves",
+          "titleUk": "Ти́хе мі́сце для чита́ння",
+          "assetPath": "/assets/identify/library/library_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "library-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Tall Wooden Bookshelf Aisle",
+          "titleUk": "Книжко́ві ряди́ в бібліоте́ці",
+          "assetPath": "/assets/identify/library/library_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "library-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Evening Research Corner",
+          "titleUk": "Вечі́рня робо́та в бібліоте́ці",
+          "assetPath": "/assets/identify/library/library_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "library-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Reference & Archive Room",
+          "titleUk": "Зал рідкі́сних вида́нь",
+          "assetPath": "/assets/identify/library/library_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "gym-fitness",
+      "number": 13,
+      "titleEn": "Gym & Fitness",
+      "titleUk": "Спортза́л і фі́тнес",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/gym-fitness/gym-fitness_01.webp",
+      "scenes": [
+        {
+          "sceneId": "gym-fitness-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Free Weights & Bench Zone",
+          "titleUk": "Зо́на вільних ваг у спортза́лі",
+          "assetPath": "/assets/identify/gym-fitness/gym-fitness_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "gym-fitness-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Cardio Treadmill & Fitness Machines",
+          "titleUk": "Кардіозо́на та тренаже́ри",
+          "assetPath": "/assets/identify/gym-fitness/gym-fitness_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "gym-fitness-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Stretching & Yoga Mat Corner",
+          "titleUk": "Куто́чок для розми́нки та фі́тнесу",
+          "assetPath": "/assets/identify/gym-fitness/gym-fitness_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "gym-fitness-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Strength & Conditioning Room",
+          "titleUk": "Зал силової підгото́вки",
+          "assetPath": "/assets/identify/gym-fitness/gym-fitness_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "gym-fitness-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Morning Workout Circuit",
+          "titleUk": "Ранко́ве тренува́ння в за́лі",
+          "assetPath": "/assets/identify/gym-fitness/gym-fitness_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "park-garden",
+      "number": 14,
+      "titleEn": "Park & Garden",
+      "titleUk": "Парк і сад",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/park-garden/park-garden_01.webp",
+      "scenes": [
+        {
+          "sceneId": "park-garden-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Sunny Botanical Park Path",
+          "titleUk": "Со́нячна але́я місько́го па́рку",
+          "assetPath": "/assets/identify/park-garden/park-garden_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "park-garden-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Garden Bench & Flowerbed",
+          "titleUk": "Квіту́чий сад та ла́вка для відпочи́нку",
+          "assetPath": "/assets/identify/park-garden/park-garden_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "park-garden-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Golden Autumn Park Walkway",
+          "titleUk": "Осі́нній парк із золоти́м ли́стям",
+          "assetPath": "/assets/identify/park-garden/park-garden_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "park-garden-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Morning Lawn & Birdsong",
+          "titleUk": "Ранко́ва прогу́лянка в саду́",
+          "assetPath": "/assets/identify/park-garden/park-garden_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "park-garden-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Shaded Park Promenade",
+          "titleUk": "Заті́нена дорі́жка в па́рку",
+          "assetPath": "/assets/identify/park-garden/park-garden_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "playground",
+      "number": 15,
+      "titleEn": "Playground",
+      "titleUk": "Дитя́чий майда́нчик",
+      "vocabularyCount": 7,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/playground/playground_01.webp",
+      "scenes": [
+        {
+          "sceneId": "playground-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Neighborhood Park Playground",
+          "titleUk": "Со́нячний дитя́чий майда́нчик",
+          "assetPath": "/assets/identify/playground/playground_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "playground-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Sandbox & Slide Play Area",
+          "titleUk": "Пісо́чниця та висо́ка гі́рка",
+          "assetPath": "/assets/identify/playground/playground_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "playground-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Swings Under the Park Trees",
+          "titleUk": "Го́йдалки в зеле́ному дворі́",
+          "assetPath": "/assets/identify/playground/playground_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "playground-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Afternoon Family Playground",
+          "titleUk": "Прогу́лянка на майда́нчику",
+          "assetPath": "/assets/identify/playground/playground_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "playground-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Courtyard Play Corner",
+          "titleUk": "Дворови́й ігрови́й майда́нчик",
+          "assetPath": "/assets/identify/playground/playground_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "city-streets",
+      "number": 16,
+      "titleEn": "City Streets",
+      "titleUk": "Ву́лиці мі́ста",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/city-streets/city-streets_01.webp",
+      "scenes": [
+        {
+          "sceneId": "city-streets-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Downtown Crosswalk & Traffic Light",
+          "titleUk": "Пішохі́дний перехі́д у це́нтрі мі́ста",
+          "assetPath": "/assets/identify/city-streets/city-streets_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "city-streets-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Historic Boulevard & Architecture",
+          "titleUk": "Істори́чна ву́лиця та буди́нки",
+          "assetPath": "/assets/identify/city-streets/city-streets_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "city-streets-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "City Bike Lane & Sidewalk",
+          "titleUk": "Велодорі́жка на міські́й ву́лиці",
+          "assetPath": "/assets/identify/city-streets/city-streets_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "city-streets-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Morning Commute Intersection",
+          "titleUk": "Ранко́вий рух на перехре́сті",
+          "assetPath": "/assets/identify/city-streets/city-streets_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "city-streets-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Evening Avenue & Streetlights",
+          "titleUk": "Вечі́рня ву́лиця вели́кого мі́ста",
+          "assetPath": "/assets/identify/city-streets/city-streets_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "public-transportation",
+      "number": 17,
+      "titleEn": "Public Transportation",
+      "titleUk": "Грома́дський тра́нспорт",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/public-transportation/public-transportation_01.webp",
+      "scenes": [
+        {
+          "sceneId": "public-transportation-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "City Bus & Tram Stop Hub",
+          "titleUk": "Зупи́нка авто́буса і трамва́я",
+          "assetPath": "/assets/identify/public-transportation/public-transportation_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "public-transportation-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Inside a Modern Tram Car",
+          "titleUk": "У сало́ні суча́сного трамва́я",
+          "assetPath": "/assets/identify/public-transportation/public-transportation_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "public-transportation-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Metro Entrance & Express Bus",
+          "titleUk": "Вхід до метро́ та міськи́й тра́нспорт",
+          "assetPath": "/assets/identify/public-transportation/public-transportation_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "public-transportation-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Window Seat & Ticket Validation",
+          "titleUk": "Пої́здка з квитко́м бі́ля вікна́",
+          "assetPath": "/assets/identify/public-transportation/public-transportation_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "public-transportation-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Evening Commuter Transit Plaza",
+          "titleUk": "Вечі́рня переса́дка на зупи́нці",
+          "assetPath": "/assets/identify/public-transportation/public-transportation_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "airport-train",
+      "number": 18,
+      "titleEn": "Airport & Train Station",
+      "titleUk": "Аеропо́рт і вокза́л",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/airport-train/airport-train_01.webp",
+      "scenes": [
+        {
+          "sceneId": "airport-train-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Airport Terminal & Runway View",
+          "titleUk": "Терміна́л аеропо́рту та літа́к",
+          "assetPath": "/assets/identify/airport-train/airport-train_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "airport-train-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Central Railway Platform & Express Train",
+          "titleUk": "Залізни́чна платфо́рма та по́їзд",
+          "assetPath": "/assets/identify/airport-train/airport-train_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "airport-train-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Departure Board & Baggage Check",
+          "titleUk": "Табло́ відпра́влень і бага́ж",
+          "assetPath": "/assets/identify/airport-train/airport-train_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "airport-train-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Intercity Rail & Air Transfer Hub",
+          "titleUk": "Вокза́л швидкісни́х експре́сів",
+          "assetPath": "/assets/identify/airport-train/airport-train_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "airport-train-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Boarding Gate & Platform Lounge",
+          "titleUk": "Поса́дка пасажи́рів у подо́рож",
+          "assetPath": "/assets/identify/airport-train/airport-train_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "hospital-pharmacy",
+      "number": 19,
+      "titleEn": "Hospital & Pharmacy",
+      "titleUk": "Ліка́рня та апте́ка",
+      "vocabularyCount": 8,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_01.webp",
+      "scenes": [
+        {
+          "sceneId": "hospital-pharmacy-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Doctor Examination & Clinic Room",
+          "titleUk": "Кабіне́т лі́каря в клі́ніці",
+          "assetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "hospital-pharmacy-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Pharmacy Counter & Medicine Shelves",
+          "titleUk": "Апте́чний прила́вок та лі́ки",
+          "assetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "hospital-pharmacy-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Hospital Ward & Patient Care",
+          "titleUk": "Ліка́рняна пала́та та ме́дсестра",
+          "assetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        },
+        {
+          "sceneId": "hospital-pharmacy-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "First-Aid & Medical Checkup Tray",
+          "titleUk": "Меди́чний о́гляд та перша́ допомо́га",
+          "assetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 8
+        },
+        {
+          "sceneId": "hospital-pharmacy-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Community Clinic & Pharmacy Hub",
+          "titleUk": "Меди́чний центр і апте́ка",
+          "assetPath": "/assets/identify/hospital-pharmacy/hospital-pharmacy_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 7
+        }
+      ]
+    },
+    {
+      "id": "beach-nature",
+      "number": 20,
+      "titleEn": "Beach & Nature",
+      "titleUk": "Пляж і приро́да",
+      "vocabularyCount": 10,
+      "scenesCount": 5,
+      "thumbnailAssetPath": "/assets/identify/beach-nature/beach-nature_01.webp",
+      "scenes": [
+        {
+          "sceneId": "beach-nature-scene-1",
+          "sceneNumber": 1,
+          "titleEn": "Sunny Sea Coast & Sandy Beach",
+          "titleUk": "Со́нячний морськи́й пляж",
+          "assetPath": "/assets/identify/beach-nature/beach-nature_01.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "beach-nature-scene-2",
+          "sceneNumber": 2,
+          "titleEn": "Mountain Lake & Pine Shore",
+          "titleUk": "Гірське́ о́зеро та верши́ни",
+          "assetPath": "/assets/identify/beach-nature/beach-nature_02.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "beach-nature-scene-3",
+          "sceneNumber": 3,
+          "titleEn": "Coastal Waves & Rocky Headland",
+          "titleUk": "Морські́ хви́лі бі́ля скель",
+          "assetPath": "/assets/identify/beach-nature/beach-nature_03.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "beach-nature-scene-4",
+          "sceneNumber": 4,
+          "titleEn": "Summer Beach Relaxation",
+          "titleUk": "Лі́тній відпочи́нок на бере́зі мо́ря",
+          "assetPath": "/assets/identify/beach-nature/beach-nature_04.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        },
+        {
+          "sceneId": "beach-nature-scene-5",
+          "sceneNumber": 5,
+          "titleEn": "Golden Sunset Over Sea & Mountains",
+          "titleUk": "За́хід со́нця над мо́рем і гора́ми",
+          "assetPath": "/assets/identify/beach-nature/beach-nature_05.webp",
+          "assetSourceType": "photograph",
+          "imageVerified": true,
+          "hotspotsVerified": true,
+          "quizTested": true,
+          "targetCount": 9
+        }
+      ]
+    }
+  ]
+}

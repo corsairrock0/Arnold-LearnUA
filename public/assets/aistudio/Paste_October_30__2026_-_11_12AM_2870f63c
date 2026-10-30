@@ -1,0 +1,1006 @@
+# LANGO UA — COMPLETE 2026 MATERIAL 3 EXPRESSIVE LIGHT-THEME REDESIGN
+
+## PRIMARY OBJECTIVE
+
+You are working inside my existing Ukrainian language-learning web application:
+
+https://slovo-ua-app.ai.studio/
+
+Redesign the ENTIRE application using the attached reference screenshot as the primary visual inspiration.
+
+Create a premium, modern, cohesive LIGHT-ONLY interface inspired by Google's Material Design 3 Expressive design language and contemporary 2026 educational dashboard design.
+
+I want THREE distinct adaptive experiences:
+
+1. DESKTOP BROWSER — A spacious dashboard-style application with a navigation sidebar, large learning workspace, and useful contextual panels.
+2. TABLET — A closely related but more compact interface optimized for touch, portrait and landscape use, and efficient learning.
+3. MOBILE — A visually consistent, streamlined interface optimized for smaller screens and one-handed navigation.
+
+All three experiences must share the same design system, colors, typography, components, and visual identity.
+
+However, their layouts must be intelligently adapted rather than being simple scaled versions of each other.
+
+IMPORTANT:
+
+- Implement the changes directly in the existing application.
+- Redesign ALL application sections, not just the homepage.
+- Preserve all educational content.
+- Preserve every working feature and learning algorithm.
+- Preserve saved student progress.
+- Remove dark mode completely.
+- Use LIGHT THEME ONLY across every viewport.
+- Do not recreate or rebuild the application from scratch.
+- Do not require the previously deleted textbook PDF assets.
+
+---
+
+# PART 1 — ANALYZE THE ATTACHED DESIGN REFERENCE
+
+The attached screenshot is the primary visual reference.
+
+Study its overall composition, colors, navigation, card design, spacing, typography, and visual hierarchy.
+
+The visual qualities I want to reproduce include:
+
+### 1.1 Lavender application background
+
+The screenshot uses a beautiful medium-lavender/purple surrounding background.
+
+Create a similar visual foundation.
+
+For desktop and larger tablets, consider a soft lavender outer canvas around a white or near-white rounded application shell.
+
+The design should feel polished and cohesive, not like a plain webpage with random cards.
+
+### 1.2 Clean white navigation sidebar
+
+The screenshot has a persistent white vertical navigation area with:
+
+- Logo at the top.
+- Vertically arranged navigation items.
+- Simple monochromatic icons.
+- Clear labels.
+- Soft lavender active-state background.
+- Purple active indicator.
+- Generous spacing.
+- Secondary controls near the bottom.
+
+Recreate this approach for desktop navigation.
+
+Use Material 3 Expressive-style selection pills or rounded indicators.
+
+### 1.3 Soft neutral content background
+
+The main workspace in the screenshot uses a very light gray/off-white background.
+
+Use this to distinguish the learning workspace from its white cards.
+
+The background must remain subtle and visually quiet.
+
+### 1.4 Floating white cards
+
+The dashboard contains softly rounded white cards with:
+
+- Minimal borders.
+- Subtle shadows or tonal elevation.
+- Rounded corners.
+- Clear labels.
+- Spacious interiors.
+- Small colorful accents.
+
+Use the same design principles throughout LangoUA.
+
+### 1.5 Purple and coral accents
+
+Use lavender/purple as the main brand color.
+
+Use soft coral or peach as a secondary accent.
+
+Use occasional subtle coral-to-purple gradients for prominent actions or special highlights.
+
+Do NOT apply gradients to every component.
+
+### 1.6 Compact information hierarchy
+
+The reference presents multiple information areas without feeling overcrowded.
+
+Adopt this balance:
+
+- Strong primary learning focus.
+- Compact supporting statistics.
+- Clear information groups.
+- Consistent alignment.
+- Elegant whitespace.
+- Lightweight icons.
+
+Do not copy unrelated features from the screenshot such as a friends feed, class scheduling, upgrade advertising, or fictitious user profiles.
+
+Use its VISUAL DESIGN, not its unrelated product features.
+
+---
+
+# PART 2 — SHARED LIGHT-ONLY COLOR SYSTEM
+
+Build a unified Material 3-inspired color system.
+
+Use the attached screenshot to refine the final colors.
+
+Start with the following approximate palette:
+
+Primary lavender: #7068D9
+Deeper interactive purple: #5E55CC
+Lavender selected surface: #EAE7FF
+Soft lavender secondary surface: #F2F0FF
+
+Main application background: #F6F6F8
+Primary card surface: #FFFFFF
+Subtle elevated surface: #FAFAFC
+Secondary surface: #F0F1F5
+
+Primary text: #252535
+Secondary text: #737587
+Subtle borders: #E6E6EE
+
+Coral accent: #F49B88
+Peach accent: #FFC2A5
+Success color: #279C75
+Warning color: #CE8B38
+Error color: #C64D58
+
+Optional prominent CTA gradient:
+#F49B88 → #7068D9
+
+These are starting values, not mandatory exact matches. Refine them based on the reference image and accessibility testing.
+
+Implement semantic CSS design tokens rather than hardcoding colors separately in every component.
+
+Use Material 3-inspired surface containers, typography roles, shape tokens, state layers, and tonal elevation.
+
+Maintain accessible text contrast.
+
+Use color to indicate actual meaning, not merely decoration.
+
+---
+
+# PART 3 — REMOVE DARK MODE COMPLETELY
+
+This requirement is NON-NEGOTIABLE.
+
+I do not want a dark theme anywhere in the application.
+
+Remove all user-facing dark-mode controls, including:
+
+- Moon icons.
+- Sun icons used for theme switching.
+- Light/dark toggle switches.
+- Appearance selection menus.
+- Automatic system-theme options.
+- Any duplicated theme control in mobile, tablet, or desktop navigation.
+
+The current app includes a moon-style theme control. Remove it.
+
+The application must ALWAYS use the new light design, regardless of the user's system preferences.
+
+Implementation requirements:
+
+1. Set the application to a light-only color scheme.
+2. Remove dark-mode selection logic where it is no longer needed.
+3. Remove obsolete dark-theme styling that is no longer referenced.
+4. Remove or safely ignore stored dark-mode preferences.
+5. Ensure previously saved dark-mode settings cannot reactivate dark mode.
+6. Check all dialogs, overlays, popovers, exercise cards, and menus.
+7. Ensure browser-native form controls are styled appropriately for a light interface.
+8. Update relevant browser theme-color or application manifest settings where applicable.
+9. Ensure the application remains light even when the operating system is set to dark.
+10. Remove theme-related dead code only after verifying it is no longer needed.
+
+Preserve unrelated user preferences.
+
+Do not let the visual redesign alter learning progress or FSRS data.
+
+---
+
+# PART 4 — RESPONSIVE APPLICATION ARCHITECTURE
+
+Implement THREE coordinated layouts using one shared application and shared educational components.
+
+Do not create three separate websites.
+
+Do not duplicate the entire feature implementation for each screen size.
+
+Use responsive CSS, grid, flexbox, container queries, and reusable components.
+
+Use viewport width as the principal adaptation mechanism.
+
+Suggested layout categories:
+
+Compact: under 600 CSS pixels.
+Medium: 600–839 CSS pixels.
+Expanded: 840–1199 CSS pixels.
+Large: 1200–1599 CSS pixels.
+Extra-large: 1600 CSS pixels and above.
+
+Treat these as adaptive guidelines rather than rigid assumptions about device hardware.
+
+A tablet in split-screen mode may require the compact layout.
+
+A large tablet in landscape mode may benefit from a desktop-like arrangement.
+
+A narrow desktop browser window should remain usable.
+
+Support automatic adaptation when:
+
+- Resizing the browser.
+- Rotating a tablet.
+- Entering split-screen.
+- Changing browser zoom.
+- Using an external monitor.
+- Switching between portrait and landscape.
+
+Avoid reloading the application when a breakpoint changes.
+
+Preserve the active lesson, flashcard, text input, and reading state during layout changes.
+
+---
+
+# PART 5 — DESKTOP INTERFACE
+
+The desktop interface should most closely resemble the attached reference screenshot.
+
+Create a premium three-region application shell.
+
+## LEFT — NAVIGATION SIDEBAR
+
+Use a permanent white navigation sidebar.
+
+Suggested width: 210–250px, adjusted according to the layout.
+
+Include:
+
+- LangoUA brand identity.
+- App logo.
+- Clear navigation links.
+- Simple Material-inspired icons.
+- Soft lavender selected state.
+- Purple selection indicator.
+- Compact secondary actions where appropriate.
+
+The sidebar should feel almost identical in visual philosophy to the reference image.
+
+Use existing LangoUA destinations.
+
+Do not introduce fake navigation sections.
+
+## CENTER — MAIN LEARNING WORKSPACE
+
+Use a pale neutral-gray background.
+
+Include:
+
+- Contextual page heading.
+- Relevant learning controls.
+- Primary learning content.
+- White cards.
+- Appropriate learning statistics.
+- Interactive exercises.
+- Existing lesson content.
+- Responsive tables and diagrams.
+
+The central workspace must receive most of the available width.
+
+Avoid excessively wide reading paragraphs.
+
+## RIGHT — CONTEXTUAL LEARNING PANEL
+
+On sufficiently wide desktop screens, introduce a useful right-side study panel.
+
+Suggested content, depending on the current section:
+
+- Course progress.
+- Current learning goals.
+- Review statistics.
+- Grammar inspector.
+- Vocabulary details.
+- Selected word pronunciation.
+- Declension or conjugation breakdown.
+- Contextual lesson outline.
+
+The panel must serve a real educational function.
+
+Do not display meaningless statistics or empty decorative widgets.
+
+Hide or relocate the panel when screen space is insufficient.
+
+Prefer an intelligent two-column layout over three cramped columns.
+
+## DESKTOP VISUAL DETAILS
+
+Use:
+
+- White rounded cards.
+- Subtle elevation.
+- Compact elegant navigation.
+- Soft lavender selection.
+- Modern icons.
+- Consistent spacing.
+- Calm typography.
+- Limited accent gradients.
+- Clear hierarchy.
+
+Use the screenshot as the visual reference for the overall composition.
+
+---
+
+# PART 6 — TABLET INTERFACE
+
+Create a purpose-built tablet layout that closely resembles the mobile experience but intelligently uses tablet screen space.
+
+Tablet and mobile must feel like members of the same UI family.
+
+The tablet should NOT become an awkward miniature desktop dashboard.
+
+## TABLET PORTRAIT
+
+Use:
+
+- Compact left navigation rail or another suitable adaptive navigation pattern.
+- Large readable content panels.
+- Comfortable horizontal margins.
+- Primarily single-column lessons.
+- Responsive card grids where appropriate.
+- Touch-friendly controls.
+- Accessible contextual panels.
+- Easy navigation between lessons and study modes.
+
+Avoid forcing a permanent third column.
+
+## TABLET LANDSCAPE
+
+Use:
+
+- Compact or expanded navigation rail.
+- Main learning workspace.
+- Optional secondary study panel.
+- Two-column layouts where genuinely useful.
+- Spacious learning cards.
+- Better use of horizontal room.
+
+Examples:
+
+Course: lesson outline beside lesson content.
+Flashcards: study card beside post-answer grammar details.
+Reader: text beside word definitions.
+Vocabulary: category list beside vocabulary content.
+Sentence correction: exercise beside feedback.
+Handwriting: reference content beside a larger writing surface.
+
+## TABLET AND MOBILE RELATIONSHIP
+
+Reuse the same:
+
+- Card design.
+- Button design.
+- Visual hierarchy.
+- Typography.
+- Colors.
+- Exercise components.
+- Animations.
+- Educational presentation system.
+
+Tablet layouts can reveal additional information simultaneously, while mobile layouts present it sequentially.
+
+Tablet users must not lose features that are available on mobile.
+
+Support iPad, iPad Air, iPad Pro, Samsung Galaxy Tab, and equivalent tablet browsers.
+
+---
+
+# PART 7 — MOBILE INTERFACE
+
+Create a dedicated, premium light-theme mobile layout.
+
+Preserve full learning functionality while simplifying visual density.
+
+Use the screenshot's style adapted to smaller screens.
+
+The mobile interface should feel like a polished educational app rather than a compressed desktop website.
+
+## MOBILE APP SHELL
+
+Use:
+
+- Compact branded header.
+- Light background.
+- White learning cards.
+- Lavender active states.
+- Comfortable vertical spacing.
+- Large touch targets.
+- Clean page transitions.
+- Clear navigation.
+
+For navigation, use an appropriate compact bottom navigation bar or compact navigation plus an overflow/drawer mechanism.
+
+The app contains more destinations than comfortably fit in a standard bottom navigation bar.
+
+Do not cram seven tiny icons and labels into a narrow bar.
+
+Ensure ALL existing destinations remain accessible.
+
+Avoid simultaneous duplicate navigation bars.
+
+## MOBILE CONTENT
+
+Prioritize one primary learning task at a time.
+
+Use:
+
+- Single-column lesson layouts.
+- Centered flashcard interactions.
+- Clear answer buttons.
+- Readable Ukrainian and English text.
+- Appropriately sized grammar tables.
+- Expandable reference sections.
+- Bottom sheets or contextual views for word details.
+- Comfortable typing and handwriting experiences.
+
+Do not reduce Ukrainian grammar detail.
+
+Reorganize complex information so it is easy to read on a phone.
+
+Handle safe areas, virtual keyboards, browser toolbars, and landscape orientation.
+
+---
+
+# PART 8 — MATERIAL 3 EXPRESSIVE COMPONENT SYSTEM
+
+Create or refine a reusable component system consistent with the reference image.
+
+Recommended components:
+
+- AdaptiveAppShell
+- DesktopSidebar
+- TabletNavigationRail
+- MobileNavigation
+- PageHeader
+- LearningCard
+- ProgressCard
+- StatisticCard
+- PrimaryActionButton
+- SecondaryActionButton
+- SegmentedControl
+- SearchField
+- GrammarTable
+- LessonCard
+- FlashcardSurface
+- ContextualStudyPanel
+- ResponsiveDialog
+- WordDetailPanel
+
+Adapt naming to the existing codebase.
+
+Reuse existing components wherever possible.
+
+Do not add a large UI framework simply to replicate the screenshot.
+
+Use the existing frontend architecture.
+
+### SHAPES
+
+Suggested:
+
+- App shell: 24–30px.
+- Major cards: 20–24px.
+- Smaller cards: 14–18px.
+- Selected navigation backgrounds: 12–16px.
+- Prominent buttons: pill-shaped where appropriate.
+
+Use coherent shapes rather than arbitrary rounding.
+
+### TYPOGRAPHY
+
+Use a clean contemporary sans-serif with excellent Ukrainian Cyrillic support.
+
+Prefer a font such as Inter, Roboto, or an existing suitable project font.
+
+Suggested sizes:
+
+- Desktop page titles: 28–32px.
+- Tablet page titles: 24–28px.
+- Mobile page titles: 22–26px.
+- Section headings: 18–22px.
+- Body: 16–18px.
+- Supporting labels: 13–14px.
+
+Maintain a comfortable reading measure and line height.
+
+Do not imitate the screenshot's tiny text where doing so would reduce accessibility.
+
+### ELEVATION
+
+Use gentle shadows and tonal surfaces.
+
+Avoid strong dark borders and heavy shadow effects.
+
+### MOTION
+
+Use subtle, polished Material 3 Expressive transitions.
+
+Keep them restrained, fast, and purposeful.
+
+Respect reduced-motion accessibility preferences.
+
+Avoid distracting motion while studying.
+
+---
+
+# PART 9 — APPLY THE REDESIGN TO EVERY APPLICATION FEATURE
+
+Do not only restyle the first screen.
+
+Audit and visually redesign all existing LangoUA destinations.
+
+## 9.1 COURSE — A0 TO C1
+
+Preserve the full course and its existing rewritten educational content.
+
+Use the new design for:
+
+- CEFR module navigation.
+- Lesson cards.
+- Lesson reading.
+- Ukrainian grammar explanations.
+- Declension tables.
+- Conjugation charts.
+- Infographics.
+- Practice activities.
+- Mastery exams.
+- Progress indicators.
+
+Desktop:
+Sidebar plus course workspace, with optional lesson outline or grammar panel.
+
+Tablet:
+Adaptive lesson navigation with spacious reading layout.
+
+Mobile:
+Readable single-column lessons with accessible outlines and reference sections.
+
+Do not remove advanced linguistic detail.
+
+## 9.2 UKRAINIAN → ENGLISH FLASHCARDS
+
+Use beautiful white flashcard surfaces and refined recall controls.
+
+Desktop:
+Large main card with appropriate supporting information.
+
+Tablet:
+Large touch-friendly study card, optionally paired with grammar details after reveal.
+
+Mobile:
+Focused single-card study experience.
+
+Never reveal answers prematurely.
+
+Preserve FSRS scheduling.
+
+## 9.3 ENGLISH → UKRAINIAN RECALL
+
+Improve:
+
+- Question presentation.
+- Text input.
+- Ukrainian keyboard usability.
+- Answer feedback.
+- Pronunciation controls.
+- Review buttons.
+
+Optimize desktop keyboard use and mobile touchscreen typing.
+
+## 9.4 EVERYDAY VOCABULARY
+
+Apply the new card and navigation system to vocabulary browsing.
+
+Desktop:
+Category navigation, vocabulary list, and details where space permits.
+
+Tablet:
+Flexible category grid or master-detail layout.
+
+Mobile:
+Category cards and focused practice screens.
+
+Preserve all existing memory modes and FSRS connections.
+
+## 9.5 SENTENCE CORRECTION
+
+Desktop/tablet landscape:
+Exercise and feedback can appear in coordinated panels after submission.
+
+Mobile:
+Stack question, input, and feedback vertically.
+
+Use the shared light-theme cards and buttons.
+
+## 9.6 PHONETICS AND CURSIVE
+
+Use the new light-theme design for pronunciation learning and handwriting.
+
+Desktop:
+Comfortable practice surface with adjacent references.
+
+Tablet:
+Large stylus-friendly handwriting area.
+
+Mobile:
+Touch-friendly handwriting canvas and controls.
+
+Preserve existing handwriting behavior.
+
+Ensure pointer coordinates remain correct after resizing.
+
+## 9.7 COMPREHENSIBLE READER
+
+Redesign the reader like a premium educational reading application.
+
+Use:
+
+- Comfortable line lengths.
+- Clean Ukrainian typography.
+- Readable paragraph spacing.
+- Selection highlighting.
+- Contextual grammar inspector.
+- White reading surfaces.
+
+Desktop:
+Optional word-detail panel.
+
+Tablet:
+Two-pane reading when space allows.
+
+Mobile:
+Contextual word details via a sheet or overlay.
+
+Preserve reading position and pronunciation functionality.
+
+## 9.8 GRAMMAR INSPECTOR
+
+Unify the inspector visually across all sections.
+
+Use:
+
+- White surfaces.
+- Lavender active indicators.
+- Clearly labeled grammar tables.
+- Clean audio controls.
+- Accurate inflection highlighting.
+
+Desktop:
+Side panel where appropriate.
+
+Tablet:
+Contextual pane or sheet.
+
+Mobile:
+Accessible bottom sheet or dialog.
+
+Preserve all underlying grammar functionality.
+
+---
+
+# PART 10 — REFERENCE-STYLE DASHBOARD ELEMENTS
+
+The reference image uses compact educational dashboard elements.
+
+Introduce similar visual treatment wherever LangoUA already has meaningful data.
+
+Examples:
+
+- Total XP.
+- Active vocabulary words.
+- Reviews completed.
+- Course modules completed.
+- Current CEFR level.
+- Study progress.
+- Daily learning activity.
+
+Use:
+
+- Small white statistic cards.
+- Lavender progress bars.
+- Compact progress indicators.
+- Clear labels.
+- Soft accent backgrounds.
+
+Use charts only when actual data supports a meaningful chart.
+
+Do not generate fake activity values.
+
+Do not add subscription upgrades, paid promotions, fake user portraits, or unrelated social features simply because they appear in the screenshot.
+
+Maintain a learning-first interface.
+
+---
+
+# PART 11 — SINGLE DESIGN SYSTEM ACROSS ALL DEVICES
+
+The new desktop, tablet, and mobile interfaces must feel unmistakably related.
+
+Use one semantic design-token system for:
+
+- Colors.
+- Typography.
+- Shapes.
+- Spacing.
+- Borders.
+- Elevation.
+- Icons.
+- Interactive states.
+- Motion.
+
+Create shared components that adapt to available space.
+
+Do not create completely different visual languages for desktop and mobile.
+
+Desktop should be the spacious version of the design.
+
+Tablet should be the flexible, touch-focused version.
+
+Mobile should be the compact, focused version.
+
+The interface must remain recognizably LangoUA everywhere.
+
+---
+
+# PART 12 — PRESERVE ALL APPLICATION FUNCTIONALITY
+
+This is a UI and UX redesign, not a rewrite of the educational engine.
+
+DO NOT MODIFY OR DELETE:
+
+- Ukrainian grammar content.
+- A0–C1 curriculum.
+- Completed lessons.
+- Existing lesson IDs.
+- Vocabulary entries.
+- FSRS flashcard history.
+- Spaced-repetition scheduling.
+- User scores and XP.
+- Quiz answer logic.
+- Sentence correction algorithms.
+- Pronunciation logic.
+- Audio functionality.
+- Cursive drawing functionality.
+- Reader content.
+- Grammar inspector data.
+- Student settings unrelated to theme selection.
+
+Preserve existing routing and state management.
+
+Do not unnecessarily migrate frameworks.
+
+Do not introduce regressions.
+
+Avoid remounting active study components when resizing the screen.
+
+---
+
+# PART 13 — TECHNICAL IMPLEMENTATION
+
+First inspect the current application's actual framework, component structure, styling files, navigation, and persistence.
+
+Then implement a shared adaptive layout system.
+
+Use modern web technologies appropriate to the existing project:
+
+- CSS custom properties for semantic tokens.
+- CSS Grid for major layouts.
+- Flexbox for smaller components.
+- Media queries for broad layout classes.
+- Container queries where beneficial.
+- Fluid sizing where appropriate.
+- Existing routing and state management.
+- Responsive SVG for diagrams and infographics.
+
+Do not import Android Jetpack Compose libraries into this web application.
+
+Material 3 is the DESIGN LANGUAGE; implement it using web technologies compatible with this project.
+
+Avoid large unnecessary dependencies.
+
+Make the layout performant.
+
+Ensure long tables and large content collections remain usable.
+
+Do not alter the user's educational data during UI migrations.
+
+---
+
+# PART 14 — ACCESSIBILITY AND USABILITY
+
+Require:
+
+- Readable text.
+- Accessible contrast.
+- Touch targets of at least approximately 44×44 CSS pixels where practical.
+- Clear focus indicators.
+- Keyboard navigation.
+- Screen-reader-friendly labels.
+- Responsive tables.
+- Correct modal focus behavior.
+- Support for browser zoom.
+- Stylus and touch input.
+- Reduced-motion support.
+- No unintended page-level horizontal overflow.
+
+The reference image is inspiration, but accessibility takes priority over exact imitation.
+
+Do not use tiny fonts or low-contrast text merely because they appear in the screenshot.
+
+---
+
+# PART 15 — REQUIRED RESPONSIVE TEST MATRIX
+
+Test representative viewport sizes:
+
+MOBILE:
+- 360×800.
+- 390×844.
+- 430×932.
+- 844×390 landscape.
+
+TABLET:
+- 600×960.
+- 768×1024.
+- 820×1180.
+- 1024×768.
+- 1180×820.
+- 1280×800.
+
+DESKTOP:
+- 1280×800.
+- 1440×900.
+- 1920×1080.
+- 2560×1440.
+
+These are testing targets, not hardcoded resolution rules.
+
+Verify:
+
+1. Navigation works at every size.
+2. Desktop sidebar displays correctly.
+3. Tablet navigation adapts correctly.
+4. Mobile navigation remains usable.
+5. All seven learning destinations are accessible.
+6. No dark-mode toggle remains.
+7. Operating-system dark mode does not alter the light theme.
+8. All cards use the unified visual language.
+9. Typography is readable.
+10. Grammar tables remain usable.
+11. Flashcards work.
+12. FSRS progress remains intact.
+13. Course lessons load correctly.
+14. Vocabulary practice works.
+15. Cursive handwriting works.
+16. Pronunciation playback works.
+17. Reader inspection works.
+18. Sentence correction works.
+19. Dialogs and overlays display correctly.
+20. No unintended overflow or clipped controls occur.
+21. Light-theme colors are consistent.
+22. The application builds without errors.
+
+Use actual browser previews and automated tests where available.
+
+Do not claim testing was completed if a viewport was not actually checked.
+
+---
+
+# PART 16 — IMPLEMENTATION SEQUENCE
+
+Implement the redesign systematically.
+
+PHASE 1 — PROJECT AUDIT
+
+Inspect the current app, styling, navigation, component system, and theme implementation.
+
+Identify every existing dark-mode control and theme dependency.
+
+PHASE 2 — SHARED LIGHT DESIGN SYSTEM
+
+Implement the new lavender, coral, white, and soft-gray token system.
+
+Make the entire application light-only.
+
+Remove the dark-mode toggle and associated unused behavior.
+
+PHASE 3 — ADAPTIVE APPLICATION SHELL
+
+Create the responsive desktop, tablet, and mobile navigation layouts.
+
+Match the screenshot's overall dashboard composition on desktop.
+
+PHASE 4 — SHARED COMPONENTS
+
+Restyle cards, buttons, inputs, selectors, tables, dialogs, search fields, tooltips, and progress indicators.
+
+PHASE 5 — COURSE
+
+Apply the new design to the full A0–C1 Course.
+
+Preserve all grammar and educational content.
+
+PHASE 6 — FLASHCARDS AND RECALL
+
+Apply the redesign to both FSRS study modes.
+
+PHASE 7 — VOCABULARY AND SENTENCE CORRECTION
+
+Apply the unified style and device-adaptive layouts.
+
+PHASE 8 — PHONETICS, CURSIVE, AND READER
+
+Optimize reading and handwriting experiences.
+
+PHASE 9 — GRAMMAR INSPECTOR AND SUPPORTING PANELS
+
+Integrate contextual learning views.
+
+PHASE 10 — FINAL POLISH AND TESTING
+
+Check all viewport sizes, navigation, controls, accessibility, light-only styling, and preserved functionality.
+
+After each phase:
+
+- Save actual code changes.
+- Run available validation.
+- Confirm the app still works.
+- Record completed work and outstanding issues.
+
+If one execution cannot complete the full redesign, save a persistent redesign progress record and stop at a verified checkpoint.
+
+Continue automatically between phases as long as execution allows.
+
+Do not claim that unfinished phases have been completed.
+
+---
+
+# FINAL DESIGN STANDARD
+
+The finished LangoUA application must look visually related to the attached screenshot.
+
+It should have:
+
+- A beautiful lavender visual identity.
+- A premium white app-shell aesthetic.
+- Soft gray learning workspaces.
+- Rounded white cards.
+- Elegant purple navigation states.
+- Occasional coral accents.
+- Material 3 Expressive shapes and interactions.
+- Comfortable typography.
+- Modern learning statistics.
+- Responsive grammar tables.
+- Purpose-built desktop, tablet, and mobile layouts.
+- A polished, professional educational interface.
+
+It must feel contemporary, premium, elegant, welcoming, and focused on learning.
+
+It must NOT feel like:
+
+- A generic Bootstrap dashboard.
+- A cluttered corporate admin panel.
+- A dark-themed developer application.
+- A stretched mobile website.
+- Three unrelated user interfaces.
+- A direct copy of the reference app's unrelated product features.
+
+**LIGHT THEME ONLY. REMOVE DARK MODE COMPLETELY.**
+
+Preserve the entire Ukrainian learning experience and all existing functionality.
+
+Use the attached screenshot as your visual design reference.
+
+Implement the redesign directly in the current project.
+
+Do not stop after producing a plan. Begin actual implementation and proceed through the phases, validating changes and saving checkpoints as you go.

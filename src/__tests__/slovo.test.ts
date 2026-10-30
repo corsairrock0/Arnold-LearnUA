@@ -35,6 +35,9 @@ test('1. Zero textbook references (Pugh, Press, Routledge, §) across all source
         'src/courseVisualComponents.ts',
         'src/readerData.ts',
         'src/readerExtraData.ts',
+        'src/identifyData.ts',
+        'src/identifyEngine.ts',
+        'src/identifyView.ts',
         'src/main.ts'
     ];
     const forbidden = [/pugh/i, /ian\s+press/i, /pugh\s*&\s*press/i, /routledge/i, /poulard/i, /yurchenko/i, /shevchuk/i, /hippocrene/i, /roma\s+franko/i, /detselig/i, /bekh/i, /dingley/i, /hodder/i, /john\s+murray/i, /teach\s+yourself/i, /pavlyshyn/i, /lonely\s+planet/i, /kandybko/i, /§\s*\d/];
@@ -292,4 +295,81 @@ test('8. Visual Course Redesign (All 29 Modules A0.1–C1.1): structuredLesson s
     assert.equal(progressJson.remainingModulesCount, 0);
     assert.equal(progressJson.completedModules.length, 29);
 });
+
+test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographic scenes, hotspot bounds, MC generator, Fill-in-Blank validator, and Show Answer tracking', async () => {
+    const { IDENTIFY_CATEGORIES, renderIdentifySceneSvgDataUri } = await import('../identifyData.ts');
+    const {
+        generateIdentifyMultipleChoiceOptions,
+        validateIdentifyTypedAnswer,
+        createDefaultIdentifyProgress,
+        recordIdentifyAttempt,
+        recordIdentifyShowAnswer,
+        computeIdentifySceneSummary,
+        normalizeIdentifyUk
+    } = await import('../identifyEngine.ts');
+
+    assert.equal(IDENTIFY_CATEGORIES.length, 20, 'Expected 20 everyday Identify categories');
+    let totalScenes = 0;
+    const uniqueAssetPaths = new Set<string>();
+    for (const cat of IDENTIFY_CATEGORIES) {
+        assert.equal(cat.scenes.length, 5, `Category ${cat.id} must have 5 unique scenes`);
+        for (const sc of cat.scenes) {
+            totalScenes++;
+            assert.ok(sc.targets.length >= 6 && sc.targets.length <= 12, `Scene ${sc.id} must have 6–12 targets, got ${sc.targets.length}`);
+            assert.equal(sc.assetSourceType, 'photograph', `Scene ${sc.id} must use photograph assetSourceType`);
+            const assetUri = renderIdentifySceneSvgDataUri(sc);
+            assert.ok(assetUri.startsWith(`/assets/identify/${cat.id}/`) && assetUri.endsWith('.webp'), `Scene ${sc.id} must point to a real .webp photograph asset, got ${assetUri}`);
+            assert.equal(assetUri.includes('linearGradient'), false, `Scene ${sc.id} must not use gradient backgrounds`);
+            uniqueAssetPaths.add(assetUri);
+
+            const diskPath = path.join(process.cwd(), 'public', assetUri);
+            assert.ok(fs.existsSync(diskPath), `Photograph file missing on disk for ${sc.id}: ${diskPath}`);
+            const stat = fs.statSync(diskPath);
+            assert.ok(stat.size > 5000, `Photograph file for ${sc.id} is too small (${stat.size} bytes)`);
+
+            for (const t of sc.targets) {
+                assert.ok(t.x >= 0 && t.x <= 1 && t.y >= 0 && t.y <= 1, `Invalid normalized x/y in ${t.id}`);
+                assert.ok(t.width > 0 && t.x + t.width <= 1.01, `Invalid normalized width in ${t.id}`);
+                assert.ok(t.height > 0 && t.y + t.height <= 1.01, `Invalid normalized height in ${t.id}`);
+                assert.ok(t.uk.length > 0 && t.en.length > 0, `Missing uk/en in ${t.id}`);
+                assert.ok(t.exampleUk.length > 5 && t.exampleEn.length > 5, `Missing example sentence in ${t.id}`);
+
+                const opts = generateIdentifyMultipleChoiceOptions(t, cat);
+                assert.equal(opts.length, 4, `Expected 4 MC options for ${t.id}`);
+                assert.ok(opts.includes(t.uk), `MC options must contain correct answer ${t.uk}`);
+                const uniqueNorm = new Set(opts.map(normalizeIdentifyUk));
+                assert.equal(uniqueNorm.size, 4, `MC options must be 4 distinct words for ${t.id}`);
+            }
+        }
+    }
+    assert.equal(uniqueAssetPaths.size, 100, 'Expected 100 distinct photographic asset paths across all 100 scenes');
+    assert.equal(totalScenes, 100, 'Expected 100 total scenes across 20 categories');
+
+    // Verify Fill-in-the-Blank normalization, synonyms, and Ukrainian letter checks
+    const sinkTarget = IDENTIFY_CATEGORIES[0].scenes[0].targets.find((t) => t.vocabularyId === 'k-sink')!;
+    assert.equal(validateIdentifyTypedAnswer('мийка', sinkTarget).isCorrect, true, 'Should accept unstressed мийка');
+    assert.equal(validateIdentifyTypedAnswer('  МИ́ЙКА ', sinkTarget).isCorrect, true, 'Should accept stressed uppercase with spaces');
+    assert.equal(validateIdentifyTypedAnswer('раковина', sinkTarget).isCorrect, true, 'Should accept valid synonym раковина');
+
+    const fridgeTarget = IDENTIFY_CATEGORIES[0].scenes[0].targets.find((t) => t.vocabularyId === 'k-fridge')!;
+    const letterConf = validateIdentifyTypedAnswer('холодільнік', fridgeTarget);
+    assert.equal(letterConf.isCorrect, false, 'Should reject и/і letter confusion');
+    assert.equal(letterConf.errorType, 'ukrainian-letter-confusion');
+
+    // Verify Show Answer tracking never counts as independent mastery
+    const prog = createDefaultIdentifyProgress();
+    const kitchenScene1 = IDENTIFY_CATEGORIES[0].scenes[0];
+    recordIdentifyShowAnswer(prog, kitchenScene1, fridgeTarget);
+    recordIdentifyAttempt(prog, kitchenScene1, sinkTarget, 'mc', true, sinkTarget.uk, 'ok');
+
+    const summary = computeIdentifySceneSummary(prog, kitchenScene1);
+    assert.equal(summary.revealedCount, 1, 'Expected 1 revealed target');
+    assert.equal(summary.correctMCCount, 1, 'Expected 1 correct MC target (Show Answer must not increment correctMCCount)');
+    assert.ok(summary.needsPracticeTargets.some((t) => t.id === fridgeTarget.id), 'Revealed target must be included in needsPracticeTargets');
+
+    const progressRecord = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'identify_implementation_progress.json'), 'utf8'));
+    assert.equal(progressRecord.totals.categoriesDefined, 20);
+    assert.equal(progressRecord.totals.totalScenesDefined, 100);
+});
+
 

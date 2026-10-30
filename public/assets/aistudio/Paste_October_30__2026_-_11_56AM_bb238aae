@@ -1,0 +1,1276 @@
+# LANGO UA — CREATE THE "IDENTIFY" VISUAL VOCABULARY LEARNING FEATURE
+
+## PRIMARY OBJECTIVE
+
+You are working inside my existing Ukrainian language-learning web application:
+
+https://slovo-ua-app.ai.studio/
+
+Your task is to design, develop, and fully integrate a NEW primary navigation tab named:
+
+**Identify**
+
+Identify is an interactive visual vocabulary-learning experience where learners study Ukrainian by recognizing and naming objects in realistic photographs of everyday environments.
+
+The feature should function like a combination of:
+
+- An interactive visual dictionary.
+- A photographic vocabulary identification game.
+- A Ukrainian active-recall trainer.
+- An object-labeling learning experience.
+- A contextual vocabulary practice system.
+
+The learner selects a category, chooses a photographic scene, and identifies visible objects using either multiple-choice questions or fill-in-the-blank typing exercises.
+
+The learner must also be able to reveal the correct answer whenever desired.
+
+The completed library must contain:
+
+- 20 everyday scene categories.
+- 5 unique photographs per category.
+- 100 unique photographic scenes total.
+- Approximately 6–12 clearly identifiable vocabulary targets per scene.
+- Multiple Choice and Fill in the Blank quiz modes.
+- A Show Answer feature.
+- Accurate Ukrainian vocabulary and English translations.
+- Pronunciation support where available.
+- Scene and vocabulary progress tracking.
+- Integration with existing vocabulary and grammar tools where practical.
+- Responsive desktop, tablet, and mobile interfaces.
+
+This must be a functioning feature integrated into the existing application, not a mockup or demonstration.
+
+---
+
+# PART 1 — CRITICAL DESIGN INSTRUCTION
+
+## PRESERVE THE APPLICATION'S CURRENT VISUAL DESIGN
+
+IMPORTANT: I previously experimented with a Material Design 3 light-only redesign but have since reverted those changes.
+
+DO NOT recreate that discarded redesign.
+
+DO NOT force the application into a lavender-and-coral light-only visual theme.
+
+DO NOT remove dark mode.
+
+DO NOT replace the current navigation system.
+
+DO NOT redesign unrelated application features.
+
+Before implementing Identify, inspect the application's CURRENT:
+
+- Color palette.
+- Typography.
+- Button styles.
+- Card designs.
+- Navigation patterns.
+- Spacing.
+- Border radii.
+- Shadows and surfaces.
+- Responsive layouts.
+- Existing icon system.
+- Light and dark theme behavior, if present.
+- Shared UI components.
+
+Use the existing design system as the visual foundation for Identify.
+
+The new section should look as though it has always belonged in LangoUA.
+
+It must visually match the current Course, Everyday Vocabulary, flashcards, and other learning sections.
+
+If the current application supports both light and dark themes, Identify must support both automatically.
+
+Preserve all existing theme-switching behavior.
+
+Do not assume the current app still uses any previously requested styling.
+
+The actual project code is the source of truth.
+
+---
+
+# PART 2 — ADD IDENTIFY TO PRIMARY NAVIGATION
+
+Add a new navigation destination:
+
+**Identify**
+
+Use an appropriate icon, such as a scan, image-search, or object-identification icon from the existing icon library.
+
+Position Identify logically near Everyday Vocabulary or other vocabulary-learning sections.
+
+Update navigation consistently across:
+
+- Desktop browsers.
+- Tablet landscape.
+- Tablet portrait.
+- Mobile browsers.
+
+If the current mobile navigation has limited space, use its existing overflow or menu pattern.
+
+Do not make other destinations inaccessible.
+
+Preserve routing, selected navigation state, browser back navigation, and any existing keyboard accessibility.
+
+Do not create an entirely separate application shell for Identify.
+
+---
+
+# PART 3 — IDENTIFY LANDING PAGE
+
+When the learner opens Identify, display a category selection page.
+
+Suggested title:
+
+**Identify**
+
+Suggested subtitle:
+
+"Learn Ukrainian by identifying objects in everyday scenes."
+
+Include a short instruction:
+
+"Choose a category, explore a photograph, and name the objects you see."
+
+Display the available scene categories in a visually attractive, responsive gallery.
+
+Each category card should display:
+
+1. Representative photographic thumbnail.
+2. Category name.
+3. Short description.
+4. Number of scenes.
+5. Number of available vocabulary targets.
+6. Progress indicator.
+7. Continue or Explore action.
+
+Use real progress data where available.
+
+Do not invent completed lessons, accuracy scores, or learning statistics.
+
+The category selection experience should match the app's current visual design.
+
+---
+
+# PART 4 — CREATE 100 UNIQUE PHOTOGRAPHIC SCENES
+
+Build exactly 20 categories with five distinct photographic scenes in each category.
+
+## CATEGORY 1 — KITCHEN
+
+1. Modern home kitchen.
+2. Traditional family kitchen.
+3. Kitchen countertop and cooking utensils.
+4. Kitchen during meal preparation.
+5. Kitchen with appliances and storage.
+
+Example vocabulary:
+холодильник, плита, духовка, мийка, стіл, стілець, ніж, ложка, виделка, тарілка, каструля, сковорода.
+
+## CATEGORY 2 — BEDROOM
+
+1. Modern bedroom.
+2. Bedroom with wardrobe.
+3. Bedroom with study desk.
+4. Cozy bedroom with bedside furniture.
+5. Bedroom with clothing and accessories.
+
+Example vocabulary:
+ліжко, подушка, ковдра, шафа, дзеркало, лампа, вікно, штори, килим.
+
+## CATEGORY 3 — BATHROOM
+
+1. Modern bathroom.
+2. Bathroom sink and mirror.
+3. Shower area.
+4. Bathtub and bathroom accessories.
+5. Bathroom storage and toiletries.
+
+Example vocabulary:
+душ, ванна, дзеркало, рушник, мило, зубна щітка, зубна паста, раковина, кран.
+
+## CATEGORY 4 — LIVING ROOM
+
+1. Modern living room.
+2. Family living room.
+3. Sofa and entertainment area.
+4. Living room with bookshelves.
+5. Living room with decorative furnishings.
+
+Example vocabulary:
+диван, крісло, телевізор, книжкова полиця, лампа, стіл, килим, вікно.
+
+## CATEGORY 5 — DINING ROOM
+
+1. Family dining table.
+2. Formal dining room.
+3. Breakfast table.
+4. Dinner table setting.
+5. Dining space with serving dishes.
+
+Example vocabulary:
+стіл, стілець, тарілка, склянка, чашка, серветка, виделка, ложка, ніж.
+
+## CATEGORY 6 — SUPERMARKET
+
+1. Fresh produce aisle.
+2. Dairy section.
+3. Bread and bakery section.
+4. Packaged foods aisle.
+5. Supermarket checkout.
+
+Example vocabulary:
+яблуко, банан, молоко, сир, хліб, кошик, візок, каса, пакет.
+
+## CATEGORY 7 — FARMERS MARKET
+
+1. Vegetable market.
+2. Fruit stand.
+3. Flower market.
+4. Fresh food stalls.
+5. Outdoor market with baskets and produce.
+
+Example vocabulary:
+помідор, огірок, морква, картопля, яблуко, груша, квіти, кошик, продавець.
+
+## CATEGORY 8 — CAFÉ
+
+1. Cozy coffee shop.
+2. Café counter.
+3. Outdoor café terrace.
+4. Café table with beverages.
+5. Coffee preparation area.
+
+Example vocabulary:
+кава, чашка, чашка кави, стіл, стілець, ложечка, меню, тістечко, бариста.
+
+## CATEGORY 9 — RESTAURANT
+
+1. Restaurant dining area.
+2. Restaurant table setting.
+3. Restaurant kitchen.
+4. Casual restaurant.
+5. Fine-dining restaurant.
+
+Example vocabulary:
+меню, офіціант, тарілка, склянка, виделка, ніж, їжа, страва, рахунок.
+
+## CATEGORY 10 — CLASSROOM
+
+1. Primary school classroom.
+2. High school classroom.
+3. Language classroom.
+4. Classroom desk close-up.
+5. Classroom with teaching materials.
+
+Example vocabulary:
+дошка, учитель, учень, книжка, ручка, олівець, зошит, парта, рюкзак.
+
+## CATEGORY 11 — OFFICE
+
+1. Modern office.
+2. Home office.
+3. Meeting room.
+4. Computer workstation.
+5. Shared office space.
+
+Example vocabulary:
+комп'ютер, клавіатура, миша, монітор, стіл, крісло, ноутбук, телефон, принтер.
+
+## CATEGORY 12 — LIBRARY
+
+1. Public library.
+2. University library.
+3. Reading room.
+4. Bookshelves and study table.
+5. Library checkout desk.
+
+Example vocabulary:
+книга, полиця, стіл, стілець, бібліотека, читач, лампа, зошит.
+
+## CATEGORY 13 — GYM & FITNESS
+
+1. Weight-training gym.
+2. Cardio area.
+3. Yoga studio.
+4. Free-weight area.
+5. Fitness accessories and equipment.
+
+Example vocabulary:
+гантеля, штанга, бігова доріжка, килимок, рушник, пляшка, тренажер, лава.
+
+## CATEGORY 14 — PARK & GARDEN
+
+1. City park.
+2. Botanical garden.
+3. Park walking path.
+4. Garden with flowers.
+5. Park with benches and trees.
+
+Example vocabulary:
+дерево, квітка, трава, лавка, доріжка, кущ, листя, птах.
+
+## CATEGORY 15 — PLAYGROUND
+
+1. Children's playground.
+2. Swing set.
+3. Slide and climbing area.
+4. Sandbox.
+5. Playground with benches and toys.
+
+Example vocabulary:
+гойдалка, гірка, пісочниця, м'яч, лавка, дерево, дитина.
+
+## CATEGORY 16 — CITY STREETS
+
+1. Busy intersection.
+2. Residential street.
+3. Pedestrian shopping street.
+4. Urban sidewalk.
+5. City square.
+
+Example vocabulary:
+дорога, тротуар, світлофор, автомобіль, велосипед, будинок, знак, пішохід.
+
+## CATEGORY 17 — PUBLIC TRANSPORTATION
+
+1. City bus interior.
+2. Tram.
+3. Metro train.
+4. Bus stop.
+5. Subway platform.
+
+Example vocabulary:
+автобус, трамвай, метро, двері, сидіння, вікно, квиток, зупинка.
+
+## CATEGORY 18 — AIRPORT & TRAIN STATION
+
+1. Airport check-in.
+2. Airport departure lounge.
+3. Baggage claim.
+4. Train station platform.
+5. Train carriage interior.
+
+Example vocabulary:
+валіза, багаж, квиток, літак, поїзд, платформа, табло, пасажир.
+
+## CATEGORY 19 — HOSPITAL & PHARMACY
+
+1. Pharmacy interior.
+2. Medical examination room.
+3. Hospital waiting room.
+4. Hospital patient room.
+5. Medical supplies and equipment.
+
+Example vocabulary:
+лікар, медсестра, ліжко, термометр, ліки, бинт, аптека, стетоскоп.
+
+## CATEGORY 20 — BEACH & NATURE
+
+1. Sandy beach.
+2. Rocky beach.
+3. Lakeshore.
+4. Forest trail.
+5. Mountain landscape.
+
+Example vocabulary:
+пляж, пісок, море, хвиля, сонце, рушник, дерево, камінь, гора, озеро.
+
+---
+
+# PART 5 — PHOTOGRAPH QUALITY AND ASSET REQUIREMENTS
+
+Use REAL PHOTOGRAPHIC-LOOKING SCENES.
+
+Do not use simplistic clipart or cartoon illustrations as substitutes.
+
+Photographs should have:
+
+- Clear and identifiable objects.
+- Natural lighting.
+- Realistic composition.
+- Good resolution.
+- Consistent visual quality.
+- Appropriate subject framing.
+- Minimal distracting text.
+- No watermarks.
+- No distorted or nonsensical objects.
+
+The photographs must be genuinely distinct.
+
+Do not reuse the same photograph with slightly different cropping to create artificial variety.
+
+Use image generation if actual supported tools are available, or legally sourced photographs with appropriate licenses.
+
+Keep source and attribution information where required.
+
+Avoid arbitrary third-party hotlinks.
+
+Persist approved image assets in a reliable location supported by the project.
+
+Optimize images for the web.
+
+Use responsive image delivery and lazy loading.
+
+Do not load all 100 full-resolution photographs at once.
+
+If image-generation or asset-import capabilities are unavailable, do not fabricate image paths or pretend the 100 images exist. Complete the working feature using verified assets and record the remaining asset requirements.
+
+---
+
+# PART 6 — OBJECT IDENTIFICATION SYSTEM
+
+Each photograph must contain several actual, identifiable vocabulary targets.
+
+Aim for 6–12 targets per scene.
+
+Each target must be associated with a visible object or clearly identifiable item in that specific photograph.
+
+For example, in a kitchen:
+
+- Click the refrigerator to identify холодильник.
+- Click the knife to identify ніж.
+- Click the plate to identify тарілка.
+- Click the chair to identify стілець.
+
+Use accurate clickable hotspots or regions.
+
+## Object hotspot requirements
+
+Each hotspot must:
+
+- Correspond to a real visible object.
+- Have a stable object identifier.
+- Use normalized image-relative coordinates.
+- Remain aligned on desktop, tablet, and mobile.
+- Work with touch, mouse, stylus, and keyboard alternatives.
+- Highlight the intended object.
+- Avoid covering unrelated objects unnecessarily.
+- Trigger a quiz question when selected.
+
+A hotspot may be represented as:
+
+- A small interactive marker.
+- A responsive bounding box.
+- A polygon region.
+- A subtle highlighted area.
+
+Choose the most appropriate method for the image.
+
+Do not use fixed page coordinates.
+
+If an image uses object-fit: contain, calculate hotspot placement relative to the actually displayed image bounds, not the surrounding empty space.
+
+If zooming or panning is supported, maintain hotspot alignment after transformations.
+
+For image assets that do not yet have verified annotations, do not display invented interactive coordinates.
+
+---
+
+# PART 7 — TWO QUIZ MODES
+
+Provide a clearly visible mode selector:
+
+**Multiple Choice | Fill in the Blank**
+
+The learner can choose the preferred mode before or during a scene.
+
+Switching modes should not unnecessarily reset scene progress.
+
+Persist the preferred mode when appropriate.
+
+## MODE A — MULTIPLE CHOICE
+
+When the user selects an object:
+
+1. Highlight the object.
+2. Ask: "What is this called in Ukrainian?"
+3. Display four possible Ukrainian answers.
+4. Allow one selection.
+5. Show whether the answer is correct.
+6. Explain the answer.
+7. Offer pronunciation where available.
+8. Allow continuation to the next object.
+
+Example:
+
+A refrigerator is highlighted.
+
+What is this called in Ukrainian?
+
+A. шафа
+B. холодильник
+C. духовка
+D. пральна машина
+
+Correct answer: холодильник.
+
+## Multiple-choice answer quality
+
+Provide:
+
+- One unambiguously correct option.
+- Three plausible distractors.
+- Randomized answer ordering.
+- No duplicated choices.
+- No obvious always-correct answer position.
+- No accidental second correct synonym.
+- No answer revealed before submission.
+
+Distractors should preferably come from verified existing vocabulary.
+
+Use suitable difficulty levels.
+
+Do not generate nonsensical fake Ukrainian words.
+
+---
+
+# PART 8 — FILL IN THE BLANK MODE
+
+When the user selects an object:
+
+1. Highlight the object.
+2. Ask the learner to type its Ukrainian name.
+3. Present a clear text input.
+4. Provide a Submit button.
+5. Validate the submitted answer.
+6. Show educational feedback.
+7. Offer pronunciation and word details.
+8. Allow progression to the next object.
+
+Example:
+
+Highlighted object: refrigerator.
+
+Question:
+"What is this called in Ukrainian?"
+
+Expected answer:
+холодильник
+
+## Input validation
+
+Normalize safely.
+
+Ignore:
+
+- Leading and trailing spaces.
+- Capitalization differences.
+- Optional combining stress marks.
+
+Accept legitimate synonyms when they refer accurately to the pictured object.
+
+Do not accept incorrect spellings indiscriminately.
+
+Do not treat Ukrainian letters such as г, ґ, і, ї, и, and є as interchangeable.
+
+Use Ukrainian dictionary forms as default expected answers unless the question explicitly requests a declined or conjugated form.
+
+Display helpful spelling feedback.
+
+If the answer is partially correct, explain the issue.
+
+Do not count a substantially incorrect answer as fully correct.
+
+Support Ukrainian physical keyboards and ordinary mobile keyboard input.
+
+Allow Enter to submit.
+
+Do not let the mobile on-screen keyboard cover the input or answer controls.
+
+---
+
+# PART 9 — SHOW ANSWER FUNCTIONALITY
+
+This is a mandatory feature.
+
+Both quiz modes must have a clearly accessible:
+
+**Show Answer**
+
+button.
+
+The user must be able to reveal the answer without submitting a guess.
+
+When selected, display:
+
+- Correct Ukrainian word.
+- English meaning.
+- Accurate word stress if known.
+- Pronunciation control where supported.
+- Optional grammatical gender or other word details.
+- An example sentence where useful.
+- A Next Object or Try Again action.
+
+Example:
+
+**холодильник**
+
+English: refrigerator.
+
+Gender: masculine.
+
+Example:
+Молоко в холодильнику.
+
+Translation:
+The milk is in the refrigerator.
+
+## Scoring behavior
+
+A revealed answer must not count as an independently correct answer.
+
+Track it as:
+
+"Revealed" or "Needs Practice."
+
+The user should still be able to continue.
+
+Do not penalize the learner harshly for requesting help.
+
+Offer an opportunity to practice the word again later.
+
+Ensure that using Show Answer cannot accidentally award full mastery credit.
+
+---
+
+# PART 10 — GUIDED AND FREE EXPLORATION
+
+Support two intuitive ways to interact with a scene.
+
+## Free Exploration
+
+The learner can tap or click any annotated object in any order.
+
+## Guided Practice
+
+The app automatically chooses the next unanswered target and highlights it.
+
+The learner answers and progresses until the scene is complete.
+
+Use a simple selector or appropriate existing UI component.
+
+For both modes:
+
+- Show current progress.
+- Distinguish completed items.
+- Allow returning to previously studied objects.
+- Preserve answer history.
+- Avoid revealing future answers prematurely.
+
+If a small object cannot be selected comfortably through a hotspot, provide an accessible target list or guided alternative.
+
+---
+
+# PART 11 — VOCABULARY DETAILS
+
+Once the learner answers or reveals an object, offer additional vocabulary information.
+
+Reuse existing LangoUA data where appropriate.
+
+Possible information:
+
+- Ukrainian lemma.
+- English meaning.
+- Verified pronunciation and stress.
+- Grammatical gender.
+- Singular and plural information.
+- Relevant case forms.
+- Example Ukrainian sentence.
+- English translation.
+- Grammar Inspector link.
+- Flashcard review option.
+
+Do not overload the primary quiz with an enormous grammar table.
+
+Present additional information in an expandable details area, side panel, or contextual sheet.
+
+Integrate naturally with the existing learning tools.
+
+Use verified inflection data.
+
+Do not automatically generate irregular grammar forms unless the underlying system can do so reliably.
+
+---
+
+# PART 12 — REUSE EXISTING VOCABULARY DATA
+
+The current LangoUA application already contains a Ukrainian lexicon, flashcards, and Everyday Vocabulary learning content.
+
+Do not build a disconnected second dictionary unless technically necessary.
+
+Whenever possible:
+
+- Reference existing vocabulary IDs.
+- Use existing Ukrainian spelling.
+- Use existing translations.
+- Reuse grammar metadata.
+- Reuse pronunciation tools.
+- Reuse flashcard integration.
+- Link repeated words across scenes.
+
+For example, стіл may appear in Kitchen, Dining Room, Classroom, and Office.
+
+It should reference one canonical vocabulary entry rather than four conflicting independent records.
+
+However, each appearance must have its own scene-specific annotation and progress record.
+
+If existing vocabulary contains errors, identify and correct them carefully rather than blindly copying incorrect forms.
+
+---
+
+# PART 13 — FSRS INTEGRATION
+
+Integrate Identify with the existing spaced-repetition ecosystem where appropriate.
+
+Do not modify the FSRS scheduling algorithm.
+
+Provide an optional action:
+
+"Add to Flashcards"
+
+or
+
+"Practice This Word"
+
+Use the existing flashcard collection and scheduling system.
+
+Avoid creating duplicate flashcards.
+
+Keep Identify-specific answer history separate from FSRS review scheduling unless the app intentionally supports a well-defined shared review workflow.
+
+A correct multiple-choice guess should not automatically be treated as equivalent to successful independent flashcard recall.
+
+A revealed answer should not count as successful recall.
+
+Preserve existing FSRS history and scheduling data.
+
+---
+
+# PART 14 — SCENE PROGRESS AND SCORING
+
+Implement persistent learning progress.
+
+Track:
+
+- Category selected.
+- Scene opened.
+- Objects attempted.
+- Correct multiple-choice answers.
+- Correct typed answers.
+- Incorrect answers.
+- Revealed answers.
+- Vocabulary needing practice.
+- Scene completion.
+- Category completion.
+
+Display meaningful progress information.
+
+Examples:
+
+"Kitchen — 3 of 5 scenes completed."
+
+"7 of 10 objects identified."
+
+"4 words need practice."
+
+Use actual stored data.
+
+Never invent accuracy scores.
+
+## End-of-scene summary
+
+At the end of a scene, show:
+
+- Total objects studied.
+- Correct answers.
+- Incorrect answers.
+- Revealed answers.
+- Accuracy where meaningful.
+- Vocabulary to review.
+- Retry mistakes action.
+- Next scene action.
+- Back to category action.
+
+Do not award mastery simply because all answers were revealed.
+
+Separate exploration completion from demonstrated vocabulary mastery.
+
+Store progress through the application's existing persistence architecture.
+
+Use stable scene and target identifiers.
+
+---
+
+# PART 15 — DESKTOP EXPERIENCE
+
+Match the application's current desktop styling and navigation.
+
+Use available screen space intelligently.
+
+Suggested scene layout:
+
+LEFT:
+Existing primary app navigation.
+
+CENTER:
+Large interactive photograph.
+
+RIGHT:
+Contextual question and answer panel.
+
+The photograph should remain visible while the learner answers.
+
+The right panel can contain:
+
+- Quiz mode selector.
+- Question.
+- Multiple-choice answers or text field.
+- Submit.
+- Show Answer.
+- Feedback.
+- Word details.
+- Scene progress.
+
+Do not make the scene image so small that objects become difficult to recognize.
+
+For narrower desktop windows, collapse the contextual panel below or into an overlay when appropriate.
+
+---
+
+# PART 16 — TABLET EXPERIENCE
+
+The tablet experience should use the existing app's current visual design.
+
+Support tablet portrait and landscape.
+
+## Landscape
+
+Use:
+
+- Existing tablet navigation pattern.
+- Large interactive photograph.
+- Adjacent quiz panel where space permits.
+- Touch-friendly hotspots.
+- Spacious answer controls.
+
+## Portrait
+
+Use:
+
+- Large responsive photograph.
+- Quiz panel below or in an appropriate contextual area.
+- Comfortable text input.
+- Readable pronunciation and grammar details.
+
+Avoid unnecessary nested scroll regions.
+
+Support Apple Pencil, Samsung S Pen, mouse, and touch through standard browser interactions where supported.
+
+Recalculate annotation positioning when orientation changes.
+
+Preserve current scene and selected target during ordinary layout changes.
+
+---
+
+# PART 17 — MOBILE EXPERIENCE
+
+Design Identify to be fully usable on a smartphone.
+
+Follow the app's current mobile styling.
+
+Use:
+
+- Category grid or list.
+- Responsive photographic thumbnails.
+- Large selected scene image.
+- Clearly highlighted objects.
+- Large touch targets.
+- Easy quiz-mode switching.
+- Four readable multiple-choice buttons.
+- Comfortable Ukrainian text entry.
+- Show Answer button.
+- Accessible feedback.
+- Bottom sheet or inline vocabulary details.
+
+Keep the learning interaction focused.
+
+Do not display too many floating controls over the photograph.
+
+Support zoom or guided selection where very small objects would otherwise be difficult to identify.
+
+Make sure the virtual keyboard does not obscure the exercise.
+
+Preserve existing mobile navigation.
+
+---
+
+# PART 18 — ACCESSIBILITY
+
+The entire Identify feature must be accessible.
+
+Provide:
+
+- Keyboard navigation.
+- Screen-reader labels.
+- Visible focus states.
+- Adequate contrast.
+- Large touch targets.
+- Clear question text.
+- Accessible answer selection.
+- Alternative guided object selection.
+- Reduced-motion support.
+- Useful image descriptions.
+
+Do not rely exclusively on visual hotspots.
+
+Ensure learners can use a list of available targets or a guided question sequence without having to locate tiny hotspots visually.
+
+Do not disclose the answer through accessibility labels before the learner chooses to reveal it.
+
+Use neutral target identifiers such as "Target 3" before an answer has been submitted.
+
+---
+
+# PART 19 — STRUCTURED SCENE DATABASE
+
+Use a maintainable data architecture.
+
+Separate image assets, scene metadata, object annotations, vocabulary references, and user progress.
+
+Each scene should contain information equivalent to:
+
+- sceneId
+- categoryId
+- title
+- description
+- difficulty
+- imagePath
+- imageWidth
+- imageHeight
+- imageAttribution
+- objects
+
+Each annotated object should contain:
+
+- objectId
+- vocabularyId
+- Ukrainian lemma
+- English meaning
+- Normalized hotspot or bounding region
+- Accepted synonyms
+- Difficulty
+- Optional pronunciation reference
+- Optional grammar metadata
+
+Do not create one gigantic hardcoded component containing all 100 scenes.
+
+Use modular JSON or TypeScript datasets according to the existing project conventions.
+
+Validate data consistency.
+
+Do not introduce invalid references.
+
+Create reusable data-loading and quiz services where appropriate.
+
+Ensure the architecture can support more than 100 scenes later.
+
+---
+
+# PART 20 — OBJECT ANNOTATION ACCURACY
+
+Image-to-object mapping is critical.
+
+For each scene:
+
+1. Inspect the actual image.
+2. Identify clearly visible objects.
+3. Select appropriate vocabulary targets.
+4. Verify Ukrainian names.
+5. Establish accurate image-relative regions.
+6. Test each region against the rendered image.
+7. Confirm the correct answer identifies that specific object.
+8. Verify that synonyms are appropriate.
+9. Check that distractors are not also valid answers.
+10. Test the scene at multiple viewport sizes.
+
+Do not create annotations based only on what the image was supposed to contain.
+
+Generated photographs may omit or alter requested objects.
+
+Always use the final actual image as the basis for annotations.
+
+If accurate image inspection or annotation is not possible in the environment, flag the scene as needing verification rather than inventing coordinates.
+
+---
+
+# PART 21 — PERFORMANCE
+
+Optimize for responsive loading and smooth interaction.
+
+Requirements:
+
+- Lazy-load category thumbnails.
+- Load full scenes only when needed.
+- Use compressed image assets.
+- Preserve aspect ratios.
+- Avoid unnecessary large downloads.
+- Prevent layout shifts.
+- Preserve hotspot alignment.
+- Keep answer feedback responsive.
+- Avoid excessive component rerenders.
+- Keep progress updates efficient.
+- Support normal browser caching.
+- Avoid embedding all 100 full-resolution images in source code.
+
+Do not depend on unstable temporary image URLs.
+
+Do not claim a scene is complete if its image fails to load.
+
+---
+
+# PART 22 — PRESERVE ALL EXISTING APPLICATION FEATURES
+
+This is an additive feature.
+
+Do not rebuild or replace LangoUA.
+
+Preserve:
+
+- The complete Ukrainian Course.
+- All CEFR modules.
+- FSRS flashcards.
+- Ukrainian-to-English review.
+- English-to-Ukrainian recall.
+- Sentence Correction.
+- Phonetics and Cursive.
+- Everyday Vocabulary.
+- Comprehensible Reader.
+- Grammar Inspector.
+- Existing pronunciation features.
+- Existing lesson content.
+- Saved learning progress.
+- Existing XP and scoring behavior.
+- Current desktop navigation.
+- Current tablet navigation.
+- Current mobile navigation.
+- Current light/dark theme support if present.
+
+Do not restore the discarded Material 3 light-only redesign.
+
+Do not make unrelated global styling changes.
+
+---
+
+# PART 23 — IMPLEMENTATION PLAN
+
+Implement the feature in manageable stages.
+
+## PHASE 1 — AUDIT AND FOUNDATION
+
+Inspect existing app architecture.
+
+Determine:
+
+- Routing structure.
+- Navigation implementation.
+- Current styling and themes.
+- Vocabulary database.
+- Grammar inspector.
+- FSRS integration.
+- Persistence approach.
+- Media asset capabilities.
+
+Add the Identify navigation destination.
+
+Create the category gallery, scene gallery, scene viewer, quiz interface, and basic state management.
+
+## PHASE 2 — WORKING QUIZ ENGINE
+
+Implement:
+
+- Accurate object selection.
+- Multiple-choice generation.
+- Fill-in-the-blank validation.
+- Show Answer.
+- Feedback.
+- Guided practice.
+- Free exploration.
+- Next Object.
+- Progress tracking.
+
+Test these using verified sample scenes.
+
+## PHASE 3 — FIRST COMPLETE CATEGORY
+
+Fully implement Kitchen with five unique photographic scenes.
+
+Each scene must have:
+
+- A real functioning photograph.
+- Accurate object annotations.
+- Ukrainian vocabulary.
+- Four-choice questions.
+- Fill-in-the-blank questions.
+- Show Answer.
+- Feedback.
+- Progress persistence.
+
+Validate the entire learning experience before scaling.
+
+## PHASE 4 — EXPAND TO ALL 100 SCENES
+
+Complete the remaining 19 categories.
+
+Create five unique scenes per category.
+
+Use appropriate photographs.
+
+Validate annotations against each actual image.
+
+Do not count incomplete scenes as finished.
+
+Continue without requiring approval between categories while the current execution permits.
+
+## PHASE 5 — EXISTING APP INTEGRATION
+
+Connect:
+
+- Canonical vocabulary records.
+- Pronunciation.
+- Grammar Inspector.
+- Optional flashcard addition.
+- Existing learning progress infrastructure.
+
+Avoid altering unrelated learning algorithms.
+
+## PHASE 6 — RESPONSIVE OPTIMIZATION
+
+Test and refine:
+
+- Desktop browsers.
+- Tablet landscape.
+- Tablet portrait.
+- Mobile portrait.
+- Mobile landscape.
+- Touch input.
+- Mouse input.
+- Keyboard input.
+
+## PHASE 7 — FINAL QA
+
+Validate the finished experience.
+
+---
+
+# PART 24 — REQUIRED TESTING
+
+Verify:
+
+1. Identify appears in navigation.
+2. Existing navigation continues working.
+3. All categories are accessible.
+4. All 100 scene records are valid.
+5. All 100 photographic assets load.
+6. Scene images are genuinely distinct.
+7. Annotated objects are visible.
+8. Hotspots are correctly positioned.
+9. Hotspots work on touchscreens.
+10. Hotspots work with mouse input.
+11. Keyboard alternatives work.
+12. Multiple Choice works.
+13. Fill in the Blank works.
+14. Correct synonyms are accepted.
+15. Incorrect spelling receives appropriate feedback.
+16. Show Answer works in both modes.
+17. Revealed answers do not count as successful recall.
+18. Progress updates correctly.
+19. Progress persists after navigation and reload.
+20. Pronunciation works where supported.
+21. Vocabulary details are accurate.
+22. Grammar inspection works where integrated.
+23. FSRS scheduling remains unchanged.
+24. Desktop layouts are usable.
+25. Tablet layouts are usable.
+26. Mobile layouts are usable.
+27. Existing light and dark themes work if currently supported.
+28. No unrelated content was removed.
+29. No broken images or navigation routes remain.
+30. The application builds successfully.
+
+Only report a test as passed if it was actually performed.
+
+---
+
+# PART 25 — PERSISTENT IMPLEMENTATION PROGRESS
+
+Maintain a compact project progress file:
+
+identify_implementation_progress.json
+
+Track:
+
+- Category IDs and names.
+- Number of verified scenes per category.
+- Image asset completion.
+- Annotation verification.
+- Quiz implementation status.
+- Vocabulary integration status.
+- Responsive layout status.
+- Validation status.
+- Remaining work.
+
+Use accurate statuses:
+
+- Not Started
+- In Progress
+- Needs Verification
+- Completed
+
+Only mark a scene Completed when its asset, annotations, and quiz functionality are verified.
+
+If execution or context limits interrupt development, save the completed work and provide the next precise task.
+
+Do not claim background work will continue after the operation ends.
+
+---
+
+# FINAL DIRECTIVE
+
+Create and fully integrate a NEW "Identify" tab into my existing LangoUA application.
+
+The feature must allow users to:
+
+1. Browse 20 categories of everyday environments.
+2. Choose from 100 unique photographic scenes.
+3. Select visible objects in photographs.
+4. Identify objects using Ukrainian multiple-choice answers.
+5. Identify objects by typing Ukrainian vocabulary.
+6. Reveal answers whenever desired.
+7. View accurate Ukrainian vocabulary and English meanings.
+8. Hear pronunciation where supported.
+9. Access relevant grammatical information.
+10. Track learning progress.
+11. Review difficult vocabulary using existing learning tools.
+
+The experience must be engaging, educationally accurate, visually polished, and responsive.
+
+**MOST IMPORTANT DESIGN REQUIREMENT:**
+
+Match the CURRENT application's visual design and theme system.
+
+I have reverted the previous Material 3 light-only redesign.
+
+Do not reintroduce it.
+
+Preserve the existing desktop, tablet, and mobile design language.
+
+Preserve all existing educational content and learning functionality.
+
+Begin implementation now.
+
+Make actual changes to the existing project, validate them, save progress, and continue toward completing all 100 scenes.
+
+Do not stop after writing a plan.
+
+Report honestly what was implemented and what remains.
