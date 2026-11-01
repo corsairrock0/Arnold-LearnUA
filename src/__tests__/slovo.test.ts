@@ -38,7 +38,16 @@ test('1. Zero textbook references (Pugh, Press, Routledge, §) across all source
         'src/identifyData.ts',
         'src/identifyEngine.ts',
         'src/identifyView.ts',
-        'src/main.ts'
+        'src/main.ts',
+        'src/courseAssessmentEngine.ts',
+        'src/assessments/moduleA0_1ChecksAndPractice.ts',
+        'src/assessments/moduleA0_1ExamPart1.ts',
+        'src/assessments/moduleA0_1ExamPart2.ts',
+        'src/assessments/moduleA0_1Exam.ts',
+        'src/assessments/moduleSupplementsA0A1.ts',
+        'src/assessments/moduleSupplementsA2B1a.ts',
+        'src/assessments/moduleSupplementsB1bC1.ts',
+        'src/assessments/curriculumAssessmentBuilder.ts'
     ];
     const forbidden = [/pugh/i, /ian\s+press/i, /pugh\s*&\s*press/i, /routledge/i, /poulard/i, /yurchenko/i, /shevchuk/i, /hippocrene/i, /roma\s+franko/i, /detselig/i, /bekh/i, /dingley/i, /hodder/i, /john\s+murray/i, /teach\s+yourself/i, /pavlyshyn/i, /lonely\s+planet/i, /kandybko/i, /§\s*\d/];
     for (const rel of filesToCheck) {
@@ -165,8 +174,8 @@ test('5. Course Curriculum (29 modules A0.1-C1.1): structure, dialogues, recall 
         for (const ar of mod.activeRecall) {
             assert.ok(ar.answerUk && /[А-ЯҐЄІЇа-яґєії]/.test(ar.answerUk), `Module ${mod.id} activeRecall answerUk must be Ukrainian Cyrillic, got: ${ar.answerUk}`);
         }
-        assert.ok(mod.cfu.length >= 2, `Module ${mod.id} should have at least 2 CFU questions`);
-        assert.ok(mod.practice.length >= 3, `Module ${mod.id} should have at least 3 practice drills`);
+        assert.equal(mod.cfu.length, 20, `Module ${mod.id} should have 20 CFU questions`);
+        assert.equal(mod.practice.length, 50, `Module ${mod.id} should have 50 practice drills`);
         for (const pr of mod.practice) {
             assert.ok(pr.audioUk && pr.audioUk !== 'undefined' && /[А-ЯҐЄІЇа-яґєії]/.test(pr.audioUk), `Module ${mod.id} practice item missing valid Ukrainian audioUk: ${pr.q}`);
         }
@@ -184,7 +193,7 @@ test('5. Course Curriculum (29 modules A0.1-C1.1): structure, dialogues, recall 
             assert.equal(gData.exampleEn, exEn, `Module ${mod.id} vocab ${uk} exampleEn mismatch`);
             assert.ok(gData.spokenSummary.includes(exUk || ''), `Module ${mod.id} vocab ${uk} spokenSummary does not include its exact card example '${exUk}'`);
         }
-        assert.equal(mod.exam.length, 6, `Module ${mod.id} should have 6 mastery exam questions`);
+        assert.equal(mod.exam.length, 100, `Module ${mod.id} should have 100 mastery exam questions`);
 
         for (const q of mod.cfu) {
             assert.ok(q.ans >= 0 && q.ans < q.opts.length, `Invalid CFU answer index in ${mod.id}`);
@@ -382,3 +391,108 @@ test('10. Navigation & Core Tabs: AI Conversation tab is removed while all 8 cor
         assert.ok(indexHtml.includes(`id="${tabId}"`), `Core tab #${tabId} must remain present and functional`);
     }
 });
+
+test('11. All 29 Course Modules (A0.1–C1.1) Expanded Assessment Suite: 5,510 Total Questions (20 Inline + 20 Stage 2 + 50 Practice + 100 Exam per Module), Zero Duplicates, Balanced Answer Indices, and Deterministic Grading', async () => {
+    const {
+        validateExpandedModuleAssessments,
+        validateCourseConstructedAnswer,
+        calculateExamScore,
+        buildDetailedFeedbackHtml,
+    } = await import('../courseAssessmentEngine.ts');
+
+    assert.equal(COURSE_MODULES.length, 29, 'Expected 29 total course modules (A0.1 through C1.1)');
+
+    let grandTotalQuestions = 0;
+
+    for (const mod of COURSE_MODULES) {
+        const inlineCount = mod.structuredLesson?.embeddedChecks?.length || 0;
+        const cfuCount = mod.cfu.length;
+        const practiceCount = mod.practice.length;
+        const examCount = mod.exam.length;
+
+        assert.equal(inlineCount, 20, `Module ${mod.id} Stage 1 Inline Knowledge Check must have 20 questions, got ${inlineCount}`);
+        assert.equal(cfuCount, 20, `Module ${mod.id} Stage 2 Knowledge Check must have 20 questions, got ${cfuCount}`);
+        assert.equal(practiceCount, 50, `Module ${mod.id} Stage 3 Practice must have 50 questions, got ${practiceCount}`);
+        assert.equal(examCount, 100, `Module ${mod.id} Stage 5 Mastery Exam must have 100 questions, got ${examCount}`);
+
+        const validation = validateExpandedModuleAssessments(mod);
+        assert.equal(
+            validation.valid,
+            true,
+            `Module ${mod.id} assessment validation failed with errors:\n${validation.errors.join('\n')}`
+        );
+
+        // Verify balanced distribution of correct answer indices (0, 1, 2, 3) across each module's 100-question exam
+        const examIndexCounts = [0, 0, 0, 0];
+        for (const q of mod.exam) {
+            examIndexCounts[q.ans] = (examIndexCounts[q.ans] || 0) + 1;
+        }
+        for (let idx = 0; idx < 4; idx++) {
+            assert.ok(
+                examIndexCounts[idx] >= 20,
+                `Module ${mod.id} Exam answer index ${idx} should appear at least 20 times out of 100, got ${examIndexCounts[idx]}`
+            );
+        }
+
+        // Verify constructed text-entry items exist in every module
+        const textItemsInMod = [
+            ...(mod.structuredLesson?.embeddedChecks || []),
+            ...mod.cfu,
+            ...mod.practice,
+            ...mod.exam,
+        ].filter((item: any) => item.inputMode === 'text');
+        assert.ok(
+            textItemsInMod.length >= 10,
+            `Module ${mod.id} must include at least 10 constructed text-input questions across stages, got ${textItemsInMod.length}`
+        );
+
+        grandTotalQuestions += inlineCount + cfuCount + practiceCount + examCount;
+    }
+
+    assert.equal(grandTotalQuestions, 29 * 190, 'Expected 5,510 total assessment questions across all 29 modules');
+
+    const a01 = COURSE_MODULES.find((m) => m.id === 'A0.1')!;
+
+    // Verify constructed-response validation handles stress marks, apostrophes, case, and whitespace
+    assert.equal(validateCourseConstructedAnswer('Молоко', ['молоко́']), true, 'Should accept unstressed capitalized Молоко');
+    assert.equal(validateCourseConstructedAnswer('  будь ласка! ', ['будь ла́ска']), true, 'Should accept unstressed будь ласка with punctuation');
+    assert.equal(validateCourseConstructedAnswer("сім'я", ['сім’я́']), true, 'Should accept straight apostrophe and unstressed сім’я');
+    assert.equal(validateCourseConstructedAnswer('малако', ['молоко́']), false, 'Should reject akanie spelling малако');
+
+    // Verify exam scoring and 80% mastery threshold across 100 questions
+    const eightyCorrectSelections: Record<number, number> = {};
+    a01.exam.forEach((q, idx) => {
+        eightyCorrectSelections[idx] = idx < 80 ? q.ans : (q.ans + 1) % q.opts.length;
+    });
+    const score80 = calculateExamScore(a01.exam, eightyCorrectSelections);
+    assert.equal(score80.totalQuestions, 100);
+    assert.equal(score80.answeredCount, 100);
+    assert.equal(score80.correctCount, 80);
+    assert.equal(score80.percentage, 80);
+    assert.equal(score80.passed, true, '80/100 should pass the 80% threshold');
+
+    const seventyNineCorrectSelections: Record<number, number> = {};
+    a01.exam.forEach((q, idx) => {
+        seventyNineCorrectSelections[idx] = idx < 79 ? q.ans : (q.ans + 1) % q.opts.length;
+    });
+    const score79 = calculateExamScore(a01.exam, seventyNineCorrectSelections);
+    assert.equal(score79.correctCount, 79);
+    assert.equal(score79.passed, false, '79/100 should not pass the 80% threshold');
+
+    // Verify detailed feedback HTML contains distractor explanation, correct answer, and rule
+    const sampleQ = a01.exam[0] as any;
+    const wrongIdx = (sampleQ.ans + 1) % sampleQ.opts.length;
+    const fbHtml = buildDetailedFeedbackHtml({
+        isCorrect: false,
+        chosenIndex: wrongIdx,
+        correctIndex: sampleQ.ans,
+        options: sampleQ.opts,
+        distractorNotes: sampleQ.distractorNotes,
+        explanation: sampleQ.exp,
+    });
+    assert.ok(fbHtml.includes('Why Incorrect:'), 'Detailed feedback must explain why the chosen distractor is wrong');
+    assert.ok(fbHtml.includes('Correct Answer:'), 'Detailed feedback must show the correct answer');
+    assert.ok(fbHtml.includes('Core Rule & Explanation:'), 'Detailed feedback must include the core rule explanation');
+});
+
+

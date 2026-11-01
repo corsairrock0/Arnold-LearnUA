@@ -1,0 +1,1227 @@
+# SLOVO UA — COMPLETE ACADEMIC VIDEO EXPLAINER PRODUCTION SYSTEM
+
+## PRIMARY OBJECTIVE
+
+Generate comprehensive, professionally narrated, visually engaging educational explainer videos for EVERY module in the Course tab of my existing Ukrainian language-learning application:
+
+https://slovo-ua-app.ai.studio/
+
+The application contains approximately 29 modules spanning CEFR levels A0 through C1.
+
+Verify the actual module inventory before beginning.
+
+I want ONE complete standalone educational video per Course module, with additional parts only when a module is too extensive for one video.
+
+These videos will eventually be distributed inside a fully offline Ukrainian language-learning application for iPhone and Android.
+
+The final deliverables must be:
+
+- Real, playable MP4 files.
+- Professionally narrated.
+- Academically comprehensive.
+- Visually polished.
+- Accurate to the existing Course content.
+- Compressed to balance quality and storage size.
+- Ready for offline playback.
+- Downloadable to my Windows desktop.
+- Completely independent of my existing application.
+
+**CRITICAL: DO NOT MODIFY MY SLOVO UA APPLICATION IN ANY WAY.**
+
+---
+
+# PART 1 — ABSOLUTE APPLICATION PROTECTION
+
+Treat my entire existing Slovo UA application as STRICTLY READ-ONLY.
+
+You may inspect existing course data, curriculum files, and module definitions to understand the educational content.
+
+You must not change any existing application file.
+
+DO NOT:
+
+- Modify React components.
+- Modify TypeScript or JavaScript files.
+- Modify Course modules.
+- Modify lesson text or grammar explanations.
+- Modify the vocabulary database.
+- Modify flashcards.
+- Modify application styling.
+- Modify fonts.
+- Modify CSS.
+- Modify navigation.
+- Add a video player.
+- Add new application tabs.
+- Change the theme.
+- Change dependencies.
+- Modify package.json.
+- Modify build configuration.
+- Modify GitHub integration.
+- Create Git commits.
+- Delete assets.
+- Replace photographs.
+- Modify any existing image files.
+- Regenerate existing media.
+- Change course progress or storage data.
+
+In particular, preserve all existing photographic assets in the Identify feature, including the 100 original WebP photographs.
+
+Do not touch:
+
+- /src
+- /src/data
+- /public
+- /public/assets
+- /.aistudio
+- Any existing application configuration.
+- Any application-managed storage or synchronization directory.
+
+No files associated with the application may be overwritten, deleted, reformatted, or regenerated.
+
+Video production must occur in a verified isolated temporary environment outside the application workspace and its synchronization scope.
+
+Never use a cleanup operation that could affect the application project.
+
+If an isolated temporary environment is unavailable, stop before writing files and explain the limitation.
+
+The application's existing source files and assets must remain unchanged throughout the operation.
+
+---
+
+# PART 2 — VERIFY THE AVAILABLE VIDEO PRODUCTION CAPABILITIES
+
+Before generating anything, inspect the actual tools and services accessible in this environment.
+
+Determine whether you have access to:
+
+1. The existing Course content.
+2. Suitable text-to-speech models.
+3. Native Ukrainian speech synthesis.
+4. English voice styling or voice design.
+5. A temporary external rendering workspace.
+6. Slide or graphics rendering tools.
+7. FFmpeg or an equivalent video encoder.
+8. MP4 encoding.
+9. A supported mechanism for exporting downloadable files.
+
+Do not assume that every capability is available simply because you are running inside Google AI Studio.
+
+Do not claim that you can generate MP4 files unless the environment actually supports doing so.
+
+Do not claim that temporary files are downloadable until you verify a supported user-accessible export mechanism.
+
+If rendering or downloading is unavailable, explain exactly what is missing.
+
+Do not modify my application to work around missing functionality.
+
+Do not create a mock player, pretend download links, or an application feature as a substitute for the requested MP4 deliverables.
+
+---
+
+# PART 3 — COURSE CONTENT EXTRACTION
+
+Inspect the actual Course module registry.
+
+Identify every currently available module and its corresponding CEFR level.
+
+Create a read-only inventory containing:
+
+- Module ID.
+- Module title.
+- CEFR proficiency level.
+- Learning objectives.
+- Big Idea or central concept.
+- Main instructional sections.
+- Grammar concepts.
+- Relevant vocabulary.
+- Example sentences.
+- English translations.
+- Pronunciation information.
+- Important grammatical exceptions.
+- Common learner mistakes.
+- Practical conversational applications.
+
+Use the actual existing Course content as the authoritative educational source.
+
+The original textbook PDFs are not required.
+
+Do not ask for textbook uploads if the integrated module data is already accessible.
+
+Do not silently substitute a generic Ukrainian curriculum.
+
+Preserve the order, level, and learning objectives of the existing modules.
+
+Identify prerequisite knowledge where appropriate.
+
+Do not modify the Course data while reading it.
+
+---
+
+# PART 4 — ONE COMPREHENSIVE EXPLAINER VIDEO PER MODULE
+
+Create a dedicated academic explainer video for each Course module.
+
+Every video must be a real instructional lecture rather than a superficial summary.
+
+Each module video should:
+
+1. Introduce the module and its objectives.
+2. Explain prerequisite concepts.
+3. Teach its grammar thoroughly.
+4. Explain relevant vocabulary.
+5. Demonstrate Ukrainian word forms.
+6. Explain conjugations and declensions where relevant.
+7. Show natural Ukrainian examples.
+8. Explain grammatical exceptions.
+9. Discuss common learner mistakes.
+10. Demonstrate real-world applications.
+11. Provide active-recall exercises.
+12. End with a meaningful review.
+
+Do not omit major learning objectives.
+
+Do not pad videos with irrelevant information.
+
+Do not repeat the same generic explanations across different modules.
+
+Adapt the difficulty and detail to the actual CEFR level.
+
+If one module is particularly extensive, create clearly identified Part 1 and Part 2 videos instead of sacrificing instructional completeness.
+
+---
+
+# PART 5 — NARRATOR IDENTITY — HIGHEST PRIORITY
+
+The narrator must sound like a highly educated NATIVE UKRAINIAN university professor teaching Ukrainian to American students.
+
+This instructor speaks fluent, clear, grammatically correct English with a NATURAL, SUBTLE UKRAINIAN ACCENT.
+
+The narrator explains lessons in ENGLISH.
+
+The narrator does not explain the entire lesson in Ukrainian.
+
+However, whenever the narrator demonstrates Ukrainian vocabulary, phrases, or sentences, the pronunciation must sound authentically native Ukrainian.
+
+The desired result is a bilingual instructor who:
+
+- Is a native Ukrainian speaker.
+- Speaks fluent English.
+- Has a natural Ukrainian accent while speaking English.
+- Uses native Ukrainian pronunciation for Ukrainian examples.
+- Maintains an engaging, professional teaching style.
+- Speaks clearly enough for American students to understand.
+- Sounds warm, intelligent, calm, and confident.
+- Avoids exaggerated or stereotypical accents.
+
+The narrator should resemble a real Ukrainian professor who has taught Ukrainian language courses in English-speaking universities.
+
+DO NOT use an American narrator who anglicizes Ukrainian words.
+
+DO NOT use a Ukrainian-speaking narrator who delivers the entire explanation in Ukrainian.
+
+The distinction is essential:
+
+ENGLISH TEACHING + NATIVE UKRAINIAN PRONUNCIATION.
+
+---
+
+# PART 6 — SPEECH GENERATION TECHNOLOGY
+
+First investigate the available Gemini speech models, supported voices, voice-design capabilities, and available speech APIs.
+
+Determine whether a suitable English-speaking voice with a natural Ukrainian accent can be generated consistently.
+
+Do not assume that selecting Ukrainian as the output language will retain English explanations.
+
+Set English explicitly as the explanation language.
+
+If the available speech model supports accent or voice styling instructions, request a subtle Ukrainian accent in fluent English.
+
+If a single bilingual voice does not provide authentic Ukrainian pronunciation, use a two-voice production system:
+
+VOICE A — ENGLISH EXPLANATIONS
+
+- Fluent American-understandable English.
+- Natural Ukrainian-accented delivery, if supported.
+- Clear academic narration.
+
+VOICE B — UKRAINIAN EXAMPLES
+
+- A verified native Ukrainian or high-quality uk-UA speech voice.
+- Natural pronunciation.
+- Correct word stress.
+- Authentic vowel and consonant sounds.
+- Appropriate Ukrainian intonation.
+
+Prefer a consistent narrator identity if a single multilingual voice can meet both requirements.
+
+If separate voices are required, make transitions natural and ensure the audio remains coherent.
+
+Do not claim the two voices sound identical unless they do.
+
+Use actual supported speech-generation capabilities.
+
+Do not fabricate available models, voices, or API features.
+
+Do not expose or embed permanent API keys in files or transcripts.
+
+---
+
+# PART 7 — UKRAINIAN PRONUNCIATION ACCURACY
+
+Every Ukrainian example must use contemporary standard Ukrainian pronunciation.
+
+Pay particular attention to:
+
+- Г versus Ґ.
+- И versus І.
+- Е versus Є.
+- Ї and Й.
+- Я and Ю.
+- Soft consonants.
+- Hard consonants.
+- Palatalization.
+- Word stress.
+- Natural pronunciation of grammatical endings.
+- Natural sentence rhythm.
+- Authentic Ukrainian intonation.
+
+Use Ukrainian Cyrillic text for speech generation.
+
+Do not synthesize Ukrainian examples from simplified English transliterations.
+
+Do not invent stress marks.
+
+Do not replace Ukrainian phonemes with approximate English sounds.
+
+For examples containing several words, preserve natural connected speech.
+
+Pronunciation is central to the educational value of these videos.
+
+If the speech synthesizer cannot pronounce a particular Ukrainian example reliably, flag that segment for review rather than silently delivering an inaccurate pronunciation model.
+
+---
+
+# PART 8 — MANDATORY NARRATOR AUDIO TEST
+
+Before beginning full video production, generate a short bilingual narration test.
+
+Use the following sample:
+
+ENGLISH:
+
+"Welcome to your Ukrainian language lesson. Today we're going to learn how grammatical cases change the endings of words and help us express meaning."
+
+UKRAINIAN:
+
+"Я живу у Львові."
+
+ENGLISH:
+
+"In this example, Львові is the form used when we talk about living in Lviv. Let's examine why the ending changes."
+
+UKRAINIAN:
+
+"Я люблю українську мову."
+
+ENGLISH:
+
+"Notice how the adjective changes to agree with the noun. We'll explore this pattern step by step."
+
+Generate two or three candidate voices if supported.
+
+For each voice, assess:
+
+- English fluency.
+- Authenticity of the Ukrainian accent.
+- Native Ukrainian pronunciation.
+- Clarity.
+- Natural pacing.
+- Consistency.
+- Educational suitability.
+
+Make the audio samples available for me to review using a supported delivery mechanism.
+
+DO NOT generate all 29 videos before confirming that the narration quality is acceptable.
+
+Voice approval is a mandatory production checkpoint.
+
+---
+
+# PART 9 — TEACHING LEVEL AND METHODOLOGY
+
+Design the lessons for native American English speakers.
+
+Explanations should be easy enough for an American high-school student to understand, while remaining academically accurate.
+
+Do not assume prior knowledge of Slavic languages.
+
+Explain technical grammar terminology before using it.
+
+For each major concept, use this sequence:
+
+STEP 1 — INTRODUCE THE CONCEPT
+
+Explain what the learner is about to study.
+
+STEP 2 — DEFINE IT
+
+Explain the concept clearly in English.
+
+STEP 3 — EXPLAIN ITS PURPOSE
+
+Describe why Ukrainian uses the grammatical structure.
+
+STEP 4 — EXPLAIN THE RULE
+
+Describe the word forms, endings, agreement, or conjugation patterns.
+
+STEP 5 — SHOW AN EXAMPLE
+
+Present a natural Ukrainian sentence.
+
+STEP 6 — PRONOUNCE THE EXAMPLE
+
+Speak the Ukrainian sentence using native Ukrainian pronunciation.
+
+STEP 7 — TRANSLATE
+
+Give the accurate English meaning.
+
+STEP 8 — BREAK IT DOWN
+
+Analyze individual words and grammatical changes.
+
+STEP 9 — COMPARE
+
+Show similar and contrasting examples.
+
+STEP 10 — EXPLAIN EXCEPTIONS
+
+Discuss important irregularities and restrictions.
+
+STEP 11 — APPLY
+
+Demonstrate natural everyday usage.
+
+STEP 12 — REVIEW
+
+Reinforce the concept with a meaningful exercise.
+
+Do not simply read grammar tables aloud.
+
+Teach learners how to understand and use the patterns.
+
+---
+
+# PART 10 — ACADEMIC VIDEO PRESENTATION STYLE
+
+Create videos resembling professionally produced university-level educational lectures.
+
+The visual design should be:
+
+- Academic.
+- Modern.
+- Minimalist.
+- Elegant.
+- Highly readable.
+- Consistent.
+- Visually engaging.
+- Appropriate for language education.
+
+Use:
+
+- High-quality presentation slides.
+- Clean typography.
+- Strong visual hierarchy.
+- Grammar diagrams.
+- Sentence transformation diagrams.
+- Declension tables.
+- Verb conjugation tables.
+- Relevant timelines.
+- Animated word endings.
+- Side-by-side translations.
+- Contextual examples.
+- Clear conceptual infographics.
+
+Avoid:
+
+- Generic stock-photo montages.
+- Irrelevant cinematic scenes.
+- Decorative animation.
+- Excessive transitions.
+- AI-generated text inside images.
+- Tiny typography.
+- Overcrowded slides.
+- Distracting background music.
+- Cartoon mascots.
+- Unnecessary visual effects.
+
+Use real text rendering for Ukrainian Cyrillic content.
+
+Do not depend on image-generation models to spell Ukrainian grammar correctly.
+
+Every Ukrainian word should be rendered from accurate Unicode text.
+
+---
+
+# PART 11 — GRAMMAR VISUALIZATION REQUIREMENTS
+
+Use visual explanations whenever they genuinely improve understanding.
+
+Examples:
+
+## NOUN CASES
+
+Show relevant case roles and word-ending changes.
+
+Explain why a specific case is selected.
+
+Highlight the changing parts of nouns.
+
+## VERB CONJUGATIONS
+
+Show relevant persons, numbers, forms, and endings.
+
+Highlight consistent patterns and exceptions.
+
+## VERB ASPECT
+
+Use timeline diagrams and real-life situations to distinguish imperfective and perfective meanings.
+
+Do not incorrectly equate aspect with English tense.
+
+## ADJECTIVE AGREEMENT
+
+Demonstrate the relationship between adjective forms and noun gender, number, or case.
+
+## PREPOSITIONS
+
+Show how prepositions interact with grammatical cases.
+
+## WORD ORDER
+
+Demonstrate how natural Ukrainian sentence structures work.
+
+Explain emphasis and information structure where relevant.
+
+## PRONUNCIATION
+
+Use Cyrillic examples and accurate explanations of Ukrainian sound distinctions.
+
+Only include topics that are actually relevant to the current Course module.
+
+---
+
+# PART 12 — VIDEO STRUCTURE
+
+Use the following educational flow as a guideline.
+
+CHAPTER 1 — INTRODUCTION
+
+Explain the module's theme, goals, and relevance.
+
+CHAPTER 2 — FOUNDATIONAL KNOWLEDGE
+
+Introduce prerequisite concepts.
+
+CHAPTER 3 — MAIN GRAMMAR EXPLANATIONS
+
+Teach the module's important grammar rules in detail.
+
+CHAPTER 4 — WORD FORMS AND STRUCTURES
+
+Demonstrate relevant conjugations, declensions, or grammatical changes.
+
+CHAPTER 5 — WORKED EXAMPLES
+
+Analyze natural Ukrainian examples step by step.
+
+CHAPTER 6 — IMPORTANT EXCEPTIONS
+
+Explain irregularities and special conditions.
+
+CHAPTER 7 — COMMON MISTAKES
+
+Show typical errors and explain their corrections.
+
+CHAPTER 8 — REAL-LIFE APPLICATION
+
+Demonstrate how the concepts are used in ordinary Ukrainian conversations.
+
+CHAPTER 9 — INTERACTIVE REVIEW
+
+Present active-recall questions and briefly pause before revealing answers.
+
+CHAPTER 10 — COMPREHENSIVE SUMMARY
+
+Summarize essential learning points.
+
+Adapt chapter names and order to the actual module.
+
+Do not add irrelevant sections purely to follow the template.
+
+---
+
+# PART 13 — VIDEO DURATION
+
+Prioritize thorough teaching over arbitrary video length.
+
+Suggested planning ranges:
+
+- A0: 10–20 minutes.
+- A1: 15–25 minutes.
+- A2: 20–30 minutes.
+- B1: 25–40 minutes.
+- B2: 30–45 minutes.
+- C1: 35–60 minutes.
+
+These are educational planning targets, not guaranteed runtimes.
+
+Do not pad short modules.
+
+Do not rush complex grammar to fit the suggested range.
+
+If a long-form rendering or TTS service imposes duration or context limits, divide the module into coherent segments.
+
+Do not pretend that a short cinematic video-generation model can render a complete academic lecture in one generation.
+
+Prefer deterministic slide rendering combined with separately generated speech and synchronized assembly.
+
+---
+
+# PART 14 — COMPRESSED VIDEO OUTPUT — VERY IMPORTANT
+
+The final downloadable video must ALREADY BE COMPRESSED.
+
+Do not give me an unnecessarily large uncompressed video as the primary deliverable.
+
+Compression must be performed as part of the final production pipeline.
+
+I want a BALANCED combination of:
+
+1. Small storage size.
+2. Crisp academic slides.
+3. Readable Ukrainian text.
+4. Clear narration.
+5. Accurate pronunciation.
+6. Reliable iPhone playback.
+7. Reliable compatible Android playback.
+
+Use quality-based encoding rather than a rigid size limit.
+
+## PREFERRED VIDEO SETTINGS
+
+Container:
+MP4
+
+Video codec:
+H.265 / HEVC
+
+Resolution:
+1920 × 1080
+
+Frame rate:
+24 fps
+
+Encoding preset:
+Slow, or the closest available quality-oriented equivalent.
+
+Quality control:
+Constant Rate Factor.
+
+Initial CRF:
+26
+
+Pixel format:
+yuv420p, 8-bit.
+
+HEVC compatibility tag:
+hvc1.
+
+Container optimization:
+Fast-start metadata where supported.
+
+Use an appropriate HEVC encoder actually available in the environment.
+
+Do not assume libx265 is installed.
+
+## AUDIO SETTINGS
+
+Audio codec:
+AAC-LC.
+
+Target bitrate:
+96 kbps.
+
+Sample rate:
+48 kHz.
+
+Channel configuration:
+Mono when suitable for single-narrator speech.
+
+Use stereo only when it offers a meaningful educational or presentation benefit.
+
+Keep narration clean and natural.
+
+Do not sacrifice Ukrainian pronunciation clarity for a minimal reduction in file size.
+
+## QUALITY ADJUSTMENT
+
+Start with CRF 26.
+
+If Ukrainian text becomes noticeably blurry or develops compression artifacts, test CRF 24.
+
+If the video remains visually excellent and the file is unnecessarily large, test CRF 27 or 28.
+
+Select the smallest acceptable version using visual and audio quality checks.
+
+Use the actual video encoder's quality parameters; do not assume all encoders interpret CRF identically.
+
+---
+
+# PART 15 — FILE SIZE TARGETS
+
+My existing NotebookLM explainer videos average approximately 45 MB each.
+
+I would like the new AI Studio videos to be smaller when possible without compromising academic visual quality.
+
+Preferred approximate target:
+
+20–30 MB per video.
+
+However, this is a SOFT TARGET, not a mandatory size cap.
+
+Video duration will vary by module, so prioritize quality and use reasonable bitrate efficiency.
+
+A 40-minute lecture should not be forced into the same file size as a 10-minute lecture.
+
+If preserving quality requires 35–50 MB or more, allow the larger size.
+
+If a shorter presentation can be encoded cleanly at 15–20 MB, use the smaller output.
+
+Do not deliberately make videos longer simply to meet an expected runtime.
+
+Do not force low bitrates that make the Ukrainian grammatical endings unreadable.
+
+---
+
+# PART 16 — VIDEO COMPRESSION EFFICIENCY
+
+These lessons primarily contain educational slides, text, and diagrams.
+
+Optimize accordingly.
+
+Use:
+
+- Static slide backgrounds where appropriate.
+- Limited camera movement.
+- Minimal decorative animation.
+- Efficient slide transitions.
+- Clean, high-contrast graphics.
+- Consistent typography.
+- Simple explanatory animations.
+- Slides designed for video encoding efficiency.
+
+Avoid visual noise, unnecessary motion, continuously moving backgrounds, or elaborate effects that increase file size without educational value.
+
+Do not sacrifice instructional clarity.
+
+Preserve 1080p when needed for readable grammar tables.
+
+Do not automatically reduce resolution to 720p.
+
+If 720p would be sufficient for a particular module, test its readability before choosing it.
+
+---
+
+# PART 17 — DEVICE COMPATIBILITY
+
+These videos will be used offline in native iOS and Android applications.
+
+Preferred codec:
+H.265 / HEVC for space efficiency on compatible devices.
+
+However, HEVC is not universally supported by every Android device.
+
+Verify compatibility with the intended device requirements.
+
+If HEVC cannot be encoded or is not supported by the intended playback environment, use an H.264 fallback.
+
+Recommended H.264 fallback:
+
+- MP4 container.
+- H.264 video.
+- 1920 × 1080.
+- 24 fps.
+- CRF approximately 22–24.
+- Slow preset.
+- yuv420p.
+- AAC audio at 96 kbps.
+
+Do not describe any encoding format as universally compatible without testing.
+
+Do not use an obscure codec that would require users to install a separate video player.
+
+---
+
+# PART 18 — OPTIONAL REFERENCE FFMPEG COMMAND
+
+If FFmpeg with libx265 is available, the following configuration is an appropriate starting point:
+
+ffmpeg -i input.mp4 -c:v libx265 -preset slow -crf 26 -tag:v hvc1 -pix_fmt yuv420p -r 24 -c:a aac -b:a 96k -ar 48000 -movflags +faststart output.mp4
+
+This is a reference configuration, not a command that must be run blindly.
+
+Preserve accurate slide and audio timing.
+
+If frame-rate conversion would damage synchronization or animation quality, retain the suitable source frame rate.
+
+Prefer direct encoding from rendered slide frames and audio rather than repeatedly transcoding already-compressed videos.
+
+Avoid unnecessary lossy recompression.
+
+---
+
+# PART 19 — AUDIO SCRIPT AND SYNCHRONIZATION
+
+Create a complete narration script for every video.
+
+Break the script into timed instructional segments.
+
+Label segments clearly:
+
+ENGLISH_EXPLANATION
+
+UKRAINIAN_EXAMPLE
+
+ENGLISH_TRANSLATION
+
+GRAMMAR_BREAKDOWN
+
+PRACTICE_QUESTION
+
+PRACTICE_ANSWER
+
+SUMMARY
+
+Generate narration for the relevant segments.
+
+Determine each audio segment's actual duration.
+
+Synchronize the slide transitions to the audio.
+
+Do not guess segment durations.
+
+When a Ukrainian phrase is spoken, show the corresponding Cyrillic text on screen.
+
+When explaining grammar, highlight the relevant words and endings at the appropriate time.
+
+Make the presentation feel like a single coherent university lecture rather than disconnected audio clips.
+
+Use natural pauses.
+
+Do not insert excessively long silence between segments.
+
+---
+
+# PART 20 — EDUCATIONAL ACCURACY
+
+Use the actual Course module content as the educational authority.
+
+Preserve the meaning of existing grammar rules and explanations.
+
+Avoid inventing:
+
+- Declension rules.
+- Verb conjugations.
+- Word stress.
+- Irregular forms.
+- Ukrainian vocabulary.
+- Incorrect English translations.
+- Unsupported grammatical exceptions.
+
+Distinguish between formal grammatical rules and natural conversational preferences.
+
+When source content seems ambiguous or potentially inaccurate, flag the issue for review rather than silently modifying the underlying app.
+
+Any supplementary examples must be accurate and appropriate for the module's CEFR level.
+
+Do not reproduce lengthy third-party textbook passages verbatim.
+
+Write original instructional narration based on the integrated curriculum.
+
+---
+
+# PART 21 — LEARNER ENGAGEMENT
+
+Make the videos enjoyable to watch without sacrificing rigor.
+
+Include:
+
+- Practical Ukrainian sentence examples.
+- Useful pronunciation demonstrations.
+- Clear grammar comparisons.
+- Relevant conversational situations.
+- Short active-recall exercises.
+- Occasional prediction questions.
+- Worked examples.
+- Meaningful review sections.
+
+Example teaching sequence:
+
+"Let's look at this Ukrainian sentence."
+
+Display the sentence.
+
+Pronounce it using native Ukrainian speech.
+
+Explain the English translation.
+
+Highlight the grammatical ending.
+
+Explain why it appears.
+
+Show a contrasting form.
+
+Ask the learner to predict the next example.
+
+Pause briefly.
+
+Reveal the correct answer.
+
+Explain the reasoning.
+
+Keep educational exercises aligned with the actual module objectives.
+
+---
+
+# PART 22 — SUBTITLES AND TRANSCRIPTS
+
+When supported, generate the following supplementary files:
+
+- Accurate SRT subtitles.
+- Complete English narration transcript.
+- Ukrainian examples in correct Cyrillic.
+- Chapter timestamp file.
+- Module topic coverage report.
+
+Subtitles must reflect the actual audio.
+
+Preserve accurate Ukrainian spelling.
+
+Use real timestamps derived from the final video.
+
+Do not fabricate subtitle synchronization.
+
+These are optional supporting deliverables.
+
+The main required deliverable is the playable compressed MP4.
+
+---
+
+# PART 23 — FILE NAMING
+
+Use consistent Windows-compatible filenames.
+
+For example:
+
+SlovoUA_A0.1_Explainer_HEVC.mp4
+
+SlovoUA_A0.1_Subtitles.srt
+
+SlovoUA_A0.1_Transcript.md
+
+SlovoUA_A0.1_Chapters.txt
+
+Use the real module IDs and titles from the current Course registry.
+
+Avoid invalid Windows filename characters.
+
+Preserve a consistent naming convention across all modules.
+
+---
+
+# PART 24 — TEMPORARY ASSET STORAGE
+
+All generated output must remain separate from my existing application.
+
+Never save final videos, intermediate renders, audio clips, slide images, or transcripts inside the application repository.
+
+Do not use:
+
+- /public
+- /src
+- /src/data
+- /.aistudio
+- Any GitHub-managed application directory.
+- Any directory synchronized as part of the app project.
+
+Prefer an isolated temporary working directory outside the project, such as /tmp/slovoua_video_exports/, ONLY after verifying it is genuinely outside the application's managed workspace and synchronization scope.
+
+Temporary files must not change the application.
+
+Do not assume a temporary directory is browser-accessible.
+
+Use a supported method to provide actual downloadable files.
+
+Do not delete finished exports before I have downloaded them.
+
+Explain any temporary-file expiration limitations.
+
+Do not modify the application to create a download interface.
+
+---
+
+# PART 25 — COMPLETE VIDEO PRODUCTION PIPELINE
+
+For each module:
+
+STEP 1 — READ
+
+Inspect the original module content.
+
+STEP 2 — OUTLINE
+
+Identify every important learning objective and instructional concept.
+
+STEP 3 — COVERAGE MAP
+
+Create a coverage map showing which video section teaches each important concept.
+
+STEP 4 — SCRIPT
+
+Write a complete English instructional narration.
+
+STEP 5 — VALIDATE
+
+Check the Ukrainian grammar, vocabulary, examples, and translations.
+
+STEP 6 — VOICE GENERATION
+
+Generate English explanations and native Ukrainian examples using suitable voices.
+
+STEP 7 — SLIDE DESIGN
+
+Create academic slides, grammar tables, and instructional diagrams.
+
+STEP 8 — RENDER
+
+Render visual slides and appropriate educational animations.
+
+STEP 9 — SYNCHRONIZE
+
+Align visual segments with the actual narration duration.
+
+STEP 10 — ENCODE
+
+Produce the final compressed MP4 using quality-conscious settings.
+
+STEP 11 — VERIFY
+
+Check video integrity, audio quality, pronunciation, text readability, and synchronization.
+
+STEP 12 — EXPORT
+
+Provide the actual downloadable compressed MP4.
+
+Do not report a video as completed if only a script, slideshow, or audio file exists.
+
+A finished video means a real playable MP4 with narration and visuals.
+
+---
+
+# PART 26 — QUALITY ASSURANCE
+
+Before delivery, verify:
+
+## EDUCATIONAL QUALITY
+
+- The video corresponds to the correct module.
+- Major learning objectives are covered.
+- Grammar explanations are accurate.
+- Vocabulary is relevant.
+- Examples are natural.
+- Important exceptions are addressed.
+- The content matches the intended CEFR level.
+
+## NARRATION QUALITY
+
+- English explanations are in English.
+- The narration has the intended Ukrainian-accented character when supported.
+- Ukrainian examples sound authentically Ukrainian.
+- Audio is clear.
+- No narration is missing.
+- No abrupt cutoffs.
+- No inappropriate language switching.
+
+## VISUAL QUALITY
+
+- Ukrainian Cyrillic text is correct.
+- Text remains sharp after compression.
+- Tables are legible.
+- Diagrams match the explanation.
+- Highlighted grammatical endings are correct.
+- Slides are not overcrowded.
+- Animations are synchronized.
+
+## TECHNICAL QUALITY
+
+- MP4 opens successfully.
+- Audio plays correctly.
+- Audio and video are synchronized.
+- Duration is correct.
+- Resolution is correct.
+- Codec is recorded correctly.
+- File size is measured.
+- Download works.
+- The file is not corrupted.
+
+## APPLICATION INTEGRITY
+
+- No app files modified.
+- No lesson data modified.
+- No media assets deleted or replaced.
+- No CSS changed.
+- No dependencies changed.
+- No GitHub operations performed.
+- No temporary files written into the repository.
+
+Where possible, verify application file checksums before and after production.
+
+---
+
+# PART 27 — PILOT PRODUCTION AND APPROVAL
+
+DO NOT immediately begin producing all 29 videos.
+
+Complete the following stages in order.
+
+## STAGE A — CAPABILITY CHECK
+
+Verify:
+
+- Course content access.
+- Voice generation.
+- Native Ukrainian pronunciation capability.
+- Slide rendering.
+- MP4 encoding.
+- File export.
+- Isolated temporary storage.
+
+Report any limitations.
+
+## STAGE B — VOICE PREVIEW
+
+Create the bilingual narration test.
+
+Provide playable candidate audio samples.
+
+Wait for my approval of the narrator.
+
+## STAGE C — COMPLETE PILOT
+
+After voice approval, produce one complete compressed explainer video for the first available A0 module.
+
+The pilot must include:
+
+- Full academic explanations.
+- Clear visual slides.
+- Native Ukrainian pronunciation.
+- Natural English narration.
+- Accurate grammar demonstrations.
+- Compressed MP4 output.
+- Verified downloadable file.
+
+Report the final:
+
+- Module ID.
+- Duration.
+- Resolution.
+- Video codec.
+- Audio codec.
+- File size.
+- Whether the video was verified.
+- Whether the application remains unchanged.
+
+Wait for my approval before expanding production.
+
+## STAGE D — REMAINING MODULES
+
+After pilot approval, produce the remaining modules in manageable batches.
+
+Avoid unnecessary simultaneous rendering.
+
+Respect actual execution, storage, quota, and context limits.
+
+Complete and export each batch before beginning the next.
+
+Do not claim that background processing will continue after the current operation unless that capability is actually supported.
+
+---
+
+# PART 28 — EXPECTED OUTPUT REPORT
+
+For each completed module, report:
+
+MODULE ID:
+MODULE TITLE:
+CEFR LEVEL:
+VIDEO DURATION:
+RESOLUTION:
+VIDEO CODEC:
+ENCODING SETTINGS:
+AUDIO CODEC:
+AUDIO BITRATE:
+FINAL MP4 SIZE:
+SUBTITLE FILE:
+TRANSCRIPT FILE:
+QUALITY CHECK:
+DOWNLOAD AVAILABILITY:
+APPLICATION MODIFICATIONS: NONE, IF VERIFIED.
+
+Also report any unresolved pronunciation or compatibility issues.
+
+Do not invent successful quality checks.
+
+Do not claim that a file is downloadable without confirming delivery.
+
+---
+
+# FINAL DIRECTIVE
+
+Create a complete professional production workflow for standalone Slovo UA educational explainer videos covering every existing Course module.
+
+I want:
+
+1. Comprehensive academic Ukrainian grammar lessons.
+2. A native Ukrainian instructor teaching IN ENGLISH.
+3. A natural, subtle Ukrainian accent in the English narration.
+4. Authentic native Ukrainian pronunciation for all Ukrainian examples.
+5. Professional educational presentation slides.
+6. Accurate grammar tables, diagrams, and sentence breakdowns.
+7. Clear and engaging teaching for native English speakers.
+8. High-quality, already-compressed MP4 files.
+9. Balanced HEVC compression with approximately CRF 26 as a starting point.
+10. Sharp, readable Cyrillic text.
+11. Clear AAC narration.
+12. Reasonable file sizes suitable for offline mobile applications.
+13. Actual downloadable files for my Windows desktop.
+14. Strictly temporary output storage outside the app project.
+15. ABSOLUTELY NO MODIFICATIONS TO MY EXISTING SLOVO UA APPLICATION.
+
+FIRST verify the production capabilities.
+
+SECOND generate and present candidate bilingual narrator audio samples.
+
+THIRD wait for my narrator approval.
+
+FOURTH produce one complete, compressed A0 pilot video.
+
+FIFTH wait for my approval of the finished video.
+
+ONLY THEN proceed with the remaining Course modules in manageable batches.
+
+Do not modify the app, GitHub integration, application assets, or course content under any circumstances.
+
+The deliverable is a real, independently playable, appropriately compressed educational MP4 video — NOT application code, NOT a mock video player, NOT a slideshow without narration, and NOT an unrendered storyboard.

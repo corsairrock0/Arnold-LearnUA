@@ -29,6 +29,18 @@ import {
   type StructuredCourseLesson,
 } from './courseVisualComponents';
 import {
+  loadCourseAssessmentStore,
+  saveCourseAssessmentStore,
+  getModuleAssessmentState,
+  validateCourseConstructedAnswer,
+  buildDetailedFeedbackHtml,
+  calculateExamScore,
+  type EnrichedCourseQuestion,
+  type EnrichedPracticeDrill,
+  type EnrichedInlineCheck,
+  type StageAttemptState,
+} from './courseAssessmentEngine';
+import {
   registerIdentifyHooks,
   renderIdentifyTab,
   selectIdentifyCategory,
@@ -1484,11 +1496,21 @@ export function inspectCourseWord(rawWord: string): void {
     .split(/[,/—()]/)[0]
     .replace(/[«»"“”.!?;:]/g, '')
     .trim();
-  const cleanLower = firstToken.replace(/\u0301/g, '').toLowerCase();
+  const cleanLower = firstToken.replace(/\u0301/g, '').toLowerCase().trim();
+  const cleanFull = rawWord.replace(/\u0301/g, '').toLowerCase().trim();
 
-  const matchedVocab = FREQ_6000_DB.find(
-    (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === cleanLower
-  );
+  const matchedVocab =
+    FREQ_6000_DB.find(
+      (w) => w.ru.replace(/\u0301/g, '').toLowerCase().trim() === cleanFull
+    ) ||
+    FREQ_6000_DB.find((w) => {
+      const wClean = w.ru.replace(/\u0301/g, '').toLowerCase().trim();
+      const wLemma = wClean
+        .replace(/\s*\(.*?\)/g, '')
+        .split(/\s*[\/,]\s*/)[0]
+        .trim();
+      return wClean === cleanLower || wLemma === cleanLower;
+    });
 
   if (matchedVocab) {
     inspectWordDeep(matchedVocab.rank, true, true);
@@ -1496,9 +1518,14 @@ export function inspectCourseWord(rawWord: string): void {
   }
 
   const m = COURSE_MODULES.find((x) => x.id === activeModId) || COURSE_MODULES[0];
-  const modVocabTuple = m.vocab.find(
-    ([uk]) => uk.replace(/\u0301/g, '').toLowerCase() === cleanLower
-  );
+  const modVocabTuple = m.vocab.find(([uk]) => {
+    const uClean = uk.replace(/\u0301/g, '').toLowerCase().trim();
+    const uLemma = uClean
+      .replace(/\s*\(.*?\)/g, '')
+      .split(/\s*[\/,]\s*/)[0]
+      .trim();
+    return uClean === cleanFull || uClean === cleanLower || uLemma === cleanLower;
+  });
 
   const synthItem: VocabItem = {
     rank: 1,
@@ -1555,10 +1582,23 @@ export function addModuleVocabToFSRS(modId: string): void {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
   let added = 0;
   for (const [uk] of m.vocab) {
-    const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase();
-    const matched = FREQ_6000_DB.find(
-      (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === cleanTarget
-    );
+    const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase().trim();
+    const lemmaTarget = cleanTarget
+      .replace(/\s*\(.*?\)/g, '')
+      .split(/\s*[\/,]\s*/)[0]
+      .trim();
+    const matched =
+      FREQ_6000_DB.find(
+        (w) => w.ru.replace(/\u0301/g, '').toLowerCase().trim() === cleanTarget
+      ) ||
+      FREQ_6000_DB.find((w) => {
+        const wClean = w.ru.replace(/\u0301/g, '').toLowerCase().trim();
+        const wLemma = wClean
+          .replace(/\s*\(.*?\)/g, '')
+          .split(/\s*[\/,]\s*/)[0]
+          .trim();
+        return wClean === lemmaTarget || wLemma === lemmaTarget;
+      });
     if (matched && !db.cards.some((c) => c.rank === matched.rank)) {
       db.cards.push(createCardRecord(matched.rank));
       added++;
@@ -1812,10 +1852,7 @@ export function renderActiveModule(): void {
 
           <!-- I. PRACTICE IT (INLINE KNOWLEDGE CHECKS) -->
           <div id="sec-inline-check" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>✏️ I. Practice It Right Now (Quick Interactive Checks)</span>
-            </div>
-            ${sl.embeddedChecks.map((kc) => renderKnowledgeCheck(kc, m.id)).join('')}
+            ${renderInlineKnowledgeCheckSection(m, sl)}
           </div>
 
           <!-- J. IN REAL LIFE (DIALOGUE) -->
@@ -1977,54 +2014,9 @@ export function renderActiveModule(): void {
         </div>`;
     }
   } else if (activeStage === 1) {
-    box.innerHTML =
-      m.cfu
-        .map(
-          (c, idx) => `
-      <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-        <div style="font-weight:700; margin-bottom:8px;">Check ${idx + 1}: ${c.q}</div>
-        ${c.opts
-          .map(
-            (opt, oIdx) => `
-          <button class="option-btn" onclick="handleCourseOptionTap(this, ${oIdx === c.ans}, 'cfu-exp-${idx}', '${m.id}:cfu:${idx}')">${opt}</button>
-        `
-          )
-          .join('')}
-        <div id="cfu-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-          <b>💡 Why:</b> ${c.exp}
-          <button class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px; margin-left:8px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(c.exp)}', 'en')">🗣️ Hear</button>
-        </div>
-      </div>
-    `
-        )
-        .join('') +
-      `<button class="btn" style="width:100%;" onclick="selectCourseStage(2)">Next: Stage 3 — Guided Practice Drills →</button>`;
+    box.innerHTML = renderStage2CheckView(m);
   } else if (activeStage === 2) {
-    box.innerHTML =
-      m.practice
-        .map(
-          (p, idx) => `
-      <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-        <div style="font-weight:700; margin-bottom:8px;">Practice ${idx + 1}: ${p.prompt}</div>
-        ${p.opts
-          .map(
-            (opt, oIdx) => `
-          <button class="option-btn" onclick="handlePracticeOptionTap(this, ${oIdx === p.ans}, 'prac-exp-${idx}', '${m.id}:prac:${idx}', '${escapeSingleQuotes(p.audioUk)}')">${opt}</button>
-        `
-          )
-          .join('')}
-        <div id="prac-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--accent);">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-            <div style="font-weight:700; color:var(--accent); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 ${p.audioUk}</div>
-            <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(`${p.audioUk}. ${p.exp}`)}', 'uk')">🗣️ Hear Explanation</button>
-          </div>
-          <div><b>💡 Explanation:</b> ${p.exp}</div>
-        </div>
-      </div>
-    `
-        )
-        .join('') +
-      `<button class="btn" style="width:100%;" onclick="selectCourseStage(3)">Next: Stage 4 — Essential Vocabulary (${m.vocab.length} Words) →</button>`;
+    box.innerHTML = renderStage3PracticeView(m);
   } else if (activeStage === 3) {
     box.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
@@ -2071,51 +2063,962 @@ export function renderActiveModule(): void {
           </div>`;
         })
         .join('')}
-      <button class="btn" style="width:100%; margin-top:12px;" onclick="selectCourseStage(4)">Start Stage 5 — Module Mastery Exam →</button>
+      <button class="btn" style="width:100%; margin-top:12px;" onclick="selectCourseStage(4)">Start Stage 5 — Module Mastery Exam (${m.exam.length} Questions) →</button>
     `;
   } else {
-    const modScores = moduleExamAnswers.get(m.id) || new Map<number, boolean>();
-    const correctCount = Array.from(modScores.values()).filter(Boolean).length;
-    const passThreshold = Math.ceil(m.exam.length * 0.8);
-    const isPassed = db.passedMods.includes(m.id);
+    box.innerHTML = renderStage5ExamView(m);
+  }
+}
 
-    box.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-sm);">
-        <div style="font-size:13.5px; color:var(--text);">Answer at least <b>${passThreshold} / ${m.exam.length}</b> questions accurately to master <b>Module ${m.id}</b>.</div>
-        <span class="tag" id="exam-score-pill" style="background:${isPassed ? 'var(--success-container)' : 'var(--accent-container)'}; color:${isPassed ? 'var(--success-on-container)' : 'var(--accent-on-container)'}; font-weight:800;">
-          Score: ${correctCount} / ${m.exam.length} ${isPassed ? '• ✓ Mastered' : ''}
+// ============================================================================
+// 4B. COURSE ASSESSMENT ENGINE UI, NAVIGATION, PERSISTENCE & GRADING
+// ============================================================================
+let courseAssessmentStore = loadCourseAssessmentStore();
+let singleFocusModeByKey: Record<string, boolean> = {};
+let pendingResetConfirmKey: string | null = null;
+let pendingExamSubmitModId: string | null = null;
+
+function persistAssessmentStore(): void {
+  saveCourseAssessmentStore(courseAssessmentStore);
+}
+
+function getStageAttempt(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam'
+): StageAttemptState {
+  const modState = getModuleAssessmentState(courseAssessmentStore, modId);
+  return modState[stageKey];
+}
+
+function computeStageStats(
+  items: Array<{ ans?: number; correctIndex?: number }>,
+  attempt: StageAttemptState
+) {
+  const total = items.length;
+  let answered = 0;
+  let correct = 0;
+  let incorrect = 0;
+
+  for (let i = 0; i < total; i++) {
+    const sel = attempt.selectedOptions[i];
+    const ans =
+      typeof items[i].ans === 'number'
+        ? items[i].ans!
+        : typeof items[i].correctIndex === 'number'
+          ? items[i].correctIndex!
+          : 0;
+    if (typeof sel === 'number') {
+      answered++;
+      if (sel === ans) {
+        correct++;
+      } else {
+        incorrect++;
+      }
+    }
+  }
+
+  return {
+    total,
+    answered,
+    unanswered: total - answered,
+    correct,
+    incorrect,
+    percentAnswered: total > 0 ? Math.round((answered / total) * 100) : 0,
+  };
+}
+
+function renderQuestionJumpStrip(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam',
+  items: Array<{ ans?: number; correctIndex?: number }>,
+  attempt: StageAttemptState,
+  revealCorrectness: boolean
+): string {
+  const buttons = items
+    .map((item, idx) => {
+      const sel = attempt.selectedOptions[idx];
+      const isAnswered = typeof sel === 'number';
+      const ans =
+        typeof item.ans === 'number'
+          ? item.ans!
+          : typeof item.correctIndex === 'number'
+            ? item.correctIndex!
+            : 0;
+      const isCurrent = attempt.currentIndex === idx;
+
+      let bg = 'var(--surface-1)';
+      let color = 'var(--text-secondary)';
+      let border = isCurrent ? '2px solid var(--accent)' : '1px solid var(--border-subtle)';
+      let suffix = '';
+
+      if (isAnswered) {
+        if (revealCorrectness) {
+          if (sel === ans) {
+            bg = 'var(--success-container)';
+            color = 'var(--success-on-container)';
+            suffix = '✓';
+          } else {
+            bg = 'var(--danger-container, #fee2e2)';
+            color = 'var(--danger, #dc2626)';
+            suffix = '✗';
+          }
+        } else {
+          bg = 'var(--accent-container)';
+          color = 'var(--accent-on-container)';
+          suffix = '•';
+        }
+      }
+
+      return `<button type="button" onclick="jumpToAssessmentQuestion('${modId}', '${stageKey}', ${idx})" style="min-width:34px; height:28px; padding:0 6px; border-radius:var(--radius-xs); font-size:11.5px; font-weight:800; cursor:pointer; background:${bg}; color:${color}; border:${border};">${idx + 1}${suffix}</button>`;
+    })
+    .join('');
+
+  return `
+    <div style="display:flex; flex-wrap:wrap; gap:5px; max-height:132px; overflow-y:auto; padding:8px; background:var(--surface-1); border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-top:8px;">
+      ${buttons}
+    </div>
+  `;
+}
+
+function renderInlineKnowledgeCheckSection(
+  m: CourseModule,
+  sl: StructuredCourseLesson
+): string {
+  const attempt = getStageAttempt(m.id, 'inlineChecks');
+  const checks = sl.embeddedChecks as EnrichedInlineCheck[];
+  const stats = computeStageStats(checks, attempt);
+  const resetKey = `${m.id}:inlineChecks`;
+
+  const visibleIndices = checks
+    .map((_, idx) => idx)
+    .filter((idx) => {
+      const sel = attempt.selectedOptions[idx];
+      if (attempt.filterMode === 'unanswered') return typeof sel !== 'number';
+      if (attempt.filterMode === 'incorrect')
+        return typeof sel === 'number' && sel !== checks[idx].correctIndex;
+      return true;
+    });
+
+  return `
+    <div class="vc-section-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>✏️ I. Practice It Right Now (Quick Interactive Checks — ${checks.length} Questions)</span>
+      <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
+        Answered: ${stats.answered} / ${stats.total} • Correct: ${stats.correct} / ${stats.total}
+      </span>
+    </div>
+    <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="stage-pill ${attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'incorrect')">Missed (${stats.incorrect})</button>
+        </div>
+        ${
+          pendingResetConfirmKey === resetKey
+            ? `<div style="display:flex; gap:6px; align-items:center;">
+                <span style="font-size:12px; color:var(--danger); font-weight:700;">Clear all ${stats.answered} answers?</span>
+                <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'inlineChecks')">Yes, Reset</button>
+                <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>
+              </div>`
+            : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'inlineChecks')">🔄 Reset Checks</button>`
+        }
+      </div>
+    </div>
+    ${
+      visibleIndices.length === 0
+        ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:16px; font-weight:700; color:var(--text-secondary);">No questions match the current filter (${attempt.filterMode}). <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'all')">Show All ${stats.total} Questions</button></div>`
+        : visibleIndices
+            .map((idx) =>
+              renderKnowledgeCheck(
+                checks[idx],
+                m.id,
+                idx,
+                checks.length,
+                attempt.selectedOptions[idx],
+                attempt.textAnswers?.[idx]
+              )
+            )
+            .join('')
+    }
+  `;
+}
+
+function renderStage2CheckView(m: CourseModule): string {
+  const attempt = getStageAttempt(m.id, 'cfu');
+  const questions = m.cfu as EnrichedCourseQuestion[];
+  const stats = computeStageStats(questions, attempt);
+  const focusKey = `${m.id}:cfu`;
+  const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
+  const resetKey = `${m.id}:cfu`;
+  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, questions.length - 1));
+  attempt.currentIndex = curIdx;
+
+  let visibleIndices = questions.map((_, idx) => idx);
+  if (isSingleFocus) {
+    visibleIndices = [curIdx];
+  } else if (attempt.filterMode === 'unanswered') {
+    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+  } else if (attempt.filterMode === 'incorrect') {
+    visibleIndices = visibleIndices.filter(
+      (idx) =>
+        typeof attempt.selectedOptions[idx] === 'number' &&
+        attempt.selectedOptions[idx] !== questions[idx].ans
+    );
+  }
+
+  const headerHtml = `
+    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+        <div>
+          <b style="font-size:15px; color:var(--text);">Stage 2 — Knowledge Check (${stats.total} Questions)</b>
+          <div style="font-size:12.5px; color:var(--text-secondary);">Question ${curIdx + 1} of ${stats.total} • Answered: <b>${stats.answered}/${stats.total}</b> • Unanswered: <b>${stats.unanswered}</b></div>
+        </div>
+        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
+          Correct: ${stats.correct} / ${stats.total} (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
         </span>
       </div>
-      ${m.exam
-        .map(
-          (qItem, idx) => `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="font-weight:700; margin-bottom:8px;">Question ${idx + 1}: ${qItem.q}</div>
-          ${qItem.opts
-            .map(
-              (opt, oIdx) => `
-            <button class="option-btn" onclick="handleExamAnswer(this, ${oIdx === qItem.ans}, '${m.id}', ${idx}, 'exam-exp-${idx}')">${opt}</button>
-          `
-            )
-            .join('')}
-          <div id="exam-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-            <b>💡 Explanation:</b> ${qItem.exp}
-            <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px; margin-left:8px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(qItem.exp)}', 'en')">🗣️ Hear</button>
+      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
+        <div style="height:100%; width:${stats.percentAnswered}%; background:var(--accent); transition:width 0.2s ease;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'cfu')">Single Focus (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'incorrect')">Missed (${stats.incorrect})</button>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'cfu', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'cfu', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+          ${
+            pendingResetConfirmKey === resetKey
+              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset ${stats.answered} answers?</span>
+                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'cfu')">Confirm Reset</button>
+                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'cfu')">🔄 Reset</button>`
+          }
+        </div>
+      </div>
+      ${renderQuestionJumpStrip(m.id, 'cfu', questions, attempt, true)}
+    </div>
+  `;
+
+  const cardsHtml =
+    visibleIndices.length === 0
+      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No questions match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'cfu', 'all')">Show All ${stats.total} Questions</button></div>`
+      : visibleIndices
+          .map((idx) => {
+            const c = questions[idx];
+            const savedSel = attempt.selectedOptions[idx];
+            const hasSaved = typeof savedSel === 'number';
+            const isCorrect = hasSaved && savedSel === c.ans;
+            const savedText = attempt.textAnswers?.[idx] || '';
+
+            const textBoxHtml =
+              c.inputMode === 'text'
+                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                    <input
+                      type="text"
+                      id="cfu-text-input-${m.id}-${idx}"
+                      class="input-box"
+                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
+                      placeholder="${escapeSingleQuotes(c.hintUk ? `Type answer (Hint: ${c.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      value="${escapeSingleQuotes(savedText)}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'cfu', ${idx});}"
+                    />
+                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'cfu', ${idx})">✍️ Check Typed Answer</button>
+                  </div>`
+                : '';
+
+            const feedbackHtml = buildDetailedFeedbackHtml({
+              isCorrect: Boolean(isCorrect),
+              chosenIndex: hasSaved ? savedSel! : c.ans,
+              correctIndex: c.ans,
+              options: c.opts,
+              distractorNotes: c.distractorNotes,
+              explanation: c.exp,
+              audioUk: c.audioUk,
+            });
+
+            return `
+              <div class="card" id="cfu-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Check ${idx + 1} of ${stats.total}</span>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    ${c.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${c.topic}</span>` : ''}
+                    ${c.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${c.difficultyTier}/5</span>` : ''}
+                    ${c.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">🔊 Audio</button>` : ''}
+                  </div>
+                </div>
+                <div style="font-weight:700; margin-bottom:8px;">Check ${idx + 1}: ${c.q}</div>
+                ${textBoxHtml}
+                ${c.opts
+                  .map((opt, oIdx) => {
+                    const stateClass = hasSaved
+                      ? oIdx === c.ans
+                        ? 'correct'
+                        : oIdx === savedSel
+                          ? 'wrong'
+                          : ''
+                      : '';
+                    return `
+                      <button class="option-btn ${stateClass}" onclick="handleCourseOptionTap(this, ${oIdx === c.ans}, 'cfu-exp-${idx}', '${m.id}:cfu:${idx}', ${oIdx})">${opt}</button>
+                    `;
+                  })
+                  .join('')}
+                <div id="cfu-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
+                  <div id="cfu-exp-body-${idx}">${feedbackHtml}</div>
+                  <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
+                    ${c.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">🔊 Hear Ukrainian</button>` : ''}
+                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(c.exp)}', 'en')">🗣️ Hear Explanation</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+  return (
+    headerHtml +
+    cardsHtml +
+    `<button class="btn" style="width:100%;" onclick="selectCourseStage(2)">Next: Stage 3 — Guided Practice Drills (${m.practice.length} Questions) →</button>`
+  );
+}
+
+function renderStage3PracticeView(m: CourseModule): string {
+  const attempt = getStageAttempt(m.id, 'practice');
+  const drills = m.practice as EnrichedPracticeDrill[];
+  const stats = computeStageStats(drills, attempt);
+  const focusKey = `${m.id}:practice`;
+  const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
+  const resetKey = `${m.id}:practice`;
+  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, drills.length - 1));
+  attempt.currentIndex = curIdx;
+
+  let visibleIndices = drills.map((_, idx) => idx);
+  if (isSingleFocus) {
+    visibleIndices = [curIdx];
+  } else if (attempt.filterMode === 'unanswered') {
+    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+  } else if (attempt.filterMode === 'incorrect') {
+    visibleIndices = visibleIndices.filter(
+      (idx) =>
+        typeof attempt.selectedOptions[idx] === 'number' &&
+        attempt.selectedOptions[idx] !== drills[idx].ans
+    );
+  }
+
+  const headerHtml = `
+    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+        <div>
+          <b style="font-size:15px; color:var(--text);">Stage 3 — Guided Practice Drills (${stats.total} Questions)</b>
+          <div style="font-size:12.5px; color:var(--text-secondary);">Question ${curIdx + 1} of ${stats.total} • Answered: <b>${stats.answered}/${stats.total}</b> • Unanswered: <b>${stats.unanswered}</b></div>
+        </div>
+        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
+          Correct: ${stats.correct} / ${stats.total} (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
+        </span>
+      </div>
+      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
+        <div style="height:100%; width:${stats.percentAnswered}%; background:var(--accent); transition:width 0.2s ease;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'practice')">Single Focus (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'incorrect')">Missed (${stats.incorrect})</button>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'practice', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'practice', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+          ${
+            pendingResetConfirmKey === resetKey
+              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset ${stats.answered} answers?</span>
+                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'practice')">Confirm Reset</button>
+                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'practice')">🔄 Reset</button>`
+          }
+        </div>
+      </div>
+      ${renderQuestionJumpStrip(m.id, 'practice', drills, attempt, true)}
+    </div>
+  `;
+
+  const cardsHtml =
+    visibleIndices.length === 0
+      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No practice drills match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'practice', 'all')">Show All ${stats.total} Drills</button></div>`
+      : visibleIndices
+          .map((idx) => {
+            const p = drills[idx];
+            const savedSel = attempt.selectedOptions[idx];
+            const hasSaved = typeof savedSel === 'number';
+            const isCorrect = hasSaved && savedSel === p.ans;
+            const savedText = attempt.textAnswers?.[idx] || '';
+
+            const textBoxHtml =
+              p.inputMode === 'text'
+                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                    <input
+                      type="text"
+                      id="prac-text-input-${m.id}-${idx}"
+                      class="input-box"
+                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
+                      placeholder="${escapeSingleQuotes(p.hintUk ? `Type answer (Hint: ${p.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      value="${escapeSingleQuotes(savedText)}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'practice', ${idx});}"
+                    />
+                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'practice', ${idx})">✍️ Check Typed Answer</button>
+                  </div>`
+                : '';
+
+            const feedbackHtml = buildDetailedFeedbackHtml({
+              isCorrect: Boolean(isCorrect),
+              chosenIndex: hasSaved ? savedSel! : p.ans,
+              correctIndex: p.ans,
+              options: p.opts,
+              distractorNotes: p.distractorNotes,
+              explanation: p.exp,
+              audioUk: p.audioUk,
+            });
+
+            return `
+              <div class="card" id="prac-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Practice ${idx + 1} of ${stats.total}</span>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    ${p.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${p.topic}</span>` : ''}
+                    ${p.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${p.difficultyTier}/5</span>` : ''}
+                    ${p.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 Audio</button>` : ''}
+                  </div>
+                </div>
+                <div style="font-weight:700; margin-bottom:8px;">Practice ${idx + 1}: ${p.prompt}</div>
+                ${textBoxHtml}
+                ${p.opts
+                  .map((opt, oIdx) => {
+                    const stateClass = hasSaved
+                      ? oIdx === p.ans
+                        ? 'correct'
+                        : oIdx === savedSel
+                          ? 'wrong'
+                          : ''
+                      : '';
+                    return `
+                      <button class="option-btn ${stateClass}" onclick="handlePracticeOptionTap(this, ${oIdx === p.ans}, 'prac-exp-${idx}', '${m.id}:prac:${idx}', '${escapeSingleQuotes(p.audioUk)}', ${oIdx})">${opt}</button>
+                    `;
+                  })
+                  .join('')}
+                <div id="prac-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--accent);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                    <div style="font-weight:700; color:var(--accent); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 ${p.audioUk}</div>
+                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(`${p.audioUk}. ${p.exp}`)}', 'uk')">🗣️ Hear Explanation</button>
+                  </div>
+                  <div id="prac-exp-body-${idx}">${feedbackHtml}</div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+  return (
+    headerHtml +
+    cardsHtml +
+    `<button class="btn" style="width:100%;" onclick="selectCourseStage(3)">Next: Stage 4 — Essential Vocabulary (${m.vocab.length} Words) →</button>`
+  );
+}
+
+function renderStage5ExamView(m: CourseModule): string {
+  const attempt = getStageAttempt(m.id, 'exam');
+  const examQuestions = m.exam as EnrichedCourseQuestion[];
+  const stats = computeStageStats(examQuestions, attempt);
+  const scoreSummary = calculateExamScore(examQuestions, attempt.selectedOptions);
+  const isSubmitted = Boolean(attempt.submitted);
+  const isPassed = db.passedMods.includes(m.id) || (isSubmitted && scoreSummary.passed);
+  const focusKey = `${m.id}:exam`;
+  const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
+  const resetKey = `${m.id}:exam`;
+  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, examQuestions.length - 1));
+  attempt.currentIndex = curIdx;
+
+  let visibleIndices = examQuestions.map((_, idx) => idx);
+  if (isSingleFocus) {
+    visibleIndices = [curIdx];
+  } else if (attempt.filterMode === 'unanswered') {
+    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+  } else if (attempt.filterMode === 'incorrect' && isSubmitted) {
+    visibleIndices = visibleIndices.filter(
+      (idx) => attempt.selectedOptions[idx] !== examQuestions[idx].ans
+    );
+  }
+
+  const submitConfirmBanner =
+    pendingExamSubmitModId === m.id && !isSubmitted
+      ? `<div style="margin-top:10px; padding:12px; background:var(--surface-1); border:2px solid var(--accent); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div style="font-size:13px; font-weight:700; color:var(--text);">
+            ⚠️ You have <b>${stats.unanswered} unanswered question(s)</b> out of ${stats.total}. Submit now and grade all ${stats.total} questions?
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-success" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="submitModuleExam('${m.id}', true)">✅ Confirm & Grade Exam</button>
+            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'unanswered')">🔍 Review Unanswered (${stats.unanswered})</button>
+            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="cancelSubmitModuleExam()">Cancel</button>
+          </div>
+        </div>`
+      : '';
+
+  const postSubmitSummaryBanner = isSubmitted
+    ? `<div style="margin-top:10px; padding:12px 14px; background:${scoreSummary.passed ? 'var(--success-container)' : 'var(--surface-1)'}; color:${scoreSummary.passed ? 'var(--success-on-container)' : 'var(--text)'}; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-size:15px; font-weight:800;">
+            ${scoreSummary.passed ? '🏆 Module Exam Passed & Mastered!' : '📋 Exam Completed — Review Missed Questions Below'}
+          </div>
+          <div style="font-size:13px; margin-top:2px;">
+            Final Score: <b>${scoreSummary.correctCount} / ${scoreSummary.totalQuestions} (${scoreSummary.percentage}%)</b> • Required for Mastery: <b>${scoreSummary.passThreshold} / ${scoreSummary.totalQuestions} (80%)</b> • Missed/Unanswered: <b>${scoreSummary.totalQuestions - scoreSummary.correctCount}</b>
           </div>
         </div>
-      `
-        )
-        .join('')}
-    `;
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'incorrect')">🔍 Review Incorrect Only (${scoreSummary.totalQuestions - scoreSummary.correctCount})</button>
+          <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">Show All (${scoreSummary.totalQuestions})</button>
+        </div>
+      </div>`
+    : '';
+
+  const headerHtml = `
+    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+        <div>
+          <b style="font-size:15px; color:var(--text);">Stage 5 — Module ${m.id} Mastery Exam (${stats.total} Questions)</b>
+          <div style="font-size:12.5px; color:var(--text-secondary);">
+            Answer at least <b>${scoreSummary.passThreshold} / ${stats.total} (80%)</b> to master <b>Module ${m.id}</b> • Question ${curIdx + 1} of ${stats.total} • Answered: <b id="exam-answered-count">${stats.answered}/${stats.total}</b> (Unanswered: <b id="exam-unanswered-count">${stats.unanswered}</b>)
+          </div>
+        </div>
+        <span class="tag" id="exam-score-pill" style="background:${isPassed ? 'var(--success-container)' : 'var(--accent-container)'}; color:${isPassed ? 'var(--success-on-container)' : 'var(--accent-on-container)'}; font-weight:800;">
+          ${
+            isSubmitted
+              ? `Score: ${scoreSummary.correctCount} / ${stats.total} (${scoreSummary.percentage}%) ${isPassed ? '• ✓ Mastered' : ''}`
+              : `Answered: ${stats.answered} / ${stats.total} ${isPassed ? '• ✓ Mastered' : '• In Progress'}`
+          }
+        </span>
+      </div>
+      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
+        <div id="exam-progress-fill" style="height:100%; width:${stats.percentAnswered}%; background:${isSubmitted && scoreSummary.passed ? 'var(--success)' : 'var(--accent)'}; transition:width 0.2s ease;"></div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'exam')">Single Focus (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          ${
+            isSubmitted
+              ? `<button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'incorrect')">Missed (${stats.total - scoreSummary.correctCount})</button>`
+              : ''
+          }
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'exam', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'exam', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+          ${
+            !isSubmitted
+              ? `<button type="button" class="btn btn-success" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="submitModuleExam('${m.id}', false)">✅ Submit Exam (${stats.answered}/${stats.total})</button>`
+              : ''
+          }
+          ${
+            pendingResetConfirmKey === resetKey
+              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset entire ${stats.total}-question exam attempt?</span>
+                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'exam')">Yes, Reset Exam</button>
+                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'exam')">🔄 ${isSubmitted ? 'Retake Exam' : 'Reset Exam'}</button>`
+          }
+        </div>
+      </div>
+      ${submitConfirmBanner}
+      ${postSubmitSummaryBanner}
+      ${renderQuestionJumpStrip(m.id, 'exam', examQuestions, attempt, isSubmitted)}
+    </div>
+  `;
+
+  const cardsHtml =
+    visibleIndices.length === 0
+      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No exam questions match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">Show All ${stats.total} Questions</button></div>`
+      : visibleIndices
+          .map((idx) => {
+            const qItem = examQuestions[idx];
+            const savedSel = attempt.selectedOptions[idx];
+            const hasSaved = typeof savedSel === 'number';
+            const isCorrect = hasSaved && savedSel === qItem.ans;
+            const savedText = attempt.textAnswers?.[idx] || '';
+
+            const textBoxHtml =
+              qItem.inputMode === 'text' && !isSubmitted
+                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                    <input
+                      type="text"
+                      id="exam-text-input-${m.id}-${idx}"
+                      class="input-box"
+                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
+                      placeholder="${escapeSingleQuotes(qItem.hintUk ? `Type answer (Hint: ${qItem.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      value="${escapeSingleQuotes(savedText)}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'exam', ${idx});}"
+                    />
+                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'exam', ${idx})">✍️ Record Typed Answer</button>
+                  </div>`
+                : '';
+
+            const feedbackHtml = buildDetailedFeedbackHtml({
+              isCorrect: Boolean(isCorrect),
+              chosenIndex: hasSaved ? savedSel! : -1,
+              correctIndex: qItem.ans,
+              options: qItem.opts,
+              distractorNotes: qItem.distractorNotes,
+              explanation: qItem.exp,
+              audioUk: qItem.audioUk,
+            });
+
+            return `
+              <div class="card" id="exam-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Question ${idx + 1} of ${stats.total}</span>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    ${qItem.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${qItem.topic}</span>` : ''}
+                    ${qItem.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${qItem.difficultyTier}/5</span>` : ''}
+                    ${qItem.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">🔊 Audio</button>` : ''}
+                  </div>
+                </div>
+                <div style="font-weight:700; margin-bottom:8px;">Question ${idx + 1}: ${qItem.q}</div>
+                ${textBoxHtml}
+                ${qItem.opts
+                  .map((opt, oIdx) => {
+                    let stateClass = '';
+                    let extraStyle = '';
+                    if (isSubmitted) {
+                      if (oIdx === qItem.ans) stateClass = 'correct';
+                      else if (hasSaved && oIdx === savedSel) stateClass = 'wrong';
+                    } else if (hasSaved && oIdx === savedSel) {
+                      extraStyle =
+                        'border:2px solid var(--accent); background:var(--accent-container); color:var(--accent-on-container); font-weight:800;';
+                    }
+                    return `
+                      <button class="option-btn ${stateClass}" style="${extraStyle}" onclick="handleExamAnswer(this, ${oIdx === qItem.ans}, '${m.id}', ${idx}, 'exam-exp-${idx}', ${oIdx})">${opt}</button>
+                    `;
+                  })
+                  .join('')}
+                <div id="exam-exp-${idx}" class="${isSubmitted ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid ${isCorrect ? 'var(--success)' : 'var(--danger, #dc2626)'};">
+                  ${
+                    !hasSaved && isSubmitted
+                      ? `<div style="margin-bottom:5px; color:var(--danger, #dc2626); font-weight:700;">⚠️ Unanswered Question</div>`
+                      : ''
+                  }
+                  <div id="exam-exp-body-${idx}">${feedbackHtml}</div>
+                  <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
+                    ${qItem.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">🔊 Hear Ukrainian</button>` : ''}
+                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(qItem.exp)}', 'en')">🗣️ Hear Explanation</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+  const footerSubmitHtml = !isSubmitted
+    ? `<div style="margin-top:14px; padding:14px; background:var(--surface-2); border-radius:var(--radius-md); border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="font-size:13.5px; color:var(--text);">
+          Answered <b>${stats.answered} of ${stats.total}</b> questions (${stats.unanswered} remaining). Ready to grade your Module ${m.id} Exam?
+        </div>
+        <button type="button" class="btn btn-success" style="min-height:40px; padding:8px 18px; font-size:14px;" onclick="submitModuleExam('${m.id}', false)">✅ Submit & Grade Module ${m.id} Exam (${stats.answered}/${stats.total})</button>
+      </div>`
+    : '';
+
+  return headerHtml + cardsHtml + footerSubmitHtml;
+}
+
+export function setAssessmentFilter(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam',
+  filterMode: 'all' | 'unanswered' | 'incorrect'
+): void {
+  triggerHaptic('light');
+  const attempt = getStageAttempt(modId, stageKey);
+  attempt.filterMode = filterMode;
+  singleFocusModeByKey[`${modId}:${stageKey}`] = false;
+  pendingExamSubmitModId = null;
+  persistAssessmentStore();
+  renderActiveModule();
+}
+
+export function toggleAssessmentSingleFocus(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam'
+): void {
+  triggerHaptic('light');
+  const key = `${modId}:${stageKey}`;
+  singleFocusModeByKey[key] = !singleFocusModeByKey[key];
+  persistAssessmentStore();
+  renderActiveModule();
+}
+
+export function jumpToAssessmentQuestion(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam',
+  qIdx: number
+): void {
+  triggerHaptic('light');
+  const attempt = getStageAttempt(modId, stageKey);
+  attempt.currentIndex = qIdx;
+  persistAssessmentStore();
+
+  const key = `${modId}:${stageKey}`;
+  if (singleFocusModeByKey[key]) {
+    renderActiveModule();
+    return;
   }
+
+  renderActiveModule();
+  const prefix =
+    stageKey === 'cfu'
+      ? 'cfu-card'
+      : stageKey === 'practice'
+        ? 'prac-card'
+        : stageKey === 'exam'
+          ? 'exam-card'
+          : 'inline-kc-card';
+  const cardEl = document.getElementById(`${prefix}-${modId}-${qIdx}`);
+  if (cardEl) {
+    cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+export function stepAssessmentQuestion(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam',
+  delta: number
+): void {
+  triggerHaptic('light');
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const total =
+    stageKey === 'cfu'
+      ? m.cfu.length
+      : stageKey === 'practice'
+        ? m.practice.length
+        : stageKey === 'exam'
+          ? m.exam.length
+          : m.structuredLesson?.embeddedChecks.length || 0;
+  const attempt = getStageAttempt(modId, stageKey);
+  const nextIdx = Math.min(Math.max(0, (attempt.currentIndex || 0) + delta), Math.max(0, total - 1));
+  jumpToAssessmentQuestion(modId, stageKey, nextIdx);
+}
+
+export function requestResetAssessmentStage(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam'
+): void {
+  triggerHaptic('light');
+  pendingResetConfirmKey = `${modId}:${stageKey}`;
+  renderActiveModule();
+}
+
+export function cancelResetAssessmentStage(): void {
+  triggerHaptic('light');
+  pendingResetConfirmKey = null;
+  renderActiveModule();
+}
+
+export function confirmResetAssessmentStage(
+  modId: string,
+  stageKey: 'inlineChecks' | 'cfu' | 'practice' | 'exam'
+): void {
+  triggerHaptic('heavy');
+  const modState = getModuleAssessmentState(courseAssessmentStore, modId);
+  modState[stageKey] = {
+    selectedOptions: {},
+    textAnswers: {},
+    submitted: false,
+    currentIndex: 0,
+    filterMode: 'all',
+  };
+  if (stageKey === 'exam') {
+    moduleExamAnswers.delete(modId);
+  }
+  pendingResetConfirmKey = null;
+  pendingExamSubmitModId = null;
+  persistAssessmentStore();
+  renderActiveModule();
+}
+
+export function handleInlineCheckOption(
+  btnEl: HTMLElement,
+  modId: string,
+  qIdx: number,
+  optIdx: number
+): void {
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const checks = (m.structuredLesson?.embeddedChecks || []) as EnrichedInlineCheck[];
+  const kc = checks[qIdx];
+  if (!kc) return;
+
+  const isCorrect = optIdx === kc.correctIndex;
+  const attempt = getStageAttempt(modId, 'inlineChecks');
+  attempt.selectedOptions[qIdx] = optIdx;
+  attempt.currentIndex = qIdx;
+  persistAssessmentStore();
+
+  const expId = `vc-kc-exp-${modId}-${kc.id}`;
+  const quizKey = `${modId}:inline-kc:${kc.id}`;
+  handlePracticeOptionTap(btnEl, isCorrect, expId, quizKey, kc.audioUk || '', optIdx);
+  renderActiveModule();
+}
+
+export function submitInlineCheckText(modId: string, qIdx: number): void {
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const checks = (m.structuredLesson?.embeddedChecks || []) as EnrichedInlineCheck[];
+  const kc = checks[qIdx];
+  if (!kc) return;
+
+  const inputEl = document.getElementById(
+    `inline-kc-input-${modId}-${qIdx}`
+  ) as HTMLInputElement | null;
+  const typed = inputEl ? inputEl.value.trim() : '';
+  if (!typed) return;
+
+  const accepted = [
+    ...(kc.acceptedTextAnswers || []),
+    ...(kc.acceptedAnswersUk || []),
+    ...(kc.expectedAnswerUk ? [kc.expectedAnswerUk] : []),
+    kc.options[kc.correctIndex],
+  ].filter(Boolean);
+  const isCorrect = validateCourseConstructedAnswer(typed, accepted);
+  const attempt = getStageAttempt(modId, 'inlineChecks');
+  if (!attempt.textAnswers) attempt.textAnswers = {};
+  attempt.textAnswers[qIdx] = typed;
+  attempt.selectedOptions[qIdx] = isCorrect
+    ? kc.correctIndex
+    : (kc.correctIndex + 1) % kc.options.length;
+  attempt.currentIndex = qIdx;
+  persistAssessmentStore();
+
+  if (isCorrect) {
+    triggerHaptic('heavy');
+    const quizKey = `${modId}:inline-kc:${kc.id}`;
+    if (!completedQuizKeys.has(quizKey)) {
+      completedQuizKeys.add(quizKey);
+      db.xp += 10;
+      saveDB();
+    }
+    if (kc.audioUk) speakUkrainian(kc.audioUk);
+  } else {
+    triggerHaptic('light');
+  }
+  renderActiveModule();
+}
+
+export function submitStageAssessmentText(
+  modId: string,
+  stageKey: 'cfu' | 'practice' | 'exam',
+  qIdx: number
+): void {
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const prefix = stageKey === 'cfu' ? 'cfu' : stageKey === 'practice' ? 'prac' : 'exam';
+  const inputEl = document.getElementById(
+    `${prefix}-text-input-${modId}-${qIdx}`
+  ) as HTMLInputElement | null;
+  const typed = inputEl ? inputEl.value.trim() : '';
+  if (!typed) return;
+
+  const list =
+    stageKey === 'cfu'
+      ? (m.cfu as EnrichedCourseQuestion[])
+      : stageKey === 'practice'
+        ? (m.practice as EnrichedPracticeDrill[])
+        : (m.exam as EnrichedCourseQuestion[]);
+  const item = list[qIdx];
+  if (!item) return;
+
+  const isCorrect = validateCourseConstructedAnswer(typed, item);
+  const chosenIdx = isCorrect ? item.ans : (item.ans + 1) % item.opts.length;
+
+  const attempt = getStageAttempt(modId, stageKey);
+  if (!attempt.textAnswers) attempt.textAnswers = {};
+  attempt.textAnswers[qIdx] = typed;
+  attempt.selectedOptions[qIdx] = chosenIdx;
+  attempt.currentIndex = qIdx;
+  persistAssessmentStore();
+
+  if (stageKey === 'exam') {
+    let modMap = moduleExamAnswers.get(modId);
+    if (!modMap) {
+      modMap = new Map<number, boolean>();
+      moduleExamAnswers.set(modId, modMap);
+    }
+    modMap.set(qIdx, isCorrect);
+    triggerHaptic('light');
+    renderActiveModule();
+    return;
+  }
+
+  if (isCorrect) {
+    triggerHaptic('heavy');
+    const quizKey = `${modId}:${stageKey === 'cfu' ? 'cfu' : 'prac'}:${qIdx}`;
+    if (!completedQuizKeys.has(quizKey)) {
+      completedQuizKeys.add(quizKey);
+      db.xp += 10;
+      saveDB();
+    }
+    if (item.audioUk) speakUkrainian(item.audioUk);
+  } else {
+    triggerHaptic('light');
+  }
+  renderActiveModule();
 }
 
 export function handleCourseOptionTap(
   btnEl: HTMLElement,
   isCorrect: boolean,
   expId: string | null,
-  quizKey?: string
+  quizKey?: string,
+  optIdx?: number
 ): void {
+  if (quizKey) {
+    const parts = quizKey.split(':');
+    if (parts.length >= 3) {
+      const [modId, kind, rawIdx] = parts;
+      const qIdx = Number(rawIdx);
+      if (!Number.isNaN(qIdx) && (kind === 'cfu' || kind === 'prac')) {
+        const stageKey = kind === 'cfu' ? 'cfu' : 'practice';
+        const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+        const items =
+          stageKey === 'cfu'
+            ? (m.cfu as EnrichedCourseQuestion[])
+            : (m.practice as EnrichedPracticeDrill[]);
+        const item = items[qIdx];
+        if (item) {
+          const resolvedOptIdx =
+            typeof optIdx === 'number'
+              ? optIdx
+              : isCorrect
+                ? item.ans
+                : (item.ans + 1) % item.opts.length;
+          const attempt = getStageAttempt(modId, stageKey);
+          attempt.selectedOptions[qIdx] = resolvedOptIdx;
+          attempt.currentIndex = qIdx;
+          persistAssessmentStore();
+
+          const bodyEl = document.getElementById(
+            `${kind === 'cfu' ? 'cfu' : 'prac'}-exp-body-${qIdx}`
+          );
+          if (bodyEl) {
+            bodyEl.innerHTML = buildDetailedFeedbackHtml({
+              isCorrect,
+              chosenIndex: resolvedOptIdx,
+              correctIndex: item.ans,
+              options: item.opts,
+              distractorNotes: item.distractorNotes,
+              explanation: item.exp,
+              audioUk: item.audioUk,
+            });
+          }
+        }
+      }
+    }
+  }
+
   if (isCorrect) {
     triggerHaptic('heavy');
     btnEl.classList.add('correct');
@@ -2139,9 +3042,10 @@ export function handlePracticeOptionTap(
   isCorrect: boolean,
   expId: string,
   quizKey: string,
-  audioUk: string
+  audioUk: string,
+  optIdx?: number
 ): void {
-  handleCourseOptionTap(btnEl, isCorrect, expId, quizKey);
+  handleCourseOptionTap(btnEl, isCorrect, expId, quizKey, optIdx);
   if (isCorrect && audioUk) {
     speakUkrainian(audioUk);
   }
@@ -2152,20 +3056,73 @@ export function handleExamAnswer(
   isCorrect: boolean,
   modId: string,
   qIdx: number,
-  expId: string
+  expId: string,
+  optIdx?: number
 ): void {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const qItem = m.exam[qIdx] as EnrichedCourseQuestion | undefined;
   let modMap = moduleExamAnswers.get(modId);
   if (!modMap) {
     modMap = new Map<number, boolean>();
     moduleExamAnswers.set(modId, modMap);
   }
 
+  const resolvedOptIdx =
+    typeof optIdx === 'number'
+      ? optIdx
+      : qItem
+        ? isCorrect
+          ? qItem.ans
+          : (qItem.ans + 1) % qItem.opts.length
+        : isCorrect
+          ? 0
+          : 1;
+
+  const attempt = getStageAttempt(modId, 'exam');
+  attempt.selectedOptions[qIdx] = resolvedOptIdx;
+  attempt.currentIndex = qIdx;
+  persistAssessmentStore();
+
+  modMap.set(qIdx, isCorrect);
+
+  // During an active unsubmitted exam attempt, do NOT reveal right/wrong or explanations early.
+  if (!attempt.submitted) {
+    triggerHaptic('light');
+    const cardEl = btnEl.closest('.card');
+    if (cardEl) {
+      const allBtns = cardEl.querySelectorAll('.option-btn');
+      allBtns.forEach((b) => {
+        (b as HTMLElement).style.border = '';
+        (b as HTMLElement).style.background = '';
+        (b as HTMLElement).style.color = '';
+        (b as HTMLElement).style.fontWeight = '';
+      });
+    }
+    btnEl.style.border = '2px solid var(--accent)';
+    btnEl.style.background = 'var(--accent-container)';
+    btnEl.style.color = 'var(--accent-on-container)';
+    btnEl.style.fontWeight = '800';
+
+    const stats = computeStageStats(m.exam, attempt);
+    const ansCountEl = document.getElementById('exam-answered-count');
+    if (ansCountEl) ansCountEl.innerText = `${stats.answered}/${stats.total}`;
+    const unansCountEl = document.getElementById('exam-unanswered-count');
+    if (unansCountEl) unansCountEl.innerText = `${stats.unanswered}`;
+    const fillEl = document.getElementById('exam-progress-fill');
+    if (fillEl) fillEl.style.width = `${stats.percentAnswered}%`;
+    const scorePill = document.getElementById('exam-score-pill');
+    if (scorePill) {
+      const isPassed = db.passedMods.includes(modId);
+      scorePill.innerText = `Answered: ${stats.answered} / ${m.exam.length} ${isPassed ? '• ✓ Mastered' : '• In Progress'}`;
+    }
+    return;
+  }
+
+  // If already submitted (review mode interaction), show immediate feedback
   const quizKey = `${modId}:exam:${qIdx}`;
   if (isCorrect) {
     triggerHaptic('heavy');
     btnEl.classList.add('correct');
-    modMap.set(qIdx, true);
     if (!completedQuizKeys.has(quizKey)) {
       completedQuizKeys.add(quizKey);
       db.xp += 15;
@@ -2173,27 +3130,66 @@ export function handleExamAnswer(
   } else {
     triggerHaptic('light');
     btnEl.classList.add('wrong');
-    if (!modMap.get(qIdx)) {
-      modMap.set(qIdx, false);
-    }
   }
 
   const expEl = document.getElementById(expId);
   if (expEl) expEl.classList.remove('hidden');
+  saveDB();
+}
 
-  const correctCount = Array.from(modMap.values()).filter(Boolean).length;
-  const passThreshold = Math.ceil(m.exam.length * 0.8);
-  if (correctCount >= passThreshold && !db.passedMods.includes(modId)) {
+export function cancelSubmitModuleExam(): void {
+  triggerHaptic('light');
+  pendingExamSubmitModId = null;
+  renderActiveModule();
+}
+
+export function submitModuleExam(modId: string, forceConfirm = false): void {
+  const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+  const attempt = getStageAttempt(modId, 'exam');
+  const stats = computeStageStats(m.exam, attempt);
+
+  if (stats.unanswered > 0 && !forceConfirm) {
+    triggerHaptic('light');
+    pendingExamSubmitModId = modId;
+    renderActiveModule();
+    return;
+  }
+
+  triggerHaptic('heavy');
+  pendingExamSubmitModId = null;
+  attempt.submitted = true;
+  attempt.filterMode = 'all';
+
+  let modMap = moduleExamAnswers.get(modId);
+  if (!modMap) {
+    modMap = new Map<number, boolean>();
+    moduleExamAnswers.set(modId, modMap);
+  }
+
+  let newlyEarnedXp = 0;
+  m.exam.forEach((qItem, idx) => {
+    const sel = attempt.selectedOptions[idx];
+    const isCorrect = typeof sel === 'number' && sel === qItem.ans;
+    modMap!.set(idx, isCorrect);
+    const quizKey = `${modId}:exam:${idx}`;
+    if (isCorrect && !completedQuizKeys.has(quizKey)) {
+      completedQuizKeys.add(quizKey);
+      newlyEarnedXp += 15;
+    }
+  });
+
+  db.xp += newlyEarnedXp;
+  const scoreSummary = calculateExamScore(m.exam, attempt.selectedOptions);
+  attempt.lastScore = scoreSummary.correctCount;
+
+  if (scoreSummary.passed && !db.passedMods.includes(modId)) {
     db.passedMods.push(modId);
     renderCourseSyllabus();
   }
-  saveDB();
 
-  const scorePill = document.getElementById('exam-score-pill');
-  if (scorePill) {
-    const isPassed = db.passedMods.includes(modId);
-    scorePill.innerText = `Score: ${correctCount} / ${m.exam.length} ${isPassed ? '• ✓ Mastered' : ''}`;
-  }
+  persistAssessmentStore();
+  saveDB();
+  renderActiveModule();
 }
 
 // ============================================================================
@@ -3077,6 +4073,18 @@ declare global {
     handleCourseOptionTap: typeof handleCourseOptionTap;
     handlePracticeOptionTap: typeof handlePracticeOptionTap;
     handleExamAnswer: typeof handleExamAnswer;
+    setAssessmentFilter: typeof setAssessmentFilter;
+    toggleAssessmentSingleFocus: typeof toggleAssessmentSingleFocus;
+    jumpToAssessmentQuestion: typeof jumpToAssessmentQuestion;
+    stepAssessmentQuestion: typeof stepAssessmentQuestion;
+    requestResetAssessmentStage: typeof requestResetAssessmentStage;
+    cancelResetAssessmentStage: typeof cancelResetAssessmentStage;
+    confirmResetAssessmentStage: typeof confirmResetAssessmentStage;
+    handleInlineCheckOption: typeof handleInlineCheckOption;
+    submitInlineCheckText: typeof submitInlineCheckText;
+    submitStageAssessmentText: typeof submitStageAssessmentText;
+    cancelSubmitModuleExam: typeof cancelSubmitModuleExam;
+    submitModuleExam: typeof submitModuleExam;
     selectVocabCategory: typeof selectVocabCategory;
     selectVocabMode: typeof selectVocabMode;
     speakCategoryGuide: typeof speakCategoryGuide;
@@ -3165,6 +4173,18 @@ if (typeof window !== 'undefined') {
   window.handleCourseOptionTap = handleCourseOptionTap;
   window.handlePracticeOptionTap = handlePracticeOptionTap;
   window.handleExamAnswer = handleExamAnswer;
+  window.setAssessmentFilter = setAssessmentFilter;
+  window.toggleAssessmentSingleFocus = toggleAssessmentSingleFocus;
+  window.jumpToAssessmentQuestion = jumpToAssessmentQuestion;
+  window.stepAssessmentQuestion = stepAssessmentQuestion;
+  window.requestResetAssessmentStage = requestResetAssessmentStage;
+  window.cancelResetAssessmentStage = cancelResetAssessmentStage;
+  window.confirmResetAssessmentStage = confirmResetAssessmentStage;
+  window.handleInlineCheckOption = handleInlineCheckOption;
+  window.submitInlineCheckText = submitInlineCheckText;
+  window.submitStageAssessmentText = submitStageAssessmentText;
+  window.cancelSubmitModuleExam = cancelSubmitModuleExam;
+  window.submitModuleExam = submitModuleExam;
   window.selectVocabCategory = selectVocabCategory;
   window.selectVocabMode = selectVocabMode;
   window.speakCategoryGuide = speakCategoryGuide;

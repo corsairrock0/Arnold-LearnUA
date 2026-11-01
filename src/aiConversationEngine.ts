@@ -501,7 +501,7 @@ export function analyzeUkrainianUtterance(
       whatChangedSummary:
         'The microphone pickup was very short or unclear. You can edit your transcript text directly or say it again.',
       grammarRuleSummary:
-        'Instead of guessing a grammar mistake from unclear audio, LangoUA lets you clarify or edit what you meant to say.',
+        'Instead of guessing a grammar mistake from unclear audio, Learn Ukrainian - Lango lets you clarify or edit what you meant to say.',
       additionalExampleUk: 'Приві́т! Мене́ зва́ти Оле́на.',
       additionalExampleEn: 'Hi! My name is Olena.',
       practicePromptEn: 'Try saying or typing a complete Ukrainian phrase:',
@@ -1430,7 +1430,7 @@ export function buildSystemInstructionForSession(params: {
       : 'informal (ти)';
 
   return [
-    `You are LangoUA's AI Ukrainian language partner and tutor. Always be transparent that you are an AI partner/tutor (never claim to be a human).`,
+    `You are Learn Ukrainian - Lango's AI Ukrainian language partner and tutor. Always be transparent that you are an AI partner/tutor (never claim to be a human).`,
     `ACTIVE CONVERSATION MODE: ${modeCfg.titleEn} (${modeCfg.id}). ${modeCfg.aiPersonaSummary}`,
     params.conversationMode === 'tutor'
       ? `Follow the 8-step tutor sequence: introduce/model a structure, demonstrate a Ukrainian example, invite the learner to use it, evaluate, correct per the correction setting, offer a brief retry when helpful, reinforce, and continue.`

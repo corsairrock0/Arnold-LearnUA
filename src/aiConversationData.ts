@@ -820,7 +820,7 @@ export const PRONUNCIATION_GUIDES: PronunciationGuideItem[] = [
         wordEn: 'road (stress on 2nd syllable)',
         contrastWordUk: 'дорога́',
         contrastWordEn: 'dear / expensive (feminine, stress on last syllable)',
-        noteEn: 'Pay close attention to stress marks in LangoUA transcripts.',
+        noteEn: 'Pay close attention to stress marks in Learn Ukrainian - Lango transcripts.',
       },
     ],
     practiceSentenceUk: 'Молоко́ на столі́, а старода́вній за́мок стої́ть на горі́.',

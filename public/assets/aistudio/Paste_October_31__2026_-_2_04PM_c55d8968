@@ -1,0 +1,788 @@
+# SLOVO UA — COMPREHENSIVE COURSE ASSESSMENT EXPANSION
+
+## PRIMARY OBJECTIVE
+
+Upgrade the existing assessment system within my Ukrainian language-learning application:
+
+https://slovo-ua-app.ai.studio/
+
+The Course tab currently contains approximately 29 learning modules spanning CEFR levels A0 through C1.
+
+Inspect the actual Course module registry to determine the current number and structure of modules.
+
+I want EVERY existing Course module to have substantially more comprehensive, rigorous, and pedagogically effective assessments.
+
+REQUIRED QUESTION COUNTS:
+
+1. KNOWLEDGE CHECKS — AT LEAST 20 QUESTIONS PER KNOWLEDGE CHECK.
+2. PRACTICE ACTIVITIES — 50 QUESTIONS PER PRACTICE.
+3. MODULE EXAMS — 100 QUESTIONS PER EXAM.
+
+These requirements apply to every existing assessment instance within each Course module, not merely to the total number of questions across an entire module.
+
+If a module contains three separate Knowledge Checks, each Knowledge Check must contain at least 20 questions.
+
+If a module contains multiple Practice activities, each Practice activity must offer 50 questions.
+
+Each module exam must contain 100 questions.
+
+The objective is to develop genuine Ukrainian proficiency through comprehensive retrieval practice, grammatical reasoning, application, production, and assessment.
+
+## 1. CRITICAL APPLICATION PRESERVATION
+
+THIS IS AN INCREMENTAL CONTENT AND ASSESSMENT UPGRADE.
+
+Do not redesign or rebuild my application.
+
+Preserve the entire existing design system and user experience.
+
+DO NOT MODIFY UNRELATED FEATURES.
+
+Do not change:
+
+- Application theme.
+- Existing fonts.
+- Typography.
+- Colors.
+- Layouts.
+- Navigation.
+- Course module organization.
+- Curriculum learning objectives.
+- Existing vocabulary database.
+- FSRS flashcard scheduling.
+- Grammar Inspector.
+- Reader content.
+- Identify feature.
+- Existing images and photographs.
+- Pronunciation tools.
+- Existing media.
+- Authentication or user data.
+- Unrelated application configuration.
+- GitHub integration.
+
+Preserve all existing Identify photographs, including the original 100 WebP photographs.
+
+Do not remove, regenerate, or replace photographic assets.
+
+Do not create a new app.
+
+Do not introduce a new styling framework.
+
+Do not install unnecessary dependencies.
+
+Do not modify existing media files.
+
+Make only the changes actually required to expand and improve the existing Course assessment content and its necessary supporting logic.
+
+Preserve existing behavior wherever possible.
+
+Do not run destructive cleanup operations.
+
+Do not attempt GitHub synchronization unless I explicitly request it.
+
+## 2. FIRST INSPECT THE EXISTING ASSESSMENT ARCHITECTURE
+
+Before writing code or generating questions:
+
+1. Inspect the current Course module registry.
+2. Locate all Knowledge Check definitions.
+3. Locate all Practice activity definitions.
+4. Locate all module Exam definitions.
+5. Identify the underlying question schemas.
+6. Identify grading and answer-validation logic.
+7. Identify current progress-tracking behavior.
+8. Identify existing review and retry functionality.
+9. Identify any question randomization logic.
+10. Identify storage and performance constraints.
+
+Reuse the existing architecture wherever practical.
+
+Do not duplicate existing assessment components unnecessarily.
+
+Do not introduce an incompatible question schema.
+
+Do not change stored learner progress unless necessary, and never erase progress.
+
+Before implementation, report the existing counts for each assessment in each module.
+
+## 3. KNOWLEDGE CHECKS — MINIMUM 20 QUESTIONS EACH
+
+Expand every existing Knowledge Check to at least 20 meaningful questions.
+
+Knowledge Checks should assess comprehension of the specific lesson or concept that immediately precedes them.
+
+Their purpose is to verify that learners genuinely understand the material before advancing.
+
+Use a progression from straightforward understanding to applied reasoning.
+
+Suggested balance:
+
+- 20% foundational understanding.
+- 40% application.
+- 25% grammatical analysis.
+- 15% challenging transfer and error detection.
+
+These percentages are guidelines, not rigid requirements.
+
+Question types may include:
+
+- Multiple choice.
+- Fill in the blank.
+- Select the correct Ukrainian form.
+- Choose the accurate translation.
+- Identify incorrect grammar.
+- Sentence completion.
+- Word-order selection.
+- Case identification.
+- Verb conjugation.
+- Adjective agreement.
+- Preposition selection.
+- Short constructed answers when supported.
+
+Adapt question types to the relevant lesson.
+
+Do not ask questions about grammar that has not been taught or reasonably established as prerequisite knowledge.
+
+Every question must have one clearly gradable correct answer or a well-defined set of acceptable answers.
+
+## 4. PRACTICE ACTIVITIES — EXACTLY 50 QUESTIONS EACH
+
+Expand every Practice activity to provide a 50-question learning session.
+
+Practice is designed to build skill through repeated retrieval, variation, and increasingly challenging applications.
+
+Suggested difficulty distribution:
+
+- Questions 1–10: Foundational reinforcement.
+- Questions 11–20: Standard application.
+- Questions 21–35: Intermediate grammatical reasoning.
+- Questions 36–45: Challenging contextual application.
+- Questions 46–50: Advanced integration of relevant concepts.
+
+This is a pedagogical progression, not a requirement to always present questions in fixed order.
+
+If the app uses randomized questions, preserve an overall balanced difficulty distribution.
+
+Each Practice should contain enough meaningful variation to avoid repetitive or mechanically generated questions.
+
+Prioritize:
+
+- Active recall.
+- Sentence production.
+- Contextual grammar.
+- Translation into Ukrainian.
+- Conjugation and declension.
+- Correct use of cases.
+- Sentence transformations.
+- Error correction.
+- Vocabulary application.
+- Realistic conversational Ukrainian.
+
+Where supported, practice should be formative rather than purely evaluative.
+
+Provide useful corrective feedback after mistakes.
+
+Do not simply mark an answer incorrect without explaining the relevant grammatical principle.
+
+## 5. MODULE EXAMS — EXACTLY 100 DIFFICULT QUESTIONS
+
+Every Course module must have a comprehensive 100-question exam.
+
+THE EXAMS MUST BE CHALLENGING.
+
+However, difficulty must be appropriate to the module's CEFR level.
+
+A difficult A1 exam should test demanding A1-level mastery, not introduce unexplained C1 material.
+
+A difficult C1 exam should require sophisticated C1-level reasoning, nuance, and production.
+
+The exam should cover all major module learning objectives.
+
+Suggested composition:
+
+- 15 questions: Foundational accuracy.
+- 20 questions: Applied grammar.
+- 20 questions: Vocabulary and contextual usage.
+- 20 questions: Sentence construction and transformation.
+- 15 questions: Error correction and nuanced distinctions.
+- 10 questions: Advanced integrated application.
+
+Total: 100 questions.
+
+Adapt the distribution when the module emphasizes specific skills.
+
+Do not force irrelevant question categories into modules that do not teach them.
+
+The final 100 questions should demonstrate comprehensive mastery of the module rather than merely memorization of isolated facts.
+
+## 6. MAKE EXAM QUESTIONS GENUINELY DIFFICULT
+
+Avoid making an exam artificially difficult through:
+
+- Ambiguous wording.
+- Obscure vocabulary unrelated to the module.
+- Trick questions.
+- Incorrect answer keys.
+- Unexplained advanced grammar.
+- Unnatural Ukrainian sentences.
+- Excessively similar answer options without a meaningful linguistic distinction.
+
+Instead, make examinations challenging through:
+
+- Multi-concept integration.
+- Context-sensitive grammatical decisions.
+- Accurate case selection.
+- Complex but level-appropriate conjugation.
+- Aspect selection.
+- Adjective agreement.
+- Sentence transformations.
+- Error detection.
+- Natural phrasing.
+- Meaning-sensitive translation.
+- Appropriate formal versus informal language.
+- Interpretation of grammatical meaning.
+- Distinguishing superficially similar valid structures.
+
+Require learners to understand WHY a grammatical form is correct.
+
+## 7. CEFR-ALIGNED DIFFICULTY
+
+Adjust question complexity by Course level.
+
+### A0 / PRE-A1
+
+Focus on:
+
+- Ukrainian alphabet recognition.
+- Foundational pronunciation concepts.
+- Basic greetings.
+- Essential vocabulary.
+- Simple grammatical distinctions.
+- Basic sentence understanding.
+
+Difficulty should come from requiring accurate foundational knowledge.
+
+Do not introduce unrelated advanced grammar.
+
+### A1
+
+Focus on:
+
+- Core vocabulary.
+- Simple sentence construction.
+- Basic conjugation.
+- Foundational case usage.
+- Gender and number.
+- Common agreement patterns.
+- Everyday situations.
+
+Include distractors that expose genuine beginner mistakes.
+
+### A2
+
+Focus on:
+
+- More complex sentences.
+- Multiple grammatical relationships.
+- Expanded case usage.
+- Relevant tense and aspect distinctions.
+- Prepositional structures.
+- Contextual vocabulary.
+- Meaningful sentence transformations.
+
+### B1
+
+Focus on:
+
+- Integrated grammar.
+- Natural conversation.
+- Aspect distinctions.
+- More complex syntax.
+- Context-dependent grammatical choices.
+- Error correction.
+- Accurate Ukrainian sentence production.
+
+### B2
+
+Focus on:
+
+- Complex sentence relationships.
+- Nuanced grammar.
+- Sophisticated aspect usage.
+- Register and stylistic choices.
+- Natural idiomatic language.
+- Advanced transformations.
+- Multiple plausible constructions requiring contextual analysis.
+
+### C1
+
+Focus on:
+
+- Advanced syntax.
+- Nuanced meaning.
+- Register and stylistic precision.
+- Complex grammatical constructions.
+- Natural advanced Ukrainian.
+- Context-sensitive interpretation.
+- Sophisticated error correction.
+- Differences between grammatically correct and pragmatically appropriate language.
+
+Difficulty must never come at the expense of linguistic accuracy.
+
+## 8. QUESTION TYPE DIVERSITY
+
+Avoid relying almost entirely on multiple-choice questions.
+
+Use the question formats already supported by the application.
+
+Where the assessment system supports them, include:
+
+1. Multiple-choice selection.
+2. Fill-in-the-blank.
+3. Ukrainian sentence completion.
+4. English-to-Ukrainian translation.
+5. Ukrainian-to-English translation.
+6. Conjugation.
+7. Declension.
+8. Word-order construction.
+9. Sentence transformation.
+10. Grammar error correction.
+11. Appropriate preposition selection.
+12. Case selection.
+13. Agreement correction.
+14. Contextual vocabulary application.
+15. Formal and informal register distinctions.
+16. Natural expression selection.
+17. Multi-step grammatical reasoning.
+18. Short constructed responses.
+
+Use the most educationally suitable format for each concept.
+
+Do not implement complex new interaction types unless they are compatible with the existing architecture and genuinely necessary.
+
+Do not turn advanced language production tasks into simplistic recognition questions merely because multiple choice is easier to implement.
+
+## 9. ANSWER QUALITY AND DISTRACTORS
+
+Every question must have an accurate answer key.
+
+For multiple-choice questions:
+
+- Use plausible incorrect choices.
+- Base distractors on realistic learner mistakes.
+- Keep grammatical form and context consistent.
+- Avoid absurd alternatives.
+- Avoid distractors that are also valid answers.
+- Avoid obvious patterns in correct-answer positions.
+
+For fill-in-the-blank and text-entry questions:
+
+- Define the expected answer.
+- Account for valid alternative forms when appropriate.
+- Normalize harmless whitespace differences.
+- Handle Unicode consistently.
+- Allow reasonable capitalization variations where capitalization is not being tested.
+- Do not penalize valid Ukrainian alternatives.
+- Do not accept grammatically incorrect answers merely because they share keywords.
+
+For translation questions:
+
+Recognize that multiple Ukrainian translations may be grammatically valid.
+
+When the prompt requires one specific grammatical form, provide enough context to make that requirement clear.
+
+When several answers are genuinely valid, support accepted alternatives or use a more appropriate evaluation method.
+
+Never falsely present one valid expression as the only possible Ukrainian answer.
+
+## 10. GRAMMAR AND CONTENT ACCURACY
+
+All assessment questions must be linguistically accurate.
+
+Use contemporary standard Ukrainian.
+
+Check:
+
+- Noun gender.
+- Noun case.
+- Declension endings.
+- Adjective agreement.
+- Verb person and number.
+- Verb conjugation.
+- Tense.
+- Aspect.
+- Preposition-case relationships.
+- Word order.
+- Natural vocabulary usage.
+- Translation accuracy.
+- Proper spelling.
+- Word stress when relevant.
+- Appropriate register.
+
+Do not invent grammar rules or incorrect forms.
+
+Avoid unnatural Ukrainian examples created simply to satisfy a question count.
+
+Use the existing Course materials as the primary instructional authority.
+
+Supplementary question examples may be newly written, but they must be consistent with the module's curriculum and level.
+
+If a source explanation is ambiguous or potentially inaccurate, flag the issue for review rather than silently changing unrelated course content.
+
+## 11. ELIMINATE REPETITIVE QUESTIONS
+
+A larger question bank is not useful if many questions are effectively duplicates.
+
+Each question should test a meaningful concept or application.
+
+Avoid:
+
+- Rewording the same question repeatedly.
+- Replacing only a proper name.
+- Changing only the order of answer options.
+- Reusing identical example sentences.
+- Repeating the same answer pattern.
+- Generating superficial vocabulary substitutions.
+
+Use variation across:
+
+- Context.
+- Sentence structure.
+- Vocabulary.
+- Grammatical forms.
+- Cognitive difficulty.
+- Learner errors.
+- Real-life communication situations.
+
+Some deliberate repetition is appropriate for mastery, but it should be educationally purposeful.
+
+## 12. IMPROVE EXPLANATORY FEEDBACK
+
+Every answer should include a concise, accurate explanation.
+
+When a learner makes a mistake, explain:
+
+1. Why the selected answer is incorrect.
+2. Why the correct answer works.
+3. Which grammatical rule applies.
+4. What ending, agreement, or structure matters.
+5. How the concept appears in natural Ukrainian.
+
+Where useful, show the original Ukrainian sentence and an accurate English translation.
+
+For exams, preserve exam integrity by displaying detailed feedback after submission rather than exposing answers during an active attempt.
+
+For Practice and Knowledge Checks, retain the existing feedback behavior unless a change is necessary to support the expanded content.
+
+## 13. ASSESSMENT PROGRESS AND USER EXPERIENCE
+
+A 100-question exam is substantially longer than the existing smaller assessments.
+
+Preserve the current visual design while ensuring long assessments remain manageable.
+
+Where compatible with the current app architecture, support:
+
+- Clear progress indicators.
+- Current question number.
+- Total question count.
+- Previous and Next navigation.
+- A way to review earlier answers.
+- Clear unanswered-question indicators.
+- Safe progress persistence.
+- Resuming an interrupted attempt.
+- Confirmation before final exam submission.
+- Final score.
+- Review of incorrect answers.
+- Explanations after submission.
+
+If existing functionality already provides these capabilities, reuse it.
+
+Avoid unnecessary UI redesign.
+
+Do not introduce changes that break previously saved learner progress.
+
+For long exams, never lose an entire attempt because the user temporarily closes the application.
+
+Use a reasonable persistence strategy compatible with the existing app.
+
+## 14. SCORING
+
+Maintain the existing grading framework wherever possible.
+
+Ensure correct scoring across all 100 exam questions.
+
+The score should accurately reflect answered and unanswered questions.
+
+Avoid accidental double-scoring, incorrect totals, and false positives.
+
+If the current app uses pass/fail thresholds, preserve them unless there is a compelling compatibility reason to change them.
+
+Do not invent new certification claims or official CEFR accreditation.
+
+For constructed responses, use deterministic validation when the answer can be checked unambiguously.
+
+Do not depend on an unreliable exact-string comparison for translation questions with multiple valid answers.
+
+If reliable automatic grading is unavailable for a particular question type, use a compatible format or flag the grading limitation rather than silently marking valid answers wrong.
+
+## 15. PERFORMANCE AND DATA STRUCTURE
+
+The expansion may introduce thousands of questions across approximately 29 modules.
+
+Implement efficiently.
+
+Prefer structured, typed, validated question data.
+
+Do not place massive question datasets directly inside rendering components when the existing architecture provides a better location.
+
+Avoid unnecessarily loading every question across every module on initial application launch.
+
+Use module-level lazy loading or equivalent existing patterns where appropriate.
+
+Preserve build performance and application responsiveness.
+
+Do not create redundant copies of assessment content.
+
+Do not add unnecessary packages.
+
+Keep the assessment data maintainable.
+
+If static question banks are used, ensure they are complete and available offline.
+
+Do not require cloud-based AI calls merely to display or grade the predefined questions.
+
+## 16. OFFLINE FUNCTIONALITY
+
+This app is intended to support offline mobile learning.
+
+All assessment questions, correct answers, accepted alternatives, and explanations should be available locally as part of the application.
+
+Do not introduce a dependency on external servers for the expanded assessment content.
+
+Do not require an active internet connection to begin, complete, or review Knowledge Checks, Practice activities, or Exams.
+
+Preserve the existing offline-compatible architecture.
+
+## 17. QUESTION GENERATION AND VALIDATION PIPELINE
+
+Do not generate thousands of questions without validating them.
+
+Use a staged approach.
+
+STAGE 1 — INVENTORY
+
+Identify all modules and assessment instances.
+
+STAGE 2 — CONTENT MAPPING
+
+Map the learning objectives and grammatical topics relevant to each assessment.
+
+STAGE 3 — COVERAGE BLUEPRINT
+
+Allocate the question count across the actual topics taught.
+
+STAGE 4 — QUESTION GENERATION
+
+Write high-quality, level-appropriate questions.
+
+STAGE 5 — ANSWER VALIDATION
+
+Check correct answers, alternative answers, and distractors.
+
+STAGE 6 — DUPLICATE DETECTION
+
+Identify exact and near-duplicate questions.
+
+STAGE 7 — DIFFICULTY REVIEW
+
+Check that the questions progress appropriately and exams are challenging.
+
+STAGE 8 — SCHEMA VALIDATION
+
+Ensure compatibility with the application.
+
+STAGE 9 — INTEGRATION
+
+Add the new assessment content to the existing system.
+
+STAGE 10 — TESTING
+
+Verify rendering, grading, progress tracking, and functionality.
+
+Do not skip validation simply to maximize the number of generated questions.
+
+## 18. PILOT FIRST
+
+Before expanding the entire curriculum, complete ONE module as a pilot.
+
+Choose the first available Course module containing the relevant assessment types.
+
+For that module:
+
+- Expand every Knowledge Check to at least 20 questions.
+- Expand every Practice activity to 50 questions.
+- Expand the module Exam to 100 challenging questions.
+- Verify every question has a valid answer.
+- Verify there are no substantial duplicates.
+- Verify feedback accuracy.
+- Verify scoring.
+- Verify progress persistence.
+- Verify the UI still looks like the original application.
+- Verify unrelated features remain unchanged.
+
+Use the existing question data format.
+
+Do not overwrite the entire curriculum.
+
+Once the pilot is implemented, provide a concise report of changes and test results.
+
+WAIT FOR MY APPROVAL before applying the expansion to the remaining modules.
+
+## 19. COMPLETE CURRICULUM ROLLOUT
+
+After pilot approval, expand the remaining Course modules in manageable batches.
+
+Suggested batch size: 2–4 modules.
+
+Process the modules systematically by their existing course order.
+
+For each module:
+
+1. Extract the curriculum topics.
+2. Expand every Knowledge Check.
+3. Expand every Practice.
+4. Expand the Exam.
+5. Validate answers.
+6. Verify counts.
+7. Run relevant tests.
+8. Check for duplicated questions.
+9. Confirm no unrelated functionality changed.
+
+Do not claim the complete curriculum is finished if only some modules have been expanded.
+
+Provide a clear completion report after each batch.
+
+Do not continue processing in the background unless such execution is actually supported.
+
+## 20. AUTOMATED VALIDATION REQUIREMENTS
+
+Add or reuse automated tests that verify:
+
+- Every Knowledge Check has at least 20 valid questions.
+- Every Practice activity contains exactly 50 questions.
+- Every module Exam contains exactly 100 questions.
+- Every question has a unique identifier within its appropriate scope.
+- Every question has a valid prompt.
+- Every multiple-choice question has valid options.
+- Every answer key points to an actual valid answer.
+- No question has an empty explanation.
+- No major duplicate questions exist.
+- All referenced modules and lessons exist.
+- The assessment schema is valid.
+- Existing grading functions work correctly.
+- Exam scores are calculated accurately.
+- Progress tracking remains compatible.
+- No unrelated assets or UI functionality were changed.
+
+Do not fabricate successful test results.
+
+Run the actual available build and validation commands.
+
+If an issue occurs, correct only the relevant assessment code or data.
+
+Never delete application assets or unrelated files as a troubleshooting shortcut.
+
+## 21. ASSESSMENT INVENTORY REPORT
+
+Before implementation, provide a table showing:
+
+- Module ID.
+- Module title.
+- CEFR level.
+- Number of Knowledge Checks.
+- Number of Practice activities.
+- Current Knowledge Check question counts.
+- Current Practice question counts.
+- Current Exam question count.
+- Expected new total.
+
+After completing each module, report:
+
+- Actual Knowledge Check counts.
+- Actual Practice counts.
+- Actual Exam count.
+- Question types used.
+- Major grammar topics covered.
+- Validation status.
+- Duplicate-check status.
+- Build/test results.
+
+Mark incomplete modules accurately.
+
+Do not claim full coverage if any Knowledge Check, Practice, or Exam remains below the required count.
+
+## 22. PRESERVE ALL EXISTING WORK
+
+The expanded assessments must remain part of my existing Slovo UA application.
+
+Do not replace the original application with a newly generated project.
+
+Do not rewrite the entire Course system.
+
+Do not recreate existing data unnecessarily.
+
+Preserve:
+
+- Existing learning objectives.
+- Existing lesson explanations.
+- Course progression.
+- Existing question content that is accurate and useful.
+- Existing grading behavior.
+- Existing user progress.
+- Existing visual design.
+
+Only expand and improve assessment content and the supporting functionality required for larger assessments.
+
+Do not introduce unrelated features.
+
+## FINAL DIRECTIVE
+
+UPGRADE ALL COURSE MODULE ASSESSMENTS TO THE FOLLOWING STANDARD:
+
+KNOWLEDGE CHECKS:
+At least 20 high-quality questions for EVERY existing Knowledge Check.
+
+PRACTICE ACTIVITIES:
+Exactly 50 high-quality questions for EVERY existing Practice activity.
+
+MODULE EXAMS:
+Exactly 100 challenging, comprehensive questions for EVERY existing module Exam.
+
+All questions must be:
+
+- Grammatically accurate.
+- Appropriate to the module's CEFR level.
+- Aligned with the actual curriculum.
+- Educationally meaningful.
+- Diverse in format.
+- Free of substantial duplication.
+- Supported by correct answers.
+- Accompanied by useful explanations.
+- Compatible with offline use.
+- Integrated into the existing assessment architecture.
+
+Make exams genuinely difficult through sophisticated but level-appropriate application, not confusing or unfair question wording.
+
+PRESERVE MY EXISTING APPLICATION DESIGN, PHOTOGRAPHS, FEATURES, COURSE CONTENT, AND USER PROGRESS.
+
+FIRST inspect the assessment architecture and inventory.
+
+SECOND implement and thoroughly test one complete module as a pilot.
+
+THIRD stop and wait for my approval.
+
+ONLY AFTER APPROVAL expand the remaining modules in manageable, validated batches.
+
+Do not redesign the app, remove existing assets, change unrelated features, or attempt GitHub operations.
+
+The final result should be a comprehensive, academically rigorous Ukrainian assessment system that genuinely develops and measures language proficiency.

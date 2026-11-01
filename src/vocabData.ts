@@ -1577,19 +1577,44 @@ const RAW_VERIFIED_VOCAB: Array<
   ['квас', 'NOUN', 'kvas (traditional fermented rye bread or beet beverage; Gen. ква́су; хлі́бний або́ буряко́вий квас)', 'A2', 'У спеко́тний лі́тній день ніщо́ так не втамо́вує спра́гу, як кухоль прохоло́дного хлі́бного ква́су.', 'On a hot summer day nothing quenches thirst like a mug of cool rye-bread kvas.'],
   ['пови́дло', 'NOUN', 'smooth fruit butter / thick puréed jam (neuter: я́блучне або́ сливо́ве пови́дло; cf. варе́ння with whole fruit)', 'B1', 'Пиріжки́ з густи́м сливо́вим пови́длом чудово смаку́ють із трав’яни́м ча́єм.', 'Baked buns filled with thick plum butter taste wonderful with herbal tea.'],
   ['консерва́нт', 'NOUN', 'food preservative (pl. консерва́нти; «без консерва́нтів та барвникі́в» = no preservatives or artificial colors)', 'B1', 'Ми купу́ємо натура́льний я́блучний сік пря́мого віджи́му без цу́кру та консерва́нтів.', 'We buy natural direct-pressed apple juice without sugar or preservatives.'],
+
+  // --- COURSE MODULE A0.1 CORE PHONETIC & ALPHABET ANCHORS ---
+  ['та́то', 'NOUN', 'dad / father (Voc. та́ту!)', 'A0', 'Мій та́то вдо́ма.', 'My dad is at home.'],
+  ['те́ма', 'NOUN', 'topic / theme', 'A0', 'Це ціка́ва те́ма.', 'This is an interesting topic.'],
+  ['сік', 'NOUN', 'juice (Gen. со́ку)', 'A0', 'На столі́ стої́ть я́блучний сік.', 'Apple juice is on the table.'],
+  ['ба́ба', 'NOUN', 'grandma (colloquial; affectionate: бабу́ся)', 'A0', 'Ма́ма і ба́ба п’ють чай.', 'Mom and grandma are drinking tea.'],
+  ['бу́ква', 'NOUN', 'letter (of the alphabet)', 'A0', 'Ко́жна бу́ква ма́є свій чітки́й звук.', 'Every letter has its own clear sound.'],
+  ['звук', 'NOUN', 'sound (Gen. зву́ку)', 'A0', 'Бу́ква «І» передає́ чи́стий звук [i].', 'The letter "І" represents the pure sound [i].'],
+  ['мед', 'NOUN', 'honey (Gen. ме́ду)', 'A0', 'Тут є гаря́чий чай і духмя́ний мед.', 'Here are hot tea and fragrant honey.'],
+  ['чі́тко', 'ADV', 'clearly / distinctly', 'A0', 'Він вимовля́є ко́жний звук чі́тко.', 'He pronounces every sound clearly.'],
 ];
 
+import { COURSE_MODULES_A0_A1 } from './courseDataA0A1';
+import { COURSE_MODULES_A2_C1 } from './courseDataA2C1';
+import { MODULE_VOCAB_ADDITIONS } from './vocab/moduleVocabAdditions';
 
+function normalizeVocabLemmaKey(uk: string): string {
+  return uk
+    .replace(/\u0301/g, '')
+    .toLowerCase()
+    .replace(/\s*\(.*?\)/g, '')
+    .split(/\s*[\/,]\s*/)[0]
+    .trim();
+}
 
-// Deduplicate by normalized Ukrainian word + POS while keeping stable rank order
+// Deduplicate by normalized Ukrainian word + POS while keeping stable rank order (ranks 1..1411 untouched)
 export const FREQ_6000_DB: VocabItem[] = [];
 (function buildVerifiedVocabCatalog() {
   const seen = new Set<string>();
+  const seenLemmas = new Set<string>();
   let rank = 1;
   for (const [ru, pos, en, level, exampleUk, exampleEn] of RAW_VERIFIED_VOCAB) {
-    const cleanKey = `${ru.toLowerCase().replace(/\u0301/g, '')}::${pos}`;
+    const cleanWord = ru.toLowerCase().replace(/\u0301/g, '').trim();
+    const cleanKey = `${cleanWord}::${pos}`;
     if (seen.has(cleanKey)) continue;
     seen.add(cleanKey);
+    seenLemmas.add(cleanWord);
+    seenLemmas.add(normalizeVocabLemmaKey(ru));
     FREQ_6000_DB.push({
       rank,
       ru,
@@ -1603,4 +1628,38 @@ export const FREQ_6000_DB: VocabItem[] = [];
     });
     rank++;
   }
+
+  // Ensure 100% of Course Module vocabulary (original + 50+ new words per module across all 29 modules)
+  // is linked in FREQ_6000_DB for FSRS flashcards and 7-Case Grammar Inspector without shifting ranks 1..1411.
+  const allRawModules = [...COURSE_MODULES_A0_A1, ...COURSE_MODULES_A2_C1];
+  for (const mod of allRawModules) {
+    const modEntries = [
+      ...mod.vocab,
+      ...(MODULE_VOCAB_ADDITIONS[mod.id] || []),
+    ];
+    for (const [uk, pos, en, exUk, exEn] of modEntries) {
+      const cleanWord = uk.toLowerCase().replace(/\u0301/g, '').trim();
+      const lemmaKey = normalizeVocabLemmaKey(uk);
+      const cleanKey = `${cleanWord}::${pos}`;
+      if (seen.has(cleanKey) || seenLemmas.has(cleanWord) || seenLemmas.has(lemmaKey)) {
+        continue;
+      }
+      seen.add(cleanKey);
+      seenLemmas.add(cleanWord);
+      seenLemmas.add(lemmaKey);
+      FREQ_6000_DB.push({
+        rank,
+        ru: uk,
+        pos,
+        en,
+        level: mod.level,
+        exampleUk: exUk,
+        exampleEn: exEn,
+        exUk,
+        exEn,
+      });
+      rank++;
+    }
+  }
 })();
+

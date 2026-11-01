@@ -989,7 +989,7 @@ export function renderAIConversationTab(): void {
       <!-- 6. FOOTER PRIVACY, MICROPHONE & AI DISCLOSURE -->
       <footer class="convo-privacy-footer">
         <div class="convo-privacy-text">
-          <strong>🔒 Privacy & AI Transparency:</strong> You are speaking with LangoUA’s AI Ukrainian partner/tutor powered by server-side Gemini models. Microphone audio is used strictly for live Ukrainian transcription and conversation, and your preferences are saved locally in your browser.
+          <strong>🔒 Privacy & AI Transparency:</strong> You are speaking with Learn Ukrainian - Lango’s AI Ukrainian partner/tutor powered by server-side Gemini models. Microphone audio is used strictly for live Ukrainian transcription and conversation, and your preferences are saved locally in your browser.
         </div>
         <button
           type="button"
@@ -1714,7 +1714,7 @@ function renderHowToSayModal(): string {
           <h3>🗣️ How Do I Say This in Ukrainian?</h3>
           <button type="button" class="convo-mini-btn" onclick="convoCloseHowToSayModal()">✕</button>
         </div>
-        <p>Type an English sentence or idea below, and LangoUA will show you how to say it naturally in Ukrainian at your current CEFR level (${escapeHtml(
+        <p>Type an English sentence or idea below, and Learn Ukrainian - Lango will show you how to say it naturally in Ukrainian at your current CEFR level (${escapeHtml(
           convoState.cefrLevel
         )}):</p>
         <div class="convo-modal-input-row">
@@ -1872,9 +1872,9 @@ function renderSessionReviewModal(): string {
           </div>
         </div>
 
-        <!-- 5. Recommended LangoUA Course Modules -->
+        <!-- 5. Recommended Learn Ukrainian - Lango Course Modules -->
         <div class="convo-review-section">
-          <h4>📚 Recommended LangoUA Course Modules</h4>
+          <h4>📚 Recommended Learn Ukrainian - Lango Course Modules</h4>
           <div class="convo-review-modules-list">
             ${review.recommendedCourseModules
               .map(

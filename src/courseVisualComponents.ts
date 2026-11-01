@@ -157,6 +157,15 @@ export interface KnowledgeCheckProps {
   correctIndex: number;
   explanation: string;
   audioUk?: string;
+  questionType?: string;
+  difficultyTier?: number;
+  topic?: string;
+  distractorNotes?: string[];
+  acceptedTextAnswers?: string[];
+  acceptedAnswersUk?: string[];
+  expectedAnswerUk?: string;
+  inputMode?: 'multiple-choice' | 'text' | 'mc';
+  hintUk?: string;
 }
 
 export interface StructuredCourseLesson {
@@ -601,24 +610,90 @@ export function renderLessonReference(props: LessonReferenceProps): string {
 
 export function renderKnowledgeCheck(
   props: KnowledgeCheckProps,
-  modId: string
+  modId: string,
+  idx?: number,
+  total?: number,
+  savedSelection?: number,
+  savedTextAnswer?: string
 ): string {
   const expId = `vc-kc-exp-${modId}-${props.id}`;
   const quizKey = `${modId}:inline-kc:${props.id}`;
+  const qNumLabel =
+    typeof idx === 'number' && typeof total === 'number'
+      ? `Quick Check ${idx + 1} of ${total}`
+      : 'Quick Check';
+  const hasSaved = typeof savedSelection === 'number';
+  const isSavedCorrect = hasSaved && savedSelection === props.correctIndex;
+  const chosenNote =
+    hasSaved && props.distractorNotes && props.distractorNotes[savedSelection!]
+      ? props.distractorNotes[savedSelection!]
+      : '';
+  const correctOptText = props.options[props.correctIndex] || '';
+
+  const textEntryHtml =
+    props.inputMode === 'text' &&
+    Boolean(
+      (props.acceptedTextAnswers && props.acceptedTextAnswers.length > 0) ||
+        (props.acceptedAnswersUk && props.acceptedAnswersUk.length > 0) ||
+        props.expectedAnswerUk
+    ) &&
+    typeof idx === 'number'
+      ? `
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+        <input
+          type="text"
+          id="inline-kc-input-${modId}-${idx}"
+          class="input-box"
+          style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
+          placeholder="${escapeQuote(props.hintUk ? `Type answer (Hint: ${props.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+          value="${escapeQuote(savedTextAnswer || '')}"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();submitInlineCheckText('${escapeQuote(modId)}', ${idx});}"
+        />
+        <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitInlineCheckText('${escapeQuote(modId)}', ${idx})">✍️ Check Typed Answer</button>
+      </div>
+    `
+      : '';
+
   return `
-    <div class="vc-kc-card">
-      <div class="vc-kc-question">⚡ Quick Check: ${props.question}</div>
+    <div class="vc-kc-card" id="inline-kc-card-${modId}-${typeof idx === 'number' ? idx : props.id}">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+        <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">⚡ ${qNumLabel}</span>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          ${props.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${props.topic}</span>` : ''}
+          ${props.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${props.difficultyTier}/5</span>` : ''}
+          ${props.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeQuote(props.audioUk)}')">🔊 Audio</button>` : ''}
+        </div>
+      </div>
+      <div class="vc-kc-question">${props.question}</div>
+      ${textEntryHtml}
       <div class="vc-kc-options">
         ${props.options
-          .map(
-            (opt, oIdx) => `
-          <button type="button" class="option-btn" onclick="handlePracticeOptionTap(this, ${oIdx === props.correctIndex}, '${expId}', '${quizKey}', '${escapeQuote(props.audioUk || '')}')">${opt}</button>
-        `
-          )
+          .map((opt, oIdx) => {
+            const stateClass = hasSaved
+              ? oIdx === props.correctIndex
+                ? 'correct'
+                : oIdx === savedSelection
+                  ? 'wrong'
+                  : ''
+              : '';
+            const clickCall =
+              typeof idx === 'number'
+                ? `handleInlineCheckOption(this, '${escapeQuote(modId)}', ${idx}, ${oIdx})`
+                : `handlePracticeOptionTap(this, ${oIdx === props.correctIndex}, '${expId}', '${quizKey}', '${escapeQuote(props.audioUk || '')}')`;
+            return `
+          <button type="button" class="option-btn ${stateClass}" onclick="${clickCall}">${opt}</button>
+        `;
+          })
           .join('')}
       </div>
-      <div id="${expId}" class="hidden vc-kc-exp">
-        <b>💡 Why:</b> ${props.explanation}
+      <div id="${expId}" class="${hasSaved ? '' : 'hidden '}vc-kc-exp">
+        ${
+          hasSaved && !isSavedCorrect && chosenNote
+            ? `<div style="margin-bottom:5px; color:var(--danger); font-weight:600;">❌ <b>Why Incorrect:</b> ${chosenNote}</div>`
+            : ''
+        }
+        <div style="margin-bottom:4px; color:var(--success); font-weight:700;">✅ <b>Correct Answer:</b> ${correctOptText}</div>
+        <div><b>💡 Rule & Explanation:</b> ${props.explanation}</div>
       </div>
     </div>
   `;
