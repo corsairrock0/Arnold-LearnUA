@@ -39,6 +39,7 @@ import {
   syncAllTabsForActiveTrack,
   SYNTHETIC_ENGLISH_TO_HINDI_TEST_FIXTURE_JSON,
 } from './universalCoursePlayer.ts';
+import { evaluateCmsAccessContext } from './cmsAuthAndStorage.ts';
 
 let pendingModalTargetLanguage: string | null = null;
 let lastImportPreviewReport: CourseImportPreviewReport | null = null;
@@ -85,6 +86,13 @@ export function syncMultilingualTrackUI(): void {
     }
   }
 
+  // 1b. Sync top header Content Studio button visibility for trusted dev environment
+  const isCmsAllowed = evaluateCmsAccessContext().isAllowed;
+  const topStudioBtn = document.getElementById('lango-open-cms-studio-btn');
+  if (topStudioBtn) {
+    topStudioBtn.style.display = isCmsAllowed ? '' : 'none';
+  }
+
   // 2. Render the Course Tab Track Selector Banner
   const bannerContainer = document.getElementById('lango-course-track-banner');
   if (bannerContainer) {
@@ -129,11 +137,16 @@ export function syncMultilingualTrackUI(): void {
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           ${
             !isUkPublished
-              ? `<button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" data-testid="btn-return-ukrainian" onclick="selectCourseTrackById('${PUBLISHED_UKRAINIAN_TRACK_ID}')">🇺🇦 Ukrainian Course (29 Modules)</button>`
+              ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-return-ukrainian" onclick="selectCourseTrackById('${PUBLISHED_UKRAINIAN_TRACK_ID}')">🇺🇦 Ukrainian Course (29 Modules)</button>`
               : ''
           }
-          <button type="button" class="btn" style="min-height:34px; padding:5px 12px; font-size:12px;" data-testid="btn-open-language-selector" onclick="openLanguageSelectorModal()">🌐 Change Language / Track</button>
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" data-testid="btn-open-dev-importer" onclick="openDevCourseImporterModal('${escapeHtml(track.trackId)}')">🛠️ JSON Importer</button>
+          <button type="button" class="btn" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-open-language-selector" onclick="openLanguageSelectorModal()">🌐 Change Language / Track</button>
+          ${
+            isCmsAllowed
+              ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-banner-open-cms-studio" onclick="openLangoContentStudio(undefined, '${escapeHtml(track.trackId)}')">🎛️ Content Studio</button>
+                 <button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-open-dev-importer" onclick="openDevCourseImporterModal('${escapeHtml(track.trackId)}')">🛠️ JSON Importer</button>`
+              : ''
+          }
         </div>
       </div>
     `;
@@ -553,9 +566,16 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
               )
               .join('')}
           </select>
-          <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="closeLanguageSelectorModal(); openDevCourseImporterModal('${escapeHtml(activeTrack.trackId)}');">
-            🛠️ Developer JSON Importer &amp; Track Registry
-          </button>
+          ${
+            evaluateCmsAccessContext().isAllowed
+              ? `<button type="button" class="btn" data-testid="btn-modal-open-cms-studio" style="min-height:36px; padding:5px 12px; font-size:12px;" onclick="closeLanguageSelectorModal(); openLangoContentStudio(undefined, '${escapeHtml(activeTrack.trackId)}');">
+                  🎛️ Open Lango Content Studio (CMS)
+                </button>
+                <button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 10px; font-size:12px;" onclick="closeLanguageSelectorModal(); openDevCourseImporterModal('${escapeHtml(activeTrack.trackId)}');">
+                  🛠️ Developer JSON Importer &amp; Track Registry
+                </button>`
+              : ''
+          }
         </div>
       </div>
     </div>

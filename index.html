@@ -1499,6 +1499,54 @@
     /* ==========================================================================
        iPHONE 16 PRO MAX & MOBILE PORTRAIT/LANDSCAPE OPTIMIZATION (<= 960px)
        ========================================================================== */
+    /* ==========================================================================
+       LANGO CONTENT STUDIO (CMS) RESPONSIVE SHELL & MOBILE SAFE AREAS
+       ========================================================================== */
+    #lango-cms-studio-root {
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 28px);
+    }
+
+    .cms-studio-shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 16px 20px calc(env(safe-area-inset-bottom, 20px) + 64px) 20px;
+    }
+
+    .cms-header-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .cms-nav-bar {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .cms-three-col-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr 1fr;
+        gap: 14px;
+        align-items: start;
+    }
+
+    .cms-quick-actions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
     @media (max-width: 960px) {
         .ios-top-bar {
             padding: calc(env(safe-area-inset-top, 12px) + 6px) 8px 8px 8px;
@@ -1507,19 +1555,24 @@
 
         .brand-cluster {
             gap: 5px;
-            flex-shrink: 0;
+            min-width: 0;
+            flex-shrink: 1;
         }
 
         .brand-badge {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            font-size: 11px;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            font-size: 10.5px;
+            flex-shrink: 0;
         }
 
         .logo {
-            font-size: 13.5px;
+            font-size: 12.5px;
             letter-spacing: -0.4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .brand-subtitle {
@@ -1529,23 +1582,90 @@
         .top-telemetry {
             gap: 4px;
             flex-shrink: 0;
+            overflow-x: auto;
+            max-width: 100%;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .top-telemetry::-webkit-scrollbar {
+            display: none;
         }
 
         .stat-pill {
-            padding: 4px 6px;
-            font-size: 11px;
+            padding: 4px 5px;
+            font-size: 10.5px;
             gap: 2px;
             white-space: nowrap;
         }
 
         .icon-action-btn {
-            min-width: 32px;
+            min-width: 30px;
             min-height: 32px;
-            padding: 0 7px;
-            font-size: 11.5px;
+            padding: 0 6px;
+            font-size: 11px;
             gap: 3px;
             white-space: nowrap;
             flex-shrink: 0;
+        }
+
+        #voice-label-pill {
+            display: none;
+        }
+
+        #lango-top-track-label {
+            max-width: 64px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+
+        .cms-studio-shell {
+            padding: 12px 12px calc(env(safe-area-inset-bottom, 20px) + 72px) 12px;
+        }
+
+        .cms-header-controls {
+            width: 100%;
+        }
+
+        .cms-header-controls .input-box,
+        .cms-header-controls .btn {
+            flex: 1 1 100%;
+            width: 100% !important;
+            min-height: 44px !important;
+        }
+
+        .cms-nav-bar {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .cms-nav-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cms-nav-bar .stage-pill {
+            min-height: 42px !important;
+            padding: 6px 13px !important;
+            flex: 0 0 auto;
+        }
+
+        .cms-three-col-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cms-quick-actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        #lango-cms-studio-root .btn,
+        #lango-cms-studio-root .input-box,
+        #lango-cms-studio-root select {
+            min-height: 42px;
         }
 
         .app-shell {
@@ -2023,8 +2143,13 @@
             <button class="icon-action-btn" id="openai-voice-btn" onclick="openVoiceModal()" aria-label="Choose Voice" title="Choose Voice">
                 🎙️ <span id="voice-label-pill">Choose Voice</span>
             </button>
+            <button class="icon-action-btn" id="lango-open-cms-studio-btn" data-testid="btn-open-cms-studio" onclick="openLangoContentStudio()" aria-label="Open Lango Content Studio (Developer CMS)" title="Lango Content Studio (Developer CMS)">
+                🎛️ <span>Studio</span>
+            </button>
         </div>
     </header>
+
+    <div id="lango-cms-studio-root" class="hidden"></div>
 
     <div class="app-shell">
         <!-- Navigation Bar (Left Rail on Desktop, Thumb-Zone Bottom Tab Bar on iPhone 16 Pro Max) -->

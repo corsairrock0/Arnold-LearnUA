@@ -87,6 +87,43 @@ import {
   gradeTrackIsolatedFsrsItem,
   speakMultilingualText,
 } from './multilingual/universalCoursePlayer.ts';
+import {
+  openLangoContentStudio,
+  closeLangoContentStudio,
+  switchCmsWorkspaceTab,
+  selectCmsActiveTrack,
+  dismissCmsBanner,
+  handleCmsGlobalSearchInput,
+  handleSearchResultClick,
+  setCmsCourseManagerFilter,
+  selectCmsEditorModule,
+  selectCmsEditorLesson,
+  selectCmsEditorActivity,
+  toggleCmsSourceJsonDrawer,
+  handleAddCmsModulePrompt,
+  handleMoveCmsModule,
+  handleDuplicateCmsModule,
+  handleSaveCmsLessonEdits,
+  handleSaveCmsActivityEdits,
+  handleCreateManualSnapshot,
+  handleCmsLifecycleTransition,
+  setCmsImportMode,
+  loadCmsSampleFixture,
+  handleExecuteCmsDraftImport,
+  setCmsVocabSearch,
+  selectCmsVocabLexeme,
+  selectCmsOverlayLanguage,
+  handleSaveCanonicalLexeme,
+  handleSaveNativeOverlay,
+  handleRunCmsBulkAudit,
+  handleAddCmsReviewerNote,
+  handleRestoreCmsSnapshot,
+  setCmsDiffSelection,
+  setCmsMediaSearch,
+  handleVerifyCmsExportRoundTrip,
+  handleDownloadCmsExportJson,
+  bootCmsStudioRouteIfRequested,
+} from './multilingual/cmsContentStudioView.ts';
 
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
@@ -4169,6 +4206,40 @@ declare global {
     gradeTrackIsolatedFsrsItem: typeof gradeTrackIsolatedFsrsItem;
     speakMultilingualText: typeof speakMultilingualText;
     updateSidebarStats: typeof updateSidebarStats;
+    openLangoContentStudio: typeof openLangoContentStudio;
+    closeLangoContentStudio: typeof closeLangoContentStudio;
+    switchCmsWorkspaceTab: typeof switchCmsWorkspaceTab;
+    selectCmsActiveTrack: typeof selectCmsActiveTrack;
+    dismissCmsBanner: typeof dismissCmsBanner;
+    handleCmsGlobalSearchInput: typeof handleCmsGlobalSearchInput;
+    handleSearchResultClick: typeof handleSearchResultClick;
+    setCmsCourseManagerFilter: typeof setCmsCourseManagerFilter;
+    selectCmsEditorModule: typeof selectCmsEditorModule;
+    selectCmsEditorLesson: typeof selectCmsEditorLesson;
+    selectCmsEditorActivity: typeof selectCmsEditorActivity;
+    toggleCmsSourceJsonDrawer: typeof toggleCmsSourceJsonDrawer;
+    handleAddCmsModulePrompt: typeof handleAddCmsModulePrompt;
+    handleMoveCmsModule: typeof handleMoveCmsModule;
+    handleDuplicateCmsModule: typeof handleDuplicateCmsModule;
+    handleSaveCmsLessonEdits: typeof handleSaveCmsLessonEdits;
+    handleSaveCmsActivityEdits: typeof handleSaveCmsActivityEdits;
+    handleCreateManualSnapshot: typeof handleCreateManualSnapshot;
+    handleCmsLifecycleTransition: typeof handleCmsLifecycleTransition;
+    setCmsImportMode: typeof setCmsImportMode;
+    loadCmsSampleFixture: typeof loadCmsSampleFixture;
+    handleExecuteCmsDraftImport: typeof handleExecuteCmsDraftImport;
+    setCmsVocabSearch: typeof setCmsVocabSearch;
+    selectCmsVocabLexeme: typeof selectCmsVocabLexeme;
+    selectCmsOverlayLanguage: typeof selectCmsOverlayLanguage;
+    handleSaveCanonicalLexeme: typeof handleSaveCanonicalLexeme;
+    handleSaveNativeOverlay: typeof handleSaveNativeOverlay;
+    handleRunCmsBulkAudit: typeof handleRunCmsBulkAudit;
+    handleAddCmsReviewerNote: typeof handleAddCmsReviewerNote;
+    handleRestoreCmsSnapshot: typeof handleRestoreCmsSnapshot;
+    setCmsDiffSelection: typeof setCmsDiffSelection;
+    setCmsMediaSearch: typeof setCmsMediaSearch;
+    handleVerifyCmsExportRoundTrip: typeof handleVerifyCmsExportRoundTrip;
+    handleDownloadCmsExportJson: typeof handleDownloadCmsExportJson;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -4293,6 +4364,40 @@ if (typeof window !== 'undefined') {
   window.gradeTrackIsolatedFsrsItem = gradeTrackIsolatedFsrsItem;
   window.speakMultilingualText = speakMultilingualText;
   window.updateSidebarStats = updateSidebarStats;
+  window.openLangoContentStudio = openLangoContentStudio;
+  window.closeLangoContentStudio = closeLangoContentStudio;
+  window.switchCmsWorkspaceTab = switchCmsWorkspaceTab;
+  window.selectCmsActiveTrack = selectCmsActiveTrack;
+  window.dismissCmsBanner = dismissCmsBanner;
+  window.handleCmsGlobalSearchInput = handleCmsGlobalSearchInput;
+  window.handleSearchResultClick = handleSearchResultClick;
+  window.setCmsCourseManagerFilter = setCmsCourseManagerFilter;
+  window.selectCmsEditorModule = selectCmsEditorModule;
+  window.selectCmsEditorLesson = selectCmsEditorLesson;
+  window.selectCmsEditorActivity = selectCmsEditorActivity;
+  window.toggleCmsSourceJsonDrawer = toggleCmsSourceJsonDrawer;
+  window.handleAddCmsModulePrompt = handleAddCmsModulePrompt;
+  window.handleMoveCmsModule = handleMoveCmsModule;
+  window.handleDuplicateCmsModule = handleDuplicateCmsModule;
+  window.handleSaveCmsLessonEdits = handleSaveCmsLessonEdits;
+  window.handleSaveCmsActivityEdits = handleSaveCmsActivityEdits;
+  window.handleCreateManualSnapshot = handleCreateManualSnapshot;
+  window.handleCmsLifecycleTransition = handleCmsLifecycleTransition;
+  window.setCmsImportMode = setCmsImportMode;
+  window.loadCmsSampleFixture = loadCmsSampleFixture;
+  window.handleExecuteCmsDraftImport = handleExecuteCmsDraftImport;
+  window.setCmsVocabSearch = setCmsVocabSearch;
+  window.selectCmsVocabLexeme = selectCmsVocabLexeme;
+  window.selectCmsOverlayLanguage = selectCmsOverlayLanguage;
+  window.handleSaveCanonicalLexeme = handleSaveCanonicalLexeme;
+  window.handleSaveNativeOverlay = handleSaveNativeOverlay;
+  window.handleRunCmsBulkAudit = handleRunCmsBulkAudit;
+  window.handleAddCmsReviewerNote = handleAddCmsReviewerNote;
+  window.handleRestoreCmsSnapshot = handleRestoreCmsSnapshot;
+  window.setCmsDiffSelection = setCmsDiffSelection;
+  window.setCmsMediaSearch = setCmsMediaSearch;
+  window.handleVerifyCmsExportRoundTrip = handleVerifyCmsExportRoundTrip;
+  window.handleDownloadCmsExportJson = handleDownloadCmsExportJson;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,
@@ -4338,4 +4443,5 @@ if (typeof window !== 'undefined') {
   const initialBookWord =
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;
   inspectWordDeep(initialBookWord, false, false);
+  bootCmsStudioRouteIfRequested();
 }
