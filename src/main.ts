@@ -90,6 +90,7 @@ import {
 import {
   openLangoContentStudio,
   closeLangoContentStudio,
+  renderLangoContentStudio,
   switchCmsWorkspaceTab,
   selectCmsActiveTrack,
   dismissCmsBanner,
@@ -100,6 +101,10 @@ import {
   selectCmsEditorLesson,
   selectCmsEditorActivity,
   toggleCmsSourceJsonDrawer,
+  toggleCmsDraftVsPublishedDiffDrawer,
+  setCmsPreviewMode,
+  openCmsPreviewWithMode,
+  handleDiscardCmsDraftOverlay,
   handleAddCmsModulePrompt,
   handleMoveCmsModule,
   handleDuplicateCmsModule,
@@ -4208,6 +4213,7 @@ declare global {
     updateSidebarStats: typeof updateSidebarStats;
     openLangoContentStudio: typeof openLangoContentStudio;
     closeLangoContentStudio: typeof closeLangoContentStudio;
+    renderLangoContentStudio: typeof renderLangoContentStudio;
     switchCmsWorkspaceTab: typeof switchCmsWorkspaceTab;
     selectCmsActiveTrack: typeof selectCmsActiveTrack;
     dismissCmsBanner: typeof dismissCmsBanner;
@@ -4218,6 +4224,10 @@ declare global {
     selectCmsEditorLesson: typeof selectCmsEditorLesson;
     selectCmsEditorActivity: typeof selectCmsEditorActivity;
     toggleCmsSourceJsonDrawer: typeof toggleCmsSourceJsonDrawer;
+    toggleCmsDraftVsPublishedDiffDrawer: typeof toggleCmsDraftVsPublishedDiffDrawer;
+    setCmsPreviewMode: typeof setCmsPreviewMode;
+    openCmsPreviewWithMode: typeof openCmsPreviewWithMode;
+    handleDiscardCmsDraftOverlay: typeof handleDiscardCmsDraftOverlay;
     handleAddCmsModulePrompt: typeof handleAddCmsModulePrompt;
     handleMoveCmsModule: typeof handleMoveCmsModule;
     handleDuplicateCmsModule: typeof handleDuplicateCmsModule;
@@ -4366,6 +4376,7 @@ if (typeof window !== 'undefined') {
   window.updateSidebarStats = updateSidebarStats;
   window.openLangoContentStudio = openLangoContentStudio;
   window.closeLangoContentStudio = closeLangoContentStudio;
+  window.renderLangoContentStudio = renderLangoContentStudio;
   window.switchCmsWorkspaceTab = switchCmsWorkspaceTab;
   window.selectCmsActiveTrack = selectCmsActiveTrack;
   window.dismissCmsBanner = dismissCmsBanner;
@@ -4376,6 +4387,11 @@ if (typeof window !== 'undefined') {
   window.selectCmsEditorLesson = selectCmsEditorLesson;
   window.selectCmsEditorActivity = selectCmsEditorActivity;
   window.toggleCmsSourceJsonDrawer = toggleCmsSourceJsonDrawer;
+  window.toggleCmsDraftVsPublishedDiffDrawer =
+    toggleCmsDraftVsPublishedDiffDrawer;
+  window.setCmsPreviewMode = setCmsPreviewMode;
+  window.openCmsPreviewWithMode = openCmsPreviewWithMode;
+  window.handleDiscardCmsDraftOverlay = handleDiscardCmsDraftOverlay;
   window.handleAddCmsModulePrompt = handleAddCmsModulePrompt;
   window.handleMoveCmsModule = handleMoveCmsModule;
   window.handleDuplicateCmsModule = handleDuplicateCmsModule;

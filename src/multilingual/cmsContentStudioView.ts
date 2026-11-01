@@ -56,6 +56,9 @@ import {
   getAllCmsTrackSummaries,
   getCmsDashboardMetrics,
   getOrCreateCmsCourseDraft,
+  getPublishedBaselineCoursePackage,
+  discardCmsDraftOverlay,
+  computeCmsDraftVsPublishedDiff,
   addOrUpdateCmsModuleInDraft,
   reorderCmsModulesInDraft,
   duplicateCmsModuleInDraft,
@@ -80,6 +83,7 @@ import {
   exportCmsCourseDraftToJson,
   runBulkCmsValidationAudit,
   searchCmsContentStudio,
+  type CmsContentOriginStatus,
   type CmsLifecycleState,
   type CmsTrackSummary,
   type CmsValidationIssue,
@@ -113,6 +117,9 @@ interface CmsStudioUiState {
   selectedLessonId: string;
   selectedActivityId: string;
   showSourceJsonDrawer: boolean;
+  showDraftVsPublishedDiffDrawer: boolean;
+  // Preview mode
+  previewMode: 'draft' | 'published';
   // Importer state
   importMode: 'full_draft_import' | 'incremental_module_merge';
   importJsonText: string;
@@ -146,7 +153,7 @@ interface CmsStudioUiState {
 const cmsUiState: CmsStudioUiState = {
   isOpen: false,
   activeTab: 'dashboard',
-  selectedTrackId: 'track:es-to-en',
+  selectedTrackId: PUBLISHED_UKRAINIAN_TRACK_ID,
   courseSearchQuery: '',
   courseDirectionFilter: 'all',
   courseStatusFilter: 'all',
@@ -156,6 +163,8 @@ const cmsUiState: CmsStudioUiState = {
   selectedLessonId: '',
   selectedActivityId: '',
   showSourceJsonDrawer: false,
+  showDraftVsPublishedDiffDrawer: false,
+  previewMode: 'draft',
   importMode: 'full_draft_import',
   importJsonText: '',
   lastImportBannerHtml: '',
@@ -690,6 +699,40 @@ function renderCmsCoursesTab(): string {
   `;
 }
 
+function renderCmsOriginStatusBadge(
+  status?: CmsContentOriginStatus | unknown,
+  testId?: string
+): string {
+  const s = (status as CmsContentOriginStatus | undefined) || 'PUBLISHED';
+  const styleMap: Record<
+    CmsContentOriginStatus,
+    { bg: string; fg: string; label: string }
+  > = {
+    PUBLISHED: {
+      bg: 'var(--success-container)',
+      fg: 'var(--success-on-container)',
+      label: 'PUBLISHED',
+    },
+    UNCHANGED: {
+      bg: 'var(--surface-2)',
+      fg: 'var(--text-secondary)',
+      label: 'UNCHANGED',
+    },
+    MODIFIED_DRAFT: {
+      bg: 'var(--warn-container)',
+      fg: 'var(--warn-on-container)',
+      label: 'MODIFIED DRAFT',
+    },
+    NEW_DRAFT: {
+      bg: 'var(--accent-container)',
+      fg: 'var(--accent-on-container)',
+      label: 'NEW DRAFT',
+    },
+  };
+  const cfg = styleMap[s] || styleMap.PUBLISHED;
+  return `<span ${testId ? `data-testid="${escapeHtml(testId)}"` : ''} class="tag" style="background:${cfg.bg}; color:${cfg.fg}; font-size:9.5px; padding:1px 6px; font-weight:800;">${cfg.label}</span>`;
+}
+
 function renderCmsCourseTrackCard(t: CmsTrackSummary): string {
   const badgeColor =
     t.lifecycleState === 'PUBLISHED'
@@ -706,7 +749,9 @@ function renderCmsCourseTrackCard(t: CmsTrackSummary): string {
 
   const modDisplay =
     t.publishedModuleCount > 0
-      ? `${t.publishedModuleCount} Pub`
+      ? t.hasDraft
+        ? `${t.publishedModuleCount} Pub (+${t.draftModuleCount} Draft)`
+        : `${t.publishedModuleCount} Pub`
       : `${t.draftModuleCount} Draft`;
 
   return `
@@ -729,7 +774,7 @@ function renderCmsCourseTrackCard(t: CmsTrackSummary): string {
           </div>
           <div>
             <div style="font-weight:800; font-size:12.5px;">${t.draftLessonCount}</div>
-            <div style="color:var(--text-secondary);">Draft Les</div>
+            <div style="color:var(--text-secondary);">Lessons</div>
           </div>
           <div>
             <div style="font-weight:800; font-size:12.5px;">${t.versionCount}</div>
@@ -745,8 +790,8 @@ function renderCmsCourseTrackCard(t: CmsTrackSummary): string {
       </div>
 
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button type="button" class="btn" style="flex:1; min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('editor', '${t.trackId}')">✏️ Editor</button>
-        <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('preview', '${t.trackId}')">👁️ Preview</button>
+        <button type="button" class="btn" data-testid="cms-card-btn-editor-${t.trackId}" style="flex:1; min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('editor', '${t.trackId}')">✏️ Editor</button>
+        <button type="button" class="btn btn-sec" data-testid="cms-card-btn-preview-${t.trackId}" style="min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('preview', '${t.trackId}')">👁️ Preview</button>
         <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('validation', '${t.trackId}')">🛡️ Audit</button>
         <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 8px; font-size:11.5px;" onclick="switchCmsWorkspaceTab('export', '${t.trackId}')">📤 Export</button>
       </div>
@@ -762,6 +807,12 @@ function renderCmsEditorTab(): string {
   ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
   const draft = getOrCreateCmsCourseDraft(cmsUiState.selectedTrackId);
   const pkg = draft.draftPackage;
+  const baselinePkg = getPublishedBaselineCoursePackage(
+    cmsUiState.selectedTrackId
+  );
+  const hasPublishedBaseline = Boolean(
+    baselinePkg && baselinePkg.modules.length > 0
+  );
   const activeMod = pkg.modules.find(
     (m) => m.moduleId === cmsUiState.selectedModuleId
   );
@@ -775,7 +826,77 @@ function renderCmsEditorTab(): string {
     (a) => a.activityId === cmsUiState.selectedActivityId
   );
 
-  const isBuiltinUk = cmsUiState.selectedTrackId === PUBLISHED_UKRAINIAN_TRACK_ID;
+  const isBuiltinUk =
+    cmsUiState.selectedTrackId === PUBLISHED_UKRAINIAN_TRACK_ID;
+  const modifiedCount = draft.modifiedModuleIds?.length || 0;
+  const newDraftCount = draft.newDraftModuleIds?.length || 0;
+  const hasDraftEdits = Boolean(draft.hasDraftChanges);
+
+  const pubVsDraftDiff =
+    cmsUiState.showDraftVsPublishedDiffDrawer && hasPublishedBaseline
+      ? computeCmsDraftVsPublishedDiff(cmsUiState.selectedTrackId)
+      : null;
+
+  const sourceOverlayBannerHtml = hasPublishedBaseline
+    ? `
+      <div data-testid="cms-editor-source-banner" style="margin-top:10px; padding:10px 12px; border-radius:var(--radius-xs); background:${hasDraftEdits ? 'var(--warn-container)' : 'var(--surface-2)'}; color:${hasDraftEdits ? 'var(--warn-on-container)' : 'var(--text)'}; border-left:4px solid ${hasDraftEdits ? 'var(--warn)' : 'var(--success)'}; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:12px;">
+        <div>
+          <div style="font-weight:800;">
+            ${
+              hasDraftEdits
+                ? `✏️ Effective Curriculum View: ${baselinePkg?.modules.length || 29} Published Baseline Modules + Unpublished Draft Overlay (${modifiedCount} Modified, ${newDraftCount} New Draft Module(s))`
+                : `🏛️ Source: Published Baseline (${baselinePkg?.modules.length || 29} Authoritative Modules Loaded • 0 Unpublished Draft Changes)`
+            }
+          </div>
+          <div style="font-size:11.5px; opacity:0.9; margin-top:2px;">
+            🔒 Built-in Ukrainian curriculum in <code>src/courseData.ts</code> is read-only. Any edits you save here are stored strictly in an isolated Studio Draft overlay until published or discarded.
+          </div>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button
+            type="button"
+            class="btn btn-sec"
+            data-testid="cms-btn-compare-published"
+            style="min-height:28px; padding:3px 9px; font-size:11.5px;"
+            onclick="toggleCmsDraftVsPublishedDiffDrawer()"
+          >
+            ${cmsUiState.showDraftVsPublishedDiffDrawer ? 'Hide Published vs Draft Diff' : '🔍 Compare Draft vs Published'}
+          </button>
+          <button
+            type="button"
+            class="btn btn-sec"
+            data-testid="cms-editor-btn-preview-published"
+            style="min-height:28px; padding:3px 9px; font-size:11.5px;"
+            onclick="openCmsPreviewWithMode('published')"
+          >
+            🏛️ Preview Published
+          </button>
+          <button
+            type="button"
+            class="btn btn-sec"
+            data-testid="cms-editor-btn-preview-draft"
+            style="min-height:28px; padding:3px 9px; font-size:11.5px;"
+            onclick="openCmsPreviewWithMode('draft')"
+          >
+            👁️ Preview Draft
+          </button>
+          ${
+            hasDraftEdits
+              ? `<button
+                  type="button"
+                  class="btn btn-sec"
+                  data-testid="cms-btn-discard-draft"
+                  style="min-height:28px; padding:3px 10px; font-size:11.5px; border-color:var(--danger); color:var(--danger);"
+                  onclick="handleDiscardCmsDraftOverlay()"
+                >
+                  🗑️ Discard Draft Changes
+                </button>`
+              : ''
+          }
+        </div>
+      </div>
+    `
+    : '';
 
   return `
     <div data-testid="cms-editor-view">
@@ -784,14 +905,15 @@ function renderCmsEditorTab(): string {
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <h2 style="margin:0; font-size:16px; font-weight:800;">✏️ Course Draft Editor: ${escapeHtml(pkg.courseTitle)}</h2>
-              <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-size:11px; font-weight:800;">State: ${escapeHtml(draft.lifecycleState)}</span>
+              <h2 style="margin:0; font-size:16px; font-weight:800;">✏️ Course Curriculum Editor: ${escapeHtml(pkg.courseTitle)}</h2>
+              <span class="tag" data-testid="cms-editor-lifecycle-tag" style="background:var(--accent-container); color:var(--accent-on-container); font-size:11px; font-weight:800;">State: ${escapeHtml(draft.lifecycleState)}</span>
+              <span class="tag" data-testid="cms-editor-module-count-tag" style="background:var(--surface-2); color:var(--text); font-size:11px; font-weight:800;">${pkg.modules.length} Module(s)</span>
               <span class="tag" style="background:var(--surface-2); color:var(--text-secondary); font-size:11px;">Schema v${escapeHtml(pkg.schemaVersion)}</span>
             </div>
             <div style="font-size:12px; color:var(--text-secondary); margin-top:3px;">
               ${
                 isBuiltinUk
-                  ? '🔒 Built-in Ukrainian curriculum is protected. Edits here are stored strictly in an isolated Studio Draft overlay and never overwrite src/courseData.ts.'
+                  ? 'Inspecting & editing the 29-module Learn Ukrainian curriculum via non-destructive Published Baseline + Studio Draft Overlay.'
                   : 'All edits occur in isolated DRAFT storage until explicitly validated and published to the active Course Track.'
               }
             </div>
@@ -799,7 +921,7 @@ function renderCmsEditorTab(): string {
 
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
             <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="handleAddCmsModulePrompt()">+ Add Module</button>
-            <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="toggleCmsSourceJsonDrawer()">
+            <button type="button" class="btn btn-sec" data-testid="cms-btn-inspect-json" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="toggleCmsSourceJsonDrawer()">
               ${cmsUiState.showSourceJsonDrawer ? 'Hide Source JSON' : '{ } Inspect Source JSON'}
             </button>
             <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="handleCreateManualSnapshot()">📸 Save Version Snapshot</button>
@@ -807,11 +929,26 @@ function renderCmsEditorTab(): string {
           </div>
         </div>
 
+        ${sourceOverlayBannerHtml}
+
+        ${
+          pubVsDraftDiff
+            ? `<div data-testid="cms-published-vs-draft-diff-drawer" style="margin-top:12px; padding:12px; background:var(--surface-2); border:1px solid var(--border-strong); border-radius:var(--radius-xs); font-size:12px;">
+                <div style="font-weight:800; margin-bottom:6px;">🔍 Comparison: Published Baseline (<code>v0_published_baseline</code>) vs Effective Draft</div>
+                <div><b>Total Differences:</b> ${pubVsDraftDiff.totalDifferences}</div>
+                <div style="margin-top:3px;"><b>Added Draft Modules:</b> ${pubVsDraftDiff.addedModuleIds.join(', ') || 'None'} • <b>Removed Modules:</b> ${pubVsDraftDiff.removedModuleIds.join(', ') || 'None'}</div>
+                <div style="margin-top:3px;"><b>Changed Module Titles:</b> ${pubVsDraftDiff.changedModuleTitles.map((c) => `${c.moduleId} ("${escapeHtml(c.before)}" → "${escapeHtml(c.after)}")`).join(' | ') || 'None'}</div>
+                <div style="margin-top:3px;"><b>Modified Lessons:</b> ${pubVsDraftDiff.modifiedLessonIds.join(', ') || 'None (Matches Published Baseline)'}</div>
+                <div style="margin-top:3px;"><b>Modified Activity Answer Keys:</b> ${pubVsDraftDiff.changedActivityAnswerKeys.map((a) => a.activityId).join(', ') || 'None'}</div>
+              </div>`
+            : ''
+        }
+
         ${
           cmsUiState.showSourceJsonDrawer
             ? `<div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border-subtle);">
-                <div style="font-size:12px; font-weight:800; margin-bottom:6px;">Raw UniversalCoursePackageV1 Draft JSON (Read-Only Inspector):</div>
-                <textarea readonly class="input-box" style="width:100%; min-height:200px; font-family:monospace; font-size:11.5px;">${escapeHtml(JSON.stringify(pkg, null, 2))}</textarea>
+                <div style="font-size:12px; font-weight:800; margin-bottom:6px;">Raw UniversalCoursePackageV1 Effective Curriculum JSON (${pkg.modules.length} Modules — Read-Only Inspector):</div>
+                <textarea data-testid="cms-editor-source-json-textarea" readonly class="input-box" style="width:100%; min-height:200px; font-family:monospace; font-size:11.5px;">${escapeHtml(JSON.stringify(pkg, null, 2))}</textarea>
               </div>`
             : ''
         }
@@ -819,7 +956,7 @@ function renderCmsEditorTab(): string {
 
       ${
         pkg.modules.length === 0
-          ? `<div class="card" style="padding:28px; text-align:center;">
+          ? `<div class="card" data-testid="cms-editor-empty-state" style="padding:28px; text-align:center;">
               <h3 style="margin:0 0 8px 0;">📭 This Course Track Has No Draft Modules Yet</h3>
               <p style="margin:0 0 16px 0; color:var(--text-secondary); font-size:13px;">
                 Start by creating a new module below or importing a JSON package in the Import & Merge tab.
@@ -835,51 +972,72 @@ function renderCmsEditorTab(): string {
             <!-- Column 1: Module, Section & Lesson Tree -->
             <div class="card" style="padding:12px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:12.5px; font-weight:800;">📚 Modules (${pkg.modules.length})</span>
+                <span style="font-size:12.5px; font-weight:800;" data-testid="cms-editor-tree-header">📚 Modules (${pkg.modules.length})</span>
                 <button type="button" class="btn btn-sec" style="min-height:26px; padding:2px 8px; font-size:11px;" onclick="handleAddCmsModulePrompt()">+ Mod</button>
               </div>
-              <div style="max-height:540px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+              <div data-testid="cms-editor-module-tree-list" style="max-height:580px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
                 ${pkg.modules
                   .map((m, mIdx) => {
                     const isSelectedMod =
                       m.moduleId === cmsUiState.selectedModuleId;
+                    const modOrigin =
+                      (m.metadata?.cmsOriginStatus as
+                        | CmsContentOriginStatus
+                        | undefined) ||
+                      (hasPublishedBaseline
+                        ? hasDraftEdits
+                          ? 'UNCHANGED'
+                          : 'PUBLISHED'
+                        : 'NEW_DRAFT');
                     return `
-                      <div style="padding:8px; border-radius:var(--radius-xs); border:1px solid ${isSelectedMod ? 'var(--accent)' : 'var(--border-subtle)'}; background:${isSelectedMod ? 'var(--surface-2)' : 'var(--surface-1)'};">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                      <div data-testid="cms-tree-module-${m.moduleId}" style="padding:8px; border-radius:var(--radius-xs); border:1px solid ${isSelectedMod ? 'var(--accent)' : 'var(--border-subtle)'}; background:${isSelectedMod ? 'var(--surface-2)' : 'var(--surface-1)'};">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
                           <div style="cursor:pointer; font-size:12.5px; font-weight:800; color:var(--text);" onclick="selectCmsEditorModule('${m.moduleId}')">
                             <span class="tag" style="font-size:10px; padding:1px 5px;">${escapeHtml(m.proficiencyLevel || 'A1')}</span>
                             ${escapeHtml(m.title)}
                           </div>
-                          <div style="display:flex; gap:3px;">
+                          <div style="display:flex; gap:3px; flex-shrink:0;">
                             <button type="button" class="btn btn-sec" title="Move Up" style="min-height:22px; padding:1px 5px; font-size:10px;" ${mIdx === 0 ? 'disabled' : ''} onclick="handleMoveCmsModule(${mIdx}, ${mIdx - 1})">↑</button>
                             <button type="button" class="btn btn-sec" title="Move Down" style="min-height:22px; padding:1px 5px; font-size:10px;" ${mIdx === pkg.modules.length - 1 ? 'disabled' : ''} onclick="handleMoveCmsModule(${mIdx}, ${mIdx + 1})">↓</button>
                             <button type="button" class="btn btn-sec" title="Duplicate Module" style="min-height:22px; padding:1px 5px; font-size:10px;" onclick="handleDuplicateCmsModule('${m.moduleId}')">⧉</button>
                           </div>
                         </div>
-                        <div style="font-size:10.5px; color:var(--text-secondary); margin-top:2px;">ID: <code>${escapeHtml(m.moduleId)}</code></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:4px;">
+                          <span style="font-size:10.5px; color:var(--text-secondary);">ID: <code>${escapeHtml(m.moduleId)}</code> • ${(m.vocabularyReferences || []).length} Vocab</span>
+                          ${renderCmsOriginStatusBadge(modOrigin, `cms-module-origin-badge-${m.moduleId}`)}
+                        </div>
                         ${
                           isSelectedMod
-                            ? `<div style="margin-top:8px; padding-left:8px; border-left:2px solid var(--accent); display:flex; flex-direction:column; gap:4px;">
+                            ? `<div style="margin-top:8px; padding-left:8px; border-left:2px solid var(--accent); display:flex; flex-direction:column; gap:6px;">
                                 ${(m.sections || [])
-                                  .map((sec) =>
-                                    (sec.lessons || [])
-                                      .map((les) => {
-                                        const isLesSel =
-                                          les.lessonId ===
-                                          cmsUiState.selectedLessonId;
-                                        return `
-                                          <button
-                                            type="button"
-                                            data-testid="cms-tree-lesson-${les.lessonId}"
-                                            class="btn ${isLesSel ? '' : 'btn-sec'}"
-                                            style="text-align:left; justify-content:flex-start; min-height:28px; padding:4px 8px; font-size:11.5px;"
-                                            onclick="selectCmsEditorLesson('${m.moduleId}', '${sec.sectionId}', '${les.lessonId}')"
-                                          >
-                                            📄 ${escapeHtml(les.title)}
-                                          </button>
-                                        `;
-                                      })
-                                      .join('')
+                                  .map(
+                                    (sec) => `
+                                    <div>
+                                      <div style="font-size:10.5px; font-weight:800; color:var(--text-secondary); margin:2px 0 3px 0;">
+                                        📂 ${escapeHtml(sec.title)}
+                                      </div>
+                                      <div style="display:flex; flex-direction:column; gap:3px;">
+                                        ${(sec.lessons || [])
+                                          .map((les) => {
+                                            const isLesSel =
+                                              les.lessonId ===
+                                              cmsUiState.selectedLessonId;
+                                            return `
+                                              <button
+                                                type="button"
+                                                data-testid="cms-tree-lesson-${les.lessonId}"
+                                                class="btn ${isLesSel ? '' : 'btn-sec'}"
+                                                style="text-align:left; justify-content:space-between; min-height:28px; padding:4px 8px; font-size:11.5px;"
+                                                onclick="selectCmsEditorLesson('${m.moduleId}', '${sec.sectionId}', '${les.lessonId}')"
+                                              >
+                                                <span>📄 ${escapeHtml(les.title)}</span>
+                                              </button>
+                                            `;
+                                          })
+                                          .join('')}
+                                      </div>
+                                    </div>
+                                  `
                                   )
                                   .join('')}
                               </div>`
@@ -896,55 +1054,99 @@ function renderCmsEditorTab(): string {
             <div class="card" style="padding:14px;">
               ${
                 activeLesson
-                  ? `
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div>
-                      <h3 style="margin:0; font-size:15px; font-weight:800;">📄 Lesson Editor</h3>
-                      <div style="font-size:11px; color:var(--text-secondary);">Stable Lesson ID: <code>${escapeHtml(activeLesson.lessonId)}</code> (Module: <code>${escapeHtml(activeMod?.moduleId || '')}</code>)</div>
-                    </div>
-                  </div>
+                  ? (() => {
+                      const lesOrigin =
+                        (activeLesson.metadata?.cmsOriginStatus as
+                          | CmsContentOriginStatus
+                          | undefined) ||
+                        (activeMod?.metadata?.cmsOriginStatus as
+                          | CmsContentOriginStatus
+                          | undefined) ||
+                        'PUBLISHED';
+                      const ukExt = activeMod?.metadata
+                        ?.legacyUkrainianModuleExtension as
+                        | {
+                            subtitle?: string;
+                            grammarFocus?: string[];
+                            vocabCount?: number;
+                            inlineChecksCount?: number;
+                            practiceDrillsCount?: number;
+                            examQuestionsCount?: number;
+                            dialoguesCount?: number;
+                          }
+                        | undefined;
 
-                  <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div>
-                      <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Lesson Title</label>
-                      <input
-                        id="cms-edit-lesson-title"
-                        data-testid="cms-edit-lesson-title"
-                        type="text"
-                        class="input-box"
-                        style="width:100%; font-size:13px; font-weight:700;"
-                        value="${escapeHtml(activeLesson.title)}"
-                      />
-                    </div>
-                    <div>
-                      <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Summary / Subtitle</label>
-                      <input
-                        id="cms-edit-lesson-summary"
-                        type="text"
-                        class="input-box"
-                        style="width:100%; font-size:12.5px;"
-                        value="${escapeHtml(activeLesson.summary || '')}"
-                      />
-                    </div>
-                    <div>
-                      <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Instructional Prose</label>
-                      <textarea
-                        id="cms-edit-lesson-text"
-                        data-testid="cms-edit-lesson-text"
-                        class="input-box"
-                        style="width:100%; min-height:150px; font-size:12.5px; line-height:1.5;"
-                      >${escapeHtml(activeLesson.instructionalText || '')}</textarea>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn"
-                      data-testid="cms-btn-save-lesson"
-                      onclick="handleSaveCmsLessonEdits()"
-                    >
-                      💾 Save Lesson Changes to Draft
-                    </button>
-                  </div>
-                `
+                      return `
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;">
+                          <div>
+                            <h3 style="margin:0; font-size:15px; font-weight:800;">📄 Lesson Editor</h3>
+                            <div style="font-size:11px; color:var(--text-secondary);">Stable Lesson ID: <code>${escapeHtml(activeLesson.lessonId)}</code> (Module: <code>${escapeHtml(activeMod?.moduleId || '')}</code>)</div>
+                          </div>
+                          ${renderCmsOriginStatusBadge(lesOrigin, 'cms-active-lesson-origin-badge')}
+                        </div>
+
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+                          <span class="tag" style="font-size:10.5px;">📚 ${(activeLesson.vocabularyRefs || []).length} Vocab Ref(s)</span>
+                          <span class="tag" style="font-size:10.5px;">🖼️ ${(activeLesson.mediaRefs || []).length} Media Ref(s)</span>
+                          <span class="tag" style="font-size:10.5px;">🎯 ${(activeLesson.activities || []).length} Activity Item(s)</span>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                          <div>
+                            <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Lesson Title</label>
+                            <input
+                              id="cms-edit-lesson-title"
+                              data-testid="cms-edit-lesson-title"
+                              type="text"
+                              class="input-box"
+                              style="width:100%; font-size:13px; font-weight:700;"
+                              value="${escapeHtml(activeLesson.title)}"
+                            />
+                          </div>
+                          <div>
+                            <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Summary / Subtitle</label>
+                            <input
+                              id="cms-edit-lesson-summary"
+                              data-testid="cms-edit-lesson-summary"
+                              type="text"
+                              class="input-box"
+                              style="width:100%; font-size:12.5px;"
+                              value="${escapeHtml(activeLesson.summary || '')}"
+                            />
+                          </div>
+                          <div>
+                            <label style="font-size:11.5px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:4px;">Instructional Prose</label>
+                            <textarea
+                              id="cms-edit-lesson-text"
+                              data-testid="cms-edit-lesson-text"
+                              class="input-box"
+                              style="width:100%; min-height:150px; font-size:12.5px; line-height:1.5;"
+                            >${escapeHtml(activeLesson.instructionalText || '')}</textarea>
+                          </div>
+                          <button
+                            type="button"
+                            class="btn"
+                            data-testid="cms-btn-save-lesson"
+                            onclick="handleSaveCmsLessonEdits()"
+                          >
+                            💾 Save Lesson Changes to Draft Overlay
+                          </button>
+
+                          ${
+                            ukExt
+                              ? `<div data-testid="cms-ukrainian-extension-inspector" style="margin-top:6px; padding:10px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); font-size:11.5px;">
+                                  <div style="font-weight:800; margin-bottom:4px;">🇺🇦 Preserved Ukrainian Module Metadata (${escapeHtml(activeMod?.moduleId || '')})</div>
+                                  <div style="color:var(--text-secondary);">
+                                    <b>Subtitle:</b> ${escapeHtml(ukExt.subtitle || '')}<br/>
+                                    <b>Grammar Focus:</b> ${escapeHtml((ukExt.grammarFocus || []).join(' • '))}<br/>
+                                    <b>Authoritative Counts:</b> ${ukExt.vocabCount || 0} Vocab Words • ${ukExt.inlineChecksCount || 0} Inline Checks • ${ukExt.practiceDrillsCount || 0} Practice Drills • ${ukExt.examQuestionsCount || 0} Exam Items • ${ukExt.dialoguesCount || 0} Dialogues
+                                  </div>
+                                </div>`
+                              : ''
+                          }
+                        </div>
+                      `;
+                    })()
                   : '<div style="font-size:13px; color:var(--text-secondary);">Select a lesson from the module tree to edit its prose and metadata.</div>'
               }
             </div>
@@ -961,12 +1163,13 @@ function renderCmsEditorTab(): string {
                     </div>
                   </div>
 
-                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; max-height:110px; overflow-y:auto;">
                     ${(activeLesson.activities || [])
                       .map(
                         (act, idx) => `
                         <button
                           type="button"
+                          data-testid="cms-activity-pill-${act.activityId}"
                           class="stage-pill ${act.activityId === cmsUiState.selectedActivityId ? 'active' : ''}"
                           style="min-height:28px; padding:3px 10px; font-size:11.5px;"
                           onclick="selectCmsEditorActivity('${act.activityId}')"
@@ -1588,21 +1791,50 @@ function renderCmsMediaTab(): string {
 // ============================================================================
 
 function renderCmsPreviewTab(): string {
-  const preview = renderIsolatedCmsDraftPreview(cmsUiState.selectedTrackId);
+  const preview = renderIsolatedCmsDraftPreview(
+    cmsUiState.selectedTrackId,
+    cmsUiState.previewMode
+  );
+  const baselinePkg = getPublishedBaselineCoursePackage(
+    cmsUiState.selectedTrackId
+  );
+  const hasPublishedBaseline = Boolean(
+    baselinePkg && baselinePkg.modules.length > 0
+  );
 
   return `
     <div data-testid="cms-preview-view">
       <div class="card" style="padding:14px; margin-bottom:14px; border-left:4px solid var(--success);">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <div>
             <h2 style="margin:0; font-size:16px; font-weight:800;">👁️ Isolated Universal Course Player Preview</h2>
             <div style="font-size:12px; color:var(--text-secondary);">
-              Sandboxed Mode: Renders your current <b>DRAFT</b> for <code>${escapeHtml(cmsUiState.selectedTrackId)}</code> using the real Phase 2 Universal Course Player. Completing activities here <b>never</b> modifies student FSRS decks, XP, or published course state.
+              Sandboxed Mode: Renders <code>${escapeHtml(cmsUiState.selectedTrackId)}</code> in <b>${cmsUiState.previewMode.toUpperCase()}</b> mode (${preview.moduleCount} module(s)) using the real Phase 2 Universal Course Player. Completing activities here <b>never</b> modifies student FSRS decks, XP, or published course state.
             </div>
           </div>
-          <span class="tag" style="background:var(--success-container); color:var(--success-on-container); font-size:11px; font-weight:800;">
-            🔒 FSRS & XP Untouched
-          </span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button
+              type="button"
+              data-testid="cms-btn-preview-draft"
+              class="stage-pill ${cmsUiState.previewMode === 'draft' ? 'active' : ''}"
+              style="min-height:30px; padding:4px 10px; font-size:11.5px;"
+              onclick="setCmsPreviewMode('draft')"
+            >
+              ✏️ Preview Draft (${preview.hasDraftChanges ? 'With Draft Edits' : 'Effective View'})
+            </button>
+            <button
+              type="button"
+              data-testid="cms-btn-preview-published"
+              class="stage-pill ${cmsUiState.previewMode === 'published' ? 'active' : ''}"
+              style="min-height:30px; padding:4px 10px; font-size:11.5px;"
+              onclick="setCmsPreviewMode('published')"
+            >
+              🏛️ Preview Published (${hasPublishedBaseline ? `${baselinePkg?.modules.length} Baseline Mods` : 'Published Only'})
+            </button>
+            <span class="tag" style="background:var(--success-container); color:var(--success-on-container); font-size:11px; font-weight:800;">
+              🔒 FSRS & XP Untouched
+            </span>
+          </div>
         </div>
       </div>
 
@@ -1735,6 +1967,33 @@ export function selectCmsEditorActivity(activityId: string): void {
 
 export function toggleCmsSourceJsonDrawer(): void {
   cmsUiState.showSourceJsonDrawer = !cmsUiState.showSourceJsonDrawer;
+  renderLangoContentStudio();
+}
+
+export function toggleCmsDraftVsPublishedDiffDrawer(): void {
+  cmsUiState.showDraftVsPublishedDiffDrawer =
+    !cmsUiState.showDraftVsPublishedDiffDrawer;
+  renderLangoContentStudio();
+}
+
+export function setCmsPreviewMode(mode: 'draft' | 'published'): void {
+  cmsUiState.previewMode = mode;
+  renderLangoContentStudio();
+}
+
+export function openCmsPreviewWithMode(mode: 'draft' | 'published'): void {
+  cmsUiState.previewMode = mode;
+  cmsUiState.activeTab = 'preview';
+  renderLangoContentStudio();
+}
+
+export function handleDiscardCmsDraftOverlay(): void {
+  const restored = discardCmsDraftOverlay(cmsUiState.selectedTrackId);
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  setCmsBanner(
+    'success',
+    `Discarded unpublished draft changes for ${cmsUiState.selectedTrackId}. Restored ${restored.draftPackage.modules.length} published baseline module(s).`
+  );
   renderLangoContentStudio();
 }
 

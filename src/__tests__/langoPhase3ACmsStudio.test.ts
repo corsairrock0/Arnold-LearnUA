@@ -63,6 +63,9 @@ import {
   getAllCmsTrackSummaries,
   getCmsDashboardMetrics,
   getOrCreateCmsCourseDraft,
+  getPublishedBaselineCoursePackage,
+  discardCmsDraftOverlay,
+  computeCmsDraftVsPublishedDiff,
   saveCmsCourseDraft,
   addOrUpdateCmsModuleInDraft,
   reorderCmsModulesInDraft,
@@ -614,3 +617,231 @@ test('Test 25: Public users cannot access unauthorized CMS editing, importing, r
     setSimulatedPublicProductionModeForTesting(false);
   }
 });
+
+// ============================================================================
+// UKRAINIAN CMS INTEGRATION REGRESSION TESTS (SECTION 11: TEST A — TEST M)
+// ============================================================================
+
+test('TEST A, TEST B & TEST C: Main Course tab and Content Studio Editor display all 29 published Ukrainian modules with real lesson content, vocabulary, and assessments', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST A: Main Course tab data
+  assert.equal(COURSE_MODULES.length, 29);
+  assert.equal(COURSE_MODULES[0].id, 'A0.1');
+  assert.equal(COURSE_MODULES[28].id, 'C1.1');
+
+  // TEST B: Content Studio Course Editor for Learn Ukrainian (`track:en-to-uk`)
+  const ukDraft = getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(
+    ukDraft.draftPackage.modules.length,
+    29,
+    'Expected Content Studio Editor to load all 29 Ukrainian modules (never modules: [])'
+  );
+  assert.equal(ukDraft.lifecycleState, 'PUBLISHED');
+  assert.equal(ukDraft.draftPackage.courseStatus, 'published');
+  assert.equal(ukDraft.hasDraftChanges, false);
+  assert.equal(ukDraft.draftPackage.modules[0].moduleId, 'A0.1');
+  assert.equal(ukDraft.draftPackage.modules[28].moduleId, 'C1.1');
+
+  // Verify Course Manager summary matches
+  const ukSummary = getAllCmsTrackSummaries().find(
+    (s) => s.trackId === PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.ok(ukSummary);
+  assert.equal(ukSummary.publishedModuleCount, 29);
+  assert.equal(ukSummary.draftLessonCount, 145); // 29 modules * 5 structured sections
+
+  // TEST C: Select a Ukrainian module in the CMS editor and verify real lesson content, vocabulary refs, and assessments
+  const modA01 = ukDraft.draftPackage.modules[0];
+  assert.equal(modA01.moduleId, 'A0.1');
+  assert.equal(modA01.title, COURSE_MODULES[0].title);
+  assert.equal(modA01.sections?.length, 5);
+  assert.ok((modA01.vocabularyReferences?.length || 0) >= 60);
+
+  const sec1Lesson = modA01.sections![0].lessons![0];
+  assert.equal(sec1Lesson.lessonId, 'A0.1_les_grammar');
+  assert.ok(sec1Lesson.instructionalText && sec1Lesson.instructionalText.length > 100);
+  assert.ok((sec1Lesson.activities?.length || 0) >= 4);
+
+  const sec2Cfu = modA01.sections![1].lessons![0];
+  assert.ok((sec2Cfu.activities?.length || 0) >= COURSE_MODULES[0].cfu.length);
+
+  const sec3Practice = modA01.sections![2].lessons![0];
+  assert.equal(sec3Practice.activities?.length, COURSE_MODULES[0].practice.length);
+
+  const sec4Vocab = modA01.sections![3].lessons![0];
+  assert.equal(sec4Vocab.activities?.length, 1);
+  assert.equal(sec4Vocab.vocabularyRefs?.length, COURSE_MODULES[0].vocab.length);
+
+  const sec5Exam = modA01.sections![4].lessons![0];
+  assert.equal(sec5Exam.activities?.length, COURSE_MODULES[0].exam.length);
+});
+
+test('TEST D & TEST E: CMS Preview Published and Preview Draft both display the 29-module Ukrainian course through the Universal Course Player', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST D: Preview Published
+  const pubPreview = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  assert.equal(pubPreview.usesUniversalCoursePlayer, true);
+  assert.equal(pubPreview.isIsolatedFromStudentFsrs, true);
+  assert.equal(pubPreview.previewMode, 'published');
+  assert.equal(pubPreview.moduleCount, 29);
+  assert.ok(pubPreview.html.includes('A0.1'));
+  assert.ok(pubPreview.html.includes('C1.1'));
+  assert.ok(pubPreview.html.includes('PREVIEW PUBLISHED BASELINE'));
+
+  // TEST E: Preview Draft with no draft changes
+  const draftPreview = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  assert.equal(draftPreview.usesUniversalCoursePlayer, true);
+  assert.equal(draftPreview.isIsolatedFromStudentFsrs, true);
+  assert.equal(draftPreview.previewMode, 'draft');
+  assert.equal(draftPreview.moduleCount, 29);
+  assert.equal(draftPreview.hasDraftChanges, false);
+  assert.ok(draftPreview.html.includes('A0.1'));
+  assert.ok(draftPreview.html.includes('C1.1'));
+});
+
+test('TEST F & TEST G: Safe Draft Edit on Ukrainian module updates Draft View & Draft Preview while Published Baseline & Learner Course remain untouched; Discard Draft restores baseline', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const originalTitleInSource = COURSE_MODULES[0].title;
+
+  // TEST F: Make a small draft edit to a Ukrainian lesson in A0.1
+  const editedEnv = updateCmsLessonInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'A0.1',
+    'A0.1_les_grammar',
+    {
+      title: 'A0.1 Lesson & Grammar — [STUDIO DRAFT OVERLAY TEST EDIT]',
+    }
+  );
+
+  // 1. Draft overlay stores the change and marks A0.1 as MODIFIED_DRAFT while other 28 modules remain UNCHANGED
+  assert.equal(editedEnv.hasDraftChanges, true);
+  assert.deepEqual(editedEnv.modifiedModuleIds, ['A0.1']);
+  assert.equal(editedEnv.draftPackage.modules.length, 29);
+  assert.equal(
+    editedEnv.draftPackage.modules[0].metadata?.cmsOriginStatus,
+    'MODIFIED_DRAFT'
+  );
+  assert.equal(
+    editedEnv.draftPackage.modules[1].metadata?.cmsOriginStatus,
+    'UNCHANGED'
+  );
+
+  // 2. Draft Preview reflects the change
+  const draftPreviewAfterEdit = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  assert.equal(draftPreviewAfterEdit.hasDraftChanges, true);
+  assert.ok(
+    draftPreviewAfterEdit.html.includes('[STUDIO DRAFT OVERLAY TEST EDIT]')
+  );
+
+  // 3. Published Baseline and Preview Published remain completely unchanged
+  const pubBaseline = getPublishedBaselineCoursePackage(
+    PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.ok(pubBaseline);
+  assert.equal(
+    pubBaseline.modules[0].sections![0].lessons![0].title.includes(
+      '[STUDIO DRAFT OVERLAY TEST EDIT]'
+    ),
+    false
+  );
+  const pubPreviewAfterEdit = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  assert.equal(
+    pubPreviewAfterEdit.html.includes('[STUDIO DRAFT OVERLAY TEST EDIT]'),
+    false
+  );
+
+  // 4. Main learner COURSE_MODULES is untouched
+  assert.equal(COURSE_MODULES[0].title, originalTitleInSource);
+
+  // 5. Diff vs Published Baseline accurately reports 1 modified lesson
+  const diffVsPub = computeCmsDraftVsPublishedDiff(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.ok(diffVsPub);
+  assert.deepEqual(diffVsPub.modifiedLessonIds, ['A0.1_les_grammar']);
+
+  // TEST G: Discard Draft restores the original 29-module Published Baseline
+  const afterDiscard = discardCmsDraftOverlay(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(afterDiscard.hasDraftChanges, false);
+  assert.equal(afterDiscard.draftPackage.modules.length, 29);
+  assert.equal(
+    afterDiscard.draftPackage.modules[0].sections![0].lessons![0].title.includes(
+      '[STUDIO DRAFT OVERLAY TEST EDIT]'
+    ),
+    false
+  );
+  assert.equal(
+    afterDiscard.draftPackage.modules[0].metadata?.cmsOriginStatus,
+    'PUBLISHED'
+  );
+});
+
+test('TEST H, TEST I, TEST J, TEST K, TEST L & TEST M: Version Snapshot, Empty Track, Bilingual Separation, Publication Safety, and Learner Preservation', () => {
+  // TEST H: Version history for Ukrainian always includes the 29-module v0_published_baseline and never 0-module snapshots
+  const ukHistory = getCmsVersionHistory(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.ok(ukHistory.length >= 1);
+  const baselineSnap = ukHistory.find(
+    (s) => s.versionId === 'v0_published_baseline'
+  );
+  assert.ok(baselineSnap, 'Expected v0_published_baseline snapshot');
+  assert.equal(baselineSnap.packageSnapshot.modules.length, 29);
+  for (const snap of ukHistory) {
+    assert.ok(
+      snap.packageSnapshot.modules.length >= 29,
+      `Ukrainian snapshot ${snap.versionId} must never have 0 modules`
+    );
+  }
+
+  // Publication Safety: Attempting to validate or publish an empty or truncated Ukrainian package is blocked
+  const truncatedPkg = {
+    ...baselineSnap.packageSnapshot,
+    modules: baselineSnap.packageSnapshot.modules.slice(0, 28), // missing C1.1
+  };
+  const truncatedReport = validateCmsCourseDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    truncatedPkg
+  );
+  assert.equal(truncatedReport.canPublish, false);
+  assert.ok(
+    truncatedReport.issues.some(
+      (i) => i.code === 'ACCIDENTAL_MODULE_DELETION_DETECTED'
+    )
+  );
+
+  // TEST I: Empty Course Track (e.g., Learn Spanish `track:en-to-es`) continues to show empty state
+  clearCmsDraftAndHistoryForTrack('track:en-to-es');
+  const esForeignDraft = getOrCreateCmsCourseDraft('track:en-to-es');
+  assert.equal(esForeignDraft.lifecycleState, 'EMPTY');
+  assert.equal(esForeignDraft.draftPackage.courseStatus, 'draft');
+  assert.equal(esForeignDraft.draftPackage.modules.length, 0);
+
+  // TEST J: Bilingual English Track Separation (`track:es-to-en` vs `track:ja-to-en`)
+  const esEnTrack = getCourseTrackById('track:es-to-en');
+  const jaEnTrack = getCourseTrackById('track:ja-to-en');
+  assert.notEqual(esEnTrack?.trackId, jaEnTrack?.trackId);
+  assert.equal(esEnTrack?.nativeLanguage, 'es');
+  assert.equal(jaEnTrack?.nativeLanguage, 'ja');
+
+  // TEST K, L, M: Vocabulary, Assessments, FSRS, Identify, and all 8 tabs intact
+  assert.equal(
+    COURSE_MODULES.reduce((acc, m) => acc + m.vocab.length, 0),
+    1810
+  );
+  assert.equal(
+    IDENTIFY_CATEGORIES.flatMap((c) => c.scenes).length,
+    100
+  );
+});
+

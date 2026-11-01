@@ -398,8 +398,13 @@ export function selectUniversalCourseModule(
   st.selectedModuleIndex = Math.max(0, moduleIndex);
   st.selectedSectionIndex = 0;
   st.selectedLessonIndex = 0;
-  if (typeof window !== 'undefined' && window.syncMultilingualTrackUI) {
-    window.syncMultilingualTrackUI();
+  if (typeof window !== 'undefined') {
+    if (window.syncMultilingualTrackUI) {
+      window.syncMultilingualTrackUI();
+    }
+    if ((window as unknown as { renderLangoContentStudio?: () => void }).renderLangoContentStudio) {
+      (window as unknown as { renderLangoContentStudio: () => void }).renderLangoContentStudio();
+    }
   }
 }
 
@@ -411,8 +416,13 @@ export function selectUniversalCourseLesson(
   const st = getOrCreatePlayerState(trackId);
   st.selectedSectionIndex = Math.max(0, sectionIndex);
   st.selectedLessonIndex = Math.max(0, lessonIndex);
-  if (typeof window !== 'undefined' && window.syncMultilingualTrackUI) {
-    window.syncMultilingualTrackUI();
+  if (typeof window !== 'undefined') {
+    if (window.syncMultilingualTrackUI) {
+      window.syncMultilingualTrackUI();
+    }
+    if ((window as unknown as { renderLangoContentStudio?: () => void }).renderLangoContentStudio) {
+      (window as unknown as { renderLangoContentStudio: () => void }).renderLangoContentStudio();
+    }
   }
 }
 
@@ -607,7 +617,7 @@ export function renderUniversalImportedCourseWorkspace(
         >
           <div style="display:flex; justify-content:space-between; width:100%; align-items:center; gap:6px;">
             <span class="tag" style="font-size:10.5px; font-weight:800; background:var(--surface-1); color:var(--accent);">
-              ${escapeHtml(m.proficiencyLevel || `Module ${idx + 1}`)}
+              ${escapeHtml(m.moduleId)} • ${escapeHtml(m.proficiencyLevel || `Module ${idx + 1}`)}
             </span>
             <span style="font-size:11px; font-weight:800; color:${isCompleted ? 'var(--success)' : modAccess.isUnlocked ? 'var(--text-secondary)' : 'var(--warn)'};">
               ${isCompleted ? '✓ Completed' : modAccess.isUnlocked ? (modAccess.isFreeTierModule ? 'Free Tier' : 'Unlocked') : '🔒 Premium'}
@@ -721,6 +731,7 @@ export function renderUniversalImportedCourseWorkspace(
     .join('');
 
   const activitiesHtml = activities
+    .slice(0, 40)
     .map((act) => {
       const isSupported = SUPPORTED_ACTIVITY_TYPES.has(act.activityType);
       const answered = state.answeredActivities[act.activityId];
@@ -728,6 +739,12 @@ export function renderUniversalImportedCourseWorkspace(
         options?: string[];
         correctIndex?: number;
         explanation?: string;
+        rules?: string[];
+        examples?: Array<{ uk: string; en: string }>;
+        dialogueTitle?: string;
+        dialogueLines?: Array<{ speaker: string; uk: string; en: string }>;
+        vocabItems?: Array<[string, string, string, string?, string?]>;
+        items?: Array<{ promptEn: string; answerUk: string; hint: string }>;
       };
 
       if (!isSupported) {
@@ -747,15 +764,18 @@ export function renderUniversalImportedCourseWorkspace(
       }
 
       if (
-        act.activityType === 'knowledge_check_mc' &&
-        Array.isArray(payload.options)
+        (act.activityType === 'knowledge_check_mc' ||
+          act.activityType === 'guided_practice_drill' ||
+          act.activityType === 'module_mastery_exam') &&
+        Array.isArray(payload.options) &&
+        payload.options.length >= 2
       ) {
         const correctIdx =
           typeof payload.correctIndex === 'number' ? payload.correctIndex : 0;
         return `
           <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-strong); border-radius:var(--radius-md);">
             <div style="font-size:11.5px; font-weight:800; color:var(--accent); text-transform:uppercase;">
-              ✓ Interactive Knowledge Check (${escapeHtml(act.activityType)})
+              ✓ Interactive Assessment (${escapeHtml(act.activityType)})
             </div>
             <div style="font-size:15px; font-weight:800; color:var(--text); margin:4px 0 8px 0;">
               ${escapeHtml(act.title || 'Knowledge Check')}
@@ -795,6 +815,103 @@ export function renderUniversalImportedCourseWorkspace(
         `;
       }
 
+      if (
+        act.activityType === 'lesson_explanation' &&
+        Array.isArray(payload.rules) &&
+        payload.rules.length > 0
+      ) {
+        return `
+          <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="font-size:11.5px; font-weight:800; color:var(--accent); text-transform:uppercase;">
+              📘 Grammar &amp; Core Rules (${payload.rules.length} Rules)
+            </div>
+            <div style="font-size:14.5px; font-weight:800; color:var(--text); margin:4px 0 8px 0;">
+              ${escapeHtml(act.title || act.activityId)}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; color:var(--text); line-height:1.55;">
+              ${payload.rules
+                .map(
+                  (r) =>
+                    `<div style="padding:8px 10px; background:var(--surface-1); border-radius:var(--radius-xs);">${r}</div>`
+                )
+                .join('')}
+            </div>
+            ${
+              Array.isArray(payload.examples) && payload.examples.length > 0
+                ? `<div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border-subtle);">
+                    <div style="font-size:11.5px; font-weight:800; color:var(--text-secondary); margin-bottom:6px;">Key Examples:</div>
+                    ${payload.examples
+                      .map(
+                        (ex) =>
+                          `<div style="font-size:12.5px; margin-bottom:4px;"><b>${escapeHtml(ex.uk)}</b> — <span style="color:var(--text-secondary);">${escapeHtml(ex.en)}</span></div>`
+                      )
+                      .join('')}
+                  </div>`
+                : ''
+            }
+          </div>
+        `;
+      }
+
+      if (
+        act.activityType === 'contextual_dialogue' &&
+        Array.isArray(payload.dialogueLines) &&
+        payload.dialogueLines.length > 0
+      ) {
+        return `
+          <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="font-size:11.5px; font-weight:800; color:var(--accent); text-transform:uppercase;">
+              💬 Contextual Dialogue
+            </div>
+            <div style="font-size:14.5px; font-weight:800; color:var(--text); margin:4px 0 8px 0;">
+              ${escapeHtml(act.title || payload.dialogueTitle || 'Dialogue')}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              ${payload.dialogueLines
+                .map(
+                  (line) => `
+                  <div style="padding:8px 10px; background:var(--surface-1); border-radius:var(--radius-xs); font-size:13px;">
+                    <b>${escapeHtml(line.speaker)}:</b> <span style="color:var(--accent); font-weight:700;">${escapeHtml(line.uk)}</span>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${escapeHtml(line.en)}</div>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (
+        act.activityType === 'vocabulary_introduction' &&
+        Array.isArray(payload.vocabItems) &&
+        payload.vocabItems.length > 0
+      ) {
+        return `
+          <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="font-size:11.5px; font-weight:800; color:var(--accent); text-transform:uppercase;">
+              🔤 Module Vocabulary (${payload.vocabItems.length} Words)
+            </div>
+            <div style="font-size:14.5px; font-weight:800; color:var(--text); margin:4px 0 8px 0;">
+              ${escapeHtml(act.title || 'Vocabulary Introduction')}
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:8px; max-height:360px; overflow-y:auto;">
+              ${payload.vocabItems
+                .map(
+                  (tuple) => `
+                  <div style="padding:8px 10px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); font-size:12.5px;">
+                    <div><b style="color:var(--accent); font-size:13.5px;">${escapeHtml(tuple[0])}</b> <span style="color:var(--text-secondary); font-size:11px;">(${escapeHtml(tuple[2] || '')})</span></div>
+                    <div style="font-weight:700; color:var(--text); margin-top:2px;">${escapeHtml(tuple[1])}</div>
+                    ${tuple[3] ? `<div style="font-size:11.5px; color:var(--text-secondary); margin-top:3px;">${escapeHtml(tuple[3])}</div>` : ''}
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+          </div>
+        `;
+      }
+
       return `
         <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -818,6 +935,30 @@ export function renderUniversalImportedCourseWorkspace(
       `;
     })
     .join('');
+
+  const sectionLessonNavHtml =
+    sections.length > 1 || lessons.length > 1
+      ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+          ${sections
+            .map((sec, sIdx) =>
+              (sec.lessons || []).map((les, lIdx) => {
+                const isActive = sIdx === activeSecIdx && lIdx === activeLesIdx;
+                return `
+                  <button
+                    type="button"
+                    data-testid="universal-section-pill-${sIdx}-${lIdx}"
+                    class="stage-pill ${isActive ? 'active' : ''}"
+                    style="min-height:32px; padding:4px 10px; font-size:12px;"
+                    onclick="selectUniversalCourseLesson('${escapeHtml(track.trackId)}', ${sIdx}, ${lIdx})"
+                  >
+                    ${escapeHtml(sec.title || les.title)}
+                  </button>
+                `;
+              }).join('')
+            )
+            .join('')}
+        </div>`
+      : '';
 
   const isLessonCompleted =
     activeLesson && progress.completedLessonIds.includes(activeLesson.lessonId);
@@ -905,6 +1046,8 @@ export function renderUniversalImportedCourseWorkspace(
                     </div>`
                   : ''
               }
+
+              ${sectionLessonNavHtml}
 
               ${
                 activeLesson

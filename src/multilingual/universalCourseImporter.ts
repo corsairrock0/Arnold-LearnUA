@@ -49,6 +49,8 @@ export interface UniversalLessonV1 {
   activities?: UniversalActivityItemV1[];
   vocabularyRefs?: string[];
   pronunciationRefs?: string[];
+  mediaRefs?: string[];
+  metadata?: Record<string, unknown>;
   [extKey: string]: unknown;
 }
 
