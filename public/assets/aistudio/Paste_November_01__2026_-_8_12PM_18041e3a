@@ -1,0 +1,1179 @@
+LANGO — PHASE 1: MULTILINGUAL FOUNDATION, UNIVERSAL COURSE IMPORTER, HINDI SUPPORT, AND NATIVE-LANGUAGE-SPECIFIC ENGLISH LEARNING
+
+PRIMARY OBJECTIVE
+
+Upgrade my EXISTING working application:
+
+https://slovo-ua-app.ai.studio/
+
+Current application: Learn Ukrainian Lango
+
+Future platform name: Lango
+
+This is Phase 1 of creating a comprehensive multilingual language-learning platform.
+
+The application must support two major learning directions:
+
+1. English-speaking students learning 14 foreign languages.
+2. Native speakers of those 14 languages learning English through independently designed English-as-a-second-language (ESL/EFL) curricula.
+
+Preserve my entire existing Ukrainian application.
+
+The Ukrainian course is currently the only completed course.
+
+All additional language courses must remain blank until their actual educational content is generated and imported.
+
+The objective of this phase is to build the multilingual foundation, language-selection system, course-track architecture, and universal JSON importer needed to support every future course.
+
+DO NOT generate the missing curricula now.
+
+DO NOT implement payments, Firebase Authentication, a full administrator dashboard, or live subscriptions in this phase.
+
+⸻
+
+1. ABSOLUTE APPLICATION PRESERVATION
+
+This must be a NON-DESTRUCTIVE upgrade.
+
+Do not rebuild the application from scratch.
+
+Do not replace or regenerate:
+
+* Existing Ukrainian Course modules.
+* Lessons and educational explanations.
+* Grammar tables.
+* Vocabulary.
+* Knowledge Checks.
+* Practice activities.
+* Exams.
+* Existing assessment question banks.
+* Flashcards.
+* FSRS spaced-repetition scheduling.
+* Learning progress.
+* Reader.
+* Grammar Inspector.
+* Identify feature.
+* Existing WebP photographs.
+* Existing media.
+* Pronunciation tools.
+* Current UI styling.
+* Navigation.
+* Fonts and typography.
+* Unrelated functionality.
+
+Do not modify GitHub integration.
+
+Do not recreate the existing Google Cloud Run service.
+
+Do not change unrelated deployment configuration.
+
+Do not remove production dependencies.
+
+Do not delete or reset application data.
+
+Preserve stable course, lesson, vocabulary, and review identifiers.
+
+Before implementing any architectural changes, inspect the current codebase and identify potential data-loss or compatibility risks.
+
+Use non-destructive adapters and compatibility layers whenever possible.
+
+⸻
+
+2. FOURTEEN FOREIGN LANGUAGES
+
+Support these 14 foreign languages:
+
+1. Spanish — es
+2. French — fr
+3. Italian — it
+4. Portuguese — pt
+5. Russian — ru
+6. Ukrainian — uk
+7. Polish — pl
+8. German — de
+9. Chinese — zh
+10. Vietnamese — vi
+11. Korean — ko
+12. Japanese — ja
+13. Arabic — ar
+14. Hindi — hi
+
+HINDI IS NOW AN OFFICIALLY SUPPORTED LANGUAGE.
+
+For Hindi:
+
+* Support native Devanagari script.
+* Preserve combining marks and vowel signs.
+* Support appropriate Unicode normalization.
+* Support Hindi-specific grammar and vocabulary metadata.
+* Support pronunciation and transliteration where relevant.
+* Ensure correct rendering, searching, and future vocabulary importing.
+
+The platform must remain extensible so additional languages can be added later.
+
+Do not hardcode the application to this exact language count.
+
+⸻
+
+3. ADD ENGLISH AS A LEARNING TARGET
+
+In addition to the 14 foreign languages, English must be supported as a target language.
+
+English language code: en
+
+This creates 15 possible target languages in the platform.
+
+However, English has a special requirement:
+
+It must support 14 DIFFERENT native-language-specific curricula.
+
+DO NOT implement one generic English curriculum and simply translate its interface into different languages.
+
+DO NOT assume English learners from different native-language backgrounds need identical lessons.
+
+The app must support independent English courses designed specifically for learners whose first language is:
+
+1. Spanish.
+2. French.
+3. Italian.
+4. Portuguese.
+5. Russian.
+6. Ukrainian.
+7. Polish.
+8. German.
+9. Chinese.
+10. Vietnamese.
+11. Korean.
+12. Japanese.
+13. Arabic.
+14. Hindi.
+
+Every English course must be allowed to have a completely independent educational design.
+
+These fourteen English-learning curricula will be developed later.
+
+For Phase 1, their Course content must remain empty.
+
+⸻
+
+4. TWO LEARNING DIRECTIONS
+
+The platform must clearly distinguish between two learning directions.
+
+DIRECTION A — ENGLISH SPEAKERS LEARNING A FOREIGN LANGUAGE
+
+Examples:
+
+* English to Ukrainian.
+* English to Russian.
+* English to Polish.
+* English to Spanish.
+* English to Japanese.
+* English to Hindi.
+
+Default learner native language: English.
+
+Default instructional language: American English.
+
+Target language: The selected foreign language.
+
+Each target language will eventually have its own comprehensive curriculum.
+
+The existing Ukrainian course belongs to this direction.
+
+DIRECTION B — FOREIGN LANGUAGE SPEAKERS LEARNING ENGLISH
+
+Examples:
+
+* Spanish to English.
+* Ukrainian to English.
+* Russian to English.
+* Japanese to English.
+* Vietnamese to English.
+* Arabic to English.
+* Hindi to English.
+
+Target language: English.
+
+Learner native language: The selected foreign language.
+
+Instructional language: The learner’s native language by default.
+
+Target English variety: American English by default, with future support for other varieties.
+
+Each source-language-to-English combination must be represented as a distinct course track.
+
+Do not confuse the interface language, instructional language, native language, and target language.
+
+These are separate concepts.
+
+⸻
+
+5. CENTRAL COURSE-TRACK ARCHITECTURE
+
+THIS IS A MANDATORY ARCHITECTURAL DECISION.
+
+Do not organize all courses solely by target language.
+
+A target language may have multiple distinct curricula for different learner populations.
+
+For example:
+
+English for Spanish speakers.
+
+English for Vietnamese speakers.
+
+English for Japanese speakers.
+
+These are three different educational products, even though the target language is English.
+
+Create an extensible Course Track model.
+
+Each course track should support:
+
+* Stable course track ID.
+* Target language ID.
+* Native/source language ID.
+* Instructional language ID.
+* Target language variety.
+* Native language variety where applicable.
+* Course title.
+* Course availability.
+* Curriculum version.
+* Independent module registry.
+* Course content reference.
+* Vocabulary associations.
+* Assessment associations.
+* Pronunciation configuration.
+* Progress namespace.
+* Future entitlement scope.
+* Extensible metadata.
+
+The technical identity of a curriculum must include more than its target language.
+
+Use stable identifiers and explicit references rather than relying on display names.
+
+Example:
+
+Course Track A:
+Target language: English.
+Native language: Spanish.
+Instructional language: Spanish.
+
+Course Track B:
+Target language: English.
+Native language: Japanese.
+Instructional language: Japanese.
+
+These must be independently identifiable and importable.
+
+⸻
+
+6. FUTURE CURRICULUM AUTONOMY
+
+Gemini must have COMPLETE pedagogical freedom when generating future curricula.
+
+My existing Ukrainian course is a SOFTWARE TEMPLATE, not a CURRICULUM TEMPLATE.
+
+Do not impose:
+
+* Ukrainian grammar progression.
+* Ukrainian module count.
+* Fixed lesson counts.
+* The same section structure.
+* Identical learning objectives.
+* Identical vocabulary distribution.
+* Identical teaching strategies.
+* Identical practice activities.
+* Identical examination structures.
+
+Different languages require different educational approaches.
+
+Likewise, English courses designed for different native-language speakers must have complete freedom to differ from each other.
+
+The AI should use its knowledge of:
+
+* Linguistics.
+* Second-language acquisition.
+* Language pedagogy.
+* Cognitive science.
+* Language transfer.
+* Contrastive linguistics.
+* Pronunciation development.
+* Vocabulary acquisition.
+* Reading and listening development.
+* Speaking and writing skills.
+* Language-specific learner difficulties.
+* Evidence-informed instructional design.
+
+These are potential sources of expertise, not a rigid methodology checklist.
+
+The AI must independently determine the most appropriate course structure for the particular target language and learner population.
+
+⸻
+
+7. UNIQUE ENGLISH CURRICULA FOR EACH NATIVE LANGUAGE
+
+THIS IS ESPECIALLY IMPORTANT.
+
+Each of the fourteen English curricula must be independently developed based on the linguistic characteristics of the learner’s native language.
+
+A Spanish-speaking student learning English may face different challenges from a Japanese-speaking student.
+
+A Vietnamese-speaking student may require different pronunciation training from a Russian-speaking student.
+
+A Hindi-speaking student may benefit from different grammatical comparisons than a French-speaking student.
+
+The future curriculum-generation system must consider:
+
+* The learner’s native phonological system.
+* Differences in pronunciation.
+* Writing-system differences.
+* Grammatical contrasts.
+* Word order.
+* Vocabulary transfer.
+* False friends where relevant.
+* Common transfer-related errors.
+* Pragmatic and cultural communication differences.
+* Learning prerequisites.
+* Effective explanations using the learner’s native language.
+
+These considerations should inform the AI’s educational decisions without requiring it to follow a fixed checklist.
+
+The AI should be free to discover additional relevant challenges and teaching opportunities.
+
+Do not assume all speakers of a particular language make identical mistakes.
+
+Do not rely exclusively on stereotypes or unsupported assumptions about learner populations.
+
+Use source materials and reliable linguistic knowledge to identify useful instructional differences.
+
+⸻
+
+8. ENGLISH COURSES MUST NOT BE SIMPLE TRANSLATIONS
+
+Do not take a single English course and translate its explanations into fourteen languages.
+
+Do not assume the same sequence of English grammar topics will work best for every native-language group.
+
+Every course may have its own:
+
+* Number of modules.
+* Number of lessons.
+* Grammar progression.
+* Pronunciation progression.
+* Listening practice.
+* Reading progression.
+* Vocabulary sequence.
+* Writing activities.
+* Speaking activities.
+* Explanatory approach.
+* Examples.
+* Dialogues.
+* Assessments.
+* Error-correction methods.
+* Prerequisites.
+* Review system.
+
+Content may overlap naturally when educationally appropriate.
+
+However, any similarity must result from sound pedagogical reasoning rather than forced reuse.
+
+Each English curriculum should be originally designed for its intended learner population.
+
+⸻
+
+9. SOURCE LANGUAGE AND INTERFACE LANGUAGE
+
+The app should distinguish these concepts:
+
+NATIVE LANGUAGE:
+The learner’s first or strongest language.
+
+TARGET LANGUAGE:
+The language being learned.
+
+INSTRUCTIONAL LANGUAGE:
+The language used to explain lessons.
+
+INTERFACE LANGUAGE:
+The language used for navigation, buttons, notifications, and account settings.
+
+COURSE TRACK:
+The specific educational program for a particular learner population and target language.
+
+These settings must not be treated as interchangeable.
+
+Example:
+
+Native language: Ukrainian.
+
+Target language: English.
+
+Instructional language: Ukrainian.
+
+Interface language: Ukrainian.
+
+Course: English for Ukrainian speakers.
+
+Another example:
+
+Native language: Vietnamese.
+
+Target language: English.
+
+Instructional language: Vietnamese.
+
+Interface language: English.
+
+Course: English for Vietnamese speakers.
+
+The architecture must permit this combination without changing the actual curriculum identity.
+
+Initially, preserve the existing application’s English interface.
+
+Prepare the interface localization architecture for future translation into the fourteen foreign languages.
+
+Do not automatically translate the entire existing interface during Phase 1.
+
+Do not fabricate localization completeness.
+
+⸻
+
+10. GLOBAL LANGUAGE AND LEARNING-DIRECTION SELECTOR
+
+Create a polished language-selection experience.
+
+Users should be able to choose:
+
+WHAT LANGUAGE DO YOU WANT TO LEARN?
+
+Available target languages:
+
+Spanish
+French
+Italian
+Portuguese
+Russian
+Ukrainian
+Polish
+German
+Chinese
+Vietnamese
+Korean
+Japanese
+Arabic
+Hindi
+English
+
+When selecting any foreign language, the initial default course track should be the corresponding course for English-speaking learners.
+
+When selecting English, display a secondary choice:
+
+WHAT IS YOUR NATIVE LANGUAGE?
+
+Options:
+
+Spanish
+French
+Italian
+Portuguese
+Russian
+Ukrainian
+Polish
+German
+Chinese
+Vietnamese
+Korean
+Japanese
+Arabic
+Hindi
+
+Selecting a native language loads the corresponding English-learning course track.
+
+For example:
+
+Learn English → Native Language: Polish.
+
+This selects English for Polish speakers.
+
+Learn English → Native Language: Korean.
+
+This selects English for Korean speakers.
+
+Do not confuse these tracks.
+
+Preserve the existing design system and navigation style.
+
+Ensure language selection works on desktop and mobile.
+
+Remember the selected course track appropriately without requiring login during this phase.
+
+⸻
+
+11. COMPLETE COURSE INVENTORY
+
+The platform must support at least twenty-eight planned course tracks:
+
+FOURTEEN FOREIGN-LANGUAGE TRACKS:
+
+* English to Spanish.
+* English to French.
+* English to Italian.
+* English to Portuguese.
+* English to Russian.
+* English to Ukrainian.
+* English to Polish.
+* English to German.
+* English to Chinese.
+* English to Vietnamese.
+* English to Korean.
+* English to Japanese.
+* English to Arabic.
+* English to Hindi.
+
+FOURTEEN ENGLISH-LEARNING TRACKS:
+
+* Spanish to English.
+* French to English.
+* Italian to English.
+* Portuguese to English.
+* Russian to English.
+* Ukrainian to English.
+* Polish to English.
+* German to English.
+* Chinese to English.
+* Vietnamese to English.
+* Korean to English.
+* Japanese to English.
+* Arabic to English.
+* Hindi to English.
+
+Only the existing English-to-Ukrainian course is currently complete.
+
+Every other Course track should be empty or marked Coming Soon.
+
+Do not invent course content merely to populate the track registry.
+
+The application must support more tracks in the future without requiring an architectural rewrite.
+
+⸻
+
+12. EXISTING UKRAINIAN COURSE PRESERVATION
+
+Register the existing Ukrainian course as:
+
+Target language: Ukrainian.
+
+Native language: English.
+
+Instructional language: English.
+
+Course status: Published or equivalent existing status.
+
+Use the actual existing Course registry and content.
+
+Do not duplicate the curriculum.
+
+Do not change its module order.
+
+Do not change its identifiers.
+
+Do not change existing progress.
+
+Do not regenerate vocabulary.
+
+Do not modify assessments.
+
+Do not alter lesson explanations.
+
+Do not replace existing photographs.
+
+Use a compatibility adapter when necessary.
+
+The current Ukrainian course must remain fully functional throughout the migration.
+
+⸻
+
+13. BLANK COURSE STATES
+
+For all other twenty-seven planned course tracks:
+
+Keep the actual curriculum empty.
+
+Display a professional Coming Soon state.
+
+Suggested message:
+
+“Course Coming Soon”
+
+“This course is currently being developed. Lessons will become available when the curriculum is ready.”
+
+For English-learning tracks, include the selected native-language context.
+
+Example:
+
+“English for Spanish Speakers — Coming Soon.”
+
+“English for Hindi Speakers — Coming Soon.”
+
+Do not create fake modules, lessons, vocabulary assignments, grammar explanations, Knowledge Checks, Practice activities, or Exams.
+
+Do not mark incomplete tracks as published.
+
+Do not represent a blank course as an error.
+
+⸻
+
+14. UNIVERSAL COURSE JSON IMPORTER
+
+Build a flexible, versioned JSON importer.
+
+The importer must support importing a completed curriculum into a specific course track.
+
+It must identify:
+
+* Target language.
+* Learner native language.
+* Instructional language.
+* Course track ID.
+* Course schema version.
+* Module structure.
+* Lesson structure.
+* Supported learning activities.
+* Vocabulary references.
+* Pronunciation requirements.
+* Progress identifiers.
+* Source provenance where available.
+
+The importer must NEVER assume that a target language uniquely identifies a course.
+
+For English, the native language is essential.
+
+An English course designed for Spanish speakers must not accidentally be imported into the English-for-Japanese track.
+
+Likewise, a future Russian course designed for English speakers must not overwrite Ukrainian content.
+
+Use a safe, explicit course-track mapping process.
+
+⸻
+
+15. FLEXIBLE JSON SCHEMA
+
+Use a universal technical schema with a small, stable set of required fields.
+
+Recommended course-level fields:
+
+* schemaVersion
+* courseId
+* courseTrackId
+* targetLanguage
+* nativeLanguage
+* instructionalLanguage
+* targetVariety
+* courseTitle
+* courseStatus
+* modules
+* metadata
+
+Permit additional fields.
+
+A module may include:
+
+* Stable module ID.
+* Title.
+* Optional proficiency level.
+* Learning objectives.
+* Sections.
+* Lessons.
+* Supported activities.
+* Vocabulary references.
+* Pronunciation references.
+* Prerequisites.
+* Source provenance.
+* Extensible educational metadata.
+
+Do not require every language to have identical educational structures.
+
+Do not force all concepts into Ukrainian-specific grammar classifications.
+
+Do not force every course to follow CEFR if a different proficiency approach is pedagogically appropriate.
+
+Use appropriate schema versioning.
+
+Preserve meaningful unknown extension fields where possible.
+
+Report unsupported activity types rather than silently deleting them.
+
+⸻
+
+16. IMPORT PREVIEW
+
+Before importing course JSON, display:
+
+* Course title.
+* Course track.
+* Target language.
+* Native language.
+* Instructional language.
+* Number of modules.
+* Number of sections.
+* Number of lessons.
+* Included activity types.
+* Schema version.
+* Unsupported content types.
+* Missing references.
+* Duplicate identifiers.
+* Potential conflicts.
+* Validation status.
+
+Require explicit confirmation before committing an import.
+
+Prevent accidental replacement of an existing course.
+
+Do not silently overwrite Ukrainian.
+
+Do not mix different English-learning tracks.
+
+Do not silently drop valid content.
+
+⸻
+
+17. IMPORT PERMISSIONS AND SECURITY
+
+The importer must not be publicly writable.
+
+Do not create an endpoint allowing arbitrary visitors to upload and publish course content.
+
+For Phase 1, restrict actual import operations to trusted developer tooling or an appropriately protected development environment.
+
+If secure administrative authentication is not yet available, do not expose production course-import actions to the public.
+
+The full secure admin panel will be implemented in a later phase.
+
+Do not implement an insecure temporary administrator account.
+
+Do not hardcode passwords.
+
+Do not add fake authentication.
+
+⸻
+
+18. REUSABLE COURSE COMPONENTS
+
+Reuse existing learning components whenever appropriate.
+
+Examples:
+
+* Module navigation.
+* Lessons.
+* Grammar displays.
+* Vocabulary displays.
+* Knowledge Checks.
+* Practice activities.
+* Exams.
+* Flashcards.
+* Progress displays.
+
+Do not duplicate the entire UI implementation for every language.
+
+However, do not force all future curricula into identical lesson templates.
+
+The rendering system must support flexible content composition.
+
+If a new language introduces an educational activity not currently supported, the importer should preserve its metadata and report that additional rendering functionality is needed.
+
+Do not falsely claim unsupported learning activities work.
+
+⸻
+
+19. FUTURE VOCABULARY AND ANKI ARCHITECTURE
+
+Preserve the approved plan for separate high-frequency vocabulary decks.
+
+Every foreign language will eventually have a vocabulary registry targeting 6,000 verified, high-frequency lexical items.
+
+For future English-learning tracks, prepare a shared canonical English vocabulary registry that can support multiple independent learner-native-language presentations.
+
+IMPORTANT:
+
+English vocabulary itself does not need to be duplicated fourteen times.
+
+Instead, the system should support:
+
+* Canonical English lexical identity.
+* Vocabulary meanings and examples.
+* Native-language translations.
+* Learner-language-specific explanations.
+* Native-language-specific usage notes.
+* Different vocabulary teaching sequences.
+* Different flashcard presentations.
+* Independent learning progress.
+
+For example:
+
+An English word may appear in:
+
+English for Spanish speakers.
+
+English for Japanese speakers.
+
+English for Arabic speakers.
+
+The underlying lexical item may be shared.
+
+However, its explanation, translation, pronunciation guidance, examples, and pedagogical role may differ substantially by learner population.
+
+Do not use a single identical vocabulary card presentation for every native-language group if different teaching material is appropriate.
+
+Preserve existing Ukrainian vocabulary and FSRS learning progress.
+
+Do not generate or import the 6,000-word datasets during this phase.
+
+Do not fabricate frequency rankings.
+
+⸻
+
+20. INDEPENDENT PROGRESS BY COURSE TRACK
+
+Prepare the learning-progress architecture to associate progress with a specific Course Track rather than only a target language.
+
+This is important because English has fourteen different curricula.
+
+Progress for:
+
+English for Spanish speakers
+
+must remain independent from:
+
+English for Japanese speakers.
+
+The system should eventually support:
+
+* User ID.
+* Course track ID.
+* Module ID.
+* Lesson ID.
+* Assessment ID.
+* Vocabulary item ID.
+* FSRS review state.
+* Completion status.
+
+Do not reset existing Ukrainian progress.
+
+Create a migration-compatible approach that maps existing Ukrainian progress into the new course-track identity without losing prior records.
+
+Do not introduce unnecessary account or backend dependencies during this phase.
+
+⸻
+
+21. FUTURE SUBSCRIPTION READINESS
+
+The approved long-term business model is:
+
+ONE LANGO ACCOUNT.
+
+MULTIPLE INDEPENDENT LANGUAGE SUBSCRIPTIONS.
+
+MONTHLY OR ANNUAL BILLING.
+
+FOUR FREE PUBLISHED MODULES PER COURSE.
+
+PREMIUM ACCESS FOR SUBSEQUENT MODULES.
+
+However, the new Course Track model creates an important architectural distinction.
+
+A language can have multiple different courses.
+
+Therefore, design the future entitlement system to support explicit access scopes such as:
+
+* Target language.
+* Specific course track.
+* Defined course collection.
+* Specific premium vocabulary offering.
+
+Do not hardcode subscription access exclusively to a target-language string.
+
+This is especially important for English, which will have fourteen native-language-specific curricula.
+
+Do not make an irreversible business decision about whether purchasing English unlocks one native-language track or every English track during Phase 1.
+
+Make the entitlement model capable of supporting either policy later.
+
+Preserve the current plan for independent subscriptions across different learning languages.
+
+Do not implement billing yet.
+
+Do not create fake subscriptions.
+
+Do not activate Stripe, RevenueCat, Apple Billing, or Google Play Billing.
+
+⸻
+
+22. FUTURE INTERFACE LOCALIZATION
+
+Prepare the app for localization into:
+
+Spanish
+French
+Italian
+Portuguese
+Russian
+Ukrainian
+Polish
+German
+Chinese
+Vietnamese
+Korean
+Japanese
+Arabic
+Hindi
+English
+
+Do not hardcode UI labels in a way that makes localization difficult.
+
+Separate interface strings from Course educational content where practical.
+
+Support right-to-left layout for Arabic.
+
+Support Devanagari rendering for Hindi.
+
+Preserve Chinese, Japanese, Korean, Vietnamese, and Cyrillic text correctly.
+
+Do not automatically translate the entire application during this phase.
+
+Prepare the localization architecture without inventing completed translations.
+
+Keep the existing English interface functional.
+
+⸻
+
+23. PERFORMANCE AND OFFLINE READINESS
+
+Do not preload all twenty-eight course tracks.
+
+Load the selected Course Track as needed.
+
+Preserve efficient Ukrainian course loading.
+
+Keep future JSON packages modular and versioned.
+
+Ensure the design can later support offline iOS and Android learning.
+
+Avoid requiring a network connection simply to view the existing Ukrainian educational content if it already supports offline access.
+
+Support correct Unicode, text direction, and font fallback for all target languages.
+
+Do not embed every future course into a single giant frontend bundle.
+
+⸻
+
+24. DOCUMENTATION
+
+Document:
+
+* How the language registry works.
+* How the target-language selector works.
+* How the learner-native-language selector works.
+* How Course Tracks are identified.
+* How the existing Ukrainian course is mapped.
+* How to register a new course.
+* How to import JSON.
+* How to validate course metadata.
+* How to prevent cross-language collisions.
+* How to distinguish English courses by native language.
+* How future English curriculum packages will integrate.
+* How language-specific vocabulary and FSRS progress will integrate.
+* How future subscription entitlements will work.
+* How future UI localization will work.
+
+Provide a small synthetic JSON fixture for testing.
+
+Mark it clearly as test data.
+
+Do not publish synthetic lessons as real courses.
+
+⸻
+
+25. REQUIRED TESTS
+
+Run available build and functional tests.
+
+Verify:
+
+1. All existing Ukrainian modules still work.
+2. Existing Ukrainian progress remains intact.
+3. Existing vocabulary remains available.
+4. Existing photos and media remain accessible.
+5. The language selector lists all fourteen foreign languages.
+6. Hindi is present and displayed correctly.
+7. English appears as an additional learning target.
+8. Selecting English presents the native-language choices.
+9. All fourteen native-language choices are available.
+10. English for Spanish speakers and English for Japanese speakers resolve to different Course Tracks.
+11. Every unfinished Course displays Coming Soon.
+12. No fake curriculum data is generated.
+13. Switching course tracks does not mix progress.
+14. The universal importer detects the target language.
+15. The importer detects the learner native language.
+16. The importer rejects incompatible course-track mappings.
+17. Invalid JSON is rejected.
+18. Duplicate identifiers are detected.
+19. Unsupported activity types are reported.
+20. Import previews show accurate counts.
+21. A test course import cannot overwrite Ukrainian.
+22. Arabic script renders in the correct direction.
+23. Hindi Devanagari renders correctly.
+24. Chinese, Japanese, Korean, Vietnamese, and Cyrillic text remain intact.
+25. The current production build remains compatible with Cloud Run.
+
+Do not claim tests passed without actually running them.
+
+Do not fabricate successful import results.
+
+⸻
+
+26. IMPLEMENTATION CHECKPOINTS
+
+CHECKPOINT A — ARCHITECTURE INSPECTION
+
+Inspect the current codebase.
+
+Identify existing registries, routing, persistence, and relevant components.
+
+Report preservation risks.
+
+CHECKPOINT B — LANGUAGE REGISTRY
+
+Register the fourteen foreign languages and English as a target.
+
+Implement the language selector.
+
+CHECKPOINT C — COURSE TRACK REGISTRY
+
+Support unique target-language/native-language combinations.
+
+Register the existing Ukrainian course.
+
+Register the twenty-seven empty future course tracks.
+
+CHECKPOINT D — LEARNING-DIRECTION SELECTOR
+
+Implement English-to-foreign-language selection.
+
+Implement foreign-language-to-English selection with a native-language chooser.
+
+CHECKPOINT E — JSON IMPORT SCHEMA
+
+Implement a flexible versioned schema compatible with the Course Track model.
+
+CHECKPOINT F — IMPORT VALIDATION
+
+Implement JSON parsing, validation, preview, and safe development-only import behavior.
+
+CHECKPOINT G — NON-DESTRUCTIVE TEST
+
+Use a synthetic Course JSON fixture in a development environment.
+
+Confirm that importing it into an empty test track does not affect Ukrainian.
+
+CHECKPOINT H — REGRESSION TESTS
+
+Verify that existing Ukrainian features, data, photographs, and assessments remain intact.
+
+CHECKPOINT I — REVIEW
+
+Report:
+
+* Files changed.
+* Language registry changes.
+* Course Track design.
+* Import schema design.
+* UI changes.
+* Tests executed.
+* Known limitations.
+* Future vocabulary integration requirements.
+* Future account and subscription integration requirements.
+
+STOP AND WAIT FOR MY APPROVAL BEFORE BEGINNING PHASE 2.
+
+⸻
+
+27. STRICT PHASE 1 SCOPE
+
+During this phase, implement ONLY:
+
+* Support for Hindi.
+* Fourteen foreign languages.
+* English as an additional learning target.
+* Fourteen native-language-specific English Course Tracks.
+* Language selection.
+* Native-language selection.
+* Independent Course Track identities.
+* Coming Soon states.
+* Universal Course JSON schema.
+* JSON import validation and preview.
+* Safe developer-only import pilot.
+* Future-compatible vocabulary and progress architecture.
+* Non-destructive migration safeguards.
+
+DO NOT:
+
+* Generate foreign-language courses.
+* Generate English curricula.
+* Generate 6,000-word vocabulary datasets.
+* Modify the Ukrainian curriculum.
+* Implement Firebase Authentication.
+* Implement Stripe.
+* Implement Apple or Google subscriptions.
+* Build the full administrator dashboard.
+* Create production payment flows.
+* Add insecure temporary accounts.
+* Create fake educational content.
+* Change deployment infrastructure unnecessarily.
+
+⸻
+
+FINAL DIRECTIVE
+
+TRANSFORM MY EXISTING LEARN UKRAINIAN LANGO APP INTO THE FOUNDATION FOR LANGO.
+
+Support these fourteen foreign languages:
+
+Spanish, French, Italian, Portuguese, Russian, Ukrainian, Polish, German, Chinese, Vietnamese, Korean, Japanese, Arabic, and Hindi.
+
+Also support English as a target language.
+
+Prepare fourteen different English-learning Course Tracks, one for native speakers of each supported foreign language.
+
+Each English-learning curriculum must eventually be independently developed by Gemini using its own linguistic and pedagogical expertise together with relevant textbook-derived knowledge.
+
+DO NOT create a single English course and merely translate it fourteen times.
+
+DO NOT require every English curriculum to follow the same modules, grammatical progression, pronunciation program, vocabulary order, or instructional methodology.
+
+Maintain complete curricular freedom.
+
+Preserve the existing Ukrainian course exactly.
+
+Leave every other Course Track blank.
+
+Build the global language selector, native-language selection experience, Course Track registry, and universal JSON importer.
+
+Ensure future vocabulary, progress tracking, authentication, and subscription entitlements can distinguish different learner populations and course tracks.
+
+Do not add billing or authentication in this phase.
+
+FIRST inspect the architecture.
+
+SECOND prepare a safe implementation plan.
+
+THIRD implement the multilingual and Course Track foundation.
+
+FOURTH validate with a development-only JSON import pilot.
+
+FIFTH verify Ukrainian remains unchanged.
+
+SIXTH report actual results and STOP FOR MY APPROVAL.
+
+Success means Lango can support twenty-eight independently designed Course Tracks without forcing them into the Ukrainian curriculum structure, while retaining every existing Ukrainian educational feature and asset.

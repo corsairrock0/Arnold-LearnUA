@@ -1,7 +1,7 @@
-import type { CourseModule, CourseVocabTuple } from '../courseTypes';
-import { MODULE_VOCAB_ADDITIONS_A0_A2 } from './moduleVocabAdditionsA0A2';
-import { MODULE_VOCAB_ADDITIONS_B1 } from './moduleVocabAdditionsB1';
-import { MODULE_VOCAB_ADDITIONS_B2_C1 } from './moduleVocabAdditionsB2C1';
+import type { CourseModule, CourseVocabTuple } from '../courseDataA0A1.ts';
+import { MODULE_VOCAB_ADDITIONS_A0_A2 } from './moduleVocabAdditionsA0A2.ts';
+import { MODULE_VOCAB_ADDITIONS_B1 } from './moduleVocabAdditionsB1.ts';
+import { MODULE_VOCAB_ADDITIONS_B2_C1 } from './moduleVocabAdditionsB2C1.ts';
 
 export const MODULE_VOCAB_ADDITIONS: Record<string, CourseVocabTuple[]> = {
   ...MODULE_VOCAB_ADDITIONS_A0_A2,

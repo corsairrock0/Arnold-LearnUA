@@ -1589,9 +1589,9 @@ const RAW_VERIFIED_VOCAB: Array<
   ['чі́тко', 'ADV', 'clearly / distinctly', 'A0', 'Він вимовля́є ко́жний звук чі́тко.', 'He pronounces every sound clearly.'],
 ];
 
-import { COURSE_MODULES_A0_A1 } from './courseDataA0A1';
-import { COURSE_MODULES_A2_C1 } from './courseDataA2C1';
-import { MODULE_VOCAB_ADDITIONS } from './vocab/moduleVocabAdditions';
+import { COURSE_MODULES_A0_A1 } from './courseDataA0A1.ts';
+import { COURSE_MODULES_A2_C1 } from './courseDataA2C1.ts';
+import { MODULE_VOCAB_ADDITIONS } from './vocab/moduleVocabAdditions.ts';
 
 function normalizeVocabLemmaKey(uk: string): string {
   return uk

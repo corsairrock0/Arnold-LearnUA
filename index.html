@@ -2011,6 +2011,9 @@
         <div class="top-telemetry">
             <div class="stat-pill" title="Total Experience Points">⭐ <b id="xp-top-display">0</b></div>
             <div class="stat-pill" title="Active Words in Decks">🃏 <b id="deck-top-count">0</b></div>
+            <button class="icon-action-btn" id="lango-top-track-btn" data-testid="btn-top-language-selector" onclick="openLanguageSelectorModal()" aria-label="Choose Language & Course Track" title="Choose Language & Course Track">
+                🌍 <span id="lango-top-track-label">Ukrainian (EN → UK)</span>
+            </button>
             <button class="icon-action-btn" onclick="openInspectorSheet()" aria-label="Open Deep Grammar Inspector" title="7-Case Grammar Inspector">
                 <span>🔍</span>
             </button>
@@ -2217,6 +2220,7 @@
 
                 <!-- TAB 5: STEP-BY-STEP UKRAINIAN COURSE (A0-C1, 29 MODULES) -->
                 <section id="tab-course" aria-label="Comprehensive Ukrainian Course">
+                    <div id="lango-course-track-banner"></div>
                     <div class="section-header">
                         <div>
                             <h1 class="section-title">Step-by-Step Ukrainian Course (A0 → C1)</h1>

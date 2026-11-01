@@ -62,6 +62,31 @@ import {
   addIdentifyWordToFSRS,
   addIdentifySceneWordsToFSRS,
 } from './identifyView';
+import {
+  openLanguageSelectorModal,
+  closeLanguageSelectorModal,
+  selectTargetLanguageInModal,
+  selectNativeLanguageForEnglishInModal,
+  selectCourseTrackById,
+  changeInterfaceLanguageInModal,
+  openDevCourseImporterModal,
+  closeDevCourseImporterModal,
+  loadSyntheticCourseJsonFixture,
+  loadSyntheticHindiCourseJsonFixture,
+  runDevImportPreview,
+  confirmDevPilotImport,
+  resetDevPilotCourseTrack,
+  syncMultilingualTrackUI,
+} from './multilingual/multilingualSelectorView.ts';
+import {
+  selectUniversalCourseModule,
+  selectUniversalCourseLesson,
+  answerUniversalCourseActivity,
+  markUniversalLessonComplete,
+  addTrackVocabItemToIsolatedFsrs,
+  gradeTrackIsolatedFsrsItem,
+  speakMultilingualText,
+} from './multilingual/universalCoursePlayer.ts';
 
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
@@ -3984,6 +4009,7 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
   } else if (tab === 'identify') {
     renderIdentifyTab();
   }
+  syncMultilingualTrackUI();
   const mainEl = document.getElementById('main-scroll-container');
   if (mainEl) mainEl.scrollTop = 0;
 }
@@ -4121,6 +4147,28 @@ declare global {
     goIdentifyNextScene: typeof goIdentifyNextScene;
     addIdentifyWordToFSRS: typeof addIdentifyWordToFSRS;
     addIdentifySceneWordsToFSRS: typeof addIdentifySceneWordsToFSRS;
+    openLanguageSelectorModal: typeof openLanguageSelectorModal;
+    closeLanguageSelectorModal: typeof closeLanguageSelectorModal;
+    selectTargetLanguageInModal: typeof selectTargetLanguageInModal;
+    selectNativeLanguageForEnglishInModal: typeof selectNativeLanguageForEnglishInModal;
+    selectCourseTrackById: typeof selectCourseTrackById;
+    changeInterfaceLanguageInModal: typeof changeInterfaceLanguageInModal;
+    openDevCourseImporterModal: typeof openDevCourseImporterModal;
+    closeDevCourseImporterModal: typeof closeDevCourseImporterModal;
+    loadSyntheticCourseJsonFixture: typeof loadSyntheticCourseJsonFixture;
+    loadSyntheticHindiCourseJsonFixture: typeof loadSyntheticHindiCourseJsonFixture;
+    runDevImportPreview: typeof runDevImportPreview;
+    confirmDevPilotImport: typeof confirmDevPilotImport;
+    resetDevPilotCourseTrack: typeof resetDevPilotCourseTrack;
+    syncMultilingualTrackUI: typeof syncMultilingualTrackUI;
+    selectUniversalCourseModule: typeof selectUniversalCourseModule;
+    selectUniversalCourseLesson: typeof selectUniversalCourseLesson;
+    answerUniversalCourseActivity: typeof answerUniversalCourseActivity;
+    markUniversalLessonComplete: typeof markUniversalLessonComplete;
+    addTrackVocabItemToIsolatedFsrs: typeof addTrackVocabItemToIsolatedFsrs;
+    gradeTrackIsolatedFsrsItem: typeof gradeTrackIsolatedFsrsItem;
+    speakMultilingualText: typeof speakMultilingualText;
+    updateSidebarStats: typeof updateSidebarStats;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -4221,6 +4269,30 @@ if (typeof window !== 'undefined') {
   window.goIdentifyNextScene = goIdentifyNextScene;
   window.addIdentifyWordToFSRS = addIdentifyWordToFSRS;
   window.addIdentifySceneWordsToFSRS = addIdentifySceneWordsToFSRS;
+  window.openLanguageSelectorModal = openLanguageSelectorModal;
+  window.closeLanguageSelectorModal = closeLanguageSelectorModal;
+  window.selectTargetLanguageInModal = selectTargetLanguageInModal;
+  window.selectNativeLanguageForEnglishInModal =
+    selectNativeLanguageForEnglishInModal;
+  window.selectCourseTrackById = selectCourseTrackById;
+  window.changeInterfaceLanguageInModal = changeInterfaceLanguageInModal;
+  window.openDevCourseImporterModal = openDevCourseImporterModal;
+  window.closeDevCourseImporterModal = closeDevCourseImporterModal;
+  window.loadSyntheticCourseJsonFixture = loadSyntheticCourseJsonFixture;
+  window.loadSyntheticHindiCourseJsonFixture =
+    loadSyntheticHindiCourseJsonFixture;
+  window.runDevImportPreview = runDevImportPreview;
+  window.confirmDevPilotImport = confirmDevPilotImport;
+  window.resetDevPilotCourseTrack = resetDevPilotCourseTrack;
+  window.syncMultilingualTrackUI = syncMultilingualTrackUI;
+  window.selectUniversalCourseModule = selectUniversalCourseModule;
+  window.selectUniversalCourseLesson = selectUniversalCourseLesson;
+  window.answerUniversalCourseActivity = answerUniversalCourseActivity;
+  window.markUniversalLessonComplete = markUniversalLessonComplete;
+  window.addTrackVocabItemToIsolatedFsrs = addTrackVocabItemToIsolatedFsrs;
+  window.gradeTrackIsolatedFsrsItem = gradeTrackIsolatedFsrsItem;
+  window.speakMultilingualText = speakMultilingualText;
+  window.updateSidebarStats = updateSidebarStats;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,
@@ -4253,6 +4325,7 @@ if (typeof window !== 'undefined') {
   renderPhonetics6000();
   renderCourseSyllabus();
   renderActiveModule();
+  syncMultilingualTrackUI();
   renderEverydayVocabTab();
   registerIdentifyHooks({
     triggerHaptic: (t) => triggerHaptic(t === 'heavy' ? 'heavy' : 'light'),
