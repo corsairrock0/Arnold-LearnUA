@@ -1145,8 +1145,8 @@ export function syncAllTabsForActiveTrack(track: CourseTrack): void {
   );
   if (en2ukNavLabel && srsNavLabel) {
     if (isUkrainian) {
-      en2ukNavLabel.textContent = 'EN→UA';
-      srsNavLabel.textContent = 'UA→EN';
+      en2ukNavLabel.textContent = 'EN→UK';
+      srsNavLabel.textContent = 'UK→EN';
     } else {
       en2ukNavLabel.textContent = `${track.nativeLanguage.toUpperCase()}→${track.targetLanguage.toUpperCase()}`;
       srsNavLabel.textContent = `${track.targetLanguage.toUpperCase()}→${track.nativeLanguage.toUpperCase()}`;

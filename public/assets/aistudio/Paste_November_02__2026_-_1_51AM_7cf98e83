@@ -1,0 +1,1195 @@
+LANGO CONTENT STUDIO — COMPLETE USER EXPERIENCE AND INTERFACE SIMPLIFICATION FOR BEGINNERS
+
+PRIMARY OBJECTIVE
+
+Improve the usability, visual clarity, navigation, and instructional guidance of my EXISTING Lango Content Studio.
+
+My application is currently published at:
+
+https://slovo-ua-app.ai.studio/
+
+The Content Studio already exists and can display my existing Ukrainian curriculum, including its 29 published modules.
+
+However, the current Course Editing interface is too technical and confusing.
+
+I want the interface to be intuitive enough that an American high school student, approximately ages 14–18, with NO programming experience and NO knowledge of JSON, could confidently understand how to use it.
+
+Redesign the CMS experience to make course creation, editing, organizing, previewing, validating, and publishing simple and approachable.
+
+IMPORTANT:
+
+This is a USER EXPERIENCE AND USER INTERFACE IMPROVEMENT task.
+
+Do NOT rebuild the underlying CMS.
+
+Do NOT replace its content management engine.
+
+Do NOT modify existing curriculum data unnecessarily.
+
+Do NOT change unrelated learner-facing application functionality.
+
+Preserve all completed work from Phases 1, 2, and 3A.
+
+The goal is to make an already powerful CMS much easier to understand and operate.
+
+⸻
+
+1. INSPECT THE CURRENT CMS FIRST
+
+Before modifying code, inspect the actual existing Content Studio implementation.
+
+Review the current:
+
+* Studio entry point.
+* Dashboard.
+* Course Manager.
+* Course & Lesson Editor.
+* JSON Import & Merge.
+* Vocabulary Manager.
+* Media Library.
+* Validation and Audit views.
+* Version History.
+* Draft Preview.
+* Publishing interface.
+* Export tools.
+* Course navigation.
+* Mobile navigation.
+
+Identify which workflows are currently confusing.
+
+Pay special attention to:
+
+* Technical terminology.
+* Too many buttons shown simultaneously.
+* Unclear button labels.
+* Poor visual hierarchy.
+* Large JSON inspectors.
+* Unclear draft versus published states.
+* Confusing content hierarchy.
+* Difficult-to-discover editing actions.
+* Unclear save behavior.
+* Confusing validation messages.
+* Missing instructions.
+* Poor mobile usability.
+
+Reuse existing working components and underlying services.
+
+Do not assume that missing instructions require rebuilding the architecture.
+
+⸻
+
+2. DESIGN FOR AN AMERICAN HIGH SCHOOL STUDENT
+
+Use language and interaction patterns understandable to a typical American high school student.
+
+Assume the user:
+
+* Has never used a CMS.
+* Does not know what JSON means.
+* Does not understand schemas.
+* Does not know what a draft overlay is.
+* May not understand course-track identifiers.
+* Has never published educational content.
+* May use the application from an iPhone.
+* Wants to accomplish tasks without reading extensive documentation.
+
+The user should be able to answer:
+
+“What course am I editing?”
+
+“What lesson am I editing?”
+
+“How do I change something?”
+
+“How do I save?”
+
+“How do I preview?”
+
+“Will students see my changes?”
+
+“How do I publish?”
+
+“How do I undo a mistake?”
+
+The interface must answer these questions naturally.
+
+Use plain, conversational American English.
+
+Avoid unnecessary technical vocabulary.
+
+Prefer short labels and straightforward explanations.
+
+Do not use childish visuals or patronizing language.
+
+The result should feel professional, modern, calm, and easy to understand.
+
+⸻
+
+3. SIMPLIFY NAVIGATION
+
+Reorganize the Content Studio interface to emphasize common tasks.
+
+Recommended primary navigation:
+
+1. Home
+2. My Courses
+3. Edit Content
+4. Vocabulary
+5. Media
+6. Review & Publish
+
+Place less frequently needed technical tools under:
+
+Advanced Tools
+
+These may include:
+
+* JSON Import & Merge.
+* Raw JSON Inspector.
+* Schema Information.
+* Technical Validation Reports.
+* Developer Metadata.
+* Advanced Version Comparison.
+* Technical Export Settings.
+
+Do not delete any tools.
+
+Only reorganize them so beginners see the most important actions first.
+
+Preserve existing working routes and internal functions where possible.
+
+Provide backward-compatible navigation for existing deep links.
+
+Do not remove the existing Course Track architecture.
+
+⸻
+
+4. CREATE A FRIENDLY CMS HOME SCREEN
+
+Replace the overwhelming developer-oriented dashboard with a beginner-friendly home experience.
+
+Display a welcoming title:
+
+“Content Studio”
+
+Supporting description:
+
+“Create, organize, and improve your language courses in one place.”
+
+Show clear primary actions:
+
+* Edit a Course
+* Add a Lesson
+* Import Content
+* Preview a Course
+
+Show useful summaries:
+
+* Courses available.
+* Published courses.
+* Courses in progress.
+* Draft changes waiting for review.
+* Content needing attention.
+
+Only display real values from existing application data.
+
+Do not fabricate statistics.
+
+Provide a clear “Continue Editing” section when a valid last-edited item exists.
+
+If no recent item is available, omit the section rather than inventing one.
+
+⸻
+
+5. USE PLAIN-ENGLISH TERMINOLOGY
+
+Replace unnecessarily technical UI labels with understandable alternatives.
+
+Recommended examples:
+
+“Course Track” → “Course”
+
+“Draft Overlay” → “Unpublished Changes”
+
+“Raw UniversalCoursePackageV1 Draft JSON” → “Technical Course Data”
+
+“Schema v1.0” → “Content Format v1.0” under Advanced Details
+
+“Validate” → “Check for Problems”
+
+“Validate & Publish” → “Review & Publish”
+
+“JSON Import & Merge” → “Import Course Content”
+
+“Version Snapshot” → “Save a Backup Version”
+
+“Audit” → “Check Content”
+
+“Diff” → “Compare Changes”
+
+“Published Baseline” → “Current Published Version”
+
+“Track ID” → “Course ID” under Advanced Details
+
+Use existing technical identifiers internally.
+
+Do NOT change stable database keys, Course Track IDs, JSON schema field names, import contracts, or API behavior merely to improve visible labels.
+
+This is a presentation-level terminology change, not a schema migration.
+
+When a technical term is genuinely necessary, explain it in simple language.
+
+⸻
+
+6. MAKE THE EDITING PROCESS OBVIOUS
+
+Create a clearly guided workflow:
+
+STEP 1 — Choose a Course.
+
+STEP 2 — Choose a Module.
+
+STEP 3 — Choose a Lesson or Activity.
+
+STEP 4 — Make Changes.
+
+STEP 5 — Preview Your Changes.
+
+STEP 6 — Review and Publish When Ready.
+
+Show the user’s position in the workflow.
+
+Use simple headings such as:
+
+“Step 1 of 3: Choose a Course”
+
+“Choose a Lesson to Edit”
+
+“Preview Your Changes”
+
+“Ready to Publish?”
+
+Do not force experienced users through a wizard for every action.
+
+Allow them to navigate directly to the desired content.
+
+The workflow should make the correct next action clear.
+
+⸻
+
+7. IMPROVE THE COURSE MANAGER
+
+The Course Manager currently supports 28 independent Course Tracks.
+
+Preserve those tracks.
+
+Redesign the course cards so they are easy to understand.
+
+Each card should show:
+
+* Course name.
+* Native language.
+* Target language.
+* Number of existing modules.
+* Publication status.
+* Draft status if relevant.
+* Last edited date where available.
+
+Use understandable buttons:
+
+“Open Course”
+
+“Edit”
+
+“Preview”
+
+Place additional options inside a clearly labeled menu:
+
+“More Options”
+
+Avoid displaying every possible action on every card at once.
+
+For empty courses, display:
+
+“Not Started”
+
+“This course doesn’t have any lessons yet.”
+
+Include an appropriate action such as:
+
+“Add Your First Module”
+
+For the existing Ukrainian course, correctly display:
+
+“Learn Ukrainian”
+
+“29 Published Modules”
+
+Do not show an empty-draft message when the published curriculum exists.
+
+⸻
+
+8. IMPROVE THE COURSE & LESSON EDITOR
+
+This is the HIGHEST PRIORITY area.
+
+Create an intuitive course-editing interface.
+
+Use a three-part layout on desktop where practical:
+
+LEFT:
+Course outline.
+
+CENTER:
+Lesson editing area.
+
+RIGHT:
+Contextual help or properties.
+
+On smaller screens, adapt this into a single-column layout using panels or collapsible sections.
+
+The course outline should clearly show:
+
+Course
+→ Module
+→ Section
+→ Lesson
+→ Activity
+
+Adapt to the actual current schema.
+
+Do not enforce a hierarchy that would break flexible curricula.
+
+Allow users to expand and collapse course sections.
+
+Make it easy to select and edit existing content.
+
+Use readable module and lesson titles.
+
+Keep technical IDs out of the primary visual hierarchy.
+
+Show stable IDs in an optional details view.
+
+For Ukrainian, I should be able to:
+
+1. Open Learn Ukrainian.
+2. See my 29 existing modules.
+3. Select Module A0.1.
+4. See its actual lessons.
+5. Choose a lesson.
+6. Edit supported content.
+7. Preview the changes.
+8. Save the draft.
+9. Publish only after explicit approval.
+
+I must NOT need to open raw JSON to perform ordinary lesson edits.
+
+⸻
+
+9. FRIENDLY CONTENT EDITING FORMS
+
+Use intuitive editing controls whenever the existing schema supports them.
+
+Examples:
+
+LESSON TITLE
+
+A clearly labeled text field.
+
+LESSON EXPLANATION
+
+A comfortable structured text editor.
+
+EXAMPLE SENTENCES
+
+Clearly separated examples with target-language and translation fields.
+
+VOCABULARY
+
+Searchable vocabulary references.
+
+GRAMMAR TABLES
+
+Simple table editing where supported.
+
+IMAGES AND MEDIA
+
+A clear media selection interface.
+
+ASSESSMENTS
+
+Easy-to-understand question and answer editing forms.
+
+Provide labels that explain what each field is for.
+
+Include concise placeholders.
+
+Example:
+
+“Lesson title”
+
+Placeholder:
+“Enter the name students will see.”
+
+Another example:
+
+“Explanation”
+
+Helper text:
+“Explain the concept in a way students can understand.”
+
+Do not fill empty lesson fields with invented educational content.
+
+Do not silently modify existing lesson formatting.
+
+If a content type cannot be edited safely using a form, provide a read-only preview with a clear explanation.
+
+Do not discard unsupported fields.
+
+⸻
+
+10. ADD CONTEXTUAL HELP
+
+Add helpful explanations throughout Content Studio.
+
+Use small help icons, short helper text, and contextual tips.
+
+Examples:
+
+NEXT TO “SAVE DRAFT”:
+
+“Save your changes without showing them to students.”
+
+NEXT TO “PREVIEW”:
+
+“See exactly how your lesson will look to students.”
+
+NEXT TO “PUBLISH”:
+
+“Make your approved changes available in the published course.”
+
+NEXT TO “VERSION HISTORY”:
+
+“View earlier versions and recover previous changes.”
+
+NEXT TO “IMPORT”:
+
+“Add lessons or modules from a course file.”
+
+NEXT TO “VALIDATION”:
+
+“Check for missing answers, broken links, or other problems.”
+
+Help should be concise and relevant.
+
+Avoid flooding the interface with long paragraphs.
+
+Use expandable explanations for detailed information.
+
+Do not show the same tooltip repeatedly if it becomes distracting.
+
+⸻
+
+11. OPTIONAL FIRST-TIME GUIDED TOUR
+
+Create an optional introductory walkthrough.
+
+The walkthrough should explain:
+
+1. How to choose a Course.
+2. How to open a Module.
+3. How to edit a Lesson.
+4. How to save changes.
+5. How to preview.
+6. How to publish.
+7. How to restore earlier versions.
+
+Use plain American English.
+
+Keep the tour short.
+
+Allow users to:
+
+* Start the tour.
+* Skip it.
+* Close it.
+* Reopen it through a Help menu.
+
+Do not require users to complete the tour before using Content Studio.
+
+Do not create fake content during the walkthrough.
+
+Do not make real edits to published curriculum as part of onboarding.
+
+⸻
+
+12. CLEAR DRAFT AND PUBLISHED STATES
+
+The current Content Studio uses an isolated draft overlay to protect published content.
+
+PRESERVE THIS IMPORTANT ARCHITECTURE.
+
+However, explain the distinction in simple language.
+
+Use these visible concepts:
+
+PUBLISHED:
+“What students currently see.”
+
+DRAFT:
+“Changes you’re still working on.”
+
+UNPUBLISHED CHANGES:
+“Edits you have saved but haven’t published.”
+
+Display status clearly.
+
+Examples:
+
+“Published — No unpublished changes”
+
+“Draft — 3 unpublished changes”
+
+“Ready for Review”
+
+“Published Successfully”
+
+These labels must reflect actual system state.
+
+Do not claim changes are saved when they are only in memory.
+
+Do not claim publication succeeded unless the appropriate storage or publishing operation completed successfully.
+
+The CMS should always make clear whether editing affects:
+
+* The current published course.
+* A private draft.
+* A preview only.
+
+Never overwrite the existing Ukrainian curriculum accidentally.
+
+⸻
+
+13. IMPROVE SAVING AND EDITING FEEDBACK
+
+Users should always know what happens after pressing a button.
+
+Provide clear feedback for:
+
+* Saving.
+* Validation.
+* Importing.
+* Exporting.
+* Version snapshot creation.
+* Publishing.
+* Restoring a version.
+
+Examples:
+
+“Your draft has been saved.”
+
+“Your changes are ready to preview.”
+
+“We found 2 things to fix before publishing.”
+
+“Your course was published successfully.”
+
+Only display these messages when the corresponding operation actually succeeded.
+
+If an operation fails, explain the issue and what the user can do next.
+
+If autosave already exists, describe its real behavior accurately.
+
+If autosave does not exist, do not falsely display “All changes saved.”
+
+Warn before navigating away from unsaved changes.
+
+Do not add autosave if it could create unsafe persistence behavior without proper storage support.
+
+⸻
+
+14. MAKE PREVIEW EASY TO FIND AND USE
+
+The Preview function should be prominent.
+
+Provide an obvious:
+
+“Preview as Student”
+
+button.
+
+Use the existing universal Course Player.
+
+Do not rebuild the Course Player.
+
+Allow viewing the current published version and draft changes separately when supported.
+
+Use readable labels:
+
+“See Published Course”
+
+“Preview My Changes”
+
+Provide a clear way to return to editing.
+
+Do not let preview interactions modify real FSRS or course progress.
+
+Do not create duplicate records when previewing.
+
+Ensure the preview represents the actual learning interface accurately.
+
+⸻
+
+15. SIMPLIFY VALIDATION
+
+Replace technical validation jargon with understandable messages.
+
+Instead of:
+
+“Missing required activity.correctOptionId”
+
+Show something like:
+
+“This question doesn’t have a correct answer selected.”
+
+Instead of:
+
+“Unresolved vocabulary reference”
+
+Show:
+
+“This lesson links to a vocabulary word that couldn’t be found.”
+
+Instead of:
+
+“Duplicate moduleId”
+
+Show:
+
+“Two modules are using the same ID. Each module needs a unique ID.”
+
+Show the user:
+
+* What is wrong.
+* Where the problem is.
+* Why it matters.
+* How to fix it.
+
+Whenever feasible, provide:
+
+“Go to Problem”
+
+which opens the relevant editing field.
+
+Classify issues as:
+
+Must Fix
+
+Recommended
+
+Information
+
+Keep technical details available under an expandable:
+
+“Show Technical Details”
+
+Do not hide actual validation failures.
+
+Do not invent corrective actions that the CMS cannot perform.
+
+⸻
+
+16. SIMPLIFY IMPORTING CONTENT
+
+Make JSON importing understandable to users who do not know what JSON is.
+
+Primary interface heading:
+
+“Import Course Content”
+
+Description:
+
+“Upload a course file to add modules, lessons, and activities.”
+
+Use a clear file-selection area.
+
+Explain supported formats.
+
+Show a step-by-step process:
+
+1. Select File.
+2. Check Contents.
+3. Choose Destination Course.
+4. Review Changes.
+5. Confirm Import.
+
+Show a friendly summary before importing.
+
+Example:
+
+“This file contains 5 modules and 24 lessons.”
+
+“This content will be added to Learn Japanese.”
+
+Do not claim the file is valid until the real importer validates it.
+
+Preserve the existing advanced JSON import tools.
+
+Make raw schema information optional.
+
+Never automatically overwrite existing curriculum content.
+
+⸻
+
+17. SIMPLIFY VERSION HISTORY
+
+Rename the visible feature to:
+
+“Version History”
+
+Or:
+
+“Previous Versions”
+
+Explain:
+
+“See earlier versions of your course and recover previous changes.”
+
+Show versions in a readable timeline.
+
+Each entry should display:
+
+* Date and time.
+* Course name.
+* Short change summary.
+* Publication status.
+* Actual saved version identifier where appropriate.
+
+Allow:
+
+“Preview Version”
+
+“Compare Changes”
+
+“Restore Version”
+
+Require confirmation before restoration.
+
+Do not restore a version if doing so would silently delete unrelated course data or learner progress.
+
+Keep technical revision identifiers in Advanced Details.
+
+⸻
+
+18. HIDE RAW JSON BY DEFAULT
+
+The current editor exposes large sections of raw UniversalCoursePackageV1 JSON.
+
+This is useful for developers but confusing for beginners.
+
+Move raw JSON inspection into:
+
+Advanced Tools → View Course JSON
+
+Or a similar advanced section.
+
+By default, show a friendly visual course outline and editing interface.
+
+Do not make JSON editing a prerequisite for ordinary editing.
+
+Preserve all advanced functionality.
+
+Allow technical users to inspect the actual schema and metadata.
+
+Do not delete or rewrite underlying JSON data.
+
+⸻
+
+19. RESPONSIVE DESIGN FOR IPHONE 16 PRO MAX
+
+The application must work intuitively on:
+
+* iPhone 16 Pro Max.
+* Other modern iPhones.
+* Android phones.
+* Tablets.
+* Desktop browsers.
+
+Use responsive layouts.
+
+Avoid forcing wide desktop dashboards into narrow mobile screens.
+
+On mobile:
+
+* Use a simple course selector.
+* Use expandable module lists.
+* Show one main editing panel at a time.
+* Provide prominent Save Draft and Preview actions.
+* Use appropriately sized touch targets.
+* Keep critical buttons accessible.
+* Avoid horizontal overflow.
+* Prevent overlapping controls.
+* Respect iPhone safe areas.
+* Make tooltips accessible through touch rather than hover only.
+
+Preserve all eight existing learning tabs.
+
+Do not add the CMS as a ninth tab that displaces or breaks the student navigation.
+
+Continue using a separate Content Studio entry point.
+
+⸻
+
+20. VISUAL DESIGN REQUIREMENTS
+
+Use the existing Lango design language.
+
+Maintain:
+
+* Current brand identity.
+* Current visual consistency.
+* Existing colors where appropriate.
+* Existing typography.
+* Existing icon conventions.
+* Responsive behavior.
+
+Improve:
+
+* Visual hierarchy.
+* Spacing.
+* Readability.
+* Button grouping.
+* Clear section headings.
+* Empty states.
+* Help messages.
+* Form labels.
+* Status feedback.
+* Navigation clarity.
+
+Use progressive disclosure.
+
+Show basic actions first.
+
+Reveal advanced options only when needed.
+
+Avoid presenting 10 or more competing action buttons in one area.
+
+Use descriptive button labels instead of relying only on emojis or icons.
+
+Keep the interface professional rather than childish.
+
+Follow applicable accessibility best practices, including readable contrast, visible focus, keyboard navigation, meaningful labels, and adequately sized touch targets.
+
+⸻
+
+21. MAKE EMPTY STATES USEFUL
+
+When a course has no modules, explain what to do.
+
+Example:
+
+“No lessons yet.”
+
+“Start by adding your first module or importing a course file.”
+
+Buttons:
+
+“Create a Module”
+
+“Import Course Content”
+
+For a course with published modules but no draft edits:
+
+DO NOT show:
+
+“This Course Track Has No Draft Modules Yet”
+
+as though the course were empty.
+
+Instead show the real published modules.
+
+Use the message:
+
+“No unpublished changes yet.”
+
+when appropriate.
+
+Do not confuse a zero-change draft with a zero-content course.
+
+⸻
+
+22. ADD A CENTRAL HELP AREA
+
+Include a small Help section accessible from Content Studio.
+
+It should explain common tasks using short instructions.
+
+Suggested topics:
+
+* How to edit a lesson.
+* How to add a module.
+* How to add practice questions.
+* How to preview a course.
+* How to import a course file.
+* How to fix validation errors.
+* How to publish changes.
+* How to restore an earlier version.
+
+Use plain American English.
+
+Prefer short step-by-step explanations.
+
+Do not require users to understand implementation details.
+
+Do not invent functionality that hasn’t been implemented.
+
+⸻
+
+23. SECURITY AND PUBLISHED APPLICATION SAFETY
+
+My app is published at:
+
+https://slovo-ua-app.ai.studio/
+
+This is important.
+
+The CMS must not become an unsecured public editing environment.
+
+Do not make administrative publishing, importing, editing, or deletion actions available to anonymous public visitors.
+
+Do not rely on hidden navigation, client-side flags, or secret routes as security.
+
+Since full Firebase administrator authentication has not yet been implemented, preserve a genuinely developer-only or otherwise securely restricted editing environment.
+
+If the current environment cannot enforce that distinction, keep write operations disabled on the public deployment and make editing available only in a trusted development environment.
+
+Do not implement a fake administrator login.
+
+Do not hardcode passwords.
+
+Do not change the publicly deployed application merely to expose developer controls.
+
+Do not implement Firebase or payment systems as part of this UI task.
+
+Explain any security limitations clearly.
+
+⸻
+
+24. PRESERVE ALL EXISTING LEARNING FUNCTIONALITY
+
+DO NOT modify:
+
+* Existing 29 Ukrainian modules.
+* Existing grammar content.
+* Assessment questions.
+* Vocabulary content.
+* Flashcard history.
+* FSRS algorithms.
+* Reader.
+* Grammar Inspector.
+* Identify.
+* Sentence tools.
+* Phonetics.
+* Existing eight-tab navigation.
+* Photographs.
+* WebP assets.
+* Audio.
+* Video.
+* Course Track registry.
+* Shared English vocabulary.
+* Native-language-specific English vocabulary overlays.
+* Existing JSON schemas.
+* Existing subscription architecture.
+* Existing API contracts unless required for safe UI integration.
+
+Do not regenerate content.
+
+Do not rebuild the learner-facing course interface.
+
+Do not modify deployment settings unnecessarily.
+
+Do not alter GitHub integration.
+
+Keep the original curriculum intact.
+
+⸻
+
+25. IMPLEMENT IN CONTROLLED STAGES
+
+STAGE 1 — USABILITY AUDIT
+
+Inspect the existing CMS.
+
+Identify confusing workflows, labels, navigation, and button arrangements.
+
+Explain the proposed improvements.
+
+STAGE 2 — SIMPLIFIED NAVIGATION
+
+Reorganize the CMS menu and dashboard.
+
+Make common actions easier to discover.
+
+STAGE 3 — COURSE EDITOR REDESIGN
+
+Implement visual course navigation, beginner-friendly editing forms, and clear draft states.
+
+STAGE 4 — GUIDED HELP
+
+Add contextual instructions, tooltips, clear empty states, and an optional first-time tour.
+
+STAGE 5 — PREVIEW, VALIDATION AND IMPORT CLARITY
+
+Improve explanations and feedback without replacing existing core services.
+
+STAGE 6 — MOBILE RESPONSIVENESS
+
+Test the redesigned CMS on phone, tablet, and desktop layouts.
+
+STAGE 7 — REGRESSION TESTING
+
+Verify existing Ukrainian and multilingual features remain intact.
+
+STAGE 8 — COMPLETION REPORT
+
+Explain the completed changes and any remaining usability limitations.
+
+⸻
+
+26. REQUIRED ACCEPTANCE TESTS
+
+TEST A:
+
+A beginner can open Content Studio and understand where to start.
+
+TEST B:
+
+A beginner can select Learn Ukrainian without knowing what a Course Track ID means.
+
+TEST C:
+
+The existing 29 Ukrainian modules appear correctly.
+
+TEST D:
+
+A user can locate Module A0.1 and inspect its real lesson content.
+
+TEST E:
+
+A user can make a safe test edit without modifying the published curriculum.
+
+TEST F:
+
+The UI clearly communicates whether changes are saved or unpublished.
+
+TEST G:
+
+A user can preview a draft through the existing universal Course Player.
+
+TEST H:
+
+The user can identify and understand a validation error without reading JSON.
+
+TEST I:
+
+The JSON importer explains its steps in plain language.
+
+TEST J:
+
+Raw JSON remains accessible under Advanced Tools.
+
+TEST K:
+
+The CMS works on iPhone 16 Pro Max without horizontal overflow or hidden primary actions.
+
+TEST L:
+
+The desktop experience remains functional.
+
+TEST M:
+
+Existing Ukrainian educational content is unchanged.
+
+TEST N:
+
+All eight learner-facing tabs continue working.
+
+TEST O:
+
+Existing vocabulary and FSRS progress remain intact.
+
+TEST P:
+
+Unauthorized visitors cannot access CMS write or publish operations.
+
+TEST Q:
+
+No publication occurs merely from saving or previewing a draft.
+
+TEST R:
+
+The application builds successfully.
+
+Run actual tests where supported.
+
+Do not claim a test passed if it was not executed.
+
+⸻
+
+27. REQUIRED FINAL REPORT
+
+After implementation, report:
+
+1. Which CMS screens were redesigned.
+2. Which labels were simplified.
+3. Which help instructions were added.
+4. How users now edit a course.
+5. How users save drafts.
+6. How users preview unpublished changes.
+7. How users publish safely.
+8. Where advanced JSON tools are located.
+9. How the mobile interface works.
+10. Which existing files were modified.
+11. Which tests were executed.
+12. Whether the public CMS remains restricted.
+13. Any remaining technical limitations.
+
+Do not claim features work without verifying them.
+
+⸻
+
+FINAL DIRECTIVE
+
+REDESIGN MY EXISTING LANGO CONTENT STUDIO TO BE EASY ENOUGH FOR AN AMERICAN HIGH SCHOOL STUDENT TO UNDERSTAND AND USE WITHOUT PROGRAMMING KNOWLEDGE.
+
+Prioritize:
+
+* Simple navigation.
+* Intuitive course editing.
+* Clear lesson organization.
+* Plain-English labels.
+* Helpful instructions.
+* Contextual tips.
+* Beginner-friendly forms.
+* Easy preview.
+* Understandable validation.
+* Safe draft editing.
+* Clear publishing workflows.
+* Accessible mobile design.
+* Advanced tools hidden until needed.
+
+PRESERVE ALL EXISTING FUNCTIONALITY.
+
+DO NOT rebuild the CMS.
+
+DO NOT modify my 29-module Ukrainian curriculum.
+
+DO NOT change FSRS, vocabulary, course data, media, or learner navigation.
+
+DO NOT expose content editing publicly without real server-side authorization.
+
+Use the existing CMS and course player.
+
+Inspect the current implementation, identify usability problems, redesign the interface, test representative workflows, and report the results.
+
+The ultimate goal is that someone who has never used a Content Management System can open Lango Content Studio and confidently create, organize, edit, preview, and manage a language course without understanding JSON, schemas, programming, or backend architecture.

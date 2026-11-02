@@ -90,6 +90,13 @@ import {
   searchCmsContentStudio,
   clearCmsDraftAndHistoryForTrack,
 } from '../multilingual/cmsContentStudioEngine.ts';
+import {
+  formatFriendlyCourseDisplayName,
+  formatFriendlyCourseStatusSummary,
+  formatFriendlyValidationIssue,
+  getCmsGuidedTourSteps,
+  getCmsCentralHelpTopics,
+} from '../multilingual/cmsContentStudioView.ts';
 
 test('Test 1: All 28 Course Tracks appear in Lango Content Studio', () => {
   const summaries = getAllCmsTrackSummaries();
@@ -844,4 +851,83 @@ test('TEST H, TEST I, TEST J, TEST K, TEST L & TEST M: Version Snapshot, Empty T
     100
   );
 });
+
+// ============================================================================
+// BEGINNER-FRIENDLY CONTENT STUDIO UX REDESIGN TESTS (SECTION 26: TEST A — TEST R)
+// ============================================================================
+
+test('Beginner UX Redesign (TEST A — TEST R): Plain-English course names, friendly status summaries, plain-English validation messages, guided tour, and central help', () => {
+  // 1. Plain-English Course Display Names (TEST C, TEST M, TEST N)
+  const ukDisplay = formatFriendlyCourseDisplayName(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(ukDisplay, 'Learn Ukrainian (English → Ukrainian)');
+
+  const esEnDisplay = formatFriendlyCourseDisplayName('track:es-to-en');
+  assert.equal(esEnDisplay, 'English for Spanish Speakers (Spanish → English)');
+  assert.notEqual(
+    formatFriendlyCourseDisplayName('track:es-to-en'),
+    formatFriendlyCourseDisplayName('track:ja-to-en')
+  );
+
+  // 2. Friendly Course Status Summary for Published vs Empty vs Unpublished Changes (TEST C, TEST L)
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const summaries = getAllCmsTrackSummaries();
+  const ukSummary = summaries.find((s) => s.trackId === PUBLISHED_UKRAINIAN_TRACK_ID)!;
+  const ukStatus = formatFriendlyCourseStatusSummary(ukSummary);
+  assert.equal(ukStatus.shortStatusLabel, 'Published');
+  assert.equal(ukStatus.moduleCountLabel, '29 Published Modules');
+  assert.equal(ukStatus.isStarted, true);
+
+  clearCmsDraftAndHistoryForTrack('track:en-to-es');
+  const esForeignSummary = getAllCmsTrackSummaries().find(
+    (s) => s.trackId === 'track:en-to-es'
+  )!;
+  const esStatus = formatFriendlyCourseStatusSummary(esForeignSummary);
+  assert.equal(esStatus.badgeLabel, 'Not Started');
+  assert.equal(esStatus.moduleCountLabel, '0 Modules');
+  assert.equal(
+    esStatus.description,
+    "This course doesn't have any lessons yet."
+  );
+  assert.equal(esStatus.isStarted, false);
+
+  // 3. Friendly Validation Messages (TEST I): What is wrong, Where, Why it matters, How to fix it
+  const sampleError = formatFriendlyValidationIssue(
+    {
+      issueId: 'test_err_1',
+      severity: 'ERROR',
+      code: 'MISSING_OR_INVALID_CORRECT_ANSWER',
+      courseTrackId: PUBLISHED_UKRAINIAN_TRACK_ID,
+      locationPath: 'modules[0].sections[0].lessons[0].activities[1]',
+      message: 'Activity act_2 has invalid correctIndex',
+    },
+    PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.equal(sampleError.categoryLabel, 'Must Fix');
+  assert.equal(
+    sampleError.whatIsWrong,
+    "This question doesn't have a valid correct answer selected."
+  );
+  assert.ok(sampleError.whereItIs.includes('Module A0.1'));
+  assert.ok(sampleError.whyItMatters.includes('Without a valid correct answer choice'));
+  assert.ok(sampleError.howToFixIt.includes('Correct Answer'));
+  assert.equal(sampleError.canJumpToEditor, true);
+
+  // 4. Guided Tour & Central Help Topics (TEST A, TEST B)
+  const tourSteps = getCmsGuidedTourSteps();
+  assert.equal(tourSteps.length, 7);
+  assert.equal(tourSteps[0].stepNumber, 1);
+  assert.equal(tourSteps[6].stepNumber, 7);
+
+  const helpTopics = getCmsCentralHelpTopics();
+  assert.equal(helpTopics.length, 8);
+  assert.ok(
+    helpTopics.some((t) => t.title === 'How to edit a lesson')
+  );
+  assert.ok(
+    helpTopics.some(
+      (t) => t.title === 'How to undo mistakes or restore an earlier version'
+    )
+  );
+});
+
 

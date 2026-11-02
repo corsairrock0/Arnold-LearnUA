@@ -1536,15 +1536,46 @@
 
     .cms-three-col-grid {
         display: grid;
-        grid-template-columns: 280px 1fr 1fr;
-        gap: 14px;
+        grid-template-columns: 290px minmax(0, 1fr) 300px;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .cms-two-col-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+        gap: 16px;
         align-items: start;
     }
 
     .cms-quick-actions-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+    }
+
+    .cms-workflow-stepper {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 8px;
+    }
+
+    .cms-mobile-panel-tabs {
+        display: none;
+    }
+
+    .cms-more-menu {
+        position: relative;
+        display: inline-block;
+    }
+
+    .cms-more-menu summary {
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .cms-more-menu summary::-webkit-details-marker {
+        display: none;
     }
 
     @media (max-width: 960px) {
@@ -1654,12 +1685,28 @@
             flex: 0 0 auto;
         }
 
-        .cms-three-col-grid {
+        .cms-three-col-grid,
+        .cms-two-col-grid {
             grid-template-columns: 1fr;
         }
 
         .cms-quick-actions-grid {
             grid-template-columns: 1fr;
+        }
+
+        .cms-workflow-stepper {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .cms-mobile-panel-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .cms-mobile-hidden-panel {
+            display: none !important;
         }
 
         #lango-cms-studio-root .btn,
@@ -2166,11 +2213,11 @@
             </button>
             <button class="nav-btn" onclick="switchTab('en2uk', this)">
                 <span class="nav-icon" aria-hidden="true">🔄</span>
-                <span>EN→UA</span>
+                <span>EN→UK</span>
             </button>
             <button class="nav-btn" onclick="switchTab('srs', this)">
                 <span class="nav-icon" aria-hidden="true">🧠</span>
-                <span>UA→EN</span>
+                <span>UK→EN</span>
             </button>
             <button class="nav-btn" onclick="switchTab('vocab', this)">
                 <span class="nav-icon" aria-hidden="true">🗂️</span>

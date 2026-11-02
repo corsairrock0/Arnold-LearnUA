@@ -127,6 +127,22 @@ import {
   setCmsMediaSearch,
   handleVerifyCmsExportRoundTrip,
   handleDownloadCmsExportJson,
+  openCmsAdvancedSubTab,
+  startCmsGuidedTour,
+  stepCmsGuidedTour,
+  closeCmsGuidedTour,
+  setCmsMobileEditorPanel,
+  toggleCmsOutlineSection,
+  markCmsEditorUnsavedChanges,
+  syncFriendlyMcChoicesToUnderlyingInputs,
+  handleQuickAddLessonFromHome,
+  handleStartFirstModuleForTrack,
+  resumeLastEditedCmsLesson,
+  jumpToCmsValidationProblem,
+  handleAddCmsActivityToLesson,
+  togglePendingPublishConfirmation,
+  handleCmsImportFileSelected,
+  handleCheckCmsImportContents,
   bootCmsStudioRouteIfRequested,
 } from './multilingual/cmsContentStudioView.ts';
 
@@ -4250,6 +4266,22 @@ declare global {
     setCmsMediaSearch: typeof setCmsMediaSearch;
     handleVerifyCmsExportRoundTrip: typeof handleVerifyCmsExportRoundTrip;
     handleDownloadCmsExportJson: typeof handleDownloadCmsExportJson;
+    openCmsAdvancedSubTab: typeof openCmsAdvancedSubTab;
+    startCmsGuidedTour: typeof startCmsGuidedTour;
+    stepCmsGuidedTour: typeof stepCmsGuidedTour;
+    closeCmsGuidedTour: typeof closeCmsGuidedTour;
+    setCmsMobileEditorPanel: typeof setCmsMobileEditorPanel;
+    toggleCmsOutlineSection: typeof toggleCmsOutlineSection;
+    markCmsEditorUnsavedChanges: typeof markCmsEditorUnsavedChanges;
+    syncFriendlyMcChoicesToUnderlyingInputs: typeof syncFriendlyMcChoicesToUnderlyingInputs;
+    handleQuickAddLessonFromHome: typeof handleQuickAddLessonFromHome;
+    handleStartFirstModuleForTrack: typeof handleStartFirstModuleForTrack;
+    resumeLastEditedCmsLesson: typeof resumeLastEditedCmsLesson;
+    jumpToCmsValidationProblem: typeof jumpToCmsValidationProblem;
+    handleAddCmsActivityToLesson: typeof handleAddCmsActivityToLesson;
+    togglePendingPublishConfirmation: typeof togglePendingPublishConfirmation;
+    handleCmsImportFileSelected: typeof handleCmsImportFileSelected;
+    handleCheckCmsImportContents: typeof handleCheckCmsImportContents;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -4414,6 +4446,23 @@ if (typeof window !== 'undefined') {
   window.setCmsMediaSearch = setCmsMediaSearch;
   window.handleVerifyCmsExportRoundTrip = handleVerifyCmsExportRoundTrip;
   window.handleDownloadCmsExportJson = handleDownloadCmsExportJson;
+  window.openCmsAdvancedSubTab = openCmsAdvancedSubTab;
+  window.startCmsGuidedTour = startCmsGuidedTour;
+  window.stepCmsGuidedTour = stepCmsGuidedTour;
+  window.closeCmsGuidedTour = closeCmsGuidedTour;
+  window.setCmsMobileEditorPanel = setCmsMobileEditorPanel;
+  window.toggleCmsOutlineSection = toggleCmsOutlineSection;
+  window.markCmsEditorUnsavedChanges = markCmsEditorUnsavedChanges;
+  window.syncFriendlyMcChoicesToUnderlyingInputs =
+    syncFriendlyMcChoicesToUnderlyingInputs;
+  window.handleQuickAddLessonFromHome = handleQuickAddLessonFromHome;
+  window.handleStartFirstModuleForTrack = handleStartFirstModuleForTrack;
+  window.resumeLastEditedCmsLesson = resumeLastEditedCmsLesson;
+  window.jumpToCmsValidationProblem = jumpToCmsValidationProblem;
+  window.handleAddCmsActivityToLesson = handleAddCmsActivityToLesson;
+  window.togglePendingPublishConfirmation = togglePendingPublishConfirmation;
+  window.handleCmsImportFileSelected = handleCmsImportFileSelected;
+  window.handleCheckCmsImportContents = handleCheckCmsImportContents;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,
