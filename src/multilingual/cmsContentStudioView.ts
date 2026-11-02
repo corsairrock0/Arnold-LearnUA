@@ -109,6 +109,27 @@ import {
   type CmsValidationReport,
 } from './cmsContentStudioEngine.ts';
 
+import {
+  registerIdentifyStudioRerenderHook,
+  renderCmsIdentifySceneManagerTab,
+  selectCmsIdentifyScene,
+  selectCmsIdentifyTarget,
+  setCmsIdentifyFilter,
+  toggleCmsIdentifyBulkAuditPanel,
+  toggleCmsIdentifyScenePlannerPanel,
+  handleCmsIdentifyCanvasClick,
+  handleCmsIdentifySaveGeometryInputs,
+  handleCmsIdentifyNudgeTarget,
+  handleCmsIdentifyMarkTargetMissing,
+  handleCmsIdentifyAddTarget,
+  handleCmsIdentifyChangeAssetPath,
+  handleCmsIdentifyUndoDraft,
+  handleCmsIdentifyRestoreBaseline,
+  handleCmsIdentifyCheckScene,
+  handleCmsIdentifyPublishScene,
+  handleCmsIdentifyPreviewInLearnerApp,
+} from './cmsIdentifyStudioTab.ts';
+
 export type CmsWorkspaceTab =
   | 'dashboard'
   | 'courses'
@@ -118,6 +139,7 @@ export type CmsWorkspaceTab =
   | 'validation'
   | 'versions'
   | 'media'
+  | 'identify'
   | 'preview'
   | 'export'
   | 'advanced'
@@ -993,6 +1015,11 @@ export function renderLangoContentStudio(): void {
       isActive: cmsUiState.activeTab === 'media',
     },
     {
+      id: 'identify',
+      label: 'Identify Scenes',
+      isActive: cmsUiState.activeTab === 'identify',
+    },
+    {
       id: 'validation',
       label: 'Review & Publish',
       isActive: cmsUiState.activeTab === 'validation',
@@ -1043,6 +1070,10 @@ export function renderLangoContentStudio(): void {
       break;
     case 'media':
       workspaceBodyHtml = renderCmsMediaTab();
+      break;
+    case 'identify':
+      registerIdentifyStudioRerenderHook(renderLangoContentStudio);
+      workspaceBodyHtml = renderCmsIdentifySceneManagerTab();
       break;
     case 'validation':
       workspaceBodyHtml = renderCmsValidationTab();
@@ -5241,4 +5272,22 @@ export function bootCmsStudioRouteIfRequested(): void {
   }
 }
 
-export { cmsStorageAdapter };
+export {
+  cmsStorageAdapter,
+  selectCmsIdentifyScene,
+  selectCmsIdentifyTarget,
+  setCmsIdentifyFilter,
+  toggleCmsIdentifyBulkAuditPanel,
+  toggleCmsIdentifyScenePlannerPanel,
+  handleCmsIdentifyCanvasClick,
+  handleCmsIdentifySaveGeometryInputs,
+  handleCmsIdentifyNudgeTarget,
+  handleCmsIdentifyMarkTargetMissing,
+  handleCmsIdentifyAddTarget,
+  handleCmsIdentifyChangeAssetPath,
+  handleCmsIdentifyUndoDraft,
+  handleCmsIdentifyRestoreBaseline,
+  handleCmsIdentifyCheckScene,
+  handleCmsIdentifyPublishScene,
+  handleCmsIdentifyPreviewInLearnerApp,
+};

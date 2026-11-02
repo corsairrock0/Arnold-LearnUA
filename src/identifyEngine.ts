@@ -5,15 +5,30 @@
 // ============================================================================
 
 import {
+  getApprovedLearnerTargets,
+  getPlayableIdentifyCategories,
   IDENTIFY_CATEGORIES,
+  IDENTIFY_MASTER_2000_NOUNS,
+  isApprovedVerifiedLearnerTarget,
+  isScenePlayableForStudents,
+  isSynthetic5x5GridBox,
   renderIdentifySceneSvgDataUri,
   type IdentifyCategory,
   type IdentifyHotspot,
   type IdentifyScene,
 } from './identifyData.ts';
 
-export type IdentifyExplorationMode = 'free' | 'guided';
+export {
+  getApprovedLearnerTargets,
+  getPlayableIdentifyCategories,
+  isApprovedVerifiedLearnerTarget,
+  isScenePlayableForStudents,
+  isSynthetic5x5GridBox,
+};
+
+export type IdentifyExplorationMode = 'explore' | 'free' | 'guided';
 export type IdentifyQuizMode = 'mc' | 'fill';
+export type IdentifyRoundLength = 5 | 8 | 10;
 export type IdentifyTargetStatus = 'unanswered' | 'correct-mc' | 'correct-fill' | 'incorrect' | 'revealed';
 
 export interface IdentifyTargetProgress {
@@ -25,11 +40,33 @@ export interface IdentifyTargetProgress {
   revealed: boolean;
   lastUserAnswer?: string;
   lastFeedback?: string;
+  lastPracticedRound?: number;
+}
+
+export interface IdentifyActiveRoundState {
+  roundId: string;
+  sceneId: string;
+  roundNumber: number;
+  roundLength: IdentifyRoundLength;
+  requestedRoundLength?: IdentifyRoundLength;
+  shortenedDueToVerifiedLimit?: boolean;
+  shortenedExplanationEn?: string;
+  targetIds: string[];
+  initialUnseenTargetIds: string[];
+  completedInRoundTargetIds: string[];
+  correctInRoundTargetIds: string[];
+  incorrectOrRevealedInRoundTargetIds: string[];
+  isMistakeReviewRound: boolean;
+  xpAwarded: boolean;
 }
 
 export interface IdentifySceneProgress {
   sceneId: string;
   targets: Record<string, IdentifyTargetProgress>;
+  roundsCompleted?: number;
+  activeRound?: IdentifyActiveRoundState;
+  awardedRoundIds?: string[];
+  exploredTargetIds?: string[];
   completedAt?: number;
 }
 
@@ -39,9 +76,11 @@ export interface IdentifyPersistentProgress {
   activeSceneId: string;
   explorationMode: IdentifyExplorationMode;
   quizMode: IdentifyQuizMode;
+  roundLength: IdentifyRoundLength;
   scenes: Record<string, IdentifySceneProgress>;
   wordsNeedingPractice: string[]; // vocabularyIds revealed or missed
 }
+
 
 export interface IdentifyValidationResult {
   isCorrect: boolean;
@@ -214,13 +253,15 @@ export function createDefaultIdentifyProgress(): IdentifyPersistentProgress {
   return {
     version: 1,
     activeCategoryId: 'kitchen',
-    activeSceneId: 'kitchen-scene-1',
+    activeSceneId: 'kitchen-scene-2',
     explorationMode: 'free',
     quizMode: 'mc',
+    roundLength: 8,
     scenes: {},
     wordsNeedingPractice: [],
   };
 }
+
 
 export function loadIdentifyProgress(): IdentifyPersistentProgress {
   if (typeof localStorage === 'undefined') {
@@ -273,7 +314,20 @@ export function recordIdentifyAttempt(
   userAnswer: string,
   feedback: string
 ): IdentifyTargetProgress {
+  if (!isApprovedVerifiedLearnerTarget(target)) {
+    return {
+      status: 'unanswered',
+      attempts: 0,
+      correctMC: 0,
+      correctTyped: 0,
+      incorrectAttempts: 0,
+      revealed: false,
+      lastFeedback: 'Unverified object cannot be scored in learner practice.',
+    };
+  }
+
   const sp = ensureSceneProgress(prog, scene.id);
+  ensureActiveIdentifyRound(prog, scene);
   const existing: IdentifyTargetProgress = sp.targets[target.id] || {
     status: 'unanswered',
     attempts: 0,
@@ -290,7 +344,6 @@ export function recordIdentifyAttempt(
   if (isCorrect) {
     if (quizMode === 'mc') {
       existing.correctMC += 1;
-      // Only upgrade to correct-mc if it wasn't previously revealed
       if (!existing.revealed) {
         existing.status = 'correct-mc';
       }
@@ -311,6 +364,27 @@ export function recordIdentifyAttempt(
   }
 
   sp.targets[target.id] = existing;
+
+  // Update active round progress if this target belongs to the active round
+  if (sp.activeRound && sp.activeRound.targetIds.includes(target.id)) {
+    const ar = sp.activeRound;
+    if (isCorrect) {
+      if (!ar.completedInRoundTargetIds.includes(target.id)) {
+        ar.completedInRoundTargetIds.push(target.id);
+      }
+      if (
+        !ar.incorrectOrRevealedInRoundTargetIds.includes(target.id) &&
+        !ar.correctInRoundTargetIds.includes(target.id)
+      ) {
+        ar.correctInRoundTargetIds.push(target.id);
+      }
+    } else {
+      if (!ar.incorrectOrRevealedInRoundTargetIds.includes(target.id)) {
+        ar.incorrectOrRevealedInRoundTargetIds.push(target.id);
+      }
+    }
+  }
+
   return existing;
 }
 
@@ -319,7 +393,20 @@ export function recordIdentifyShowAnswer(
   scene: IdentifyScene,
   target: IdentifyHotspot
 ): IdentifyTargetProgress {
+  if (!isApprovedVerifiedLearnerTarget(target)) {
+    return {
+      status: 'unanswered',
+      attempts: 0,
+      correctMC: 0,
+      correctTyped: 0,
+      incorrectAttempts: 0,
+      revealed: false,
+      lastFeedback: 'Unverified object cannot be revealed in learner practice.',
+    };
+  }
+
   const sp = ensureSceneProgress(prog, scene.id);
+  ensureActiveIdentifyRound(prog, scene);
   const existing: IdentifyTargetProgress = sp.targets[target.id] || {
     status: 'unanswered',
     attempts: 0,
@@ -338,19 +425,436 @@ export function recordIdentifyShowAnswer(
   }
 
   sp.targets[target.id] = existing;
+
+  if (sp.activeRound && sp.activeRound.targetIds.includes(target.id)) {
+    const ar = sp.activeRound;
+    if (!ar.completedInRoundTargetIds.includes(target.id)) {
+      ar.completedInRoundTargetIds.push(target.id);
+    }
+    if (!ar.incorrectOrRevealedInRoundTargetIds.includes(target.id)) {
+      ar.incorrectOrRevealedInRoundTargetIds.push(target.id);
+    }
+  }
+
   return existing;
+}
+
+export function recordIdentifyExploreInspection(
+  prog: IdentifyPersistentProgress,
+  scene: IdentifyScene,
+  target: IdentifyHotspot
+): void {
+  if (!isApprovedVerifiedLearnerTarget(target)) {
+    return;
+  }
+  const sp = ensureSceneProgress(prog, scene.id);
+  if (!sp.exploredTargetIds) {
+    sp.exploredTargetIds = [];
+  }
+  if (!sp.exploredTargetIds.includes(target.id)) {
+    sp.exploredTargetIds.push(target.id);
+  }
+}
+
+const masterPriorityMap = new Map<string, string>();
+for (const m of IDENTIFY_MASTER_2000_NOUNS) {
+  masterPriorityMap.set(m.vocabularyId, m.priorityTier);
+  masterPriorityMap.set(m.conceptId, m.priorityTier);
+}
+
+/**
+ * Intelligent adaptive question selection for a 5-, 8-, or 10-question practice round.
+ * FAIL-CLOSED SAFETY RULE: Only selects genuinely visually verified targets (`getApprovedLearnerTargets`).
+ * If fewer verified targets exist than `roundLength`, returns only the verified targets.
+ * If 0 verified targets exist, returns `[]`.
+ */
+export function selectAdaptiveIdentifyRoundTargets(
+  scene: IdentifyScene,
+  prog: IdentifyPersistentProgress,
+  roundLength: IdentifyRoundLength = prog.roundLength || 8,
+  options?: {
+    mistakeReviewOnly?: boolean;
+    dueVocabularyIds?: string[];
+    roundIndexOverride?: number;
+  }
+): IdentifyHotspot[] {
+  const sp = ensureSceneProgress(prog, scene.id);
+  const allTargets = getApprovedLearnerTargets(scene);
+  if (allTargets.length === 0) return [];
+
+  const desiredCount = Math.min(allTargets.length, roundLength);
+  const dueSet = new Set(options?.dueVocabularyIds || []);
+  const roundIdx = options?.roundIndexOverride ?? (sp.roundsCompleted || 0);
+
+  // Rotate starting offset by roundIdx so consecutive rounds naturally cover all verified objects
+  const rotatedTargets: IdentifyHotspot[] = [];
+  const shift = (roundIdx * desiredCount) % allTargets.length;
+  for (let i = 0; i < allTargets.length; i++) {
+    rotatedTargets.push(allTargets[(i + shift) % allTargets.length]);
+  }
+
+  const scoreTarget = (t: IdentifyHotspot): number => {
+    const tp = sp.targets[t.id];
+    const isMissedOrRevealed =
+      tp?.status === 'incorrect' ||
+      tp?.status === 'revealed' ||
+      (tp?.incorrectAttempts || 0) > 0 ||
+      prog.wordsNeedingPractice.includes(t.vocabularyId);
+
+    const isUnseen = !tp || tp.status === 'unanswered';
+    const isDue = dueSet.has(t.vocabularyId) || dueSet.has(t.uk);
+    const tier =
+      masterPriorityMap.get(t.conceptId || '') ||
+      masterPriorityMap.get(t.vocabularyId) ||
+      'foundational';
+    const tierBonus = tier === 'foundational' ? 30 : tier === 'intermediate' ? 15 : 0;
+
+    if (options?.mistakeReviewOnly) {
+      return isMissedOrRevealed ? 1000 + tierBonus : isUnseen ? 200 + tierBonus : tierBonus;
+    }
+
+    if (isMissedOrRevealed) return 400 + tierBonus;
+    if (isUnseen) return 300 + tierBonus;
+    if (isDue) return 200 + tierBonus;
+    return 50 + tierBonus;
+  };
+
+  const scored = rotatedTargets.map((target, rotationOrder) => ({
+    target,
+    score: scoreTarget(target),
+    rotationOrder,
+  }));
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return a.rotationOrder - b.rotationOrder;
+  });
+
+  const selected = scored.slice(0, desiredCount).map((s) => s.target);
+  // Sort selected in ascending targetNumber order so guided navigation feels natural
+  selected.sort((a, b) => a.targetNumber - b.targetNumber);
+  return selected;
+}
+
+/**
+ * Starts or resets an adaptive practice round of 5, 8, or 10 questions on a scene.
+ * Safely shortens the round if fewer verified targets exist than `roundLength`,
+ * and marks the round empty if 0 verified targets exist.
+ */
+export function startIdentifyPracticeRound(
+  prog: IdentifyPersistentProgress,
+  scene: IdentifyScene,
+  options?: {
+    roundLength?: IdentifyRoundLength;
+    mistakeReviewOnly?: boolean;
+    dueVocabularyIds?: string[];
+    advanceRoundCounter?: boolean;
+  }
+): IdentifyActiveRoundState {
+  const sp = ensureSceneProgress(prog, scene.id);
+  const roundLength: IdentifyRoundLength = options?.roundLength || prog.roundLength || 8;
+  prog.roundLength = roundLength;
+
+  if (options?.advanceRoundCounter) {
+    sp.roundsCompleted = (sp.roundsCompleted || 0) + 1;
+  }
+  const roundNumber = (sp.roundsCompleted || 0) + 1;
+
+  const verifiedTargets = getApprovedLearnerTargets(scene);
+  const selectedTargets = selectAdaptiveIdentifyRoundTargets(scene, prog, roundLength, {
+    mistakeReviewOnly: options?.mistakeReviewOnly,
+    dueVocabularyIds: options?.dueVocabularyIds,
+    roundIndexOverride: sp.roundsCompleted || 0,
+  });
+
+  const shortenedDueToVerifiedLimit =
+    verifiedTargets.length > 0 && verifiedTargets.length < roundLength;
+  const shortenedExplanationEn =
+    verifiedTargets.length === 0
+      ? 'This scene currently has 0 visually verified objects and is unavailable for student practice until AI image generation and human hotspot verification are completed.'
+      : shortenedDueToVerifiedLimit
+      ? `This scene currently has ${verifiedTargets.length} visually verified objects, so your ${roundLength}-question round has been safely adjusted to ${verifiedTargets.length} verified questions.`
+      : undefined;
+
+  const initialUnseenTargetIds = selectedTargets
+    .filter((t) => {
+      const tp = sp.targets[t.id];
+      return !tp || tp.status === 'unanswered';
+    })
+    .map((t) => t.id);
+
+  const completedInRoundTargetIds: string[] = [];
+  const correctInRoundTargetIds: string[] = [];
+  const incorrectOrRevealedInRoundTargetIds: string[] = [];
+
+  for (const t of selectedTargets) {
+    const tp = sp.targets[t.id];
+    if (tp && (options?.advanceRoundCounter || options?.mistakeReviewOnly)) {
+      if (tp.status === 'revealed' || tp.status === 'incorrect') {
+        tp.status = 'unanswered';
+        tp.revealed = false;
+      }
+    }
+  }
+
+  const activeRound: IdentifyActiveRoundState = {
+    roundId: `${scene.id}-r${roundNumber}-len${roundLength}`,
+    sceneId: scene.id,
+    roundNumber,
+    roundLength,
+    requestedRoundLength: roundLength,
+    shortenedDueToVerifiedLimit,
+    shortenedExplanationEn,
+    targetIds: selectedTargets.map((t) => t.id),
+    initialUnseenTargetIds,
+    completedInRoundTargetIds,
+    correctInRoundTargetIds,
+    incorrectOrRevealedInRoundTargetIds,
+    isMistakeReviewRound: Boolean(options?.mistakeReviewOnly),
+    xpAwarded: false,
+  };
+
+  sp.activeRound = activeRound;
+  return activeRound;
+}
+
+export function ensureActiveIdentifyRound(
+  prog: IdentifyPersistentProgress,
+  scene: IdentifyScene
+): IdentifyActiveRoundState {
+  const sp = ensureSceneProgress(prog, scene.id);
+  const desiredLen: IdentifyRoundLength = prog.roundLength || 8;
+  const approvedTargets = getApprovedLearnerTargets(scene);
+  const validIds = new Set(approvedTargets.map((t) => t.id));
+
+  if (
+    sp.activeRound &&
+    sp.activeRound.sceneId === scene.id &&
+    sp.activeRound.roundLength === desiredLen &&
+    ((approvedTargets.length === 0 && sp.activeRound.targetIds.length === 0) ||
+      (sp.activeRound.targetIds.length > 0 &&
+        sp.activeRound.targetIds.every((id) => validIds.has(id))))
+  ) {
+    return sp.activeRound;
+  }
+
+  return startIdentifyPracticeRound(prog, scene, { roundLength: desiredLen });
+}
+
+export interface IdentifyRoundSummary {
+  roundId: string;
+  roundNumber: number;
+  roundLength: IdentifyRoundLength;
+  requestedRoundLength?: IdentifyRoundLength;
+  shortenedDueToVerifiedLimit?: boolean;
+  shortenedExplanationEn?: string;
+  totalQuestionsInRound: number;
+  questionsAttemptedInRound: number;
+  questionsCompletedInRound: number;
+  correctCountInRound: number;
+  incorrectOrRevealedCountInRound: number;
+  accuracyPercent: number;
+  isRoundComplete: boolean;
+  newlyIntroducedWords: IdentifyHotspot[];
+  previouslyStudiedWords: IdentifyHotspot[];
+  wordsNeedingReview: IdentifyHotspot[];
+  sceneTotalObjects: number;
+  scenePracticedObjectsCount: number;
+  sceneMasteredObjectsCount: number;
+  sceneCoveragePercent: number;
+  isSceneMastered: boolean;
+  xpEarnedThisRound: number;
+  xpAlreadyAwarded: boolean;
+}
+
+export function computeIdentifyRoundSummary(
+  prog: IdentifyPersistentProgress,
+  scene: IdentifyScene
+): IdentifyRoundSummary {
+  const sp = ensureSceneProgress(prog, scene.id);
+  const ar = ensureActiveIdentifyRound(prog, scene);
+  const approvedTargets = getApprovedLearnerTargets(scene);
+
+  const roundTargets = ar.targetIds
+    .map((id) => approvedTargets.find((t) => t.id === id))
+    .filter((t): t is IdentifyHotspot => Boolean(t));
+
+  let questionsAttemptedInRound = 0;
+  let questionsCompletedInRound = 0;
+  let correctCountInRound = 0;
+  let incorrectOrRevealedCountInRound = 0;
+  const newlyIntroducedWords: IdentifyHotspot[] = [];
+  const previouslyStudiedWords: IdentifyHotspot[] = [];
+  const wordsNeedingReview: IdentifyHotspot[] = [];
+
+  for (const t of roundTargets) {
+    const tp = sp.targets[t.id];
+    const inCompletedList = ar.completedInRoundTargetIds.includes(t.id);
+    const inCorrectList = ar.correctInRoundTargetIds.includes(t.id);
+    const inIncorrectList = ar.incorrectOrRevealedInRoundTargetIds.includes(t.id);
+
+    const isResolvedByTargetStatus =
+      ar.roundNumber === 1 &&
+      (tp?.status === 'correct-mc' || tp?.status === 'correct-fill' || tp?.status === 'revealed');
+
+    if (inCompletedList || inIncorrectList || isResolvedByTargetStatus) {
+      questionsAttemptedInRound += 1;
+    }
+
+    if (inCompletedList || isResolvedByTargetStatus) {
+      questionsCompletedInRound += 1;
+      if (
+        inCorrectList ||
+        ((tp?.status === 'correct-mc' || tp?.status === 'correct-fill') &&
+          !inIncorrectList &&
+          !tp.revealed)
+      ) {
+        correctCountInRound += 1;
+      } else {
+        incorrectOrRevealedCountInRound += 1;
+        wordsNeedingReview.push(t);
+      }
+    } else if (inIncorrectList || tp?.status === 'incorrect') {
+      wordsNeedingReview.push(t);
+    }
+
+    if (ar.initialUnseenTargetIds.includes(t.id)) {
+      newlyIntroducedWords.push(t);
+    } else {
+      previouslyStudiedWords.push(t);
+    }
+  }
+
+  const totalQuestionsInRound = roundTargets.length;
+  const isRoundComplete =
+    totalQuestionsInRound > 0 && questionsCompletedInRound >= totalQuestionsInRound;
+
+  const accuracyPercent =
+    questionsCompletedInRound > 0
+      ? Math.round((correctCountInRound / questionsCompletedInRound) * 100)
+      : 0;
+
+  let scenePracticedObjectsCount = 0;
+  let sceneMasteredObjectsCount = 0;
+  for (const t of approvedTargets) {
+    const tp = sp.targets[t.id];
+    if (!tp || tp.status === 'unanswered') continue;
+    scenePracticedObjectsCount += 1;
+    if (
+      (tp.status === 'correct-mc' || tp.status === 'correct-fill') &&
+      !tp.revealed
+    ) {
+      sceneMasteredObjectsCount += 1;
+    }
+  }
+
+  const sceneTotalObjects = approvedTargets.length;
+  const sceneCoveragePercent =
+    sceneTotalObjects > 0
+      ? Math.round((scenePracticedObjectsCount / sceneTotalObjects) * 100)
+      : 0;
+
+  const isSceneMastered =
+    sceneTotalObjects > 0 && sceneMasteredObjectsCount >= sceneTotalObjects;
+
+  const awardedRoundIds = sp.awardedRoundIds || [];
+  const xpAlreadyAwarded = Boolean(ar.xpAwarded || awardedRoundIds.includes(ar.roundId));
+  const xpEarnedThisRound =
+    sceneTotalObjects > 0 ? correctCountInRound * 5 + (isRoundComplete ? 15 : 0) : 0;
+
+  return {
+    roundId: ar.roundId,
+    roundNumber: ar.roundNumber,
+    roundLength: ar.roundLength,
+    requestedRoundLength: ar.requestedRoundLength ?? ar.roundLength,
+    shortenedDueToVerifiedLimit: ar.shortenedDueToVerifiedLimit,
+    shortenedExplanationEn: ar.shortenedExplanationEn,
+    totalQuestionsInRound,
+    questionsAttemptedInRound,
+    questionsCompletedInRound,
+    correctCountInRound,
+    incorrectOrRevealedCountInRound,
+    accuracyPercent,
+    isRoundComplete,
+    newlyIntroducedWords,
+    previouslyStudiedWords,
+    wordsNeedingReview,
+    sceneTotalObjects,
+    scenePracticedObjectsCount,
+    sceneMasteredObjectsCount,
+    sceneCoveragePercent,
+    isSceneMastered,
+    xpEarnedThisRound,
+    xpAlreadyAwarded,
+  };
+}
+
+/**
+ * Idempotently marks a completed round's XP as awarded so re-rendering or
+ * clicking round summary actions never duplicates XP.
+ */
+export function claimIdentifyRoundXpIfEligible(
+  prog: IdentifyPersistentProgress,
+  scene: IdentifyScene
+): number {
+  const summary = computeIdentifyRoundSummary(prog, scene);
+  if (!summary.isRoundComplete || summary.xpAlreadyAwarded || summary.sceneTotalObjects === 0) {
+    return 0;
+  }
+  const sp = ensureSceneProgress(prog, scene.id);
+  if (sp.activeRound) {
+    sp.activeRound.xpAwarded = true;
+  }
+  if (!sp.awardedRoundIds) {
+    sp.awardedRoundIds = [];
+  }
+  if (!sp.awardedRoundIds.includes(summary.roundId)) {
+    sp.awardedRoundIds.push(summary.roundId);
+  }
+  saveIdentifyProgress(prog);
+  return summary.xpEarnedThisRound;
+}
+
+/**
+ * Generates a learner-friendly phonetic pronunciation guide for Ukrainian words
+ * in Explore Mode (Section 20).
+ */
+export function transliterateUkToPronunciation(uk: string): string {
+  const map: Record<string, string> = {
+    а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e', є: 'ye',
+    ж: 'zh', з: 'z', и: 'y', і: 'i', ї: 'yi', й: 'y', к: 'k', л: 'l',
+    м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u',
+    ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ь: 'ʲ',
+    ю: 'yu', я: 'ya', '’': '', "'": '',
+  };
+  let out = '';
+  const lower = uk.toLowerCase();
+  for (let i = 0; i < lower.length; i++) {
+    const ch = lower[i];
+    if (ch === '\u0301') {
+      out += '́';
+    } else if (map[ch] !== undefined) {
+      out += map[ch];
+    } else {
+      out += ch;
+    }
+  }
+  return `[${out}]`;
 }
 
 export interface IdentifySceneSummaryMetrics {
   totalTargets: number;
   attemptedCount: number;
-  resolvedCount: number; // answered correctly or revealed
+  resolvedCount: number; // answered correctly or revealed across the scene
+  masteredCount: number; // answered correctly without reveal
   correctMCCount: number;
   correctTypedCount: number;
   incorrectAttemptsTotal: number;
   revealedCount: number;
-  isSceneComplete: boolean;
+  isSceneComplete: boolean; // true ONLY when all verified targets in the scene are resolved
+  isSceneMastered: boolean; // true ONLY when all verified targets in the scene are mastered
   needsPracticeTargets: IdentifyHotspot[];
+  activeRoundSummary: IdentifyRoundSummary;
 }
 
 export function computeIdentifySceneSummary(
@@ -358,15 +862,17 @@ export function computeIdentifySceneSummary(
   scene: IdentifyScene
 ): IdentifySceneSummaryMetrics {
   const sp = prog.scenes[scene.id];
+  const approvedTargets = getApprovedLearnerTargets(scene);
   let attemptedCount = 0;
   let resolvedCount = 0;
+  let masteredCount = 0;
   let correctMCCount = 0;
   let correctTypedCount = 0;
   let incorrectAttemptsTotal = 0;
   let revealedCount = 0;
   const needsPracticeTargets: IdentifyHotspot[] = [];
 
-  for (const t of scene.targets) {
+  for (const t of approvedTargets) {
     const tp = sp?.targets[t.id];
     if (!tp || tp.status === 'unanswered') continue;
     attemptedCount += 1;
@@ -374,9 +880,11 @@ export function computeIdentifySceneSummary(
 
     if (tp.status === 'correct-mc') {
       resolvedCount += 1;
+      masteredCount += 1;
       correctMCCount += 1;
     } else if (tp.status === 'correct-fill') {
       resolvedCount += 1;
+      masteredCount += 1;
       correctTypedCount += 1;
     } else if (tp.status === 'revealed') {
       resolvedCount += 1;
@@ -391,15 +899,22 @@ export function computeIdentifySceneSummary(
     }
   }
 
+  const activeRoundSummary = computeIdentifyRoundSummary(prog, scene);
+
   return {
-    totalTargets: scene.targets.length,
+    totalTargets: approvedTargets.length,
     attemptedCount,
     resolvedCount,
+    masteredCount,
     correctMCCount,
     correctTypedCount,
     incorrectAttemptsTotal,
     revealedCount,
-    isSceneComplete: resolvedCount === scene.targets.length && scene.targets.length > 0,
+    isSceneComplete: resolvedCount === approvedTargets.length && approvedTargets.length > 0,
+    isSceneMastered: masteredCount === approvedTargets.length && approvedTargets.length > 0,
     needsPracticeTargets,
+    activeRoundSummary,
   };
 }
+
+

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F4EFE6"/>
+            <stop offset="100%" stop-color="#E5DAC7"/>
+          </linearGradient>
+          <linearGradient id="bg-counter" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D7C0A3"/>
+            <stop offset="18%" stop-color="#B99976"/>
+            <stop offset="100%" stop-color="#8C6B4A"/>
+          </linearGradient>
+          <pattern id="tile-grid" width="60" height="30" patternUnits="userSpaceOnUse">
+            <rect width="60" height="30" fill="none" stroke="#E2D6C3" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="540" fill="url(#bg-wall)"/>
+        <rect y="180" width="1200" height="360" fill="url(#tile-grid)" opacity="0.65"/>
+        <rect y="530" width="1200" height="16" fill="#A07E5B"/>
+        <rect y="546" width="1200" height="354" fill="url(#bg-counter)"/>
+      
+      <g id="obj-rs-food"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="216" cy="268.56" rx="120.96" ry="69.12" fill="#FFFFFF" stroke="#64748B" stroke-width="4"/>
+        <path d="M135.36,262.79999999999995 Q216,141.84 296.64,262.79999999999995 Z" fill="#F59E0B" stroke="#B45309" stroke-width="4"/>
+      </g>
+<g id="obj-rs-plate"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="600" cy="234" rx="126.72" ry="109.44" fill="#FFFFFF" stroke="#94A3B8" stroke-width="5"/>
+        <ellipse cx="600" cy="234" rx="89.28" ry="74.88" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/>
+      </g>
+<g id="obj-rs-glass"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="914.88,136.07999999999998 1053.12,136.07999999999998 1030.08,337.68 937.92,337.68" fill="#E0F2FE" fill-opacity="0.78" stroke="#0284C7" stroke-width="4"/>
+        <polygon points="923.52,199.44 1044.48,199.44 1027.2,329.03999999999996 940.8,329.03999999999996" fill="#38BDF8" fill-opacity="0.55"/>
+        <ellipse cx="984" cy="136.07999999999998" rx="69.12" ry="14.4" fill="#F0F9FF" stroke="#0284C7" stroke-width="3"/>
+      </g>
+<g id="obj-rs-fork"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <line x1="135.36" y1="716.4" x2="244.79999999999998" y2="606.96" stroke="#94A3B8" stroke-width="10" stroke-linecap="round"/>
+        <path d="M227.52,618.48 L262.08000000000004,583.92 M244.79999999999998,595.44 L296.64,543.6 M227.52,583.92 L279.36,532.08 M262.08000000000004,612.72 L313.91999999999996,560.88" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-rs-knife"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M507.84,710.64 L585.6,635.76" stroke="#451A03" stroke-width="16" stroke-linecap="round"/>
+        <path d="M585.6,635.76 L703.6800000000001,526.32 Q720.96,566.64 611.52,664.56 Z" fill="#E2E8F0" stroke="#475569" stroke-width="4"/>
+      </g>
+<g id="obj-rs-bill"><ellipse cx="984" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="909.12" y="526.32" width="149.76" height="207.35999999999999" rx="6" fill="#1E293B" stroke="#F59E0B" stroke-width="4"/>
+        <line x1="937.92" y1="578.16" x2="1030.08" y2="578.16" stroke="#FDE68A" stroke-width="4"/>
+        <line x1="937.92" y1="618.48" x2="1030.08" y2="618.48" stroke="#FDE68A" stroke-width="4"/>
+        <line x1="937.92" y1="658.8" x2="1007.04" y2="658.8" stroke="#FDE68A" stroke-width="4"/>
+      </g>
+    </svg>

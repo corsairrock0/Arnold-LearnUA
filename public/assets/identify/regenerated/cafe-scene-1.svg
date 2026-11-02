@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FBF7F0"/>
+            <stop offset="100%" stop-color="#EFE6D5"/>
+          </linearGradient>
+          <linearGradient id="bg-counter" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D7C0A3"/>
+            <stop offset="18%" stop-color="#B99976"/>
+            <stop offset="100%" stop-color="#8C6B4A"/>
+          </linearGradient>
+          <pattern id="tile-grid" width="60" height="30" patternUnits="userSpaceOnUse">
+            <rect width="60" height="30" fill="none" stroke="#E2D6C3" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="540" fill="url(#bg-wall)"/>
+        <rect y="180" width="1200" height="360" fill="url(#tile-grid)" opacity="0.65"/>
+        <rect y="530" width="1200" height="16" fill="#A07E5B"/>
+        <rect y="546" width="1200" height="354" fill="url(#bg-counter)"/>
+      
+      <g id="obj-cf-barista"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M141.12,343.44 V239.76 Q141.12,208.07999999999998 216,208.07999999999998 Q290.88,208.07999999999998 290.88,239.76 V343.44 Z" fill="#15803D" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="216" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M169.92000000000002,165.76 A46.08,46.08 0 0,1 262.08,165.76 Q216,140.112 169.92000000000002,165.76 Z" fill="#78350F"/>
+        <circle cx="199.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="232.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M201.2544,187.1136 Q216,196.3296 230.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="169.92000000000002" y="234" width="92.16" height="97.92" rx="4" fill="#FEF3C7" stroke="#B45309" stroke-width="2"/>
+      </g>
+<g id="obj-cf-menu"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="525.12" y="130.32" width="149.76" height="207.35999999999999" rx="6" fill="#1E293B" stroke="#F59E0B" stroke-width="4"/>
+        <line x1="553.92" y1="182.16" x2="646.08" y2="182.16" stroke="#FDE68A" stroke-width="4"/>
+        <line x1="553.92" y1="222.48000000000002" x2="646.08" y2="222.48000000000002" stroke="#FDE68A" stroke-width="4"/>
+        <line x1="553.92" y1="262.79999999999995" x2="623.04" y2="262.79999999999995" stroke="#FDE68A" stroke-width="4"/>
+      </g>
+<g id="obj-cf-coffee"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="914.88" y="159.12" width="138.24" height="178.56" rx="8" fill="#78350F" stroke="#451A03" stroke-width="4"/>
+        <ellipse cx="984" cy="245.52" rx="40.32000000000001" ry="28.8" fill="#FDE68A"/>
+      </g>
+<g id="obj-cf-cup"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="216" cy="722.16" rx="109.44" ry="25.919999999999998" fill="#F1F5F9" stroke="#94A3B8" stroke-width="4"/>
+        <path d="M141.12,572.4 H279.36 V664.56 Q279.36,716.4 210.24,716.4 Q141.12,716.4 141.12,664.56 Z" fill="#FFFFFF" stroke="#64748B" stroke-width="4"/>
+        <path d="M279.36,595.44 Q331.2,595.44 331.2,635.76 Q331.2,676.08 279.36,676.08" fill="none" stroke="#64748B" stroke-width="6"/>
+        <ellipse cx="210.24" cy="572.4" rx="69.12" ry="17.28" fill="#78350F" stroke="#451A03" stroke-width="3"/>
+      </g>
+<g id="obj-cf-pastry"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M507.84,681.84 Q600,549.36 692.16,681.84 Q600,635.76 507.84,681.84 Z" fill="#F59E0B" stroke="#B45309" stroke-width="4"/>
+      </g>
+    </svg>

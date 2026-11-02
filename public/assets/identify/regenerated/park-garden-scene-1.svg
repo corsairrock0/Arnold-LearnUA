@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38BDF8"/>
+            <stop offset="60%" stop-color="#BAE6FD"/>
+            <stop offset="100%" stop-color="#E0F2FE"/>
+          </linearGradient>
+          <linearGradient id="lawn-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#86EFAC"/>
+            <stop offset="45%" stop-color="#4ADE80"/>
+            <stop offset="100%" stop-color="#22C55E"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="420" fill="url(#sky-grad)"/>
+        <path d="M0,420 Q300,370 600,405 T1200,395 L1200,900 L0,900 Z" fill="url(#lawn-grad)"/>
+      
+      <g id="obj-pk-tree"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="192.96" y="228.24" width="46.08" height="126.72" rx="4" fill="#78350F"/>
+        <circle cx="216" cy="187.92000000000002" r="80.64000000000001" fill="#16A34A" stroke="#14532D" stroke-width="4"/>
+        <circle cx="169.92000000000002" cy="210.95999999999998" r="57.6" fill="#22C55E"/>
+        <circle cx="262.08" cy="210.95999999999998" r="57.6" fill="#15803D"/>
+      </g>
+<g id="obj-pk-bush"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <circle cx="553.92" cy="251.28" r="63.36" fill="#16A34A"/>
+        <circle cx="646.08" cy="251.28" r="63.36" fill="#15803D"/>
+        <circle cx="600" cy="216.72" r="74.88" fill="#22C55E" stroke="#14532D" stroke-width="4"/>
+      </g>
+<g id="obj-pk-bench"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="868.8" y="182.16" width="230.4" height="46.08" rx="4" fill="#B45309" stroke="#78350F" stroke-width="4"/>
+        <rect x="863.04" y="239.76" width="241.92" height="34.56" rx="4" fill="#92400E" stroke="#451A03" stroke-width="4"/>
+        <rect x="891.84" y="274.32" width="23.04" height="69.12" fill="#334155"/>
+        <rect x="1053.12" y="274.32" width="23.04" height="69.12" fill="#334155"/>
+      </g>
+<g id="obj-pk-path"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="146.88,537.84 285.12,537.84 336.96000000000004,733.6800000000001 95.03999999999999,733.6800000000001" fill="#CBD5E1" stroke="#334155" stroke-width="4"/>
+        <line x1="216" y1="555.12" x2="216" y2="716.4" stroke="#FACC15" stroke-width="5" stroke-dasharray="12,10"/>
+      </g>
+<g id="obj-pk-grass"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="479.04" y="606.96" width="241.92" height="126.72" rx="14" fill="#22C55E" stroke="#15803D" stroke-width="4"/>
+        <path d="M525.12,670.3199999999999 L513.6,578.16 M600,670.3199999999999 L605.76,566.64 M669.12,670.3199999999999 L680.64,578.16" stroke="#14532D" stroke-width="5" stroke-linecap="round"/>
+      </g>
+    </svg>

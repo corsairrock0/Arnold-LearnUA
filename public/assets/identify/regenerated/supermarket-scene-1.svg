@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F0F9FF"/>
+            <stop offset="100%" stop-color="#E0F2FE"/>
+          </linearGradient>
+          <linearGradient id="bg-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#CBD5E1"/>
+            <stop offset="100%" stop-color="#94A3B8"/>
+          </linearGradient>
+          <pattern id="clean-tile" width="64" height="64" patternUnits="userSpaceOnUse">
+            <rect width="64" height="64" fill="none" stroke="#BAE6FD" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="570" fill="url(#bg-wall)"/>
+        <rect width="1200" height="570" fill="url(#clean-tile)" opacity="0.6"/>
+        <rect y="570" width="1200" height="330" fill="url(#bg-floor)"/>
+      
+      <g id="obj-sm-apple"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <circle cx="216" cy="251.28000000000003" r="97.92" fill="#EF4444" stroke="#991B1B" stroke-width="4"/>
+        <path d="M216,159.12 Q224,118.8 234,130.32" fill="none" stroke="#451A03" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="232" cy="141.84" rx="12" ry="6" fill="#22C55E"/>
+      </g>
+<g id="obj-sm-banana"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M513.6,285.84000000000003 Q594.24,343.44 692.16,159.12 Q646.08,274.32 513.6,285.84000000000003 Z" fill="#FACC15" stroke="#CA8A04" stroke-width="5"/>
+      </g>
+<g id="obj-sm-milk"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="920.64" y="176.39999999999998" width="126.72" height="167.04" rx="6" fill="#FFFFFF" stroke="#0284C7" stroke-width="4"/>
+        <polygon points="920.64,176.39999999999998 984,130.32 1047.36,176.39999999999998" fill="#BAE6FD" stroke="#0284C7" stroke-width="4"/>
+        <rect x="920.64" y="228.24" width="126.72" height="57.6" fill="#38BDF8"/>
+      </g>
+<g id="obj-sm-cheese"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="112.32000000000001,681.84 313.91999999999996,681.84 313.91999999999996,583.92 210.24,549.36" fill="#FDE047" stroke="#CA8A04" stroke-width="4"/>
+        <circle cx="204.48000000000002" cy="635.76" r="10" fill="#EAB308"/>
+        <circle cx="267.84000000000003" cy="647.28" r="8" fill="#EAB308"/>
+        <circle cx="250.56" cy="601.2" r="7" fill="#EAB308"/>
+      </g>
+<g id="obj-sm-bread"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="496.32" y="578.16" width="207.35999999999999" height="132.48000000000002" rx="28" fill="#D97706" stroke="#78350F" stroke-width="4"/>
+        <path d="M548.16,595.44 L571.2,641.52 M594.24,595.44 L617.28,641.52 M640.3199999999999,595.44 L663.36,641.52" stroke="#FEF3C7" stroke-width="4" stroke-linecap="round"/>
+      </g>
+    </svg>

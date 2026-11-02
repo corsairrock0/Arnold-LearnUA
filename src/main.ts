@@ -61,6 +61,9 @@ import {
   goIdentifyNextScene,
   addIdentifyWordToFSRS,
   addIdentifySceneWordsToFSRS,
+  switchIdentifyPilotVariant,
+  setIdentifySceneFitMode,
+  toggleIdentifyBoundingBoxes,
 } from './identifyView';
 import {
   openLanguageSelectorModal,
@@ -172,6 +175,22 @@ import {
   handleRequestRemoveGrammarTable,
   handleRemoveGrammarTableRow,
   bootCmsStudioRouteIfRequested,
+  selectCmsIdentifyScene,
+  selectCmsIdentifyTarget,
+  setCmsIdentifyFilter,
+  toggleCmsIdentifyBulkAuditPanel,
+  toggleCmsIdentifyScenePlannerPanel,
+  handleCmsIdentifyCanvasClick,
+  handleCmsIdentifySaveGeometryInputs,
+  handleCmsIdentifyNudgeTarget,
+  handleCmsIdentifyMarkTargetMissing,
+  handleCmsIdentifyAddTarget,
+  handleCmsIdentifyChangeAssetPath,
+  handleCmsIdentifyUndoDraft,
+  handleCmsIdentifyRestoreBaseline,
+  handleCmsIdentifyCheckScene,
+  handleCmsIdentifyPublishScene,
+  handleCmsIdentifyPreviewInLearnerApp,
 } from './multilingual/cmsContentStudioView.ts';
 
 // ============================================================================
@@ -4233,6 +4252,9 @@ declare global {
     goIdentifyNextScene: typeof goIdentifyNextScene;
     addIdentifyWordToFSRS: typeof addIdentifyWordToFSRS;
     addIdentifySceneWordsToFSRS: typeof addIdentifySceneWordsToFSRS;
+    switchIdentifyPilotVariant: typeof switchIdentifyPilotVariant;
+    setIdentifySceneFitMode: typeof setIdentifySceneFitMode;
+    toggleIdentifyBoundingBoxes: typeof toggleIdentifyBoundingBoxes;
     openLanguageSelectorModal: typeof openLanguageSelectorModal;
     closeLanguageSelectorModal: typeof closeLanguageSelectorModal;
     selectTargetLanguageInModal: typeof selectTargetLanguageInModal;
@@ -4338,6 +4360,22 @@ declare global {
     handleRemoveExampleSentence: typeof handleRemoveExampleSentence;
     handleRequestRemoveGrammarTable: typeof handleRequestRemoveGrammarTable;
     handleRemoveGrammarTableRow: typeof handleRemoveGrammarTableRow;
+    selectCmsIdentifyScene: typeof selectCmsIdentifyScene;
+    selectCmsIdentifyTarget: typeof selectCmsIdentifyTarget;
+    setCmsIdentifyFilter: typeof setCmsIdentifyFilter;
+    toggleCmsIdentifyBulkAuditPanel: typeof toggleCmsIdentifyBulkAuditPanel;
+    toggleCmsIdentifyScenePlannerPanel: typeof toggleCmsIdentifyScenePlannerPanel;
+    handleCmsIdentifyCanvasClick: typeof handleCmsIdentifyCanvasClick;
+    handleCmsIdentifySaveGeometryInputs: typeof handleCmsIdentifySaveGeometryInputs;
+    handleCmsIdentifyNudgeTarget: typeof handleCmsIdentifyNudgeTarget;
+    handleCmsIdentifyMarkTargetMissing: typeof handleCmsIdentifyMarkTargetMissing;
+    handleCmsIdentifyAddTarget: typeof handleCmsIdentifyAddTarget;
+    handleCmsIdentifyChangeAssetPath: typeof handleCmsIdentifyChangeAssetPath;
+    handleCmsIdentifyUndoDraft: typeof handleCmsIdentifyUndoDraft;
+    handleCmsIdentifyRestoreBaseline: typeof handleCmsIdentifyRestoreBaseline;
+    handleCmsIdentifyCheckScene: typeof handleCmsIdentifyCheckScene;
+    handleCmsIdentifyPublishScene: typeof handleCmsIdentifyPublishScene;
+    handleCmsIdentifyPreviewInLearnerApp: typeof handleCmsIdentifyPreviewInLearnerApp;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -4438,6 +4476,9 @@ if (typeof window !== 'undefined') {
   window.goIdentifyNextScene = goIdentifyNextScene;
   window.addIdentifyWordToFSRS = addIdentifyWordToFSRS;
   window.addIdentifySceneWordsToFSRS = addIdentifySceneWordsToFSRS;
+  window.switchIdentifyPilotVariant = switchIdentifyPilotVariant;
+  window.setIdentifySceneFitMode = setIdentifySceneFitMode;
+  window.toggleIdentifyBoundingBoxes = toggleIdentifyBoundingBoxes;
   window.openLanguageSelectorModal = openLanguageSelectorModal;
   window.closeLanguageSelectorModal = closeLanguageSelectorModal;
   window.selectTargetLanguageInModal = selectTargetLanguageInModal;
@@ -4547,6 +4588,22 @@ if (typeof window !== 'undefined') {
   window.handleRemoveExampleSentence = handleRemoveExampleSentence;
   window.handleRequestRemoveGrammarTable = handleRequestRemoveGrammarTable;
   window.handleRemoveGrammarTableRow = handleRemoveGrammarTableRow;
+  window.selectCmsIdentifyScene = selectCmsIdentifyScene;
+  window.selectCmsIdentifyTarget = selectCmsIdentifyTarget;
+  window.setCmsIdentifyFilter = setCmsIdentifyFilter;
+  window.toggleCmsIdentifyBulkAuditPanel = toggleCmsIdentifyBulkAuditPanel;
+  window.toggleCmsIdentifyScenePlannerPanel = toggleCmsIdentifyScenePlannerPanel;
+  window.handleCmsIdentifyCanvasClick = handleCmsIdentifyCanvasClick;
+  window.handleCmsIdentifySaveGeometryInputs = handleCmsIdentifySaveGeometryInputs;
+  window.handleCmsIdentifyNudgeTarget = handleCmsIdentifyNudgeTarget;
+  window.handleCmsIdentifyMarkTargetMissing = handleCmsIdentifyMarkTargetMissing;
+  window.handleCmsIdentifyAddTarget = handleCmsIdentifyAddTarget;
+  window.handleCmsIdentifyChangeAssetPath = handleCmsIdentifyChangeAssetPath;
+  window.handleCmsIdentifyUndoDraft = handleCmsIdentifyUndoDraft;
+  window.handleCmsIdentifyRestoreBaseline = handleCmsIdentifyRestoreBaseline;
+  window.handleCmsIdentifyCheckScene = handleCmsIdentifyCheckScene;
+  window.handleCmsIdentifyPublishScene = handleCmsIdentifyPublishScene;
+  window.handleCmsIdentifyPreviewInLearnerApp = handleCmsIdentifyPreviewInLearnerApp;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,

@@ -1,0 +1,1465 @@
+# LANGO — COMPLETE IDENTIFY SYSTEM UPGRADE: INTELLIGENT SCENE GENERATION, ACCURATE OBJECT DETECTION, RESPONSIVE DESIGN, AND CONTENT STUDIO MANAGEMENT
+
+## PRIMARY OBJECTIVE
+
+Improve the existing **Identify** feature in my Lango language-learning application:
+
+https://slovo-ua-app.ai.studio/
+
+The Identify tab is an interactive visual vocabulary-learning experience where students examine an image, select objects, and identify the corresponding vocabulary words.
+
+Currently, some Identify scenes do not accurately represent their assigned vocabulary. Additionally, numbered interactive targets are sometimes placed in arbitrary grid positions instead of appearing over the actual objects.
+
+I want to transform Identify into a reliable, intelligent, visually accurate learning system in which:
+
+1. Every image is specifically designed around its assigned vocabulary.
+2. Every selected vocabulary word corresponds to a clearly visible object.
+3. Every interactive target is positioned over the correct physical object.
+4. The number of objects per image can vary according to scene complexity.
+5. Images are intelligently generated, verified, annotated, and validated.
+6. Target positions remain accurate on every screen size and device.
+7. Students can use the activity with a mouse, touchscreen, keyboard, or supported accessibility controls.
+8. Existing scenes can be audited and corrected safely.
+9. Identify images and target annotations can be managed through Lango Content Studio.
+10. All existing educational content, images, and learning progress are preserved.
+
+This is a targeted enhancement of the existing Identify feature.
+
+**DO NOT rebuild the application or regenerate its entire image library.**
+
+---
+
+# 1. ABSOLUTE APPLICATION PRESERVATION
+
+My application already contains extensive educational content and completed development work.
+
+Preserve:
+
+- Existing Ukrainian Course modules.
+- All lesson explanations.
+- Grammar tables.
+- Vocabulary entries.
+- Knowledge Checks.
+- Practice activities.
+- Examinations.
+- Assessment question banks.
+- Anki-style flashcards.
+- Existing FSRS scheduling and progress.
+- All eight learner-facing tabs.
+- Existing Identify exercises.
+- Existing WebP photographs.
+- Other image assets.
+- Existing audio and video.
+- Reader.
+- Grammar Inspector.
+- Sentence features.
+- Phonetics.
+- Universal Course Player.
+- All 28 Course Tracks.
+- Shared canonical English vocabulary.
+- Fourteen native-language-specific English vocabulary overlays.
+- Track-isolated learning progress.
+- Lango Content Studio.
+- Course JSON importing and exporting.
+- Published content and version history.
+- Existing application styling and navigation.
+- Current Google Cloud Run compatibility.
+
+Do not delete or overwrite existing images.
+
+Do not reset XP or learning history.
+
+Do not alter vocabulary identifiers.
+
+Do not modify unrelated GitHub settings.
+
+Do not recreate the Cloud Run service.
+
+Do not change deployment configuration without a verified technical reason.
+
+Make changes incrementally and safely.
+
+---
+
+# 2. INSPECT THE EXISTING IDENTIFY IMPLEMENTATION FIRST
+
+Before modifying code, inspect the actual existing implementation.
+
+Determine:
+
+- Where Identify scene data is stored.
+- How scenes are selected.
+- How vocabulary words are associated with images.
+- How image assets are referenced.
+- How target coordinates are generated.
+- How numbered targets are rendered.
+- Whether targets currently use a fixed grid.
+- Whether bounding boxes or polygons already exist.
+- How answers are validated.
+- How correct and incorrect feedback is displayed.
+- How the existing accessible target selector works.
+- How grammar and pronunciation explanations are connected.
+- Whether any automated image-generation services already exist.
+- Whether image-understanding or object-location tools are available.
+- How Identify content integrates with Content Studio.
+- How scene revisions and publication work.
+- How existing completion and XP records are stored.
+
+Identify the root causes of scene-word mismatches and incorrect marker positions.
+
+Do not assume the problems can be solved by CSS alone.
+
+Provide an implementation plan that reuses the current architecture and preserves existing assets.
+
+---
+
+# 3. CORE RULE — VOCABULARY MUST DETERMINE THE SCENE
+
+The existing implementation appears to sometimes display images that do not contain the objects students are asked to identify.
+
+This must be corrected.
+
+**Every Identify scene must be created specifically to represent its intended vocabulary.**
+
+The workflow must be:
+
+1. Select the target vocabulary.
+2. Verify the intended meaning of each word.
+3. Determine whether the words can naturally appear together.
+4. Design a suitable visual scene.
+5. Generate or select a matching image.
+6. Verify the actual visible objects.
+7. Locate the objects within the image.
+8. Generate accurate object annotations.
+9. Validate scene quality.
+10. Preview the completed exercise.
+11. Approve the scene for publication.
+
+Do not select an unrelated image and assign vocabulary to arbitrary areas.
+
+Do not assume that an object exists merely because it appeared in an image-generation prompt.
+
+The final rendered image must be visually inspected or otherwise reliably verified.
+
+---
+
+# 4. INTELLIGENT VOCABULARY GROUPING
+
+Some vocabulary words naturally belong together in one scene.
+
+Others do not.
+
+Implement an intelligent grouping process that considers:
+
+- Object meaning.
+- Visual recognizability.
+- Real-world relationships.
+- Scene plausibility.
+- Relative object sizes.
+- Visual clarity.
+- Available image space.
+- Appropriate learner difficulty.
+- Semantic ambiguity.
+- The likelihood of objects being confused.
+
+Examples of natural scene categories:
+
+- A kitchen with utensils, appliances, and food.
+- A classroom with books, desks, chairs, and school supplies.
+- A beach with sand, towels, rocks, trees, and the sea.
+- A living room with furniture and household objects.
+- A park with people, paths, benches, and trees.
+- A restaurant with plates, glasses, food, and utensils.
+- A street with cars, bicycles, shops, and traffic lights.
+
+These examples are illustrative, not fixed templates.
+
+Allow the AI to independently choose suitable compositions.
+
+Do not force semantically incompatible vocabulary into one image.
+
+---
+
+# 5. FLEXIBLE NUMBER OF TARGETS
+
+Do not require exactly nine objects in every Identify scene.
+
+The number of objects should depend on:
+
+- Visual complexity.
+- Object size.
+- Image composition.
+- Available space.
+- Vocabulary difficulty.
+- Whether every object can be identified accurately.
+
+A scene with five or six clear objects is preferable to a crowded scene with nine ambiguous objects.
+
+Support varying target counts.
+
+The system may generate multiple scenes to cover a larger vocabulary group.
+
+Do not discard required vocabulary simply because it cannot fit into one image.
+
+Track which vocabulary items have been assigned to which scenes.
+
+Prevent accidental omissions and unnecessary duplicates.
+
+---
+
+# 6. REQUIRED OBJECT VISIBILITY
+
+Every assigned target must correspond to a recognizable visible object.
+
+Each object must satisfy the following criteria:
+
+**VISIBLE**
+
+The object actually appears in the image.
+
+**RECOGNIZABLE**
+
+A student can identify the object without guessing.
+
+**DISTINCT**
+
+The object is distinguishable from nearby objects.
+
+**APPROPRIATELY SIZED**
+
+The object is large enough to recognize on typical desktop, tablet, and phone displays.
+
+**NOT OBSCURED**
+
+The object is not hidden behind another element.
+
+**SEMANTICALLY CORRECT**
+
+The object accurately represents the intended vocabulary meaning.
+
+**POSITIONABLE**
+
+The object has a reliable visible region that can be annotated.
+
+If any criterion fails, the scene must be revised, split, regenerated, or marked for review.
+
+Do not publish an Identify scene with missing or unverifiable targets.
+
+---
+
+# 7. INTELLIGENT IMAGE GENERATION
+
+Create or extend a vocabulary-first scene-generation workflow.
+
+The system should generate high-quality educational imagery that naturally includes the required objects.
+
+The image-generation specification should consider:
+
+- Required vocabulary.
+- Intended lexical meanings.
+- Scene environment.
+- Object placement.
+- Relative scale.
+- Object visibility.
+- Visual separation.
+- Lighting.
+- Camera perspective.
+- Appropriate aspect ratio.
+- Recognizability.
+- Educational clarity.
+
+Images should feel coherent, realistic, and visually engaging.
+
+Use photorealistic imagery when appropriate.
+
+Allow illustrations where they provide clearer educational meaning.
+
+Do not force every exercise to use one artistic style.
+
+Avoid:
+
+- Missing objects.
+- Distorted objects.
+- Ambiguous objects.
+- Duplicate objects that confuse learners.
+- Hidden objects.
+- Unnaturally crowded compositions.
+- Unwanted text labels.
+- Poor image quality.
+- Objects too small to recognize.
+- Artificial arrangements that confuse spatial relationships.
+
+The AI may retry generation or suggest a different grouping if the result fails validation.
+
+Do not claim image generation is functional unless a real generation service is configured.
+
+If automation is unavailable, provide a workflow for manually uploading an image and annotating its objects.
+
+---
+
+# 8. VISUAL VERIFICATION BEFORE ANNOTATION
+
+Generating an image does not guarantee that the required objects actually appear.
+
+Therefore, implement a verification stage.
+
+For each target:
+
+1. Inspect the generated image.
+2. Confirm the object exists.
+3. Verify that its visible appearance matches the intended meaning.
+4. Check whether it is recognizable.
+5. Estimate or identify its location.
+6. Record verification status.
+7. Flag uncertainty.
+
+Use available image-understanding or object-location services where appropriate.
+
+Automated results may propose annotations, but must not be treated as infallible.
+
+Require manual review when confidence is insufficient.
+
+Do not invent image-understanding results or detection confidence.
+
+Do not consider scene metadata alone proof that an object is present.
+
+---
+
+# 9. OBJECT ANNOTATION DATA MODEL
+
+Implement a reliable annotation system based on the original image coordinate space.
+
+Each target should support:
+
+- Stable scene ID.
+- Stable target ID.
+- Vocabulary entry ID.
+- Verified lexical sense.
+- Image asset ID.
+- Object label.
+- Bounding box.
+- Center point.
+- Optional polygon or segmentation region.
+- Annotation source.
+- Verification status.
+- Optional confidence score from a real detection system.
+- Content version.
+
+Use normalized coordinates for annotations.
+
+For example:
+
+x: 0.20
+
+y: 0.35
+
+width: 0.15
+
+height: 0.12
+
+These values represent proportions of the original image dimensions.
+
+They must not depend on the browser viewport.
+
+The annotation describes the real object location in the original image.
+
+Never generate coordinates merely from vocabulary order.
+
+Never use a fixed 3×3 grid as the source of object locations.
+
+---
+
+# 10. ACCURATE TARGET MARKERS AND HIT AREAS
+
+Separate the visual marker from the interactive region.
+
+**VISUAL MARKER**
+
+A small numbered or otherwise recognizable indicator associated with the object.
+
+**INTERACTIVE REGION**
+
+The object's verified clickable or tappable area.
+
+The marker should not unnecessarily cover the object.
+
+The interactive area must correspond to the actual object.
+
+Use verified bounding boxes or polygons where practical.
+
+Make interaction regions usable on touchscreens without creating ambiguous overlaps.
+
+Do not allow unrelated portions of an image to activate the wrong object.
+
+If two objects overlap, provide appropriate annotation or interaction disambiguation.
+
+A target for the sun must appear over or immediately adjacent to the visible sun.
+
+A target for a tree must correspond to the actual tree.
+
+A target for a beach towel must correspond to the actual towel.
+
+A target for a mountain must correspond to the mountain.
+
+If the object is missing, no supposedly valid target should be assigned.
+
+---
+
+# 11. UNIVERSAL RESPONSIVE DESIGN
+
+The Identify feature must work across all modern device categories.
+
+This includes:
+
+**DESKTOP**
+
+- Windows desktop browsers.
+- macOS desktop browsers.
+- Linux desktop browsers.
+- Standard desktop monitors.
+- Large monitors.
+- Ultrawide monitors.
+
+**LAPTOPS**
+
+- Small laptops.
+- Standard laptops.
+- High-resolution laptops.
+
+**APPLE TABLETS**
+
+- iPad mini.
+- Standard iPad.
+- iPad Air.
+- iPad Pro.
+
+**ANDROID TABLETS**
+
+- Samsung Galaxy Tab devices.
+- Other Android tablets.
+- Small and large tablet displays.
+
+**APPLE SMARTPHONES**
+
+- iPhone 16 Pro Max.
+- Other iPhone models.
+- Modern iOS devices.
+
+**ANDROID SMARTPHONES**
+
+- Small Android phones.
+- Standard Android phones.
+- Large Android phones.
+
+Support portrait and landscape orientation where applicable.
+
+Do not optimize exclusively for iPhone.
+
+Do not create separate hardcoded Identify implementations for each device.
+
+Use one shared responsive architecture.
+
+---
+
+# 12. RESPONSIVE LAYOUT BEHAVIOR
+
+Use actual container dimensions rather than relying exclusively on device names or viewport breakpoints.
+
+The application has navigation, scene images, answer choices, and explanation panels.
+
+These must adapt to the usable space.
+
+## DESKTOP AND LARGE SCREENS
+
+Use multi-column layouts when appropriate.
+
+Display:
+
+- The Identify image prominently.
+- Vocabulary answer choices nearby.
+- Explanation or grammar panels in a useful position.
+
+Avoid excessive unused space.
+
+Do not stretch the scene unnecessarily.
+
+Avoid allowing sidebars to make the scene too small.
+
+## TABLETS
+
+Support both portrait and landscape layouts.
+
+Use side-by-side panels when there is enough room.
+
+Use stacked or collapsible panels when necessary.
+
+Make target areas touch-friendly.
+
+Avoid desktop-only hover interactions.
+
+## SMARTPHONES
+
+Prioritize the scene image.
+
+Stack supporting panels appropriately.
+
+Allow natural vertical scrolling.
+
+Avoid horizontal overflow.
+
+Keep answer controls accessible.
+
+Respect safe-area insets.
+
+Maintain readable text and useful touch-target sizes.
+
+Do not allow explanation panels to obscure the image unintentionally.
+
+---
+
+# 13. RESPONSIVE IMAGE SCALING
+
+Maintain the scene image's original aspect ratio.
+
+Do not stretch or distort images.
+
+Prefer displaying the complete image when all objects must remain visible.
+
+Use an equivalent of `object-fit: contain` when appropriate.
+
+If `object-fit: cover` or cropping is used, verify that no annotated object becomes hidden.
+
+Support multiple source aspect ratios.
+
+Do not assume all scenes are square.
+
+The image may be landscape, portrait, or another approved aspect ratio.
+
+Avoid enlarging small images beyond a reasonable quality threshold.
+
+Ensure image containers remain visually balanced across devices.
+
+---
+
+# 14. PRECISE COORDINATE TRANSFORMATION
+
+THIS IS ONE OF THE MOST IMPORTANT TECHNICAL REQUIREMENTS.
+
+All target annotations must remain aligned with their objects when the image is resized.
+
+Do not position targets relative to an unrelated outer container.
+
+Use normalized original-image coordinates.
+
+Convert those coordinates into displayed positions using the actual rendered image transform.
+
+Correctly account for:
+
+- Original image dimensions.
+- Displayed image dimensions.
+- Aspect ratio.
+- Letterboxing.
+- Cropping when supported.
+- Container padding.
+- CSS transforms.
+- Browser zoom.
+- Scroll position.
+- Sidebar width.
+- Responsive layout changes.
+- Portrait and landscape rotation.
+- Dynamic resizing.
+
+Use an appropriately image-aligned overlay, such as an SVG overlay sharing the image's coordinate system, when suitable.
+
+Avoid manually recalculating separate device-specific marker positions.
+
+If the image uses `object-fit: contain`, ensure the overlay accounts for the actual displayed image rectangle, not just the dimensions of the surrounding container.
+
+If the image uses cropping, apply the correct crop transform consistently to both image and annotations.
+
+The location of an object must remain stable regardless of screen size.
+
+---
+
+# 15. RESIZE AND ORIENTATION HANDLING
+
+The application must respond correctly when:
+
+- A browser window is resized.
+- A desktop sidebar opens or closes.
+- A tablet rotates.
+- A phone rotates.
+- Browser zoom changes.
+- The user changes display scaling.
+- A panel expands or collapses.
+- A responsive breakpoint changes the layout.
+
+Markers must remain aligned.
+
+Do not store stale viewport-based coordinates.
+
+Use suitable layout observation mechanisms or correctly aligned SVG rendering.
+
+Avoid unnecessary re-rendering that resets the current exercise.
+
+Do not lose the selected target merely because the screen size changes.
+
+---
+
+# 16. ACCESSIBLE INTERACTION
+
+Preserve and improve the existing accessible target selector.
+
+Support:
+
+- Mouse.
+- Touch.
+- Keyboard.
+- Screen readers.
+- Stylus where supported.
+
+Ensure:
+
+- Targets have accessible names.
+- Keyboard focus is visible.
+- Target selection works without hover.
+- Touch regions are practical.
+- Selected and completed targets have clear visual states.
+- Correct and incorrect feedback is understandable.
+- Students are not required to distinguish objects solely by color.
+
+Provide a list-based alternative when visual target selection is difficult.
+
+Do not reveal correct answers through accessibility labels before the student answers.
+
+The accessible label may identify the numbered target without disclosing its answer.
+
+---
+
+# 17. RESPONSIVE VOCABULARY AND EXPLANATION PANELS
+
+Preserve the Identify tab's existing educational features.
+
+These may include:
+
+- Current target indicator.
+- Progress count.
+- Vocabulary answer choices.
+- Answer submission.
+- Show Answer.
+- Ukrainian pronunciation.
+- Grammar breakdown.
+- Correct/incorrect feedback.
+- Learning statistics.
+
+Ensure these features work across all layouts.
+
+On desktop, supporting panels may appear beside the image.
+
+On tablets, panels should respond to available width.
+
+On smartphones, prioritize the learning activity and provide convenient access to explanations.
+
+Avoid excessive nested scrolling.
+
+Avoid clipped text.
+
+Preserve all vocabulary explanations and pronunciation data.
+
+---
+
+# 18. CONTENT STUDIO — IDENTIFY SCENE MANAGER
+
+Extend the existing Lango Content Studio with an Identify management area.
+
+Do not create an unrelated second CMS.
+
+Allow me to:
+
+- Browse existing Identify scenes.
+- Search scenes.
+- Filter by language.
+- Filter by Course Track.
+- Filter by validation status.
+- View assigned vocabulary.
+- View the original image.
+- Inspect object annotations.
+- See which objects are missing.
+- Review generated replacement images.
+- Preview exercises.
+- Save draft revisions.
+- Review changes.
+- Publish approved scenes using the existing publication system.
+
+Provide a clear, beginner-friendly interface.
+
+Do not require programming knowledge.
+
+---
+
+# 19. VISUAL ANNOTATION EDITOR
+
+Implement an interactive scene annotation editor.
+
+I should be able to:
+
+1. Open a scene.
+2. Select a vocabulary word.
+3. Click or tap its actual object in the image.
+4. Draw or adjust the object's target region.
+5. Resize the region.
+6. Move the marker.
+7. Preview the interaction.
+8. Save the annotation to a draft.
+9. Mark the object as missing.
+10. Remove an incorrect annotation.
+11. Restore a previous annotation.
+12. Review the complete scene before publication.
+
+Use understandable controls such as:
+
+- Select Object.
+- Move Marker.
+- Adjust Target Area.
+- Choose Vocabulary Word.
+- Object Missing.
+- Check Scene.
+- Preview Exercise.
+- Save Draft.
+- Restore.
+- Publish.
+
+Support mouse and touch editing.
+
+Do not require users to manually type normalized coordinate values.
+
+Keep advanced coordinate data available for inspection when needed.
+
+---
+
+# 20. AUTOMATIC ANNOTATION SUGGESTIONS
+
+If actual image-understanding or object-localization capabilities are available, use them to suggest object regions.
+
+Each proposed annotation should identify:
+
+- Target vocabulary item.
+- Suggested object region.
+- Verification status.
+- Actual confidence information if provided by the service.
+
+Allow manual correction.
+
+Do not pretend an annotation was AI-verified if it was placed manually or generated from a fixed layout.
+
+Do not invent confidence percentages.
+
+If no reliable automatic localization service is available, provide manual annotation instead.
+
+Do not introduce a fake AI detection feature.
+
+---
+
+# 21. CONTENT VALIDATION CENTER
+
+Add or extend an Identify Scene Quality Checker.
+
+Validate:
+
+- Image existence.
+- Valid image references.
+- Vocabulary entry existence.
+- Target ID uniqueness.
+- Annotation completeness.
+- Coordinate bounds.
+- Correct image dimensions.
+- Target region consistency.
+- Missing target locations.
+- Ambiguous overlapping regions.
+- Cross-language vocabulary consistency.
+- Broken media references.
+- Unsupported annotation formats.
+- Draft versus published version consistency.
+
+Where real visual-inspection capabilities exist, additionally check:
+
+- Object visibility.
+- Object recognizability.
+- Correct object identity.
+- Correct annotation location.
+- Overall scene plausibility.
+
+Distinguish between:
+
+STRUCTURAL VALIDATION:
+Metadata and coordinate checks.
+
+VISUAL VALIDATION:
+Whether the image really contains the object.
+
+HUMAN REVIEW:
+Final educational suitability.
+
+Do not mark a scene visually validated merely because its coordinates are within valid bounds.
+
+---
+
+# 22. BEGINNER-FRIENDLY VALIDATION MESSAGES
+
+Use plain American English.
+
+Examples:
+
+"This image doesn't appear to show a beach towel."
+
+"The marker for the sun is not on the sun."
+
+"Two target areas overlap and may confuse students."
+
+"This object is too small to identify clearly."
+
+"This vocabulary word has no matching object in the picture."
+
+"The image appears to show a lake, but the vocabulary word means sea."
+
+Provide practical actions such as:
+
+- Fix Target.
+- Choose Another Image.
+- Regenerate Scene.
+- Remove from This Scene.
+- Split into Another Scene.
+- Review Manually.
+
+Do not automatically remove curriculum vocabulary.
+
+Do not invent a fix that the system cannot actually perform.
+
+---
+
+# 23. SCENE QUALITY AND PUBLICATION STATUS
+
+Support clear scene states such as:
+
+- Not Reviewed.
+- Needs Correction.
+- Ready for Review.
+- Validated.
+- Published.
+
+Keep the status truthful.
+
+Automatically generated images must not be considered validated merely because generation succeeded.
+
+Low-confidence or visually ambiguous scenes should require review.
+
+Prevent invalid scene drafts from being published through normal content-management workflows.
+
+Do not silently replace published images.
+
+---
+
+# 24. BULK AUDIT OF EXISTING IDENTIFY SCENES
+
+Inspect the actual existing Identify scene registry.
+
+Determine the real number of images and exercises.
+
+Do not assume the count.
+
+Audit existing scenes for:
+
+- Missing images.
+- Missing vocabulary.
+- Incorrect vocabulary mapping.
+- Arbitrary grid-based annotations.
+- Invalid object positions.
+- Overlapping targets.
+- Inconsistent target counts.
+- Ambiguous object meanings.
+- Missing visual objects.
+- Broken asset references.
+- Invalid coordinate systems.
+
+Produce an audit report.
+
+Include:
+
+- Total scenes inspected.
+- Scenes structurally valid.
+- Scenes visually verified.
+- Scenes requiring manual review.
+- Scenes needing replacement.
+- Missing target counts.
+- Annotation errors.
+- Unsupported content formats.
+
+Do not falsely claim that every scene has been visually verified.
+
+Do not regenerate all images during the audit.
+
+---
+
+# 25. INITIAL PILOT — FIX THE EXISTING DEFECTIVE SCENE
+
+Use my reported Identify exercise as the first test case.
+
+Its vocabulary includes:
+
+1. Sun.
+2. Beach towel.
+3. Coastal tree.
+4. Stone or rock.
+5. Mountain.
+6. Lake or lagoon.
+7. Beach.
+8. Sand.
+9. Sea.
+
+The existing image primarily shows a lake and forest.
+
+Several required objects are missing.
+
+The numbered markers are arranged in grid positions rather than following object locations.
+
+Inspect the actual scene and its data.
+
+Determine whether all nine words can be clearly represented together.
+
+If necessary, separate incompatible items.
+
+For example, use:
+
+SCENE A:
+A coherent coastal beach environment.
+
+SCENE B:
+A clearly recognizable lake or lagoon environment.
+
+These are possible solutions, not mandatory compositions.
+
+Use the best visually accurate approach.
+
+Create corrected replacement scenes as unpublished drafts.
+
+Generate or manually approve accurate annotations.
+
+Verify every target.
+
+Do not publish automatically.
+
+Preserve the original image and all associated learning history.
+
+---
+
+# 26. NON-DESTRUCTIVE IMAGE REPLACEMENT
+
+For defective scenes:
+
+1. Preserve the original asset.
+2. Create a new proposed image asset.
+3. Store it under a separate identifier.
+4. Generate or create annotations.
+5. Validate the scene.
+6. Provide a before-and-after preview.
+7. Require approval.
+8. Publish through a versioned content process.
+
+Do not delete original WebP files.
+
+Do not overwrite original image filenames.
+
+Do not regenerate correct images unnecessarily.
+
+Do not mass-replace the entire Identify library without approval.
+
+Maintain rollback capability.
+
+---
+
+# 27. STUDENT PROGRESS AND EXERCISE IDENTITY
+
+Preserve:
+
+- Existing XP.
+- Completed activities.
+- Vocabulary progress.
+- FSRS history.
+- Track-specific progress.
+- Learning statistics.
+
+Do not erase progress when an image is corrected.
+
+Preserve historical learning records.
+
+If a scene changes substantially, use appropriate content revision identifiers so a materially changed exercise is not mistaken for the exact same assessment.
+
+Do not assign previous answers to changed targets without a compatible mapping.
+
+Do not modify unrelated learner history.
+
+---
+
+# 28. MULTILINGUAL SUPPORT
+
+The improved Identify feature must work with Lango's multilingual architecture.
+
+Support the target languages:
+
+English
+Spanish
+French
+Italian
+Portuguese
+Russian
+Ukrainian
+Polish
+German
+Chinese
+Vietnamese
+Korean
+Japanese
+Arabic
+Hindi
+
+Support all existing Course Tracks.
+
+Preserve the distinction between:
+
+- Target language.
+- Native language.
+- Instructional language.
+- Interface language.
+- Course Track.
+
+A scene may reuse a suitable image across languages.
+
+However, vocabulary translations, explanations, pronunciation, and difficulty must remain appropriate to the selected course.
+
+Do not alter canonical vocabulary IDs merely to share imagery.
+
+Do not accidentally merge learning histories.
+
+---
+
+# 29. RESPONSIVE TEST MATRIX
+
+Test representative viewports.
+
+These dimensions are examples, not layout assumptions.
+
+| Device category | Representative viewport |
+|---|---|
+| Small smartphone | 360 × 800 |
+| Standard smartphone | 390 × 844 |
+| Large smartphone | 430 × 932 |
+| Tablet portrait | 768 × 1024 |
+| Tablet landscape | 1024 × 768 |
+| Large tablet portrait | 1024 × 1366 |
+| Large tablet landscape | 1366 × 1024 |
+| Laptop | 1366 × 768 |
+| Desktop | 1920 × 1080 |
+| Large desktop | 2560 × 1440 |
+
+Also test intermediate widths and heights.
+
+Test:
+
+- Portrait.
+- Landscape.
+- Browser resizing.
+- Sidebar open.
+- Sidebar closed.
+- Browser zoom.
+- Long vocabulary explanations.
+- Different image aspect ratios.
+- Different numbers of targets.
+- Touch interaction.
+- Mouse interaction.
+- Keyboard navigation.
+
+For each tested viewport, verify:
+
+1. Every object remains visible.
+2. The scene retains its aspect ratio.
+3. Markers remain aligned.
+4. Hit regions match actual objects.
+5. Answer validation remains correct.
+6. Text remains readable.
+7. No unintended horizontal overflow occurs.
+8. The image is large enough for recognition.
+9. Explanation panels remain accessible.
+10. The current learning state survives resizing.
+
+Clearly distinguish browser viewport simulation from testing on actual physical devices.
+
+Do not claim real-device testing unless real devices were used.
+
+---
+
+# 30. AUTOMATED TARGET ALIGNMENT TESTING
+
+Where practical, add automated tests that verify annotation geometry across responsive layouts.
+
+Tests should confirm that:
+
+- Normalized coordinates map correctly to displayed image positions.
+- Letterboxing is handled.
+- Aspect ratio changes do not shift markers.
+- Container padding does not shift markers.
+- Cropping transforms are applied consistently.
+- Changing the sidebar width preserves alignment.
+- Resizing preserves target IDs and answer associations.
+- Object regions remain within visible image bounds.
+
+Automated geometry checks do not prove visual-semantic correctness.
+
+Visual verification must remain a separate quality step.
+
+---
+
+# 31. SCENE GENERATION PIPELINE
+
+Use the following conceptual workflow:
+
+VOCABULARY SELECTION
+
+↓
+
+SEMANTIC COMPATIBILITY ANALYSIS
+
+↓
+
+SCENE COMPOSITION PLANNING
+
+↓
+
+IMAGE GENERATION OR ASSET SELECTION
+
+↓
+
+VISUAL OBJECT VERIFICATION
+
+↓
+
+OBJECT LOCATION DETECTION OR MANUAL ANNOTATION
+
+↓
+
+NORMALIZED OBJECT REGIONS
+
+↓
+
+RESPONSIVE RENDERING VALIDATION
+
+↓
+
+LEARNER PREVIEW
+
+↓
+
+QUALITY REVIEW
+
+↓
+
+APPROVED PUBLICATION
+
+Design the implementation to reuse existing services and components.
+
+If image generation, object detection, or image-understanding requires an external API, identify the required service and configuration.
+
+Do not invent provider capabilities.
+
+Do not hardcode external API secrets into frontend code.
+
+Do not claim automation is complete when a required service is unavailable.
+
+Provide a practical manual alternative.
+
+---
+
+# 32. CONTENT STUDIO SECURITY
+
+My application is published at:
+
+https://slovo-ua-app.ai.studio/
+
+Do not expose public image-generation, annotation-editing, scene-deletion, or publishing operations without proper authorization.
+
+Do not rely on hidden URLs or frontend-only permissions.
+
+If administrator authentication is not yet configured, keep scene editing and publication restricted to a trusted development environment.
+
+Do not add insecure temporary administrator credentials.
+
+Do not introduce payments or unrelated authentication changes.
+
+Do not make destructive operations publicly accessible.
+
+---
+
+# 33. REQUIRED FUNCTIONAL TESTS
+
+Run actual available tests.
+
+TEST 1:
+The reported defective scene is correctly identified.
+
+TEST 2:
+Missing objects are flagged rather than treated as valid.
+
+TEST 3:
+Scene grouping avoids incompatible vocabulary when necessary.
+
+TEST 4:
+The generated or selected image contains every approved target.
+
+TEST 5:
+No target is assigned to an absent object.
+
+TEST 6:
+Object markers use verified object locations rather than grid positions.
+
+TEST 7:
+Correct and incorrect answer handling remains functional.
+
+TEST 8:
+A sun marker points to the actual sun.
+
+TEST 9:
+A beach towel marker points to the actual beach towel.
+
+TEST 10:
+Sea and lake are not treated as interchangeable.
+
+TEST 11:
+Markers remain aligned on desktop.
+
+TEST 12:
+Markers remain aligned on iPads.
+
+TEST 13:
+Markers remain aligned on Android tablets.
+
+TEST 14:
+Markers remain aligned on iPhones.
+
+TEST 15:
+Markers remain aligned on Android phones.
+
+TEST 16:
+Markers remain aligned when rotating a tablet.
+
+TEST 17:
+Markers remain aligned when resizing a desktop browser.
+
+TEST 18:
+Changing sidebar width does not shift markers incorrectly.
+
+TEST 19:
+Keyboard and accessible target selection continue working.
+
+TEST 20:
+The annotation editor can move and resize target regions.
+
+TEST 21:
+Invalid scenes cannot be published as validated content.
+
+TEST 22:
+Original images remain available.
+
+TEST 23:
+Existing XP and FSRS data remain intact.
+
+TEST 24:
+Existing Course content remains intact.
+
+TEST 25:
+All eight learner-facing tabs continue functioning.
+
+TEST 26:
+Lango Content Studio remains functional.
+
+TEST 27:
+The application builds successfully.
+
+TEST 28:
+Cloud Run deployment compatibility remains intact.
+
+TEST 29:
+No unauthorized public editing or publishing endpoints are introduced.
+
+Do not report tests as passed unless they were actually executed.
+
+---
+
+# 34. PHASED IMPLEMENTATION
+
+This is a substantial enhancement.
+
+Implement in controlled stages.
+
+## STAGE A — EXISTING SYSTEM AUDIT
+
+Inspect current scene data, asset associations, grid placement, rendering, and validation.
+
+Report the root causes.
+
+## STAGE B — ACCURATE ANNOTATION MODEL
+
+Implement normalized original-image coordinates and object regions.
+
+Preserve old scene data.
+
+Provide migration or fallback handling where necessary.
+
+## STAGE C — RESPONSIVE RENDERER
+
+Correct marker placement across desktop, laptop, tablet, and smartphone layouts.
+
+## STAGE D — SCENE PLANNING
+
+Implement vocabulary compatibility analysis and composition planning.
+
+## STAGE E — GENERATION AND VERIFICATION
+
+Integrate available generation and visual-verification services, or provide explicit manual workflows where services are unavailable.
+
+## STAGE F — CONTENT STUDIO EDITOR
+
+Add scene management, object annotation editing, scene validation, and preview.
+
+## STAGE G — PILOT CORRECTION
+
+Correct the reported scene in an isolated development draft.
+
+Verify object visibility and accurate positioning.
+
+Do not publish automatically.
+
+## STAGE H — BULK AUDIT
+
+Inspect existing scene records.
+
+Report invalid scenes.
+
+Do not mass-regenerate images.
+
+## STAGE I — RESPONSIVE TESTS
+
+Test the full viewport matrix.
+
+Verify mouse, touch, keyboard, and screen-reader-compatible interactions where possible.
+
+## STAGE J — REGRESSION TESTS
+
+Verify every existing learning feature remains intact.
+
+## STAGE K — REPORT
+
+Provide:
+
+- Root causes.
+- Files changed.
+- Annotation changes.
+- Responsive rendering strategy.
+- Scene-generation implementation.
+- Available automated verification.
+- Manual review requirements.
+- Audit results.
+- Pilot correction results.
+- Actual tests executed.
+- External services required.
+- Known limitations.
+- Preservation status.
+
+Stop before mass publication or large-scale image replacement.
+
+---
+
+# 35. STRICT SCOPE CONTROL
+
+DO NOT:
+
+- Rebuild Lango.
+- Rebuild the entire Identify feature.
+- Delete original WebP images.
+- Regenerate the entire Identify library immediately.
+- Overwrite the Ukrainian curriculum.
+- Change FSRS algorithms.
+- Reset XP.
+- Delete student progress.
+- Replace the universal Course Player.
+- Rebuild Content Studio.
+- Alter unrelated language-learning tabs.
+- Modify vocabulary frequency data.
+- Create fake AI verification results.
+- Invent image-generation integrations.
+- Use arbitrary target grids.
+- Hardcode separate marker positions for different devices.
+- Publish unverified replacement images.
+- Expose unsafe administrative endpoints.
+- Recreate the existing Cloud Run service.
+- Modify GitHub integration unnecessarily.
+- Implement unrelated payment functionality.
+
+Use safe, reversible, incremental changes.
+
+---
+
+# FINAL DIRECTIVE
+
+UPGRADE MY EXISTING LANGO IDENTIFY SYSTEM INTO AN INTELLIGENT, ACCURATE, UNIVERSALLY RESPONSIVE VISUAL VOCABULARY-LEARNING EXPERIENCE.
+
+Every image must accurately represent its assigned vocabulary.
+
+Every selected vocabulary word must correspond to an identifiable object.
+
+Every interactive marker must be positioned on the actual object, not in a predetermined grid.
+
+The AI should intelligently plan scenes around vocabulary, generate appropriate images, verify object visibility, and assign accurate annotations.
+
+If vocabulary words do not naturally belong in one image, split them into multiple suitable scenes.
+
+Do not force nine objects into every image.
+
+Use normalized image coordinates and accurate rendering transformations to guarantee device-independent marker alignment.
+
+The Identify system must work on:
+
+- Desktop browsers.
+- Laptops.
+- Large monitors.
+- Ultrawide monitors.
+- iPads.
+- Android tablets.
+- iPhones.
+- Android smartphones.
+
+Support responsive layouts, portrait and landscape orientation, mouse input, touch input, keyboard accessibility, and the existing accessible target selector.
+
+Integrate scene editing, object annotation, quality validation, and draft previews into Lango Content Studio.
+
+Preserve every original Identify image and all existing learning history.
+
+Correct the reported defective scene as a pilot.
+
+Audit existing scenes without automatically regenerating them.
+
+Preserve all 28 Course Tracks, the Ukrainian curriculum, vocabulary, FSRS, XP, other learning tabs, and the current deployment.
+
+FIRST inspect the implementation.
+
+SECOND identify the root causes.
+
+THIRD design the corrected annotation and scene-generation architecture.
+
+FOURTH implement and validate a pilot correction.
+
+FIFTH test responsive behavior across all device categories.
+
+SIXTH audit existing scenes and report the actual findings.
+
+SEVENTH stop for my approval before mass regeneration or production publication.
+
+The final result should be a professional visual-learning system where every image genuinely teaches the assigned words and every clickable target accurately tracks its object on every supported screen size.

@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Sunny Coastal Beach Scene">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="55%" stop-color="#7dd3fc" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+    <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0369a1" />
+      <stop offset="45%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#22d3ee" />
+    </linearGradient>
+    <linearGradient id="sandGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a" />
+      <stop offset="50%" stop-color="#fcd34d" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="1" />
+      <stop offset="55%" stop-color="#facc15" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#fb923c" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- 1. SKY BACKGROUND -->
+  <rect x="0" y="0" width="1200" height="390" fill="url(#skyGrad)" />
+
+  <!-- Soft distant clouds (left only, keeping sun clearly unobstructed on top-left-center) -->
+  <g fill="#ffffff" opacity="0.78">
+    <ellipse cx="520" cy="95" rx="68" ry="22" />
+    <ellipse cx="565" cy="88" rx="48" ry="18" />
+    <ellipse cx="475" cy="100" rx="44" ry="15" />
+  </g>
+
+  <!-- OBJECT 1: SUN (со́нце) — bbox: x=0.10..0.24 (120..288), y=0.06..0.24 (54..216), center=(204, 135) => (0.17, 0.15) -->
+  <g id="obj-sun">
+    <circle cx="204" cy="135" r="88" fill="url(#sunGlow)" />
+    <circle cx="204" cy="135" r="54" fill="#fde047" stroke="#f59e0b" stroke-width="4" />
+    <g stroke="#facc15" stroke-width="5" stroke-linecap="round">
+      <line x1="204" y1="62" x2="204" y2="44" />
+      <line x1="204" y1="208" x2="204" y2="226" />
+      <line x1="131" y1="135" x2="113" y2="135" />
+      <line x1="277" y1="135" x2="295" y2="135" />
+      <line x1="152" y1="83" x2="139" y2="70" />
+      <line x1="256" y1="83" x2="269" y2="70" />
+      <line x1="152" y1="187" x2="139" y2="200" />
+      <line x1="256" y1="187" x2="269" y2="200" />
+    </g>
+  </g>
+
+  <!-- OBJECT 5: MOUNTAIN (гора́) — bbox: x=0.58..0.96 (696..1152), y=0.14..0.43 (126..387), center=(924, 270) => (0.77, 0.30) -->
+  <g id="obj-mountain">
+    <!-- Far peak -->
+    <polygon points="696,387 835,168 985,387" fill="#64748b" stroke="#475569" stroke-width="3" />
+    <polygon points="835,168 796,230 822,222 842,240 872,226" fill="#f8fafc" />
+    <!-- Main prominent coastal mountain peak -->
+    <polygon points="810,387 965,135 1152,387" fill="#475569" stroke="#334155" stroke-width="3" />
+    <polygon points="965,135 916,214 946,202 972,225 1002,204 1020,218" fill="#f1f5f9" />
+    <!-- Ridge shadow -->
+    <polygon points="965,135 985,387 1152,387" fill="#334155" opacity="0.35" />
+  </g>
+
+  <!-- OBJECT 9: SEA (мо́ре) — bbox: x=0.22..0.98 (264..1176), y=0.43..0.64 (387..576), center=(660, 468) => (0.55, 0.52) -->
+  <g id="obj-sea">
+    <rect x="0" y="387" width="1200" height="205" fill="url(#seaGrad)" />
+    <!-- Subtle horizon shimmer lines -->
+    <path d="M 320 420 Q 420 412 520 420 T 720 420" fill="none" stroke="#bae6fd" stroke-width="3" opacity="0.65" />
+    <path d="M 540 465 Q 640 455 740 465 T 940 465" fill="none" stroke="#bae6fd" stroke-width="3" opacity="0.7" />
+    <path d="M 280 500 Q 370 490 460 500 T 640 500" fill="none" stroke="#e0f2fe" stroke-width="3.5" opacity="0.75" />
+  </g>
+
+  <!-- OBJECT: WAVE (хви́ля) — bbox: x=0.44..0.76 (528..912), y=0.53..0.65 (477..585), center=(720, 531) => (0.60, 0.59) -->
+  <g id="obj-wave">
+    <path d="M 520 565 C 565 505, 635 505, 675 548 C 710 500, 780 500, 825 548 C 855 520, 895 525, 920 565 Z" fill="#38bdf8" stroke="#e0f2fe" stroke-width="4" />
+    <path d="M 525 568 Q 595 540 665 568 T 805 568 T 915 568" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
+  </g>
+
+  <!-- OBJECT 7 & 8: SANDY BEACH SHORELINE (пляж / пісо́к) -->
+  <g id="obj-beach-sand">
+    <path d="M 0 560 Q 380 545 760 578 T 1200 595 L 1200 900 L 0 900 Z" fill="url(#sandGrad)" />
+    <!-- Wet shoreline foam ribbon -->
+    <path d="M 0 565 Q 380 550 760 582 T 1200 600" fill="none" stroke="#fef9c3" stroke-width="10" opacity="0.85" />
+    <!-- Sand texture ripples and dunes on right side (OBJECT 8: SAND / пісо́к — bbox: x=0.50..0.77, y=0.69..0.92, center=(0.64, 0.81)) -->
+    <path d="M 610 685 Q 695 668 785 685 T 915 690" fill="none" stroke="#d97706" stroke-width="3.5" opacity="0.55" />
+    <path d="M 625 735 Q 720 715 815 735 T 920 740" fill="none" stroke="#d97706" stroke-width="3.5" opacity="0.55" />
+    <path d="M 605 785 Q 705 765 805 785 T 905 790" fill="none" stroke="#b45309" stroke-width="3.5" opacity="0.5" />
+    <circle cx="680" cy="755" r="3" fill="#b45309" opacity="0.6" />
+    <circle cx="745" cy="710" r="3" fill="#b45309" opacity="0.6" />
+    <circle cx="820" cy="765" r="3.5" fill="#b45309" opacity="0.6" />
+    <circle cx="775" cy="810" r="3" fill="#b45309" opacity="0.6" />
+  </g>
+
+  <!-- OBJECT 3: COASTAL TREE (де́рево) — bbox: x=0.03..0.24 (36..288), y=0.28..0.74 (252..666), center=(144, 432) => (0.12, 0.48) -->
+  <g id="obj-tree">
+    <!-- Trunk shadow -->
+    <ellipse cx="145" cy="648" rx="56" ry="14" fill="#d97706" opacity="0.45" />
+    <!-- Curved palm trunk -->
+    <path d="M 122 648 Q 108 510 156 365 L 182 372 Q 142 512 158 648 Z" fill="#78350f" stroke="#451a03" stroke-width="3" />
+    <!-- Trunk rings -->
+    <line x1="120" y1="590" x2="154" y2="592" stroke="#451a03" stroke-width="2.5" />
+    <line x1="121" y1="535" x2="152" y2="538" stroke="#451a03" stroke-width="2.5" />
+    <line x1="128" y1="480" x2="157" y2="484" stroke="#451a03" stroke-width="2.5" />
+    <line x1="138" y1="425" x2="166" y2="430" stroke="#451a03" stroke-width="2.5" />
+    <!-- Lush green palm fronds -->
+    <path d="M 168 368 Q 95 310 38 358 Q 105 352 168 368 Z" fill="#15803d" stroke="#14532d" stroke-width="2.5" />
+    <path d="M 168 368 Q 85 262 52 288 Q 112 315 168 368 Z" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
+    <path d="M 168 368 Q 165 255 225 262 Q 198 315 168 368 Z" fill="#22c55e" stroke="#14532d" stroke-width="2.5" />
+    <path d="M 168 368 Q 245 292 286 345 Q 222 342 168 368 Z" fill="#16a34a" stroke="#14532d" stroke-width="2.5" />
+    <path d="M 168 368 Q 252 358 276 418 Q 218 386 168 368 Z" fill="#15803d" stroke="#14532d" stroke-width="2.5" />
+    <!-- Coconuts -->
+    <circle cx="160" cy="376" r="9" fill="#451a03" />
+    <circle cx="176" cy="378" r="9" fill="#451a03" />
+  </g>
+
+  <!-- OBJECT 2: BEACH TOWEL (рушни́к) — bbox: x=0.22..0.46 (264..552), y=0.68..0.88 (612..792), center=(408, 702) => (0.34, 0.78) -->
+  <g id="obj-towel">
+    <!-- Drop shadow on sand -->
+    <polygon points="276,656 516,626 556,758 308,794" fill="#b45309" opacity="0.35" />
+    <!-- Towel base -->
+    <polygon points="268,648 508,618 548,750 300,786" fill="#ffffff" stroke="#0f172a" stroke-width="3" />
+    <!-- Bright coral-red & turquoise stripes -->
+    <polygon points="275,670 515,640 523,666 283,696" fill="#ef4444" />
+    <polygon points="289,716 529,686 537,712 297,742" fill="#06b6d4" />
+    <polygon points="297,742 537,712 544,736 304,766" fill="#ef4444" />
+    <!-- Fringe tassels on left and right edges -->
+    <g stroke="#e2e8f0" stroke-width="3" stroke-linecap="round">
+      <line x1="268" y1="654" x2="254" y2="658" />
+      <line x1="274" y1="678" x2="260" y2="682" />
+      <line x1="280" y1="702" x2="266" y2="706" />
+      <line x1="286" y1="726" x2="272" y2="730" />
+      <line x1="292" y1="750" x2="278" y2="754" />
+      <line x1="298" y1="774" x2="284" y2="778" />
+      <line x1="512" y1="626" x2="526" y2="622" />
+      <line x1="519" y1="650" x2="533" y2="646" />
+      <line x1="526" y1="674" x2="540" y2="670" />
+      <line x1="533" y1="698" x2="547" y2="694" />
+      <line x1="540" y1="722" x2="554" y2="718" />
+      <line x1="546" y1="744" x2="560" y2="740" />
+    </g>
+  </g>
+
+  <!-- OBJECT 4: STONE / ROCK (ка́мінь) — bbox: x=0.78..0.96 (936..1152), y=0.64..0.86 (576..774), center=(1044, 675) => (0.87, 0.75) -->
+  <g id="obj-stone">
+    <ellipse cx="1048" cy="752" rx="98" ry="22" fill="#92400e" opacity="0.38" />
+    <!-- Large coastal boulder -->
+    <polygon points="942,742 958,638 1022,588 1098,608 1144,682 1128,748" fill="#64748b" stroke="#1e293b" stroke-width="3.5" />
+    <!-- Rock facets -->
+    <polygon points="1022,588 1098,608 1062,676 985,665" fill="#94a3b8" />
+    <polygon points="1098,608 1144,682 1128,748 1062,676" fill="#475569" />
+    <!-- Smaller companion stone in front -->
+    <polygon points="952,756 975,705 1032,702 1058,748 1015,768" fill="#475569" stroke="#1e293b" stroke-width="3" />
+  </g>
+</svg>

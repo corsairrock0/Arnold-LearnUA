@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="urban-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#60A5FA"/>
+            <stop offset="100%" stop-color="#DBEAFE"/>
+          </linearGradient>
+          <linearGradient id="asphalt" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#64748B"/>
+            <stop offset="100%" stop-color="#334155"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="440" fill="url(#urban-sky)"/>
+        <rect y="440" width="1200" height="130" fill="#CBD5E1"/>
+        <rect y="570" width="1200" height="330" fill="url(#asphalt)"/>
+      
+      <g id="obj-at-airplane"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="216" cy="234" rx="120.96" ry="40.32000000000001" fill="#FFFFFF" stroke="#0284C7" stroke-width="4"/>
+        <polygon points="192.96,234 146.88,130.32 244.8,234" fill="#38BDF8"/>
+        <polygon points="112.32000000000001,234 89.28,153.36 141.12,234" fill="#0284C7"/>
+      </g>
+<g id="obj-at-board"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="479.04" y="130.32" width="241.92" height="195.84" rx="8" fill="#0F172A" stroke="#92400E" stroke-width="8"/>
+        <line x1="513.6" y1="187.92000000000002" x2="674.88" y2="187.92000000000002" stroke="#FEF08A" stroke-width="4"/>
+        <line x1="513.6" y1="234" x2="651.84" y2="234" stroke="#FEF08A" stroke-width="4"/>
+      </g>
+<g id="obj-at-passenger"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M909.12,343.44 V239.76 Q909.12,208.07999999999998 984,208.07999999999998 Q1058.88,208.07999999999998 1058.88,239.76 V343.44 Z" fill="#7C3AED" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="984" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M937.92,165.76 A46.08,46.08 0 0,1 1030.08,165.76 Q984,140.112 937.92,165.76 Z" fill="#92400E"/>
+        <circle cx="967.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="1000.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M969.2544,187.1136 Q984,196.3296 998.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        
+      </g>
+<g id="obj-at-suitcase"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="141.12" y="566.64" width="149.76" height="167.04" rx="10" fill="#2563EB" stroke="#1E3A8A" stroke-width="4"/>
+        <path d="M181.44,566.64 V526.32 H250.56 V566.64" fill="none" stroke="#334155" stroke-width="6"/>
+      </g>
+<g id="obj-at-ticket"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="502.08" y="566.64" width="195.84" height="126.72" rx="8" fill="#FEF08A" stroke="#CA8A04" stroke-width="4"/>
+        <line x1="634.56" y1="566.64" x2="634.56" y2="693.36" stroke="#CA8A04" stroke-width="3" stroke-dasharray="6,6"/>
+      </g>
+    </svg>

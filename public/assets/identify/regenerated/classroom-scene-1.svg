@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#EEF3F8"/>
+            <stop offset="100%" stop-color="#DCE5F0"/>
+          </linearGradient>
+          <linearGradient id="bg-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C8A27A"/>
+            <stop offset="100%" stop-color="#9C744F"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="580" fill="url(#bg-wall)"/>
+        <rect y="568" width="1200" height="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+        <rect y="584" width="1200" height="316" fill="url(#bg-floor)"/>
+        <g stroke="#87603C" stroke-width="1.5" opacity="0.35">
+          <line x1="0" y1="640" x2="1200" y2="640"/>
+          <line x1="0" y1="710" x2="1200" y2="710"/>
+          <line x1="0" y1="790" x2="1200" y2="790"/>
+          <line x1="0" y1="870" x2="1200" y2="870"/>
+        </g>
+      
+      <g id="obj-cl-board"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="95.03999999999999" y="130.32" width="241.92" height="195.84" rx="8" fill="#14532D" stroke="#92400E" stroke-width="8"/>
+        <line x1="129.6" y1="187.92000000000002" x2="290.88" y2="187.92000000000002" stroke="#FEF08A" stroke-width="4"/>
+        <line x1="129.6" y1="234" x2="267.84000000000003" y2="234" stroke="#FEF08A" stroke-width="4"/>
+      </g>
+<g id="obj-cl-teacher"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M525.12,343.44 V239.76 Q525.12,208.07999999999998 600,208.07999999999998 Q674.88,208.07999999999998 674.88,239.76 V343.44 Z" fill="#1D4ED8" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="600" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M553.92,165.76 A46.08,46.08 0 0,1 646.08,165.76 Q600,140.112 553.92,165.76 Z" fill="#334155"/>
+        <circle cx="583.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="616.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M585.2544,187.1136 Q600,196.3296 614.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="663.36" y1="268.56" x2="720.96" y2="153.36" stroke="#92400E" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-cl-student"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M909.12,343.44 V239.76 Q909.12,208.07999999999998 984,208.07999999999998 Q1058.88,208.07999999999998 1058.88,239.76 V343.44 Z" fill="#EA580C" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="984" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M937.92,165.76 A46.08,46.08 0 0,1 1030.08,165.76 Q984,140.112 937.92,165.76 Z" fill="#92400E"/>
+        <circle cx="967.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="1000.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M969.2544,187.1136 Q984,196.3296 998.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        
+      </g>
+<g id="obj-cl-desk"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="95.03999999999999,606.96 336.96000000000004,606.96 313.91999999999996,566.64 118.08,566.64" fill="#B45309" stroke="#78350F" stroke-width="4"/>
+        <rect x="95.03999999999999" y="606.96" width="241.92" height="25.919999999999998" fill="#92400E" stroke="#451A03" stroke-width="3"/>
+        <rect x="118.08" y="632.88" width="23.04" height="109.44" fill="#78350F"/>
+        <rect x="290.88" y="632.88" width="23.04" height="109.44" fill="#78350F"/>
+      </g>
+<g id="obj-cl-book"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="507.84" y="543.6" width="184.32" height="178.56" rx="6" fill="#2563EB" stroke="#1E3A8A" stroke-width="4"/>
+        <rect x="525.12" y="555.12" width="155.52" height="155.52" fill="#FFFFFF"/>
+        <line x1="600" y1="555.12" x2="600" y2="710.64" stroke="#94A3B8" stroke-width="3"/>
+      </g>
+    </svg>

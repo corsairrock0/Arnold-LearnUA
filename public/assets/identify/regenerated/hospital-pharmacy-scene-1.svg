@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F0F9FF"/>
+            <stop offset="100%" stop-color="#E0F2FE"/>
+          </linearGradient>
+          <linearGradient id="bg-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#CBD5E1"/>
+            <stop offset="100%" stop-color="#94A3B8"/>
+          </linearGradient>
+          <pattern id="clean-tile" width="64" height="64" patternUnits="userSpaceOnUse">
+            <rect width="64" height="64" fill="none" stroke="#BAE6FD" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="570" fill="url(#bg-wall)"/>
+        <rect width="1200" height="570" fill="url(#clean-tile)" opacity="0.6"/>
+        <rect y="570" width="1200" height="330" fill="url(#bg-floor)"/>
+      
+      <g id="obj-hp-doctor"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M141.12,343.44 V239.76 Q141.12,208.07999999999998 216,208.07999999999998 Q290.88,208.07999999999998 290.88,239.76 V343.44 Z" fill="#F8FAFC" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="216" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M169.92000000000002,165.76 A46.08,46.08 0 0,1 262.08,165.76 Q216,140.112 169.92000000000002,165.76 Z" fill="#334155"/>
+        <circle cx="199.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="232.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M201.2544,187.1136 Q216,196.3296 230.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M208,257.03999999999996 H224 M216,234 V280.08000000000004" stroke="#DC2626" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-hp-nurse"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M525.12,343.44 V239.76 Q525.12,208.07999999999998 600,208.07999999999998 Q674.88,208.07999999999998 674.88,239.76 V343.44 Z" fill="#0284C7" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="600" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M553.92,165.76 A46.08,46.08 0 0,1 646.08,165.76 Q600,140.112 553.92,165.76 Z" fill="#78350F"/>
+        <circle cx="583.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="616.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M585.2544,187.1136 Q600,196.3296 614.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M592,257.03999999999996 H608 M600,234 V280.08000000000004" stroke="#DC2626" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-hp-stethoscope"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M920.64,141.84 V222.48000000000002 Q920.64,291.6 984,291.6 Q1047.36,291.6 1047.36,222.48000000000002 V141.84" fill="none" stroke="#334155" stroke-width="7"/>
+        <circle cx="984" cy="320.4" r="14" fill="#94A3B8" stroke="#1E293B" stroke-width="4"/>
+      </g>
+<g id="obj-hp-bed"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="95.03999999999999" y="537.84" width="34.56" height="195.84" rx="6" fill="#78350F"/>
+        <rect x="118.08" y="618.48" width="218.88" height="80.64000000000001" rx="10" fill="#FFFFFF" stroke="#94A3B8" stroke-width="4"/>
+        <rect x="175.68" y="624.24" width="161.28000000000003" height="74.88" rx="10" fill="#3B82F6"/>
+        <rect x="95.03999999999999" y="687.6" width="241.92" height="46.08" rx="4" fill="#92400E"/>
+      </g>
+<g id="obj-hp-thermometer"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="590" y="526.32" width="20" height="178.56" rx="10" fill="#FFFFFF" stroke="#475569" stroke-width="4"/>
+        <circle cx="600" cy="704.88" r="18" fill="#EF4444" stroke="#475569" stroke-width="4"/>
+        <line x1="600" y1="583.92" x2="600" y2="693.36" stroke="#EF4444" stroke-width="8"/>
+      </g>
+    </svg>

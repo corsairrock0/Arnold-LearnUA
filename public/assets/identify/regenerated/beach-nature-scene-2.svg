@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Alpine Mountain Lake and Rocky Shore Scene">
+  <defs>
+    <linearGradient id="alpineSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="60%" stop-color="#bae6fd" />
+      <stop offset="100%" stop-color="#f0f9ff" />
+    </linearGradient>
+    <linearGradient id="lakeWater" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="meadowShore" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4d7c0f" />
+      <stop offset="100%" stop-color="#365314" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. CLEAR ALPINE SKY -->
+  <rect x="0" y="0" width="1200" height="410" fill="url(#alpineSky)" />
+
+  <!-- OBJECT 1: SUN (со́нце) — bbox: x=0.74..0.90 (888..1080), y=0.06..0.24 (54..216), center=(984, 135) => (0.82, 0.15) -->
+  <g id="obj-sun">
+    <circle cx="984" cy="135" r="78" fill="#fef08a" opacity="0.55" />
+    <circle cx="984" cy="135" r="50" fill="#fde047" stroke="#eab308" stroke-width="4" />
+  </g>
+
+  <!-- OBJECT 2: MOUNTAIN RANGE (гора́) — bbox: x=0.22..0.76 (264..912), y=0.11..0.45 (99..405), center=(588, 261) => (0.49, 0.29) -->
+  <g id="obj-mountain">
+    <polygon points="264,405 445,148 625,405" fill="#64748b" stroke="#334155" stroke-width="3" />
+    <polygon points="445,148 398,225 432,212 458,232 490,218" fill="#f8fafc" />
+    <polygon points="465,405 660,104 895,405" fill="#475569" stroke="#1e293b" stroke-width="3.5" />
+    <polygon points="660,104 602,198 638,184 668,210 704,190 726,204" fill="#ffffff" />
+  </g>
+
+  <!-- OBJECT 4: INLAND MOUNTAIN LAKE (о́зеро) — bbox: x=0.20..0.82 (240..984), y=0.45..0.74 (405..666), center=(600, 531) => (0.50, 0.59) -->
+  <g id="obj-lake">
+    <!-- Surrounding alpine bank enclosing the lake -->
+    <rect x="0" y="395" width="1200" height="505" fill="url(#meadowShore)" />
+    <!-- Enclosed oval alpine lake basin -->
+    <ellipse cx="600" cy="540" rx="430" ry="135" fill="url(#lakeWater)" stroke="#a3e635" stroke-width="6" />
+    <!-- Calm lake water reflections -->
+    <path d="M 380 505 L 540 505" stroke="#e0f2fe" stroke-width="3.5" stroke-linecap="round" opacity="0.8" />
+    <path d="M 590 545 L 775 545" stroke="#e0f2fe" stroke-width="3.5" stroke-linecap="round" opacity="0.8" />
+    <path d="M 430 585 L 650 585" stroke="#bae6fd" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+  </g>
+
+  <!-- OBJECT 3: ALPINE PINE TREE (де́рево) — bbox: x=0.04..0.22 (48..264), y=0.22..0.72 (198..648), center=(156, 432) => (0.13, 0.48) -->
+  <g id="obj-tree">
+    <rect x="138" y="540" width="36" height="108" fill="#78350f" stroke="#451a03" stroke-width="3" />
+    <polygon points="156,200 66,365 246,365" fill="#15803d" stroke="#14532d" stroke-width="3" />
+    <polygon points="156,295 54,465 258,465" fill="#166534" stroke="#14532d" stroke-width="3" />
+    <polygon points="156,390 48,555 264,555" fill="#14532d" stroke="#052e16" stroke-width="3" />
+  </g>
+
+  <!-- OBJECT 5: GRANITE SHORELINE ROCK / BOULDER (ка́мінь) — bbox: x=0.68..0.93 (816..1116), y=0.64..0.89 (576..801), center=(960, 693) => (0.80, 0.77) -->
+  <g id="obj-stone">
+    <polygon points="824,775 848,635 942,584 1054,612 1108,712 1082,792" fill="#64748b" stroke="#1e293b" stroke-width="4" />
+    <polygon points="942,584 1054,612 1002,698 885,680" fill="#94a3b8" />
+    <polygon points="852,790 885,720 965,718 998,778 935,800" fill="#475569" stroke="#1e293b" stroke-width="3" />
+  </g>
+</svg>

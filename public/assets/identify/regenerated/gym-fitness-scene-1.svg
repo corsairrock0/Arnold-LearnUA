@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F0F9FF"/>
+            <stop offset="100%" stop-color="#E0F2FE"/>
+          </linearGradient>
+          <linearGradient id="bg-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#CBD5E1"/>
+            <stop offset="100%" stop-color="#94A3B8"/>
+          </linearGradient>
+          <pattern id="clean-tile" width="64" height="64" patternUnits="userSpaceOnUse">
+            <rect width="64" height="64" fill="none" stroke="#BAE6FD" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="570" fill="url(#bg-wall)"/>
+        <rect width="1200" height="570" fill="url(#clean-tile)" opacity="0.6"/>
+        <rect y="570" width="1200" height="330" fill="url(#bg-floor)"/>
+      
+      <g id="obj-gm-dumbbell"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <line x1="135.36" y1="234" x2="296.64" y2="234" stroke="#64748B" stroke-width="10"/>
+        <rect x="112.32000000000001" y="159.12" width="40.32000000000001" height="149.76" rx="6" fill="#1E293B"/>
+        <rect x="279.36" y="159.12" width="40.32000000000001" height="149.76" rx="6" fill="#1E293B"/>
+      </g>
+<g id="obj-gm-barbell"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <line x1="473.28" y1="234" x2="726.72" y2="234" stroke="#475569" stroke-width="8"/>
+        <rect x="490.56" y="136.07999999999998" width="28.8" height="195.84" rx="4" fill="#0F172A"/>
+        <rect x="680.64" y="136.07999999999998" width="28.8" height="195.84" rx="4" fill="#0F172A"/>
+      </g>
+<g id="obj-gm-machine"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="903.36" y="124.56" width="161.28000000000003" height="218.88" rx="8" fill="#334155" stroke="#0F172A" stroke-width="5"/>
+        <rect x="932.16" y="153.36" width="103.67999999999999" height="120.96" fill="#1E293B"/>
+        <line x1="920.64" y1="187.92000000000002" x2="1047.36" y2="187.92000000000002" stroke="#38BDF8" stroke-width="6"/>
+      </g>
+<g id="obj-gm-bench"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="100.8" y="578.16" width="230.4" height="46.08" rx="4" fill="#B45309" stroke="#78350F" stroke-width="4"/>
+        <rect x="95.03999999999999" y="635.76" width="241.92" height="34.56" rx="4" fill="#92400E" stroke="#451A03" stroke-width="4"/>
+        <rect x="123.84" y="670.3199999999999" width="23.04" height="69.12" fill="#334155"/>
+        <rect x="285.12" y="670.3199999999999" width="23.04" height="69.12" fill="#334155"/>
+      </g>
+<g id="obj-gm-towel"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="502.08" y="532.08" width="195.84" height="195.84" rx="10" fill="#EF4444" stroke="#991B1B" stroke-width="4"/>
+        <rect x="502.08" y="566.64" width="195.84" height="34.56" fill="#FFFFFF"/>
+        <rect x="502.08" y="635.76" width="195.84" height="34.56" fill="#FFFFFF"/>
+      </g>
+    </svg>

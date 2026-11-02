@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="urban-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#60A5FA"/>
+            <stop offset="100%" stop-color="#DBEAFE"/>
+          </linearGradient>
+          <linearGradient id="asphalt" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#64748B"/>
+            <stop offset="100%" stop-color="#334155"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="440" fill="url(#urban-sky)"/>
+        <rect y="440" width="1200" height="130" fill="#CBD5E1"/>
+        <rect y="570" width="1200" height="330" fill="url(#asphalt)"/>
+      
+      <g id="obj-at-board"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="95.03999999999999" y="130.32" width="241.92" height="195.84" rx="8" fill="#0F172A" stroke="#92400E" stroke-width="8"/>
+        <line x1="129.6" y1="187.92000000000002" x2="290.88" y2="187.92000000000002" stroke="#FEF08A" stroke-width="4"/>
+        <line x1="129.6" y1="234" x2="267.84000000000003" y2="234" stroke="#FEF08A" stroke-width="4"/>
+      </g>
+<g id="obj-at-train"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="484.8" y="170.64000000000001" width="230.4" height="132.48000000000002" rx="14" fill="#2563EB" stroke="#1E293B" stroke-width="4"/>
+        <rect x="507.84" y="187.92000000000002" width="74.88" height="57.6" rx="4" fill="#E0F2FE"/>
+        <rect x="605.76" y="187.92000000000002" width="74.88" height="57.6" rx="4" fill="#E0F2FE"/>
+        <circle cx="536.64" cy="308.88" r="14" fill="#0F172A"/>
+        <circle cx="663.36" cy="308.88" r="14" fill="#0F172A"/>
+      </g>
+<g id="obj-at-platform"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="914.88,141.84 1053.12,141.84 1104.96,337.68 863.04,337.68" fill="#CBD5E1" stroke="#334155" stroke-width="4"/>
+        <line x1="984" y1="159.12" x2="984" y2="320.4" stroke="#FACC15" stroke-width="5" stroke-dasharray="12,10"/>
+      </g>
+<g id="obj-at-luggage"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="141.12" y="566.64" width="149.76" height="167.04" rx="10" fill="#2563EB" stroke="#1E3A8A" stroke-width="4"/>
+        <path d="M181.44,566.64 V526.32 H250.56 V566.64" fill="none" stroke="#334155" stroke-width="6"/>
+      </g>
+<g id="obj-at-suitcase"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="525.12" y="566.64" width="149.76" height="167.04" rx="10" fill="#2563EB" stroke="#1E3A8A" stroke-width="4"/>
+        <path d="M565.44,566.64 V526.32 H634.56 V566.64" fill="none" stroke="#334155" stroke-width="6"/>
+      </g>
+    </svg>

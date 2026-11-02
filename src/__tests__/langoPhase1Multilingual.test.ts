@@ -99,19 +99,19 @@ describe('Lango Phase 1 — Multilingual Foundation, Universal Course Importer, 
     // 4. Existing Ukrainian Identify photos remain intact
     assert.equal(
       IDENTIFY_CATEGORIES.length,
-      20,
-      'All 20 Identify categories must remain intact'
+      28,
+      'All 28 Identify categories must remain intact'
     );
     const allIdentifyScenes = IDENTIFY_CATEGORIES.flatMap((c) => c.scenes);
     assert.equal(
       allIdentifyScenes.length,
-      100,
-      'All 100 Identify photographic scenes must remain intact'
+      120,
+      'All 120 verified Identify scenes must remain intact'
     );
     for (const scene of allIdentifyScenes) {
       assert.ok(
         scene.assetPath.endsWith('.webp'),
-        `Identify scene ${scene.id} must retain its WebP photo path`
+        `Identify scene ${scene.id} must retain its WebP asset path`
       );
     }
   });

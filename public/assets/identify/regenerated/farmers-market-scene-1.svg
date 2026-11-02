@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#38BDF8"/>
+            <stop offset="60%" stop-color="#BAE6FD"/>
+            <stop offset="100%" stop-color="#E0F2FE"/>
+          </linearGradient>
+          <linearGradient id="lawn-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#86EFAC"/>
+            <stop offset="45%" stop-color="#4ADE80"/>
+            <stop offset="100%" stop-color="#22C55E"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="420" fill="url(#sky-grad)"/>
+        <path d="M0,420 Q300,370 600,405 T1200,395 L1200,900 L0,900 Z" fill="url(#lawn-grad)"/>
+      
+      <g id="obj-fm-tomato"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <circle cx="216" cy="251.28000000000003" r="97.92" fill="#DC2626" stroke="#7F1D1D" stroke-width="4"/>
+        <path d="M204,159.12 L216,176.39999999999998 L228,159.12 M216,141.84 V182.16" stroke="#15803D" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-fm-cucumber"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="502.08" y="199.44" width="195.84" height="74.88" rx="20" fill="#15803D" stroke="#14532D" stroke-width="4"/>
+      </g>
+<g id="obj-fm-carrot"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="909.12,170.64000000000001 966.72,153.36 1064.64,326.15999999999997" fill="#F97316" stroke="#C2410C" stroke-width="4"/>
+        <path d="M932.16,159.12 L897.6,118.8 M943.68,159.12 L937.92,113.03999999999999" stroke="#16A34A" stroke-width="5" stroke-linecap="round"/>
+      </g>
+<g id="obj-fm-potato"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="216" cy="630" rx="109.44" ry="80.64000000000001" fill="#D97706" stroke="#78350F" stroke-width="4"/>
+        <circle cx="204" cy="624" r="3" fill="#78350F"/>
+        <circle cx="230" cy="638" r="3" fill="#78350F"/>
+      </g>
+<g id="obj-fm-basket"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="502.08,606.96 697.92,606.96 669.12,727.92 530.88,727.92" fill="#D97706" stroke="#78350F" stroke-width="4"/>
+        <path d="M536.64,606.96 Q600,509.04 663.36,606.96" fill="none" stroke="#78350F" stroke-width="7"/>
+      </g>
+    </svg>

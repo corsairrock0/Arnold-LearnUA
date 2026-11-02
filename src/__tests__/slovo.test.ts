@@ -305,8 +305,8 @@ test('8. Visual Course Redesign (All 29 Modules A0.1–C1.1): structuredLesson s
     assert.equal(progressJson.completedModules.length, 29);
 });
 
-test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographic scenes, hotspot bounds, MC generator, Fill-in-Blank validator, and Show Answer tracking', async () => {
-    const { IDENTIFY_CATEGORIES, renderIdentifySceneSvgDataUri } = await import('../identifyData.ts');
+test('9. Identify Visual Vocabulary Feature: 20 categories, 40 verified scenes, hotspot bounds, MC generator, Fill-in-Blank validator, and Show Answer tracking', async () => {
+    const { IDENTIFY_CATEGORIES, IDENTIFY_AUDIT_40_SUMMARY, renderIdentifySceneSvgDataUri } = await import('../identifyData.ts');
     const {
         generateIdentifyMultipleChoiceOptions,
         validateIdentifyTypedAnswer,
@@ -318,23 +318,32 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographi
     } = await import('../identifyEngine.ts');
 
     assert.equal(IDENTIFY_CATEGORIES.length, 20, 'Expected 20 everyday Identify categories');
+    assert.equal(IDENTIFY_AUDIT_40_SUMMARY.originalScenesAudited, 100);
+    assert.equal(IDENTIFY_AUDIT_40_SUMMARY.validScenesKept, 4);
+    assert.equal(IDENTIFY_AUDIT_40_SUMMARY.invalidScenesRegenerated, 24);
+    assert.equal(IDENTIFY_AUDIT_40_SUMMARY.newCompanionScenesAdded, 12);
+    assert.equal(IDENTIFY_AUDIT_40_SUMMARY.finalTotalScenes, 40);
+
     let totalScenes = 0;
     const uniqueAssetPaths = new Set<string>();
     for (const cat of IDENTIFY_CATEGORIES) {
-        assert.equal(cat.scenes.length, 5, `Category ${cat.id} must have 5 unique scenes`);
+        assert.equal(cat.scenes.length, 2, `Category ${cat.id} must have 2 complementary verified scenes`);
         for (const sc of cat.scenes) {
             totalScenes++;
-            assert.ok(sc.targets.length >= 6 && sc.targets.length <= 12, `Scene ${sc.id} must have 6–12 targets, got ${sc.targets.length}`);
-            assert.equal(sc.assetSourceType, 'photograph', `Scene ${sc.id} must use photograph assetSourceType`);
+            assert.ok(sc.targets.length >= 4 && sc.targets.length <= 10, `Scene ${sc.id} must have 4–10 targets, got ${sc.targets.length}`);
             const assetUri = renderIdentifySceneSvgDataUri(sc);
-            assert.ok(assetUri.startsWith(`/assets/identify/${cat.id}/`) && assetUri.endsWith('.webp'), `Scene ${sc.id} must point to a real .webp photograph asset, got ${assetUri}`);
+            assert.ok(
+                (assetUri.startsWith(`/assets/identify/${cat.id}/`) || assetUri.startsWith('/assets/identify/regenerated/')) &&
+                assetUri.endsWith('.webp'),
+                `Scene ${sc.id} must point to a real .webp scene asset, got ${assetUri}`
+            );
             assert.equal(assetUri.includes('linearGradient'), false, `Scene ${sc.id} must not use gradient backgrounds`);
             uniqueAssetPaths.add(assetUri);
 
             const diskPath = path.join(process.cwd(), 'public', assetUri);
-            assert.ok(fs.existsSync(diskPath), `Photograph file missing on disk for ${sc.id}: ${diskPath}`);
+            assert.ok(fs.existsSync(diskPath), `Scene image file missing on disk for ${sc.id}: ${diskPath}`);
             const stat = fs.statSync(diskPath);
-            assert.ok(stat.size > 5000, `Photograph file for ${sc.id} is too small (${stat.size} bytes)`);
+            assert.ok(stat.size > 5000, `Scene image file for ${sc.id} is too small (${stat.size} bytes)`);
 
             for (const t of sc.targets) {
                 assert.ok(t.x >= 0 && t.x <= 1 && t.y >= 0 && t.y <= 1, `Invalid normalized x/y in ${t.id}`);
@@ -351,8 +360,8 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographi
             }
         }
     }
-    assert.equal(uniqueAssetPaths.size, 100, 'Expected 100 distinct photographic asset paths across all 100 scenes');
-    assert.equal(totalScenes, 100, 'Expected 100 total scenes across 20 categories');
+    assert.equal(uniqueAssetPaths.size, 40, 'Expected 40 distinct .webp asset paths across all 40 scenes');
+    assert.equal(totalScenes, 40, 'Expected 40 total scenes across 20 categories');
 
     // Verify Fill-in-the-Blank normalization, synonyms, and Ukrainian letter checks
     const sinkTarget = IDENTIFY_CATEGORIES[0].scenes[0].targets.find((t) => t.vocabularyId === 'k-sink')!;
@@ -378,7 +387,7 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 100 real photographi
 
     const progressRecord = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'identify_implementation_progress.json'), 'utf8'));
     assert.equal(progressRecord.totals.categoriesDefined, 20);
-    assert.equal(progressRecord.totals.totalScenesDefined, 100);
+    assert.equal(progressRecord.totals.totalScenesDefined, 40);
 });
 
 test('10. Navigation & Core Tabs: AI Conversation tab is removed while all 8 core tabs remain intact', () => {

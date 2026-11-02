@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F4EFE6"/>
+            <stop offset="100%" stop-color="#E5DAC7"/>
+          </linearGradient>
+          <linearGradient id="bg-counter" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D7C0A3"/>
+            <stop offset="18%" stop-color="#B99976"/>
+            <stop offset="100%" stop-color="#8C6B4A"/>
+          </linearGradient>
+          <pattern id="tile-grid" width="60" height="30" patternUnits="userSpaceOnUse">
+            <rect width="60" height="30" fill="none" stroke="#E2D6C3" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="1200" height="540" fill="url(#bg-wall)"/>
+        <rect y="180" width="1200" height="360" fill="url(#tile-grid)" opacity="0.65"/>
+        <rect y="530" width="1200" height="16" fill="#A07E5B"/>
+        <rect y="546" width="1200" height="354" fill="url(#bg-counter)"/>
+      
+      <g id="obj-k-pot"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="112.32000000000001" y="170.64000000000001" width="207.35999999999999" height="178.56" rx="16" fill="#94A3B8" stroke="#334155" stroke-width="5"/>
+        <rect x="129.6" y="187.92000000000002" width="63.36" height="144" rx="8" fill="#CBD5E1" opacity="0.65"/>
+        <path d="M83.52,210.95999999999998 H112.32000000000001 M319.68,210.95999999999998 H348.48" stroke="#1E293B" stroke-width="10" stroke-linecap="round"/>
+        <ellipse cx="216" cy="170.64000000000001" rx="106.56" ry="23.04" fill="#CBD5E1" stroke="#334155" stroke-width="5"/>
+        <circle cx="216" cy="141.84" r="17.28" fill="#1E293B"/>
+      </g>
+<g id="obj-k-pan"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="576.96" cy="257.03999999999996" rx="103.67999999999999" ry="80.64000000000001" fill="#1E293B" stroke="#0F172A" stroke-width="6"/>
+        <ellipse cx="576.96" cy="257.03999999999996" rx="83.52" ry="60.48" fill="#334155"/>
+        <circle cx="559.68" cy="248.4" r="28.8" fill="#FEF9C3"/>
+        <circle cx="559.68" cy="248.4" r="14.4" fill="#F59E0B"/>
+        <line x1="669.12" y1="228.24" x2="732.48" y2="170.64000000000001" stroke="#0F172A" stroke-width="14" stroke-linecap="round"/>
+      </g>
+<g id="obj-k-plate"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <ellipse cx="984" cy="234" rx="126.72" ry="109.44" fill="#FFFFFF" stroke="#94A3B8" stroke-width="5"/>
+        <ellipse cx="984" cy="234" rx="89.28" ry="74.88" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="3"/>
+      </g>
+<g id="obj-k-knife"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M123.84,710.64 L201.6,635.76" stroke="#451A03" stroke-width="16" stroke-linecap="round"/>
+        <path d="M201.6,635.76 L319.68,526.32 Q336.96000000000004,566.64 227.52,664.56 Z" fill="#E2E8F0" stroke="#475569" stroke-width="4"/>
+      </g>
+<g id="obj-k-spoon"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <line x1="519.36" y1="710.64" x2="634.56" y2="595.44" stroke="#94A3B8" stroke-width="10" stroke-linecap="round"/>
+        <ellipse cx="663.36" cy="566.64" rx="46.08" ry="34.56" transform="rotate(-40 663.36 566.64)" fill="#E2E8F0" stroke="#64748B" stroke-width="4"/>
+      </g>
+<g id="obj-k-fork"><ellipse cx="984" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <line x1="903.36" y1="716.4" x2="1012.8" y2="606.96" stroke="#94A3B8" stroke-width="10" stroke-linecap="round"/>
+        <path d="M995.52,618.48 L1030.08,583.92 M1012.8,595.44 L1064.64,543.6 M995.52,583.92 L1047.36,532.08 M1030.08,612.72 L1081.92,560.88" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      </g>
+    </svg>

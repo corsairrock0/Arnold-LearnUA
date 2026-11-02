@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="urban-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#60A5FA"/>
+            <stop offset="100%" stop-color="#DBEAFE"/>
+          </linearGradient>
+          <linearGradient id="asphalt" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#64748B"/>
+            <stop offset="100%" stop-color="#334155"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="440" fill="url(#urban-sky)"/>
+        <rect y="440" width="1200" height="130" fill="#CBD5E1"/>
+        <rect y="570" width="1200" height="330" fill="url(#asphalt)"/>
+      
+      <g id="obj-cs-light"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="164.16" y="124.56" width="103.67999999999999" height="195.84" rx="10" fill="#1E293B" stroke="#0F172A" stroke-width="4"/>
+        <circle cx="216" cy="164.88" r="10" fill="#EF4444"/>
+        <circle cx="216" cy="222.48000000000002" r="10" fill="#FACC15"/>
+        <circle cx="216" cy="280.08000000000004" r="10" fill="#22C55E"/>
+      </g>
+<g id="obj-cs-pedestrian"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <path d="M525.12,343.44 V239.76 Q525.12,208.07999999999998 600,208.07999999999998 Q674.88,208.07999999999998 674.88,239.76 V343.44 Z" fill="#7C3AED" stroke="#1E293B" stroke-width="4"/>
+        <circle cx="600" cy="167.76" r="46.08" fill="#FDBA74" stroke="#9A3412" stroke-width="3.5"/>
+        <path d="M553.92,165.76 A46.08,46.08 0 0,1 646.08,165.76 Q600,140.112 553.92,165.76 Z" fill="#92400E"/>
+        <circle cx="583.872" cy="169.76" r="3" fill="#1E293B"/>
+        <circle cx="616.128" cy="169.76" r="3" fill="#1E293B"/>
+        <path d="M585.2544,187.1136 Q600,196.3296 614.7456,187.1136" fill="none" stroke="#9A3412" stroke-width="2.5" stroke-linecap="round"/>
+        
+      </g>
+<g id="obj-cs-car"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="868.8" y="170.64000000000001" width="230.4" height="132.48000000000002" rx="14" fill="#3B82F6" stroke="#1E293B" stroke-width="4"/>
+        <rect x="891.84" y="187.92000000000002" width="74.88" height="57.6" rx="4" fill="#E0F2FE"/>
+        <rect x="989.76" y="187.92000000000002" width="74.88" height="57.6" rx="4" fill="#E0F2FE"/>
+        <circle cx="920.64" cy="308.88" r="14" fill="#0F172A"/>
+        <circle cx="1047.36" cy="308.88" r="14" fill="#0F172A"/>
+      </g>
+<g id="obj-cs-road"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="146.88,537.84 285.12,537.84 336.96000000000004,733.6800000000001 95.03999999999999,733.6800000000001" fill="#475569" stroke="#334155" stroke-width="4"/>
+        <line x1="216" y1="555.12" x2="216" y2="716.4" stroke="#FACC15" stroke-width="5" stroke-dasharray="12,10"/>
+      </g>
+<g id="obj-cs-sidewalk"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="530.88,537.84 669.12,537.84 720.96,733.6800000000001 479.04,733.6800000000001" fill="#CBD5E1" stroke="#334155" stroke-width="4"/>
+        <line x1="600" y1="555.12" x2="600" y2="716.4" stroke="#FACC15" stroke-width="5" stroke-dasharray="12,10"/>
+      </g>
+    </svg>

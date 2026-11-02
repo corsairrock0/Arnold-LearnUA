@@ -38,7 +38,7 @@ import path from 'node:path';
 
 import { COURSE_MODULES } from '../courseData.ts';
 import { FREQ_6000_DB } from '../vocabData.ts';
-import { IDENTIFY_CATEGORIES } from '../identifyData.ts';
+import { ARCHIVED_LEGACY_SCENES_FOR_AUDIT, IDENTIFY_CATEGORIES } from '../identifyData.ts';
 import { READER_PASSAGES } from '../readerData.ts';
 import {
   getAllCourseTracks,
@@ -544,16 +544,17 @@ test('Test 19 & Test 20: Course can be exported into valid JSON and re-parsed/re
   assert.equal(reimportedPreview.moduleCount, 1);
 });
 
-test('Test 21: Existing Ukrainian photographs (100 WebP scenes) and audio remain accessible in Media Library', () => {
+test('Test 21: Existing Ukrainian WebP scenes (120 active + 100 archived on disk) and audio remain accessible in Media Library', () => {
   const mediaCatalog = getCmsMediaLibraryCatalog();
   assert.equal(
     mediaCatalog.length,
-    100,
-    'Expected all 100 Ukrainian Identify WebP scenes in Media Library'
+    120,
+    'Expected all 120 active Ukrainian Identify WebP scenes in Media Library'
   );
 
   const allIdentifyScenes = IDENTIFY_CATEGORIES.flatMap((c) => c.scenes);
-  assert.equal(allIdentifyScenes.length, 100);
+  assert.equal(allIdentifyScenes.length, 120);
+  assert.equal(ARCHIVED_LEGACY_SCENES_FOR_AUDIT.length, 100);
 
   for (const asset of mediaCatalog) {
     assert.ok(asset.assetPath.endsWith('.webp'));
@@ -864,7 +865,7 @@ test('TEST H, TEST I, TEST J, TEST K, TEST L & TEST M: Version Snapshot, Empty T
   );
   assert.equal(
     IDENTIFY_CATEGORIES.flatMap((c) => c.scenes).length,
-    100
+    120
   );
 });
 
@@ -1337,7 +1338,7 @@ test('TEST 9, TEST 10, TEST 11 & TEST 12: Remove Vocabulary Link and Media Link 
 
   // TEST 10: Link a media asset to the lesson, then remove the Media Reference without deleting the asset from Media Library
   const mediaCatalogBefore = getCmsMediaLibraryCatalog();
-  assert.equal(mediaCatalogBefore.length, 100);
+  assert.equal(mediaCatalogBefore.length, 120);
   const sampleMediaPath = mediaCatalogBefore[0].assetPath;
 
   addCmsLessonMediaRefInDraft(
@@ -1366,8 +1367,8 @@ test('TEST 9, TEST 10, TEST 11 & TEST 12: Remove Vocabulary Link and Media Link 
     mediaRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0];
   assert.equal((lesAfterMedia.mediaRefs || []).includes(sampleMediaPath), false);
 
-  // Global Media Library still has all 100 WebP photographs
-  assert.equal(getCmsMediaLibraryCatalog().length, 100);
+  // Global Media Library still has all 120 active WebP scenes
+  assert.equal(getCmsMediaLibraryCatalog().length, 120);
 
   // TEST 11: Remove Lesson in Draft (shows impact summary & requires confirmation)
   const lessonImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
@@ -1658,7 +1659,7 @@ test('TEST 13, TEST 14, TEST 15, TEST 16, TEST 17, TEST 18, TEST 19, TEST 20, TE
   // TEST 18, 19, 20, 21 & 22: Learner Course, FSRS, Identify, and Security Verification
   assert.equal(COURSE_MODULES.length, 29);
   assert.equal(FREQ_6000_DB.length, 2417);
-  assert.equal(IDENTIFY_CATEGORIES.flatMap((c) => c.scenes).length, 100);
+  assert.equal(IDENTIFY_CATEGORIES.flatMap((c) => c.scenes).length, 120);
   assert.equal(READER_PASSAGES.length > 0, true);
 });
 

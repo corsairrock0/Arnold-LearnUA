@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+      
+        <defs>
+          <linearGradient id="bg-wall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F7F3EB"/>
+            <stop offset="100%" stop-color="#E8DFCF"/>
+          </linearGradient>
+          <linearGradient id="bg-floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#C8A27A"/>
+            <stop offset="100%" stop-color="#9C744F"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="580" fill="url(#bg-wall)"/>
+        <rect y="568" width="1200" height="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+        <rect y="584" width="1200" height="316" fill="url(#bg-floor)"/>
+        <g stroke="#87603C" stroke-width="1.5" opacity="0.35">
+          <line x1="0" y1="640" x2="1200" y2="640"/>
+          <line x1="0" y1="710" x2="1200" y2="710"/>
+          <line x1="0" y1="790" x2="1200" y2="790"/>
+          <line x1="0" y1="870" x2="1200" y2="870"/>
+        </g>
+      
+      <g id="obj-lb-book"><ellipse cx="216" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="123.84" y="147.6" width="184.32" height="178.56" rx="6" fill="#2563EB" stroke="#1E3A8A" stroke-width="4"/>
+        <rect x="141.12" y="159.12" width="155.52" height="155.52" fill="#FFFFFF"/>
+        <line x1="216" y1="159.12" x2="216" y2="314.64" stroke="#94A3B8" stroke-width="3"/>
+      </g>
+<g id="obj-lb-notebook"><ellipse cx="600" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="519.36" y="136.07999999999998" width="161.28000000000003" height="195.84" rx="4" fill="#FDE047" stroke="#CA8A04" stroke-width="4"/>
+        <line x1="542.4" y1="136.07999999999998" x2="542.4" y2="331.91999999999996" stroke="#CA8A04" stroke-width="3"/>
+      </g>
+<g id="obj-lb-lamp"><ellipse cx="984" cy="372" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="932.16" y="326.15999999999997" width="103.67999999999999" height="28.8" rx="6" fill="#475569"/>
+        <line x1="984" y1="210.95999999999998" x2="984" y2="326.15999999999997" stroke="#64748B" stroke-width="8"/>
+        <polygon points="914.88,130.32 1053.12,130.32 1087.68,216.72 880.32,216.72" fill="#FEF08A" stroke="#CA8A04" stroke-width="4"/>
+        <ellipse cx="984" cy="222.48000000000002" rx="80.64000000000001" ry="23.04" fill="#FDE047" opacity="0.6"/>
+      </g>
+<g id="obj-lb-shelf"><ellipse cx="216" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <rect x="106.56" y="509.04" width="218.88" height="241.92" rx="6" fill="#78350F" stroke="#451A03" stroke-width="5"/>
+        <rect x="123.84" y="526.32" width="184.32" height="63.36" fill="#FEF3C7"/>
+        <rect x="123.84" y="601.2" width="184.32" height="63.36" fill="#FEF3C7"/>
+        <rect x="123.84" y="676.08" width="184.32" height="57.6" fill="#FEF3C7"/>
+        <rect x="135.36" y="537.84" width="23.04" height="51.839999999999996" fill="#EF4444"/>
+        <rect x="164.16" y="532.08" width="25.919999999999998" height="57.6" fill="#2563EB"/>
+        <rect x="195.84" y="540.72" width="23.04" height="48.96" fill="#10B981"/>
+        <rect x="141.12" y="612.72" width="28.8" height="51.839999999999996" fill="#F59E0B"/>
+        <rect x="175.68" y="606.96" width="25.919999999999998" height="57.6" fill="#8B5CF6"/>
+      </g>
+<g id="obj-lb-table"><ellipse cx="600" cy="768" rx="120.96" ry="17.28" fill="#0F172A" opacity="0.16"/>
+        <polygon points="479.04,606.96 720.96,606.96 697.92,566.64 502.08,566.64" fill="#B45309" stroke="#78350F" stroke-width="4"/>
+        <rect x="479.04" y="606.96" width="241.92" height="25.919999999999998" fill="#92400E" stroke="#451A03" stroke-width="3"/>
+        <rect x="502.08" y="632.88" width="23.04" height="109.44" fill="#78350F"/>
+        <rect x="674.88" y="632.88" width="23.04" height="109.44" fill="#78350F"/>
+      </g>
+    </svg>

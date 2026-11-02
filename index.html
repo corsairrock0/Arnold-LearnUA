@@ -1870,19 +1870,19 @@
        IDENTIFY VISUAL VOCABULARY SCENE & HOTSPOT SYSTEM
        ========================================================================== */
     .content-area:has(#tab-identify:not(.hidden)) {
-        max-width: 740px;
+        max-width: 1120px;
         min-width: 0;
         flex: 1;
     }
 
     .identify-stage-split {
         display: grid;
-        grid-template-columns: 1.15fr 0.85fr;
-        gap: 14px;
+        grid-template-columns: minmax(0, 1.22fr) minmax(320px, 0.88fr);
+        gap: 16px;
         align-items: start;
     }
 
-    @media (max-width: 1160px) {
+    @media (max-width: 1020px) {
         .identify-stage-split {
             grid-template-columns: 1fr;
         }
@@ -1895,35 +1895,45 @@
         border-radius: var(--radius-md);
         overflow: hidden;
         border: 1px solid var(--border-strong);
-        background: var(--surface-2);
+        background: #0f172a;
         user-select: none;
+        touch-action: manipulation;
     }
 
     .identify-scene-img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
         display: block;
+        pointer-events: none;
     }
 
     .identify-hotspot-layer {
         position: absolute;
-        inset: 0;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
     }
 
     .identify-hotspot {
         position: absolute;
         border-radius: 10px;
-        border: 2px dashed rgba(255, 255, 255, 0.92);
-        box-shadow: inset 0 0 0 1.5px rgba(15, 23, 42, 0.55);
-        background: rgba(15, 23, 42, 0.08);
+        border: 1.5px dashed rgba(255, 255, 255, 0.55);
+        background: rgba(15, 23, 42, 0.04);
         cursor: pointer;
         padding: 3px;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
+        align-items: center;
+        justify-content: center;
         transition: transform var(--spring-fast), border-color var(--spring-fast), box-shadow var(--spring-fast), background var(--spring-fast);
+    }
+
+    .identify-hotspot.show-bbox {
+        border: 2px dashed rgba(255, 255, 255, 0.95);
+        box-shadow: inset 0 0 0 1.5px rgba(15, 23, 42, 0.65);
+        background: rgba(15, 23, 42, 0.14);
     }
 
     .identify-hotspot:hover,
@@ -1937,44 +1947,57 @@
     }
 
     .identify-hotspot.selected {
-        border: 3px solid #FFFFFF;
-        background: rgba(29, 78, 216, 0.20);
+        border: 2.5px solid #FFFFFF;
+        background: rgba(29, 78, 216, 0.18);
         box-shadow: 0 0 0 3px var(--accent), 0 4px 14px rgba(15, 23, 42, 0.45);
         z-index: 6;
     }
 
     .identify-hotspot.correct {
-        border: 2.5px solid #22C55E;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.55);
-        background: rgba(21, 128, 61, 0.18);
+        border: 2px solid #22C55E;
+        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
+        background: rgba(21, 128, 61, 0.15);
     }
 
     .identify-hotspot.revealed {
-        border: 2.5px solid #F59E0B;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.55);
-        background: rgba(180, 83, 9, 0.18);
+        border: 2px solid #F59E0B;
+        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
+        background: rgba(180, 83, 9, 0.15);
     }
 
     .identify-hotspot.incorrect {
-        border: 2.5px solid #EF4444;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.55);
-        background: rgba(185, 28, 28, 0.20);
+        border: 2px solid #EF4444;
+        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
+        background: rgba(185, 28, 28, 0.18);
     }
 
     .identify-hotspot-badge {
-        min-width: 24px;
-        height: 24px;
+        min-width: 28px;
+        height: 28px;
         border-radius: 999px;
         background: var(--accent);
         color: #FFFFFF;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 800;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0 6px;
-        border: 1.5px solid #FFFFFF;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.42);
+        padding: 0 7px;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+    }
+
+    @media (max-width: 768px) {
+        .identify-hotspot-badge {
+            min-width: 30px;
+            height: 30px;
+            font-size: 12.5px;
+        }
+    }
+
+    .identify-hotspot.selected .identify-hotspot-badge {
+        transform: scale(1.12);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(0, 0, 0, 0.6);
     }
 
     .identify-hotspot.correct .identify-hotspot-badge {
@@ -1990,13 +2013,14 @@
     }
 
     .identify-hotspot-word {
-        background: rgba(15, 23, 42, 0.88);
+        background: rgba(15, 23, 42, 0.90);
         color: #FFFFFF;
         font-size: 10.5px;
         font-weight: 800;
         padding: 2px 6px;
         border-radius: 6px;
-        max-width: 100%;
+        margin-top: 2px;
+        max-width: 120px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -2442,12 +2466,12 @@
                     </div>
                 </section>
 
-                <!-- TAB 6B: IDENTIFY VISUAL VOCABULARY LEARNING (20 CATEGORIES × 5 SCENES = 100 SCENES) -->
+                <!-- TAB 6B: IDENTIFY VISUAL VOCABULARY LEARNING (20 CATEGORIES × 2 SCENES = 40 SCENES) -->
                 <section id="tab-identify" class="hidden" aria-label="Identify Visual Vocabulary">
                     <div class="section-header">
                         <div>
                             <h1 class="section-title">Identify — Visual Vocabulary Scenes</h1>
-                            <p class="section-subtitle">Explore 100 everyday photographic scenes across 20 categories. Tap any object to test recall in Multiple Choice or Fill in the Blank, or click Show Answer to study.</p>
+                            <p class="section-subtitle">Explore 40 verified everyday scenes across 20 categories. Tap any object to test recall in Multiple Choice or Fill in the Blank, or click Show Answer to study.</p>
                         </div>
                     </div>
                     <div id="identify-workspace-root"></div>

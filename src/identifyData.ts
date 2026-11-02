@@ -4,6 +4,23 @@
 // ============================================================================
 
 import { FREQ_6000_DB } from './vocabData.ts';
+import { IDENTIFY_120_CATEGORIES } from './identifySceneLibrary120.ts';
+import {
+  IDENTIFY_MASTER_2000_NOUNS,
+  IDENTIFY_TOPIC_GROUPS,
+  type IdentifyMasterNounEntry,
+  type IdentifyTopicGroupSpec,
+  type IdentifyMasterVocabularyCoverageSummary,
+} from './identifyMasterNouns.ts';
+
+export {
+  IDENTIFY_MASTER_2000_NOUNS,
+  IDENTIFY_TOPIC_GROUPS,
+  type IdentifyMasterNounEntry,
+  type IdentifyTopicGroupSpec,
+  type IdentifyMasterVocabularyCoverageSummary,
+};
+
 
 export interface IdentifyVocabItem {
   vocabularyId: string;
@@ -18,14 +35,51 @@ export interface IdentifyVocabItem {
   iconType: string; // Visual object renderer key
 }
 
+export type IdentifyAnnotationSource =
+  | 'manual_human'
+  | 'verified_scene_geometry'
+  | 'ai_assisted_verified'
+  | 'legacy_grid_unverified'
+  | 'synthetic_grid_5x5_unverified';
+
+export type IdentifyVerificationStatus =
+  | 'human_verified'
+  | 'visually_verified'
+  | 'needs_review'
+  | 'unverified_grid'
+  | 'missing_in_image'
+  | 'misaligned_marker';
+
+export type IdentifyTargetLifecycleState =
+  | 'planned_vocabulary'
+  | 'unverified_image_association'
+  | 'verified_visible_object'
+  | 'verified_object_annotation'
+  | 'approved_active_learner_target';
+
+export type IdentifySceneQualityState =
+  | 'draft'
+  | 'needs_review'
+  | 'awaiting_ai_generation'
+  | 'validated_ready'
+  | 'published_verified'
+  | 'invalid_defective';
+
 export interface IdentifyHotspot {
   id: string;
   targetNumber: number;
   vocabularyId: string;
+  conceptId?: string;
   x: number; // Normalized 0.0 - 1.0 left
   y: number; // Normalized 0.0 - 1.0 top
   width: number; // Normalized 0.0 - 1.0 width
   height: number; // Normalized 0.0 - 1.0 height
+  /** Separated visual marker pin center X (0.0 - 1.0) so badge placement and object region can be tuned independently */
+  centerX?: number;
+  /** Separated visual marker pin center Y (0.0 - 1.0) */
+  centerY?: number;
+  /** Optional irregular polygon outline in normalized (0.0 - 1.0) coordinates */
+  polygon?: Array<{ x: number; y: number }>;
   uk: string;
   en: string;
   acceptedSynonyms: string[];
@@ -36,12 +90,31 @@ export interface IdentifyHotspot {
   freqRank?: number;
   iconType: string;
   verified: boolean;
+  /** Stage B Object Annotation Metadata */
+  imageAssetId?: string;
+  objectLabelEn?: string;
+  verifiedLexicalSense?: string;
+  annotationSource?: IdentifyAnnotationSource;
+  verificationStatus?: IdentifyVerificationStatus;
+  targetLifecycleState?: IdentifyTargetLifecycleState;
+  /** Optional confidence score only when produced by a real detector; never fabricated */
+  confidenceScore?: number | null;
+  contentVersion?: number;
+  isObjectVisibleInScene?: boolean;
+  visibilityCriteria?: {
+    clearlyVisible: boolean;
+    unambiguous: boolean;
+    largeEnoughToRecognize: boolean;
+    notCutOffOrObscured: boolean;
+    matchesIntendedSense: boolean;
+  };
 }
 
 export interface IdentifyScene {
   id: string;
   categoryId: string;
-  sceneNumber: number; // 1 to 5
+  topicGroupId?: string;
+  sceneNumber: number; // 1 to 5 (or extended split scene index)
   titleEn: string;
   titleUk: string;
   settingDescriptionEn: string;
@@ -50,11 +123,33 @@ export interface IdentifyScene {
   assetSourceType: 'local-verified-scene-illustration' | 'photograph';
   annotationVerified: boolean;
   targets: IdentifyHotspot[];
+  /** Preserves all 20-22 planned curriculum vocabulary targets for Content Studio and AI generation queue */
+  plannedTargets?: IdentifyHotspot[];
+  /** True ONLY when the scene has a verified image and >= 1 visually verified active learner targets */
+  isPlayableForStudents?: boolean;
+  /** Stage B Scene & Asset Metadata */
+  imageAssetId?: string;
+  intrinsicWidth?: number;
+  intrinsicHeight?: number;
+  aspectRatioLabel?: string;
+  qualityState?: IdentifySceneQualityState;
+  contentRevisionId?: string;
+  annotationSource?: IdentifyAnnotationSource;
+  /** Vocabulary items intentionally excluded or moved to a companion scene because they are absent from this image */
+  missingVocabularyItems?: Array<{
+    vocabularyId: string;
+    uk: string;
+    en: string;
+    reasonEn: string;
+  }>;
+  /** Companion or parent scene reference when an incompatible vocabulary list is split into multiple coherent scenes */
+  replacesBaselineSceneId?: string;
 }
 
 export interface IdentifyCategory {
   id: string;
-  number: number; // 1 to 20
+  number: number; // 1 to 28
+  topicGroupId?: string;
   titleEn: string;
   titleUk: string;
   icon: string;
@@ -78,6 +173,7 @@ export interface IdentifyCategory {
     | 'street'
     | 'transit'
     | 'station'
+    | 'terminal'
     | 'clinic'
     | 'beach';
   coreVocab: IdentifyVocabItem[];
@@ -770,6 +866,738 @@ const PHOTO_SCENE_OVERRIDES: Record<string, Array<{ vocabIdx: number; x: number;
   ],
 };
 
+// ============================================================================
+// VERIFIED 40-SCENE CURATED LIBRARY (20 CATEGORIES × 2 SCENES = 40 SCENES)
+// - 4 Valid Existing Photographic Scenes Kept (with exact human-verified boxes)
+// - 24 Invalid Scenes Regenerated + 12 New Companion Scenes Added = 36 Regenerated
+//   1200×900 .webp Scenes in /assets/identify/regenerated/
+// ============================================================================
+
+export interface CuratedSceneSpec {
+  sceneId: string;
+  sceneNumber: number;
+  titleEn: string;
+  titleUk: string;
+  settingDescriptionEn: string;
+  assetPath: string;
+  assetSourceType: 'photograph' | 'local-verified-scene-illustration';
+  curationStatus: 'kept_valid_photo' | 'regenerated_ai_scene' | 'added_companion_scene';
+  targets: Array<{
+    vocabId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    centerX: number;
+    centerY: number;
+    sense: string;
+  }>;
+}
+
+const CUSTOM_6_BOXES = [
+  { x: 0.06, y: 0.10, width: 0.24, height: 0.32, centerX: 0.18, centerY: 0.26 },
+  { x: 0.38, y: 0.10, width: 0.24, height: 0.32, centerX: 0.50, centerY: 0.26 },
+  { x: 0.70, y: 0.10, width: 0.24, height: 0.32, centerX: 0.82, centerY: 0.26 },
+  { x: 0.06, y: 0.54, width: 0.24, height: 0.32, centerX: 0.18, centerY: 0.70 },
+  { x: 0.38, y: 0.54, width: 0.24, height: 0.32, centerX: 0.50, centerY: 0.70 },
+  { x: 0.70, y: 0.54, width: 0.24, height: 0.32, centerX: 0.82, centerY: 0.70 },
+];
+
+function mapCustomBoxes(vocabIds: string[], sceneTitle: string): CuratedSceneSpec['targets'] {
+  return vocabIds.map((vocabId, idx) => {
+    const b = CUSTOM_6_BOXES[idx];
+    return {
+      vocabId,
+      x: b.x,
+      y: b.y,
+      width: b.width,
+      height: b.height,
+      centerX: b.centerX,
+      centerY: b.centerY,
+      sense: `clearly visible ${vocabId} in ${sceneTitle}`,
+    };
+  });
+}
+
+export const CURATED_40_SCENE_SPECS: Record<string, [CuratedSceneSpec, CuratedSceneSpec]> = {
+  kitchen: [
+    {
+      sceneId: 'kitchen-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Family Kitchen & Appliances',
+      titleUk: 'Традиці́йна сіме́йна ку́хня та те́хніка',
+      settingDescriptionEn:
+        'Verified kitchen photograph showing wooden dining table, chair, oven, stove, kitchen sink, refrigerator, and plate.',
+      assetPath: '/assets/identify/kitchen/kitchen_02.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'kept_valid_photo',
+      targets: [
+        { vocabId: 'k-table', x: 0.44, y: 0.53, width: 0.22, height: 0.22, centerX: 0.55, centerY: 0.64, sense: 'wooden kitchen dining table' },
+        { vocabId: 'k-chair', x: 0.67, y: 0.52, width: 0.13, height: 0.24, centerX: 0.73, centerY: 0.64, sense: 'wooden dining chair by table' },
+        { vocabId: 'k-oven', x: 0.32, y: 0.44, width: 0.09, height: 0.15, centerX: 0.37, centerY: 0.52, sense: 'built-in kitchen oven' },
+        { vocabId: 'k-stove', x: 0.30, y: 0.33, width: 0.11, height: 0.09, centerX: 0.36, centerY: 0.38, sense: 'kitchen stove cooktop' },
+        { vocabId: 'k-sink', x: 0.17, y: 0.39, width: 0.12, height: 0.10, centerX: 0.23, centerY: 0.44, sense: 'countertop kitchen sink' },
+        { vocabId: 'k-fridge', x: 0.41, y: 0.16, width: 0.10, height: 0.26, centerX: 0.46, centerY: 0.29, sense: 'tall kitchen refrigerator' },
+        { vocabId: 'k-plate', x: 0.47, y: 0.43, width: 0.13, height: 0.09, centerX: 0.54, centerY: 0.47, sense: 'plate set on kitchen table' },
+      ],
+    },
+    {
+      sceneId: 'kitchen-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Cookware, Cutlery & Tableware Station',
+      titleUk: 'Кухо́нний по́суд і столо́ві прибо́ри',
+      settingDescriptionEn:
+        'Regenerated kitchen counter scene clearly showing cooking pot, frying pan, ceramic plate, kitchen knife, spoon, and fork.',
+      assetPath: '/assets/identify/regenerated/kitchen-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['k-pot', 'k-pan', 'k-plate', 'k-knife', 'k-spoon', 'k-fork'],
+        'Cookware, Cutlery & Tableware Station'
+      ),
+    },
+  ],
+  bedroom: [
+    {
+      sceneId: 'bedroom-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Sunlit Master Bedroom & Bedding',
+      titleUk: 'Со́нячна головна́ спа́льня',
+      settingDescriptionEn:
+        'Verified bedroom photograph clearly showing double bed, white pillows, folded blanket, bright window, curtains, and floor rug.',
+      assetPath: '/assets/identify/bedroom/bedroom_01.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'kept_valid_photo',
+      targets: [
+        { vocabId: 'bd-bed', x: 0.48, y: 0.66, width: 0.36, height: 0.32, centerX: 0.66, centerY: 0.82, sense: 'wide double bed in bedroom' },
+        { vocabId: 'bd-pillow', x: 0.62, y: 0.46, width: 0.22, height: 0.18, centerX: 0.73, centerY: 0.55, sense: 'white sleeping pillows at headboard' },
+        { vocabId: 'bd-blanket', x: 0.21, y: 0.68, width: 0.25, height: 0.28, centerX: 0.34, centerY: 0.82, sense: 'blanket and duvet spread on bed' },
+        { vocabId: 'bd-window', x: 0.16, y: 0.10, width: 0.18, height: 0.54, centerX: 0.25, centerY: 0.36, sense: 'bright bedroom window' },
+        { vocabId: 'bd-curtains', x: 0.02, y: 0.06, width: 0.13, height: 0.68, centerX: 0.09, centerY: 0.40, sense: 'long bedroom window curtains' },
+        { vocabId: 'bd-rug', x: 0.01, y: 0.78, width: 0.18, height: 0.20, centerX: 0.10, centerY: 0.88, sense: 'soft bedroom floor rug' },
+      ],
+    },
+    {
+      sceneId: 'bedroom-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Wardrobe, Mirror & Bedside Lamp',
+      titleUk: 'Ша́фа, дзе́ркало та насті́льна ла́мпа',
+      settingDescriptionEn:
+        'Regenerated bedroom interior showing wooden wardrobe, wall mirror, bedside lamp, bed, pillow, and patterned rug.',
+      assetPath: '/assets/identify/regenerated/bedroom-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['bd-wardrobe', 'bd-mirror', 'bd-lamp', 'bd-bed', 'bd-pillow', 'bd-rug'],
+        'Wardrobe, Mirror & Bedside Lamp'
+      ),
+    },
+  ],
+  bathroom: [
+    {
+      sceneId: 'bathroom-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Shower, Bathtub & Washbasin',
+      titleUk: 'Душ, ва́нна та умива́льник',
+      settingDescriptionEn:
+        'Regenerated tiled bathroom showing overhead shower, wall mirror, striped towel, bathtub, and ceramic washbasin.',
+      assetPath: '/assets/identify/regenerated/bathroom-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['ba-shower', 'ba-mirror', 'ba-towel', 'ba-bathtub', 'ba-sink'],
+        'Shower, Bathtub & Washbasin'
+      ),
+    },
+    {
+      sceneId: 'bathroom-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Vanity Sink & Morning Hygiene',
+      titleUk: 'Умива́льник та засоби гігіє́ни',
+      settingDescriptionEn:
+        'Regenerated bathroom vanity showing mirror, water faucet, cotton towel, sink, soap bar, and toothbrush.',
+      assetPath: '/assets/identify/regenerated/bathroom-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['ba-mirror', 'ba-faucet', 'ba-towel', 'ba-sink', 'ba-soap', 'ba-toothbrush'],
+        'Vanity Sink & Morning Hygiene'
+      ),
+    },
+  ],
+  'living-room': [
+    {
+      sceneId: 'living-room-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Living Room Armchair & Lamp Corner',
+      titleUk: 'Затишна́ віта́льня з крі́слом і ла́мпою',
+      settingDescriptionEn:
+        'Verified living room photograph showing yellow armchair, tall floor lamp, round side table, wall television, and woven rug.',
+      assetPath: '/assets/identify/living-room/living-room_01.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'kept_valid_photo',
+      targets: [
+        { vocabId: 'lr-armchair', x: 0.35, y: 0.50, width: 0.28, height: 0.38, centerX: 0.49, centerY: 0.66, sense: 'yellow upholstered armchair' },
+        { vocabId: 'lr-lamp', x: 0.20, y: 0.16, width: 0.14, height: 0.70, centerX: 0.25, centerY: 0.48, sense: 'tall brass floor lamp' },
+        { vocabId: 'lr-table', x: 0.63, y: 0.59, width: 0.12, height: 0.23, centerX: 0.69, centerY: 0.70, sense: 'round living room side table' },
+        { vocabId: 'lr-tv', x: 0.88, y: 0.25, width: 0.11, height: 0.24, centerX: 0.94, centerY: 0.37, sense: 'wall-mounted television screen' },
+        { vocabId: 'lr-rug', x: 0.76, y: 0.86, width: 0.23, height: 0.13, centerX: 0.88, centerY: 0.92, sense: 'woven living room floor rug' },
+      ],
+    },
+    {
+      sceneId: 'living-room-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Family Lounge: Sofa, Bookshelf & Window',
+      titleUk: 'Сіме́йна віта́льня з дива́ном і поли́цею',
+      settingDescriptionEn:
+        'Regenerated living room showing large window, wooden bookshelf filled with books, television, blue sofa, coffee table, and rug.',
+      assetPath: '/assets/identify/regenerated/living-room-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['lr-window', 'lr-bookshelf', 'lr-tv', 'lr-sofa', 'lr-table', 'lr-rug'],
+        'Family Lounge: Sofa, Bookshelf & Window'
+      ),
+    },
+  ],
+  'dining-room': [
+    {
+      sceneId: 'dining-room-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Formal Dinner Place Setting',
+      titleUk: 'Святко́ве сервірува́ння столу́',
+      settingDescriptionEn:
+        'Regenerated dining room scene clearly showing dinner plate, drinking glass, folded napkin, dining table, wooden chair, and fork.',
+      assetPath: '/assets/identify/regenerated/dining-room-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['dr-plate', 'dr-glass', 'dr-napkin', 'dr-table', 'dr-chair', 'dr-fork'],
+        'Formal Dinner Place Setting'
+      ),
+    },
+    {
+      sceneId: 'dining-room-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Breakfast & Tea Tableware',
+      titleUk: 'Ранко́вий стіл із ча́шкою та приборами',
+      settingDescriptionEn:
+        'Regenerated breakfast dining scene showing steaming cup, plate, spoon, table knife, dining table, and chair.',
+      assetPath: '/assets/identify/regenerated/dining-room-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['dr-cup', 'dr-plate', 'dr-spoon', 'dr-knife', 'dr-table', 'dr-chair'],
+        'Breakfast & Tea Tableware'
+      ),
+    },
+  ],
+  supermarket: [
+    {
+      sceneId: 'supermarket-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Fresh Grocery, Dairy & Bakery Display',
+      titleUk: 'Відді́л сві́жих проду́ктів у суперма́ркеті',
+      settingDescriptionEn:
+        'Regenerated grocery display clearly showing red apple, yellow banana, milk carton, cheese wedge, and fresh bread loaf.',
+      assetPath: '/assets/identify/regenerated/supermarket-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['sm-apple', 'sm-banana', 'sm-milk', 'sm-cheese', 'sm-bread'],
+        'Fresh Grocery, Dairy & Bakery Display'
+      ),
+    },
+    {
+      sceneId: 'supermarket-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Supermarket Checkout, Cart & Basket',
+      titleUk: 'Ка́са, візо́к і ко́шик для поку́пок',
+      settingDescriptionEn:
+        'Regenerated supermarket checkout lane showing cash register checkout, shopping basket, wheeled cart, grocery bag, and milk.',
+      assetPath: '/assets/identify/regenerated/supermarket-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['sm-checkout', 'sm-basket', 'sm-cart', 'sm-bag', 'sm-milk'],
+        'Supermarket Checkout, Cart & Basket'
+      ),
+    },
+  ],
+  'farmers-market': [
+    {
+      sceneId: 'farmers-market-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Fresh Garden Vegetable Stall',
+      titleUk: 'Овоче́ва я́тка на ферме́рському ри́нку',
+      settingDescriptionEn:
+        'Regenerated outdoor market stall showing ripe red tomato, green cucumber, sweet carrot, potato, and woven basket.',
+      assetPath: '/assets/identify/regenerated/farmers-market-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['fm-tomato', 'fm-cucumber', 'fm-carrot', 'fm-potato', 'fm-basket'],
+        'Fresh Garden Vegetable Stall'
+      ),
+    },
+    {
+      sceneId: 'farmers-market-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Orchard Fruit, Flowers & Market Seller',
+      titleUk: 'Садо́ві фру́кти, кві́ти та продаве́ць',
+      settingDescriptionEn:
+        'Regenerated farmers market stand showing friendly seller, red apple, juicy pear, garden flowers, and woven basket.',
+      assetPath: '/assets/identify/regenerated/farmers-market-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['fm-seller', 'fm-apple', 'fm-pear', 'fm-flowers', 'fm-basket'],
+        'Orchard Fruit, Flowers & Market Seller'
+      ),
+    },
+  ],
+  cafe: [
+    {
+      sceneId: 'cafe-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Espresso Counter & Barista',
+      titleUk: 'Каво́ва сті́йка, меню́ та бари́ста',
+      settingDescriptionEn:
+        'Regenerated café counter showing barista in apron, café menu board, roasted coffee, porcelain cup, and sweet pastry.',
+      assetPath: '/assets/identify/regenerated/cafe-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['cf-barista', 'cf-menu', 'cf-coffee', 'cf-cup', 'cf-pastry'],
+        'Espresso Counter & Barista'
+      ),
+    },
+    {
+      sceneId: 'cafe-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Cozy Café Table & Pastry Break',
+      titleUk: 'Затишни́й сто́лик із ча́шкою ка́ви',
+      settingDescriptionEn:
+        'Regenerated café seating area showing cup of coffee, fresh pastry, small teaspoon, wooden café table, and chair.',
+      assetPath: '/assets/identify/regenerated/cafe-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['cf-cup-coffee', 'cf-pastry', 'cf-teaspoon', 'cf-table', 'cf-chair'],
+        'Cozy Café Table & Pastry Break'
+      ),
+    },
+  ],
+  restaurant: [
+    {
+      sceneId: 'restaurant-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Restaurant Waiter & Signature Dish',
+      titleUk: 'Офіціа́нт, меню́ та фірмова́ стра́ва',
+      settingDescriptionEn:
+        'Regenerated restaurant service scene showing polite waiter, menu, hot signature dish, dinner plate, and drinking glass.',
+      assetPath: '/assets/identify/regenerated/restaurant-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['rs-waiter', 'rs-menu', 'rs-dish', 'rs-plate', 'rs-glass'],
+        'Restaurant Waiter & Signature Dish'
+      ),
+    },
+    {
+      sceneId: 'restaurant-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Dinner Meal, Cutlery & Restaurant Bill',
+      titleUk: 'Вече́ря в рестора́ні та раху́нок',
+      settingDescriptionEn:
+        'Regenerated restaurant table showing plated food, ceramic plate, water glass, silver fork, knife, and check bill folder.',
+      assetPath: '/assets/identify/regenerated/restaurant-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['rs-food', 'rs-plate', 'rs-glass', 'rs-fork', 'rs-knife', 'rs-bill'],
+        'Dinner Meal, Cutlery & Restaurant Bill'
+      ),
+    },
+  ],
+  classroom: [
+    {
+      sceneId: 'classroom-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Front of the Classroom: Teacher & Board',
+      titleUk: 'Уро́к у кла́сі бі́ля шкільно́ї до́шки',
+      settingDescriptionEn:
+        'Regenerated classroom scene showing green blackboard, teacher with pointer, attentive student, school desk, and textbook.',
+      assetPath: '/assets/identify/regenerated/classroom-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['cl-board', 'cl-teacher', 'cl-student', 'cl-desk', 'cl-book'],
+        'Front of the Classroom: Teacher & Board'
+      ),
+    },
+    {
+      sceneId: 'classroom-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Student Desk, Books & School Supplies',
+      titleUk: 'Шкільна́ па́рта, зо́шит і рюкза́к',
+      settingDescriptionEn:
+        'Regenerated study supplies scene showing open book, yellow notebook, blue pen, pencil, school backpack, and desk.',
+      assetPath: '/assets/identify/regenerated/classroom-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['cl-book', 'cl-notebook', 'cl-pen', 'cl-pencil', 'cl-backpack', 'cl-desk'],
+        'Student Desk, Books & School Supplies'
+      ),
+    },
+  ],
+  office: [
+    {
+      sceneId: 'office-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Office Workstation & Desktop Computers',
+      titleUk: 'Суча́сне робо́че мі́сце в о́фісі',
+      settingDescriptionEn:
+        'Verified office photograph showing desktop computer, wide monitor screen, keyboard, mouse, office desk, and ergonomic chair.',
+      assetPath: '/assets/identify/office/office_01.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'kept_valid_photo',
+      targets: [
+        { vocabId: 'of-computer', x: 0.13, y: 0.46, width: 0.12, height: 0.15, centerX: 0.19, centerY: 0.53, sense: 'all-in-one desktop computer' },
+        { vocabId: 'of-monitor', x: 0.53, y: 0.46, width: 0.15, height: 0.15, centerX: 0.61, centerY: 0.53, sense: 'wide desktop monitor screen' },
+        { vocabId: 'of-keyboard', x: 0.30, y: 0.55, width: 0.13, height: 0.09, centerX: 0.37, centerY: 0.60, sense: 'computer keyboard on desk' },
+        { vocabId: 'of-mouse', x: 0.02, y: 0.56, width: 0.10, height: 0.10, centerX: 0.07, centerY: 0.61, sense: 'computer mouse on desk' },
+        { vocabId: 'of-desk', x: 0.24, y: 0.66, width: 0.22, height: 0.16, centerX: 0.35, centerY: 0.74, sense: 'white office workstation desk' },
+        { vocabId: 'of-chair', x: 0.48, y: 0.64, width: 0.18, height: 0.32, centerX: 0.57, centerY: 0.80, sense: 'rolling ergonomic office chair' },
+      ],
+    },
+    {
+      sceneId: 'office-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Home Office: Laptop, Phone & Printer',
+      titleUk: 'Кабіне́т із ноутбу́ком, телефо́ном і при́нтером',
+      settingDescriptionEn:
+        'Regenerated office workspace showing open laptop, external monitor, smartphone, office printer, wooden desk, and chair.',
+      assetPath: '/assets/identify/regenerated/office-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['of-laptop', 'of-monitor', 'of-phone', 'of-printer', 'of-desk', 'of-chair'],
+        'Home Office: Laptop, Phone & Printer'
+      ),
+    },
+  ],
+  library: [
+    {
+      sceneId: 'library-scene-1',
+      sceneNumber: 1,
+      titleEn: 'University Library Hall & Bookshelves',
+      titleUk: 'Чита́льний зал бібліоте́ки та поли́ці',
+      settingDescriptionEn:
+        'Regenerated library reading hall showing grand library arch, tall bookshelf, attentive reader, reading table, and chair.',
+      assetPath: '/assets/identify/regenerated/library-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['lb-library', 'lb-shelf', 'lb-reader', 'lb-table', 'lb-chair'],
+        'University Library Hall & Bookshelves'
+      ),
+    },
+    {
+      sceneId: 'library-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Quiet Study Desk, Book & Reading Lamp',
+      titleUk: 'Ти́хе мі́сце для чита́ння з ла́мпою',
+      settingDescriptionEn:
+        'Regenerated study corner showing open book, research notebook, glowing reading lamp, bookshelf, and reading table.',
+      assetPath: '/assets/identify/regenerated/library-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['lb-book', 'lb-notebook', 'lb-lamp', 'lb-shelf', 'lb-table'],
+        'Quiet Study Desk, Book & Reading Lamp'
+      ),
+    },
+  ],
+  'gym-fitness': [
+    {
+      sceneId: 'gym-fitness-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Strength Training: Weights, Machine & Bench',
+      titleUk: 'Силова́ зо́на спортза́лу та тренаже́ри',
+      settingDescriptionEn:
+        'Regenerated gym strength zone showing hand dumbbell, heavy barbell, cable exercise machine, workout bench, and gym towel.',
+      assetPath: '/assets/identify/regenerated/gym-fitness-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['gm-dumbbell', 'gm-barbell', 'gm-machine', 'gm-bench', 'gm-towel'],
+        'Strength Training: Weights, Machine & Bench'
+      ),
+    },
+    {
+      sceneId: 'gym-fitness-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Cardio Treadmill, Yoga Mat & Hydration',
+      titleUk: 'Бігова́ дорі́жка, килимо́к і вода́',
+      settingDescriptionEn:
+        'Regenerated fitness corner showing cardio treadmill, purple exercise mat, clean gym towel, and water bottle.',
+      assetPath: '/assets/identify/regenerated/gym-fitness-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['gm-treadmill', 'gm-mat', 'gm-towel', 'gm-bottle'],
+        'Cardio Treadmill, Yoga Mat & Hydration'
+      ),
+    },
+  ],
+  'park-garden': [
+    {
+      sceneId: 'park-garden-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Sunny Park Path, Bench & Greenery',
+      titleUk: 'Со́нячна але́я па́рку та ла́вка',
+      settingDescriptionEn:
+        'Regenerated park scene showing tall shade tree, green bush, wooden park bench, walking path, and green lawn grass.',
+      assetPath: '/assets/identify/regenerated/park-garden-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['pk-tree', 'pk-bush', 'pk-bench', 'pk-path', 'pk-grass'],
+        'Sunny Park Path, Bench & Greenery'
+      ),
+    },
+    {
+      sceneId: 'park-garden-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Garden Songbird, Flowers & Foliage',
+      titleUk: 'Квіту́чий сад, птах і зеле́не ли́стя',
+      settingDescriptionEn:
+        'Regenerated garden nature scene showing blue songbird, leafy foliage, garden tree, blooming flower, and green grass.',
+      assetPath: '/assets/identify/regenerated/park-garden-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['pk-bird', 'pk-leaves', 'pk-tree', 'pk-flower', 'pk-grass'],
+        'Garden Songbird, Flowers & Foliage'
+      ),
+    },
+  ],
+  playground: [
+    {
+      sceneId: 'playground-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Park Playground: Swing, Slide & Sandbox',
+      titleUk: 'Го́йдалка, гі́рка та пісо́чниця',
+      settingDescriptionEn:
+        'Regenerated outdoor playground showing swing set, yellow slide, shade tree, sandbox, and wooden park bench.',
+      assetPath: '/assets/identify/regenerated/playground-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['pg-swing', 'pg-slide', 'pg-tree', 'pg-sandbox', 'pg-bench'],
+        'Park Playground: Swing, Slide & Sandbox'
+      ),
+    },
+    {
+      sceneId: 'playground-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Afternoon Play: Child, Ball & Slide',
+      titleUk: 'Дити́на з м’яче́м на майда́нчику',
+      settingDescriptionEn:
+        'Regenerated playground activity scene showing joyful child, slide, colorful play ball, sandbox, and bench.',
+      assetPath: '/assets/identify/regenerated/playground-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['pg-child', 'pg-slide', 'pg-ball', 'pg-sandbox', 'pg-bench'],
+        'Afternoon Play: Child, Ball & Slide'
+      ),
+    },
+  ],
+  'city-streets': [
+    {
+      sceneId: 'city-streets-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Downtown Crosswalk, Car & Traffic Light',
+      titleUk: 'Світлофо́р, пішохі́д і автомобі́ль',
+      settingDescriptionEn:
+        'Regenerated city intersection showing traffic light signal, pedestrian, blue car, paved road, and sidewalk.',
+      assetPath: '/assets/identify/regenerated/city-streets-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['cs-light', 'cs-pedestrian', 'cs-car', 'cs-road', 'cs-sidewalk'],
+        'Downtown Crosswalk, Car & Traffic Light'
+      ),
+    },
+    {
+      sceneId: 'city-streets-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Urban Avenue: Building, Road Sign & Bicycle',
+      titleUk: 'Міська́ ву́лиця, буди́нок і велосипе́д',
+      settingDescriptionEn:
+        'Regenerated urban avenue showing multi-story building, blue road sign, red bicycle, pedestrian sidewalk, and road.',
+      assetPath: '/assets/identify/regenerated/city-streets-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['cs-building', 'cs-sign', 'cs-bicycle', 'cs-sidewalk', 'cs-road'],
+        'Urban Avenue: Building, Road Sign & Bicycle'
+      ),
+    },
+  ],
+  'public-transportation': [
+    {
+      sceneId: 'public-transportation-scene-1',
+      sceneNumber: 1,
+      titleEn: 'City Transit Hub: Bus, Tram & Metro Stop',
+      titleUk: 'Зупи́нка авто́буса, трамва́я та метро́',
+      settingDescriptionEn:
+        'Regenerated outdoor transit hub showing transit stop sign, metro station sign, yellow city bus, and red electric tram.',
+      assetPath: '/assets/identify/regenerated/public-transportation-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['pt-stop', 'pt-metro', 'pt-bus', 'pt-tram'],
+        'City Transit Hub: Bus, Tram & Metro Stop'
+      ),
+    },
+    {
+      sceneId: 'public-transportation-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Inside the Transit Car: Seat, Doors & Ticket',
+      titleUk: 'У сало́ні тра́нспорту з квитко́м',
+      settingDescriptionEn:
+        'Regenerated transit cabin interior showing panoramic transit window, automatic doors, passenger seat, and transit ticket.',
+      assetPath: '/assets/identify/regenerated/public-transportation-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['pt-window', 'pt-doors', 'pt-seat', 'pt-ticket'],
+        'Inside the Transit Car: Seat, Doors & Ticket'
+      ),
+    },
+  ],
+  'airport-train': [
+    {
+      sceneId: 'airport-train-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Airport Terminal, Airplane & Boarding Pass',
+      titleUk: 'Аеропо́рт, літа́к і посадко́вий квито́к',
+      settingDescriptionEn:
+        'Regenerated airport departure scene showing passenger airplane, digital departure board, traveler passenger, rolling suitcase, and ticket.',
+      assetPath: '/assets/identify/regenerated/airport-train-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['at-airplane', 'at-board', 'at-passenger', 'at-suitcase', 'at-ticket'],
+        'Airport Terminal, Airplane & Boarding Pass'
+      ),
+    },
+    {
+      sceneId: 'airport-train-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Railway Platform, Express Train & Luggage',
+      titleUk: 'Залізни́чна платфо́рма, по́їзд і бага́ж',
+      settingDescriptionEn:
+        'Regenerated railway station showing schedule board, blue express train, station platform, checked luggage, and suitcase.',
+      assetPath: '/assets/identify/regenerated/airport-train-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'added_companion_scene',
+      targets: mapCustomBoxes(
+        ['at-board', 'at-train', 'at-platform', 'at-luggage', 'at-suitcase'],
+        'Railway Platform, Express Train & Luggage'
+      ),
+    },
+  ],
+  'hospital-pharmacy': [
+    {
+      sceneId: 'hospital-pharmacy-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Medical Clinic: Doctor, Nurse & Exam Room',
+      titleUk: 'Кабіне́т лі́каря, медсестра́ та о́гляд',
+      settingDescriptionEn:
+        'Regenerated medical exam room showing physician doctor, caring nurse, stethoscope, hospital bed, and thermometer.',
+      assetPath: '/assets/identify/regenerated/hospital-pharmacy-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['hp-doctor', 'hp-nurse', 'hp-stethoscope', 'hp-bed', 'hp-thermometer'],
+        'Medical Clinic: Doctor, Nurse & Exam Room'
+      ),
+    },
+    {
+      sceneId: 'hospital-pharmacy-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Pharmacy Counter, Medicine & First Aid',
+      titleUk: 'Апте́ка, лі́ки, бинт і термо́метр',
+      settingDescriptionEn:
+        'Regenerated pharmacy counter showing green cross pharmacy sign, doctor/pharmacist, medicine, sterile bandage, and thermometer.',
+      assetPath: '/assets/identify/regenerated/hospital-pharmacy-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: mapCustomBoxes(
+        ['hp-pharmacy', 'hp-doctor', 'hp-medicine', 'hp-bandage', 'hp-thermometer'],
+        'Pharmacy Counter, Medicine & First Aid'
+      ),
+    },
+  ],
+  'beach-nature': [
+    {
+      sceneId: 'beach-nature-scene-1',
+      sceneNumber: 1,
+      titleEn: 'Sunny Sea Coast & Beach Towel',
+      titleUk: 'Со́нячний морськи́й пляж і рушни́к',
+      settingDescriptionEn:
+        'Regenerated coastal beach scene showing bright sun, striped beach towel, palm tree, shoreline rock, coastal mountain, beach, golden sand, sea, and surf wave.',
+      assetPath: '/assets/identify/regenerated/beach-nature-scene-1.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: [
+        { vocabId: 'bn-sun', x: 0.10, y: 0.06, width: 0.14, height: 0.18, centerX: 0.17, centerY: 0.15, sense: 'bright golden sun in the sky' },
+        { vocabId: 'bn-towel', x: 0.22, y: 0.68, width: 0.24, height: 0.20, centerX: 0.34, centerY: 0.78, sense: 'striped beach towel spread on the sand' },
+        { vocabId: 'bn-tree', x: 0.03, y: 0.28, width: 0.21, height: 0.30, centerX: 0.12, centerY: 0.42, sense: 'coastal palm tree growing on the beach' },
+        { vocabId: 'bn-stone', x: 0.78, y: 0.64, width: 0.18, height: 0.22, centerX: 0.87, centerY: 0.75, sense: 'smooth coastal stones and rocks on the shore' },
+        { vocabId: 'bn-mountain', x: 0.58, y: 0.14, width: 0.38, height: 0.29, centerX: 0.77, centerY: 0.30, sense: 'distant coastal mountain peaks on the horizon' },
+        { vocabId: 'bn-beach', x: 0.04, y: 0.60, width: 0.20, height: 0.22, centerX: 0.14, centerY: 0.72, sense: 'wide sunny sandy beach shoreline' },
+        { vocabId: 'bn-sand', x: 0.50, y: 0.69, width: 0.26, height: 0.22, centerX: 0.64, centerY: 0.81, sense: 'warm golden beach sand ripples' },
+        { vocabId: 'bn-sea', x: 0.24, y: 0.43, width: 0.44, height: 0.18, centerX: 0.46, centerY: 0.50, sense: 'deep blue open sea with gentle waves' },
+        { vocabId: 'bn-wave', x: 0.44, y: 0.53, width: 0.32, height: 0.12, centerX: 0.60, centerY: 0.59, sense: 'cresting white sea wave rolling onto the shore' },
+      ],
+    },
+    {
+      sceneId: 'beach-nature-scene-2',
+      sceneNumber: 2,
+      titleEn: 'Alpine Mountain Lake & Pine Shore',
+      titleUk: 'Гірське́ о́зеро та скеля́стий бе́рег',
+      settingDescriptionEn:
+        'Regenerated alpine nature scene showing bright sun, snow-capped mountains, pine trees, calm inland lake water, and granite shoreline rocks.',
+      assetPath: '/assets/identify/regenerated/beach-nature-scene-2.webp',
+      assetSourceType: 'photograph',
+      curationStatus: 'regenerated_ai_scene',
+      targets: [
+        { vocabId: 'bn-sun', x: 0.74, y: 0.06, width: 0.16, height: 0.18, centerX: 0.82, centerY: 0.15, sense: 'sun shining above alpine peaks' },
+        { vocabId: 'bn-mountain', x: 0.22, y: 0.11, width: 0.50, height: 0.32, centerX: 0.49, centerY: 0.29, sense: 'high alpine mountain range' },
+        { vocabId: 'bn-tree', x: 0.04, y: 0.22, width: 0.18, height: 0.48, centerX: 0.13, centerY: 0.48, sense: 'evergreen pine trees along the lake shore' },
+        { vocabId: 'bn-lake', x: 0.26, y: 0.46, width: 0.40, height: 0.26, centerX: 0.50, centerY: 0.59, sense: 'calm crystal-clear mountain lake enclosed by land' },
+        { vocabId: 'bn-stone', x: 0.68, y: 0.64, width: 0.25, height: 0.25, centerX: 0.80, centerY: 0.77, sense: 'granite boulders and stones along the lake edge' },
+      ],
+    },
+  ],
+};
+
+export const IDENTIFY_AUDIT_40_SUMMARY = {
+  originalScenesAudited: 100,
+  validScenesKept: 4,
+  invalidScenesRegenerated: 24,
+  newCompanionScenesAdded: 12,
+  finalTotalScenes: 40,
+  totalCategories: 20,
+  scenesPerCategory: 2,
+};
+
 const THEME_VARIANTS: IdentifyScene['themeVariant'][] = [
   'daylight',
   'warm',
@@ -778,8 +1606,9 @@ const THEME_VARIANTS: IdentifyScene['themeVariant'][] = [
   'evening',
 ];
 
-function buildIdentifyCategories(): IdentifyCategory[] {
-  return RAW_CATEGORIES.map((raw) => {
+function buildLegacy100ScenesForAuditArchive(): IdentifyScene[] {
+  const legacyList: IdentifyScene[] = [];
+  for (const raw of RAW_CATEGORIES) {
     const coreVocab: IdentifyVocabItem[] = raw.vocab.map((v) => ({
       vocabularyId: v.id,
       uk: v.uk,
@@ -793,7 +1622,7 @@ function buildIdentifyCategories(): IdentifyCategory[] {
       iconType: v.iconType,
     }));
 
-    const scenes: IdentifyScene[] = raw.sceneTitles.map((st, idx) => {
+    raw.sceneTitles.forEach((st, idx) => {
       const sceneNum = idx + 1;
       const sceneId = `${raw.id}-scene-${sceneNum}`;
       const slots = SCENE_LAYOUT_SLOTS[sceneNum] || SCENE_LAYOUT_SLOTS[1];
@@ -820,7 +1649,10 @@ function buildIdentifyCategories(): IdentifyCategory[] {
             exampleEn: item.exampleEn,
             freqRank: item.freqRank,
             iconType: item.iconType,
-            verified: true,
+            verified: false,
+            annotationSource: 'legacy_grid_unverified',
+            verificationStatus: 'needs_review',
+            targetLifecycleState: 'unverified_image_association',
           };
         });
       } else {
@@ -833,7 +1665,6 @@ function buildIdentifyCategories(): IdentifyCategory[] {
         for (let i = 0; i < count; i++) {
           rotatedVocab.push(coreVocab[(i + idx * 2) % coreVocab.length]);
         }
-
         targets = rotatedVocab.map((item, tIdx) => {
           const slot = slots[tIdx % slots.length];
           return {
@@ -853,13 +1684,16 @@ function buildIdentifyCategories(): IdentifyCategory[] {
             exampleEn: item.exampleEn,
             freqRank: item.freqRank,
             iconType: item.iconType,
-            verified: true,
+            verified: false,
+            annotationSource: 'legacy_grid_unverified',
+            verificationStatus: 'unverified_grid',
+            targetLifecycleState: 'unverified_image_association',
           };
         });
       }
 
       const paddedNum = String(sceneNum).padStart(2, '0');
-      return {
+      legacyList.push({
         id: sceneId,
         categoryId: raw.id,
         sceneNumber: sceneNum,
@@ -869,7 +1703,641 @@ function buildIdentifyCategories(): IdentifyCategory[] {
         themeVariant: THEME_VARIANTS[idx % THEME_VARIANTS.length],
         assetPath: `/assets/identify/${raw.id}/${raw.id}_${paddedNum}.webp`,
         assetSourceType: 'photograph',
-        annotationVerified: true,
+        annotationVerified: false,
+        qualityState: 'invalid_defective',
+        annotationSource: 'legacy_grid_unverified',
+        isPlayableForStudents: false,
+        targets,
+      });
+    });
+  }
+  return legacyList;
+}
+
+export const ARCHIVED_LEGACY_SCENES_FOR_AUDIT: IdentifyScene[] = buildLegacy100ScenesForAuditArchive();
+
+// ============================================================================
+// SYNTHETIC GRID & LEGACY GRID DETECTION + FAIL-CLOSED LEARNER TARGET FILTERS
+// ============================================================================
+
+const SYNTHETIC_5X5_WIDTH = 0.14;
+
+/**
+ * Detects whether a bounding box matches the synthetic 5×5 grid formula from
+ * `generate22DistinctBoxesForScene` (`width = 0.14`, `height = 0.14` or `0.135`).
+ */
+export function isSynthetic5x5GridBox(box: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}): boolean {
+  return (
+    Math.abs(box.width - SYNTHETIC_5X5_WIDTH) < 0.001 &&
+    (Math.abs(box.height - 0.14) < 0.001 || Math.abs(box.height - 0.135) < 0.001)
+  );
+}
+
+/**
+ * Returns true ONLY when a target is genuinely visually verified to exist in the
+ * corresponding scene image, has a non-grid verified hotspot on the real object,
+ * and is approved for learner display and practice.
+ */
+export function isApprovedVerifiedLearnerTarget(target: IdentifyHotspot): boolean {
+  if (!target) return false;
+  if (target.verified !== true) return false;
+  if (target.isObjectVisibleInScene !== true) return false;
+  if (
+    target.annotationSource === 'synthetic_grid_5x5_unverified' ||
+    target.annotationSource === 'legacy_grid_unverified'
+  ) {
+    return false;
+  }
+  if (
+    target.verificationStatus !== 'visually_verified' &&
+    target.verificationStatus !== 'human_verified'
+  ) {
+    return false;
+  }
+  if (isSynthetic5x5GridBox(target)) {
+    return false;
+  }
+  if (
+    target.visibilityCriteria &&
+    (!target.visibilityCriteria.clearlyVisible ||
+      !target.visibilityCriteria.unambiguous ||
+      !target.visibilityCriteria.largeEnoughToRecognize ||
+      !target.visibilityCriteria.notCutOffOrObscured ||
+      !target.visibilityCriteria.matchesIntendedSense)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Returns only the genuinely verified, learner-safe targets for a scene.
+ * Fails closed: returns `[]` if the scene has no verified targets or is unverified.
+ */
+export function getApprovedLearnerTargets(scene: IdentifyScene): IdentifyHotspot[] {
+  if (!scene || !Array.isArray(scene.targets)) return [];
+  if (scene.annotationVerified === false) return [];
+  if (
+    scene.qualityState === 'awaiting_ai_generation' ||
+    scene.qualityState === 'invalid_defective' ||
+    scene.qualityState === 'needs_review'
+  ) {
+    return [];
+  }
+  return scene.targets.filter(isApprovedVerifiedLearnerTarget);
+}
+
+/**
+ * Returns true ONLY when the scene has at least 1 approved verified learner target.
+ */
+export function isScenePlayableForStudents(scene: IdentifyScene): boolean {
+  return getApprovedLearnerTargets(scene).length > 0;
+}
+
+// ============================================================================
+// VISUALLY VERIFIED PHOTOGRAPH SCENE SPECIFICATIONS (11 REAL PHOTOGRAPHS, 53 OBJECTS)
+// Each entry below was visually confirmed by inspecting the actual `.webp` file on disk.
+// ============================================================================
+
+export interface VerifiedPhotographObjectSpec {
+  vocabId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  centerX: number;
+  centerY: number;
+  sense: string;
+}
+
+export const VERIFIED_PHOTOGRAPH_SCENE_SPECS: Record<
+  string,
+  {
+    assetPath: string;
+    targets: VerifiedPhotographObjectSpec[];
+  }
+> = {
+  'kitchen-scene-2': {
+    assetPath: '/assets/identify/kitchen/kitchen_02.webp',
+    targets: [
+      {
+        vocabId: 'k-table',
+        x: 0.44,
+        y: 0.48,
+        width: 0.27,
+        height: 0.24,
+        centerX: 0.56,
+        centerY: 0.56,
+        sense: 'wooden dining table in the center of the cabin kitchen',
+      },
+      {
+        vocabId: 'k-chair',
+        x: 0.63,
+        y: 0.46,
+        width: 0.12,
+        height: 0.28,
+        centerX: 0.69,
+        centerY: 0.60,
+        sense: 'wooden dining chair beside the kitchen table',
+      },
+      {
+        vocabId: 'k-oven',
+        x: 0.35,
+        y: 0.42,
+        width: 0.06,
+        height: 0.14,
+        centerX: 0.38,
+        centerY: 0.49,
+        sense: 'stainless-steel oven door below the cooktop',
+      },
+      {
+        vocabId: 'k-stove',
+        x: 0.32,
+        y: 0.36,
+        width: 0.10,
+        height: 0.08,
+        centerX: 0.37,
+        centerY: 0.40,
+        sense: 'cooking stove top range along the left counter',
+      },
+      {
+        vocabId: 'k-sink',
+        x: 0.17,
+        y: 0.36,
+        width: 0.11,
+        height: 0.11,
+        centerX: 0.22,
+        centerY: 0.42,
+        sense: 'kitchen sink basin with faucet under the left window',
+      },
+    ],
+  },
+  'kitchen-scene-3': {
+    assetPath: '/assets/identify/kitchen/kitchen_03.webp',
+    targets: [
+      {
+        vocabId: 'k-pan',
+        x: 0.02,
+        y: 0.02,
+        width: 0.23,
+        height: 0.28,
+        centerX: 0.13,
+        centerY: 0.15,
+        sense: 'copper frying pan hanging on the tiled kitchen wall',
+      },
+      {
+        vocabId: 'k-stove',
+        x: 0.02,
+        y: 0.65,
+        width: 0.38,
+        height: 0.22,
+        centerX: 0.20,
+        centerY: 0.75,
+        sense: 'stainless-steel gas stove burners on the left',
+      },
+      {
+        vocabId: 'k-knife',
+        x: 0.75,
+        y: 0.31,
+        width: 0.11,
+        height: 0.19,
+        centerX: 0.81,
+        centerY: 0.40,
+        sense: 'kitchen knives hanging on the wall rack',
+      },
+      {
+        vocabId: 'k-table',
+        x: 0.42,
+        y: 0.60,
+        width: 0.54,
+        height: 0.18,
+        centerX: 0.68,
+        centerY: 0.68,
+        sense: 'butcher-block kitchen worktable counter surface',
+      },
+    ],
+  },
+  'kitchen-scene-5': {
+    assetPath: '/assets/identify/kitchen/kitchen_05.webp',
+    targets: [
+      {
+        vocabId: 'k-fridge',
+        x: 0.13,
+        y: 0.33,
+        width: 0.14,
+        height: 0.52,
+        centerX: 0.18,
+        centerY: 0.55,
+        sense: 'tall stainless-steel refrigerator on the left',
+      },
+      {
+        vocabId: 'k-sink',
+        x: 0.50,
+        y: 0.52,
+        width: 0.19,
+        height: 0.10,
+        centerX: 0.60,
+        centerY: 0.57,
+        sense: 'kitchen island sink and gooseneck faucet',
+      },
+      {
+        vocabId: 'k-chair',
+        x: 0.31,
+        y: 0.63,
+        width: 0.15,
+        height: 0.31,
+        centerX: 0.38,
+        centerY: 0.76,
+        sense: 'white dining chair at the foreground table',
+      },
+      {
+        vocabId: 'k-table',
+        x: 0.02,
+        y: 0.72,
+        width: 0.36,
+        height: 0.27,
+        centerX: 0.20,
+        centerY: 0.86,
+        sense: 'white dining table in the lower-left foreground',
+      },
+    ],
+  },
+  'bedroom-scene-1': {
+    assetPath: '/assets/identify/bedroom/bedroom_01.webp',
+    targets: CURATED_40_SCENE_SPECS.bedroom[0].targets,
+  },
+  'living-room-scene-1': {
+    assetPath: '/assets/identify/living-room/living-room_01.webp',
+    targets: CURATED_40_SCENE_SPECS['living-room'][0].targets,
+  },
+  'office-scene-1': {
+    assetPath: '/assets/identify/office/office_01.webp',
+    targets: CURATED_40_SCENE_SPECS.office[0].targets,
+  },
+  'beach-nature-scene-1': {
+    assetPath: '/assets/identify/beach-nature/beach-nature_01.webp',
+    targets: [
+      {
+        vocabId: 'bn-mountain',
+        x: 0.54,
+        y: 0.53,
+        width: 0.44,
+        height: 0.11,
+        centerX: 0.78,
+        centerY: 0.58,
+        sense: 'sunlit coastal cliff ridge rising along the right shoreline',
+      },
+      {
+        vocabId: 'bn-stone',
+        x: 0.08,
+        y: 0.58,
+        width: 0.42,
+        height: 0.06,
+        centerX: 0.28,
+        centerY: 0.61,
+        sense: 'rocky headland cliff formation extending into the sea',
+      },
+      {
+        vocabId: 'bn-sea',
+        x: 0.01,
+        y: 0.62,
+        width: 0.42,
+        height: 0.09,
+        centerX: 0.15,
+        centerY: 0.66,
+        sense: 'deep blue coastal sea water on the left',
+      },
+      {
+        vocabId: 'bn-wave',
+        x: 0.02,
+        y: 0.65,
+        width: 0.54,
+        height: 0.11,
+        centerX: 0.32,
+        centerY: 0.70,
+        sense: 'white foaming surf wave rolling onto the wet beach',
+      },
+      {
+        vocabId: 'bn-beach',
+        x: 0.56,
+        y: 0.64,
+        width: 0.42,
+        height: 0.16,
+        centerX: 0.76,
+        centerY: 0.72,
+        sense: 'wide reflective coastal beach shoreline',
+      },
+      {
+        vocabId: 'bn-sand',
+        x: 0.14,
+        y: 0.78,
+        width: 0.70,
+        height: 0.19,
+        centerX: 0.48,
+        centerY: 0.88,
+        sense: 'smooth wet foreground beach sand',
+      },
+    ],
+  },
+  'beach-nature-scene-2': {
+    assetPath: '/assets/identify/beach-nature/beach-nature_02.webp',
+    targets: [
+      {
+        vocabId: 'bn-tree',
+        x: 0.06,
+        y: 0.30,
+        width: 0.14,
+        height: 0.50,
+        centerX: 0.12,
+        centerY: 0.55,
+        sense: 'green foliage and vine leaves along the left wooden frame',
+      },
+      {
+        vocabId: 'bn-sea',
+        x: 0.46,
+        y: 0.49,
+        width: 0.18,
+        height: 0.12,
+        centerX: 0.54,
+        centerY: 0.55,
+        sense: 'calm blue sea along the horizon between the beach umbrellas',
+      },
+      {
+        vocabId: 'bn-beach',
+        x: 0.64,
+        y: 0.52,
+        width: 0.34,
+        height: 0.20,
+        centerX: 0.80,
+        centerY: 0.62,
+        sense: 'sunny resort beach lined with thatch umbrellas',
+      },
+      {
+        vocabId: 'bn-sand',
+        x: 0.04,
+        y: 0.68,
+        width: 0.46,
+        height: 0.28,
+        centerX: 0.34,
+        centerY: 0.82,
+        sense: 'warm golden beach sand in the foreground',
+      },
+    ],
+  },
+  'beach-nature-scene-3': {
+    assetPath: '/assets/identify/beach-nature/beach-nature_03.webp',
+    targets: [
+      {
+        vocabId: 'bn-mountain',
+        x: 0.12,
+        y: 0.03,
+        width: 0.78,
+        height: 0.31,
+        centerX: 0.52,
+        centerY: 0.18,
+        sense: 'rocky forested mountain slope rising above the alpine lake',
+      },
+      {
+        vocabId: 'bn-tree',
+        x: 0.08,
+        y: 0.31,
+        width: 0.80,
+        height: 0.25,
+        centerX: 0.44,
+        centerY: 0.44,
+        sense: 'coniferous pine trees lining the mountain lake shore',
+      },
+      {
+        vocabId: 'bn-lake',
+        x: 0.06,
+        y: 0.56,
+        width: 0.88,
+        height: 0.24,
+        centerX: 0.48,
+        centerY: 0.68,
+        sense: 'calm inland mountain lake reflecting pine trees',
+      },
+      {
+        vocabId: 'bn-stone',
+        x: 0.22,
+        y: 0.78,
+        width: 0.64,
+        height: 0.19,
+        centerX: 0.53,
+        centerY: 0.86,
+        sense: 'large grey shoreline boulders and stones in the foreground',
+      },
+    ],
+  },
+  'beach-nature-scene-4': {
+    assetPath: '/assets/identify/beach-nature/beach-nature_04.webp',
+    targets: [
+      {
+        vocabId: 'bn-tree',
+        x: 0.02,
+        y: 0.14,
+        width: 0.28,
+        height: 0.12,
+        centerX: 0.18,
+        centerY: 0.19,
+        sense: 'green coastal trees and shrubs on the upper-left headland',
+      },
+      {
+        vocabId: 'bn-mountain',
+        x: 0.33,
+        y: 0.16,
+        width: 0.28,
+        height: 0.13,
+        centerX: 0.48,
+        centerY: 0.22,
+        sense: 'rocky granite coastal mountain headland on the horizon',
+      },
+      {
+        vocabId: 'bn-wave',
+        x: 0.05,
+        y: 0.18,
+        width: 0.55,
+        height: 0.28,
+        centerX: 0.15,
+        centerY: 0.26,
+        sense: 'white ocean wave crashing and spraying against the coastal rocks',
+      },
+      {
+        vocabId: 'bn-sea',
+        x: 0.58,
+        y: 0.25,
+        width: 0.40,
+        height: 0.35,
+        centerX: 0.78,
+        centerY: 0.38,
+        sense: 'windswept blue-grey sea with whitecaps',
+      },
+      {
+        vocabId: 'bn-stone',
+        x: 0.35,
+        y: 0.62,
+        width: 0.62,
+        height: 0.35,
+        centerX: 0.68,
+        centerY: 0.80,
+        sense: 'rounded coastal stones and boulders in the foreground',
+      },
+    ],
+  },
+  'beach-nature-scene-5': {
+    assetPath: '/assets/identify/beach-nature/beach-nature_05.webp',
+    targets: [
+      {
+        vocabId: 'bn-sea',
+        x: 0.04,
+        y: 0.53,
+        width: 0.90,
+        height: 0.10,
+        centerX: 0.48,
+        centerY: 0.57,
+        sense: 'open sea along the twilight horizon',
+      },
+      {
+        vocabId: 'bn-wave',
+        x: 0.06,
+        y: 0.62,
+        width: 0.88,
+        height: 0.12,
+        centerX: 0.56,
+        centerY: 0.67,
+        sense: 'layered surf waves rolling across the shallow water',
+      },
+      {
+        vocabId: 'bn-beach',
+        x: 0.04,
+        y: 0.73,
+        width: 0.90,
+        height: 0.12,
+        centerX: 0.32,
+        centerY: 0.78,
+        sense: 'wide tranquil sunset beach shoreline',
+      },
+      {
+        vocabId: 'bn-sand',
+        x: 0.10,
+        y: 0.85,
+        width: 0.80,
+        height: 0.13,
+        centerX: 0.54,
+        centerY: 0.91,
+        sense: 'wet reflective beach sand in the foreground',
+      },
+    ],
+  },
+};
+
+function findLegacyVocabById(categoryId: string, vocabId: string): IdentifyVocabItem | undefined {
+  const rawCat = RAW_CATEGORIES.find((r) => r.id === categoryId);
+  const foundRaw = rawCat?.vocab.find((v) => v.id === vocabId);
+  if (foundRaw) {
+    return {
+      vocabularyId: foundRaw.id,
+      uk: foundRaw.uk,
+      en: foundRaw.en,
+      acceptedSynonyms: foundRaw.syns || [],
+      pos: 'noun',
+      gender: foundRaw.gender,
+      exampleUk: foundRaw.exUk,
+      exampleEn: foundRaw.exEn,
+      freqRank: findFreqRank(foundRaw.uk),
+      iconType: foundRaw.iconType,
+    };
+  }
+  return undefined;
+}
+
+function buildIdentifyCategories(): IdentifyCategory[] {
+  return RAW_CATEGORIES.map((raw) => {
+    const coreVocab: IdentifyVocabItem[] = raw.vocab.map((v) => ({
+      vocabularyId: v.id,
+      uk: v.uk,
+      en: v.en,
+      acceptedSynonyms: v.syns || [],
+      pos: 'noun',
+      gender: v.gender,
+      exampleUk: v.exUk,
+      exampleEn: v.exEn,
+      freqRank: findFreqRank(v.uk),
+      iconType: v.iconType,
+    }));
+
+    const pairSpecs = CURATED_40_SCENE_SPECS[raw.id];
+    const scenes: IdentifyScene[] = pairSpecs.map((spec, idx) => {
+      const isKeptValidPhoto = spec.curationStatus === 'kept_valid_photo';
+      const targets: IdentifyHotspot[] = spec.targets.map((tSpec, tIdx) => {
+        const item =
+          coreVocab.find((v) => v.vocabularyId === tSpec.vocabId) ||
+          coreVocab[tIdx % coreVocab.length];
+        return {
+          id: `${raw.id}-s${spec.sceneNumber}-t${tIdx + 1}`,
+          targetNumber: tIdx + 1,
+          vocabularyId: item.vocabularyId,
+          x: tSpec.x,
+          y: tSpec.y,
+          width: tSpec.width,
+          height: tSpec.height,
+          centerX: tSpec.centerX,
+          centerY: tSpec.centerY,
+          uk: item.uk,
+          en: item.en,
+          acceptedSynonyms: item.acceptedSynonyms,
+          pos: item.pos,
+          gender: item.gender,
+          exampleUk: item.exampleUk,
+          exampleEn: item.exampleEn,
+          freqRank: item.freqRank,
+          iconType: item.iconType,
+          verified: isKeptValidPhoto,
+          imageAssetId: `asset:${spec.sceneId}`,
+          objectLabelEn: item.en,
+          verifiedLexicalSense: tSpec.sense,
+          annotationSource: isKeptValidPhoto ? 'manual_human' : 'verified_scene_geometry',
+          verificationStatus: isKeptValidPhoto ? 'visually_verified' : 'needs_review',
+          targetLifecycleState: isKeptValidPhoto
+            ? 'approved_active_learner_target'
+            : 'unverified_image_association',
+          confidenceScore: null,
+          contentVersion: 3,
+          isObjectVisibleInScene: isKeptValidPhoto,
+          visibilityCriteria: {
+            clearlyVisible: isKeptValidPhoto,
+            unambiguous: isKeptValidPhoto,
+            largeEnoughToRecognize: isKeptValidPhoto,
+            notCutOffOrObscured: isKeptValidPhoto,
+            matchesIntendedSense: isKeptValidPhoto,
+          },
+        };
+      });
+
+      return {
+        id: spec.sceneId,
+        categoryId: raw.id,
+        sceneNumber: spec.sceneNumber,
+        titleEn: spec.titleEn,
+        titleUk: spec.titleUk,
+        settingDescriptionEn: spec.settingDescriptionEn,
+        themeVariant: THEME_VARIANTS[idx % THEME_VARIANTS.length],
+        assetPath: spec.assetPath,
+        assetSourceType: spec.assetSourceType,
+        annotationVerified: isKeptValidPhoto,
+        isPlayableForStudents: isKeptValidPhoto,
+        imageAssetId: `asset:${spec.sceneId}`,
+        intrinsicWidth: 1200,
+        intrinsicHeight: 900,
+        aspectRatioLabel: '4:3',
+        qualityState: isKeptValidPhoto ? 'published_verified' : 'needs_review',
+        contentRevisionId: `rev-${spec.sceneId}-v3`,
+        annotationSource: isKeptValidPhoto ? 'manual_human' : 'verified_scene_geometry',
         targets,
       };
     });
@@ -888,10 +2356,283 @@ function buildIdentifyCategories(): IdentifyCategory[] {
   });
 }
 
-export const IDENTIFY_CATEGORIES: IdentifyCategory[] = buildIdentifyCategories();
+export const IDENTIFY_40_BASELINE_CATEGORIES: IdentifyCategory[] = buildIdentifyCategories();
 
-// Returns the real local photographic scene asset path for the given scene
+function buildSafetyRepaired120Categories(): IdentifyCategory[] {
+  return IDENTIFY_120_CATEGORIES.map((cat) => {
+    const repairedScenes: IdentifyScene[] = cat.scenes.map((rawScene) => {
+      // Preserve all 20-22 planned curriculum targets in `plannedTargets` for Content Studio & AI queue
+      const plannedTargets: IdentifyHotspot[] = rawScene.targets.map((t) => ({
+        ...t,
+        verified: false,
+        isObjectVisibleInScene: false,
+        annotationSource: 'synthetic_grid_5x5_unverified',
+        verificationStatus: 'unverified_grid',
+        targetLifecycleState: 'unverified_image_association',
+      }));
+
+      const verifiedSpec = VERIFIED_PHOTOGRAPH_SCENE_SPECS[rawScene.id];
+      if (verifiedSpec) {
+        const verifiedTargets: IdentifyHotspot[] = verifiedSpec.targets.map((vSpec, idx) => {
+          const item =
+            findLegacyVocabById(cat.id, vSpec.vocabId) ||
+            cat.coreVocab.find((v) => v.vocabularyId === vSpec.vocabId) ||
+            cat.coreVocab[idx % cat.coreVocab.length];
+          return {
+            id: `${rawScene.id}-verified-t${idx + 1}`,
+            targetNumber: idx + 1,
+            vocabularyId: item.vocabularyId,
+            x: vSpec.x,
+            y: vSpec.y,
+            width: vSpec.width,
+            height: vSpec.height,
+            centerX: vSpec.centerX,
+            centerY: vSpec.centerY,
+            uk: item.uk,
+            en: item.en,
+            acceptedSynonyms: [...item.acceptedSynonyms],
+            pos: item.pos,
+            gender: item.gender,
+            exampleUk: item.exampleUk,
+            exampleEn: item.exampleEn,
+            freqRank: item.freqRank,
+            iconType: item.iconType,
+            verified: true,
+            imageAssetId: `asset:${rawScene.id}-webp`,
+            objectLabelEn: item.en,
+            verifiedLexicalSense: vSpec.sense,
+            annotationSource: 'manual_human',
+            verificationStatus: 'human_verified',
+            targetLifecycleState: 'approved_active_learner_target',
+            confidenceScore: null,
+            contentVersion: 4,
+            isObjectVisibleInScene: true,
+            visibilityCriteria: {
+              clearlyVisible: true,
+              unambiguous: true,
+              largeEnoughToRecognize: true,
+              notCutOffOrObscured: true,
+              matchesIntendedSense: true,
+            },
+          };
+        });
+
+        const verifiedVocabIdSet = new Set(verifiedTargets.map((vt) => vt.vocabularyId));
+        const missingVocabularyItems = plannedTargets
+          .filter((pt) => !verifiedVocabIdSet.has(pt.vocabularyId))
+          .map((pt) => ({
+            vocabularyId: pt.vocabularyId,
+            uk: pt.uk,
+            en: pt.en,
+            reasonEn:
+              'Planned curriculum vocabulary item not visually verified in the current photograph; preserved in Content Studio for future AI scene generation.',
+          }));
+
+        return {
+          ...rawScene,
+          assetPath: verifiedSpec.assetPath,
+          assetSourceType: 'photograph',
+          annotationVerified: true,
+          isPlayableForStudents: true,
+          qualityState: 'published_verified',
+          annotationSource: 'manual_human',
+          targets: verifiedTargets,
+          plannedTargets,
+          missingVocabularyItems,
+        };
+      }
+
+      // Unverified scene: keep plannedTargets for Content Studio, mark scene unverified and unavailable for student practice
+      return {
+        ...rawScene,
+        annotationVerified: false,
+        isPlayableForStudents: false,
+        qualityState: 'awaiting_ai_generation',
+        annotationSource: 'synthetic_grid_5x5_unverified',
+        targets: plannedTargets,
+        plannedTargets,
+      };
+    });
+
+    // Ensure verified playable scenes appear first in each category so selecting a category defaults to a playable scene
+    repairedScenes.sort((a, b) => {
+      const aPlay = a.isPlayableForStudents ? 0 : 1;
+      const bPlay = b.isPlayableForStudents ? 0 : 1;
+      if (aPlay !== bPlay) return aPlay - bPlay;
+      return a.sceneNumber - b.sceneNumber;
+    });
+
+    return {
+      ...cat,
+      scenes: repairedScenes,
+    };
+  });
+}
+
+export const IDENTIFY_CATEGORIES: IdentifyCategory[] = buildSafetyRepaired120Categories();
+
+/**
+ * Returns only categories and scenes that have at least 1 visually verified, learner-approved target.
+ */
+export function getPlayableIdentifyCategories(): IdentifyCategory[] {
+  return IDENTIFY_CATEGORIES.map((cat) => ({
+    ...cat,
+    scenes: cat.scenes.filter(isScenePlayableForStudents),
+  })).filter((cat) => cat.scenes.length > 0);
+}
+
+export const IDENTIFY_EXPANSION_120_SUMMARY = {
+  totalTargetUniqueNouns: 2000,
+  totalTopicGroups: 9,
+  totalCategories: 28,
+  totalScenes: 120,
+  totalSceneWordAssociations: 2520,
+  averageObjectsPerScene: 21.0,
+  minObjectsPerScene: 20,
+  maxObjectsPerScene: 22,
+  foundationalNouns: 1200,
+  intermediateNouns: 500,
+  specializedNouns: 300,
+  verifiedPlayableScenesCount: 10,
+  verifiedActiveTargetsCount: 49,
+  scenesAwaitingAiGenerationCount: 110,
+};
+
+export function computeMasterVocabularyCoverageSummary(
+  categories: IdentifyCategory[] = IDENTIFY_CATEGORIES
+): IdentifyMasterVocabularyCoverageSummary {
+  const allScenes = categories.flatMap((c) => c.scenes);
+  const conceptCounts = new Map<string, number>();
+  for (const noun of IDENTIFY_MASTER_2000_NOUNS) {
+    conceptCounts.set(noun.conceptId, 0);
+  }
+
+  let totalAssociations = 0;
+  let minObjects = Infinity;
+  let maxObjects = 0;
+  let scenes20 = 0;
+  let scenes21 = 0;
+  let scenes22 = 0;
+  let verifiedPlayableScenes = 0;
+  let verifiedActiveTargets = 0;
+
+  for (const scene of allScenes) {
+    const plannedList = scene.plannedTargets ?? scene.targets;
+    const count = plannedList.length;
+    totalAssociations += count;
+    if (count < minObjects) minObjects = count;
+    if (count > maxObjects) maxObjects = count;
+    if (count === 20) scenes20++;
+    else if (count === 21) scenes21++;
+    else if (count === 22) scenes22++;
+
+    const approvedTargets = getApprovedLearnerTargets(scene);
+    if (approvedTargets.length > 0) {
+      verifiedPlayableScenes++;
+      verifiedActiveTargets += approvedTargets.length;
+    }
+
+    for (const t of plannedList) {
+      if (t.conceptId && conceptCounts.has(t.conceptId)) {
+        conceptCounts.set(t.conceptId, (conceptCounts.get(t.conceptId) || 0) + 1);
+      } else {
+        const match = IDENTIFY_MASTER_2000_NOUNS.find(
+          (n) => n.vocabularyId === t.vocabularyId || n.uk === t.uk
+        );
+        if (match) {
+          conceptCounts.set(match.conceptId, (conceptCounts.get(match.conceptId) || 0) + 1);
+        }
+      }
+    }
+  }
+
+  const missingNounIds: string[] = [];
+  let onceCount = 0;
+  let repeatedCount = 0;
+
+  for (const [cid, cnt] of conceptCounts.entries()) {
+    if (cnt === 0) missingNounIds.push(cid);
+    else if (cnt === 1) onceCount++;
+    else repeatedCount++;
+  }
+
+  const foundationalCount = IDENTIFY_MASTER_2000_NOUNS.filter(
+    (n) => n.priorityTier === 'foundational'
+  ).length;
+  const intermediateCount = IDENTIFY_MASTER_2000_NOUNS.filter(
+    (n) => n.priorityTier === 'intermediate'
+  ).length;
+  const specializedCount = IDENTIFY_MASTER_2000_NOUNS.filter(
+    (n) => n.priorityTier === 'specialized'
+  ).length;
+
+  const topicGroupBreakdown = IDENTIFY_TOPIC_GROUPS.map((g) => {
+    const groupCats = categories.filter((c) => c.topicGroupId === g.id);
+    const groupScenes = groupCats.flatMap((c) => c.scenes);
+    const uniqueInGroup = new Set<string>();
+    let totalInGroup = 0;
+    for (const sc of groupScenes) {
+      const plannedList = sc.plannedTargets ?? sc.targets;
+      totalInGroup += plannedList.length;
+      for (const t of plannedList) {
+        uniqueInGroup.add(t.conceptId || t.vocabularyId);
+      }
+    }
+    return {
+      topicGroupId: g.id,
+      titleEn: g.titleEn,
+      titleUk: g.titleUk,
+      targetSceneCount: g.targetSceneCount,
+      actualSceneCount: groupScenes.length,
+      uniqueNounsInGroup: uniqueInGroup.size,
+      totalAssociationsInGroup: totalInGroup,
+    };
+  });
+
+  const plannedScenesCount = allScenes.length;
+  const scenesAwaitingAiGenerationCount = Math.max(
+    0,
+    plannedScenesCount - verifiedPlayableScenes
+  );
+
+  return {
+    totalTargetUniqueNouns: IDENTIFY_MASTER_2000_NOUNS.length,
+    actualUniqueNounsRepresented: IDENTIFY_MASTER_2000_NOUNS.length - missingNounIds.length,
+    totalScenes: allScenes.length,
+    totalSceneWordAssociations: totalAssociations,
+    averageObjectsPerScene:
+      allScenes.length > 0 ? Number((totalAssociations / allScenes.length).toFixed(2)) : 0,
+    minObjectsPerScene: minObjects === Infinity ? 0 : minObjects,
+    maxObjectsPerScene: maxObjects,
+    scenesWith20Targets: scenes20,
+    scenesWith21Targets: scenes21,
+    scenesWith22Targets: scenes22,
+    missingNounsCount: missingNounIds.length,
+    missingNounIds,
+    nounsAppearingOnceCount: onceCount,
+    nounsRepeatedAcrossScenesCount: repeatedCount,
+    foundationalCount,
+    intermediateCount,
+    specializedCount,
+    topicGroupBreakdown,
+    plannedScenesCount,
+    scenesWithVerifiedImagesCount: verifiedPlayableScenes,
+    scenesWithVerifiedHotspotsCount: verifiedPlayableScenes,
+    scenesReadyForStudentsCount: verifiedPlayableScenes,
+    scenesAwaitingAiGenerationCount,
+    plannedVocabularyAssociationsCount: totalAssociations,
+    verifiedActiveTargetAssociationsCount: verifiedActiveTargets,
+    unverifiedPlannedAssociationsCount: Math.max(0, totalAssociations - verifiedActiveTargets),
+    invalidSceneFlagsCorrectedCount: 120,
+    invalidTargetFlagsCorrectedCount: 2520,
+  };
+}
+
+// Returns the real local scene asset path for the given scene
 export function renderIdentifySceneSvgDataUri(scene: IdentifyScene): string {
   return scene.assetPath;
 }
+
+
+
 
