@@ -664,12 +664,42 @@ export function renderUniversalImportedCourseWorkspace(
         ? activeModule.activities!
         : [];
 
+  const removedVocabForLesson = new Set<string>(
+    Array.isArray(activeLesson?.metadata?.removedVocabularyRefs)
+      ? (activeLesson!.metadata!.removedVocabularyRefs as string[])
+      : []
+  );
+
   const vocabRefs = Array.from(
     new Set([
       ...(activeModule.vocabularyReferences || []),
       ...(activeLesson?.vocabularyRefs || []),
     ])
-  );
+  ).filter((vRef) => !removedVocabForLesson.has(vRef));
+
+  const mediaRefs = Array.isArray(activeLesson?.mediaRefs)
+    ? activeLesson!.mediaRefs!
+    : [];
+
+  const mediaCardsHtml = mediaRefs
+    .map(
+      (mRef, mIdx) => `
+        <div data-testid="universal-lesson-media-${mIdx}" style="padding:10px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <img
+            src="${escapeHtml(mRef)}"
+            alt="Lesson media ${escapeHtml(mRef)}"
+            referrerpolicy="no-referrer"
+            loading="lazy"
+            style="width:110px; height:80px; object-fit:cover; border-radius:var(--radius-xs); background:var(--surface-2);"
+          />
+          <div>
+            <div style="font-size:13px; font-weight:800; color:var(--text);">Lesson Visual Reference</div>
+            <div style="font-size:11.5px; color:var(--text-secondary); font-family:monospace;">${escapeHtml(mRef)}</div>
+          </div>
+        </div>
+      `
+    )
+    .join('');
 
   const vocabCardsHtml = vocabRefs
     .map((vRef) => {
@@ -745,6 +775,16 @@ export function renderUniversalImportedCourseWorkspace(
         dialogueLines?: Array<{ speaker: string; uk: string; en: string }>;
         vocabItems?: Array<[string, string, string, string?, string?]>;
         items?: Array<{ promptEn: string; answerUk: string; hint: string }>;
+        tables?: Array<{
+          title?: string;
+          headers?: string[];
+          rows?: Array<string[] | { groupLabel?: string; cells?: Array<string | { text?: string }> }>;
+        }>;
+        patternTables?: Array<{
+          title?: string;
+          headers?: string[];
+          rows?: Array<string[] | { groupLabel?: string; cells?: Array<string | { text?: string }> }>;
+        }>;
       };
 
       if (!isSupported) {
@@ -849,6 +889,64 @@ export function renderUniversalImportedCourseWorkspace(
                   </div>`
                 : ''
             }
+          </div>
+        `;
+      }
+
+      const grammarTablesList = Array.isArray(payload.tables)
+        ? payload.tables
+        : Array.isArray(payload.patternTables)
+          ? payload.patternTables
+          : [];
+
+      if (
+        act.activityType === 'grammar_pattern_table' &&
+        grammarTablesList.length > 0
+      ) {
+        return `
+          <div data-testid="interactive-activity-card-${escapeHtml(act.activityId)}" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+            <div style="font-size:11.5px; font-weight:800; color:var(--accent); text-transform:uppercase;">
+              📊 Grammar Reference Tables (${grammarTablesList.length} Table${grammarTablesList.length === 1 ? '' : 's'})
+            </div>
+            <div style="font-size:14.5px; font-weight:800; color:var(--text); margin:4px 0 8px 0;">
+              ${escapeHtml(act.title || act.activityId)}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              ${grammarTablesList
+                .map(
+                  (tbl) => `
+                  <div style="padding:10px; background:var(--surface-1); border-radius:var(--radius-xs); overflow-x:auto;">
+                    <div style="font-size:13px; font-weight:800; margin-bottom:6px;">${escapeHtml(tbl.title || 'Grammar Table')}</div>
+                    ${
+                      Array.isArray(tbl.rows) && tbl.rows.length > 0
+                        ? `<table style="width:100%; border-collapse:collapse; font-size:12px;">
+                            ${
+                              Array.isArray(tbl.headers) && tbl.headers.length > 0
+                                ? `<thead><tr>${tbl.headers.map((h) => `<th style="text-align:left; padding:4px 8px; border-bottom:1px solid var(--border-strong);">${escapeHtml(h)}</th>`).join('')}</tr></thead>`
+                                : ''
+                            }
+                            <tbody>
+                              ${tbl.rows
+                                .map((row) => {
+                                  const cellList = Array.isArray(row)
+                                    ? row
+                                    : Array.isArray((row as any)?.cells)
+                                      ? ((row as any).cells as Array<string | { text?: string }>).map(
+                                          (c) => (typeof c === 'string' ? c : String(c?.text || ''))
+                                        )
+                                      : [];
+                                  return `<tr>${cellList.map((cell) => `<td style="padding:4px 8px; border-bottom:1px solid var(--border-subtle);">${escapeHtml(String(cell))}</td>`).join('')}</tr>`;
+                                })
+                                .join('')}
+                            </tbody>
+                          </table>`
+                        : ''
+                    }
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
           </div>
         `;
       }
@@ -1064,6 +1162,19 @@ export function renderUniversalImportedCourseWorkspace(
                       </div>
                       ${activeLesson.summary ? `<p style="margin:6px 0 0 0; font-size:13.5px; color:var(--text); line-height:1.55;">${escapeHtml(activeLesson.summary)}</p>` : ''}
                       ${activeLesson.instructionalText ? `<p style="margin:6px 0 0 0; font-size:13px; color:var(--text-secondary); line-height:1.55;">${escapeHtml(activeLesson.instructionalText)}</p>` : ''}
+                    </div>`
+                  : ''
+              }
+
+              ${
+                mediaCardsHtml
+                  ? `<div style="margin-bottom:14px;">
+                      <div style="font-size:12px; font-weight:800; color:var(--text-secondary); text-transform:uppercase; margin-bottom:6px;">
+                        Lesson Photos &amp; Media (${mediaRefs.length})
+                      </div>
+                      <div style="display:grid; gap:8px;">
+                        ${mediaCardsHtml}
+                      </div>
                     </div>`
                   : ''
               }

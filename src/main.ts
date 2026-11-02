@@ -143,6 +143,34 @@ import {
   togglePendingPublishConfirmation,
   handleCmsImportFileSelected,
   handleCheckCmsImportContents,
+  toggleCmsRemovedItemsDrawer,
+  toggleCmsUnpublishedChangesDrawer,
+  requestCmsItemRemoval,
+  confirmPendingCmsRemoval,
+  cancelPendingCmsRemoval,
+  handleUndoCmsEditorAction,
+  handleRedoCmsEditorAction,
+  handleRestoreRemovedCmsItem,
+  handleRequestRemoveModule,
+  handleAddCmsSection,
+  handleRequestRemoveSection,
+  handleAddCmsLesson,
+  handleDuplicateCmsLesson,
+  handleRequestRemoveLesson,
+  handleRemoveLessonParagraph,
+  handleRemoveLessonVocabRef,
+  handleAddLessonVocabRefFromInput,
+  handleRemoveLessonMediaRef,
+  handleAddLessonMediaRefFromInput,
+  handleDuplicateActiveCmsActivity,
+  handleRequestRemoveActiveActivity,
+  handleAddCmsAnswerOption,
+  handleRequestRemoveAnswerOption,
+  handleRemoveQuestionExplanation,
+  handleRemoveGrammarRule,
+  handleRemoveExampleSentence,
+  handleRequestRemoveGrammarTable,
+  handleRemoveGrammarTableRow,
   bootCmsStudioRouteIfRequested,
 } from './multilingual/cmsContentStudioView.ts';
 
@@ -4282,6 +4310,34 @@ declare global {
     togglePendingPublishConfirmation: typeof togglePendingPublishConfirmation;
     handleCmsImportFileSelected: typeof handleCmsImportFileSelected;
     handleCheckCmsImportContents: typeof handleCheckCmsImportContents;
+    toggleCmsRemovedItemsDrawer: typeof toggleCmsRemovedItemsDrawer;
+    toggleCmsUnpublishedChangesDrawer: typeof toggleCmsUnpublishedChangesDrawer;
+    requestCmsItemRemoval: typeof requestCmsItemRemoval;
+    confirmPendingCmsRemoval: typeof confirmPendingCmsRemoval;
+    cancelPendingCmsRemoval: typeof cancelPendingCmsRemoval;
+    handleUndoCmsEditorAction: typeof handleUndoCmsEditorAction;
+    handleRedoCmsEditorAction: typeof handleRedoCmsEditorAction;
+    handleRestoreRemovedCmsItem: typeof handleRestoreRemovedCmsItem;
+    handleRequestRemoveModule: typeof handleRequestRemoveModule;
+    handleAddCmsSection: typeof handleAddCmsSection;
+    handleRequestRemoveSection: typeof handleRequestRemoveSection;
+    handleAddCmsLesson: typeof handleAddCmsLesson;
+    handleDuplicateCmsLesson: typeof handleDuplicateCmsLesson;
+    handleRequestRemoveLesson: typeof handleRequestRemoveLesson;
+    handleRemoveLessonParagraph: typeof handleRemoveLessonParagraph;
+    handleRemoveLessonVocabRef: typeof handleRemoveLessonVocabRef;
+    handleAddLessonVocabRefFromInput: typeof handleAddLessonVocabRefFromInput;
+    handleRemoveLessonMediaRef: typeof handleRemoveLessonMediaRef;
+    handleAddLessonMediaRefFromInput: typeof handleAddLessonMediaRefFromInput;
+    handleDuplicateActiveCmsActivity: typeof handleDuplicateActiveCmsActivity;
+    handleRequestRemoveActiveActivity: typeof handleRequestRemoveActiveActivity;
+    handleAddCmsAnswerOption: typeof handleAddCmsAnswerOption;
+    handleRequestRemoveAnswerOption: typeof handleRequestRemoveAnswerOption;
+    handleRemoveQuestionExplanation: typeof handleRemoveQuestionExplanation;
+    handleRemoveGrammarRule: typeof handleRemoveGrammarRule;
+    handleRemoveExampleSentence: typeof handleRemoveExampleSentence;
+    handleRequestRemoveGrammarTable: typeof handleRequestRemoveGrammarTable;
+    handleRemoveGrammarTableRow: typeof handleRemoveGrammarTableRow;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -4463,6 +4519,34 @@ if (typeof window !== 'undefined') {
   window.togglePendingPublishConfirmation = togglePendingPublishConfirmation;
   window.handleCmsImportFileSelected = handleCmsImportFileSelected;
   window.handleCheckCmsImportContents = handleCheckCmsImportContents;
+  window.toggleCmsRemovedItemsDrawer = toggleCmsRemovedItemsDrawer;
+  window.toggleCmsUnpublishedChangesDrawer = toggleCmsUnpublishedChangesDrawer;
+  window.requestCmsItemRemoval = requestCmsItemRemoval;
+  window.confirmPendingCmsRemoval = confirmPendingCmsRemoval;
+  window.cancelPendingCmsRemoval = cancelPendingCmsRemoval;
+  window.handleUndoCmsEditorAction = handleUndoCmsEditorAction;
+  window.handleRedoCmsEditorAction = handleRedoCmsEditorAction;
+  window.handleRestoreRemovedCmsItem = handleRestoreRemovedCmsItem;
+  window.handleRequestRemoveModule = handleRequestRemoveModule;
+  window.handleAddCmsSection = handleAddCmsSection;
+  window.handleRequestRemoveSection = handleRequestRemoveSection;
+  window.handleAddCmsLesson = handleAddCmsLesson;
+  window.handleDuplicateCmsLesson = handleDuplicateCmsLesson;
+  window.handleRequestRemoveLesson = handleRequestRemoveLesson;
+  window.handleRemoveLessonParagraph = handleRemoveLessonParagraph;
+  window.handleRemoveLessonVocabRef = handleRemoveLessonVocabRef;
+  window.handleAddLessonVocabRefFromInput = handleAddLessonVocabRefFromInput;
+  window.handleRemoveLessonMediaRef = handleRemoveLessonMediaRef;
+  window.handleAddLessonMediaRefFromInput = handleAddLessonMediaRefFromInput;
+  window.handleDuplicateActiveCmsActivity = handleDuplicateActiveCmsActivity;
+  window.handleRequestRemoveActiveActivity = handleRequestRemoveActiveActivity;
+  window.handleAddCmsAnswerOption = handleAddCmsAnswerOption;
+  window.handleRequestRemoveAnswerOption = handleRequestRemoveAnswerOption;
+  window.handleRemoveQuestionExplanation = handleRemoveQuestionExplanation;
+  window.handleRemoveGrammarRule = handleRemoveGrammarRule;
+  window.handleRemoveExampleSentence = handleRemoveExampleSentence;
+  window.handleRequestRemoveGrammarTable = handleRequestRemoveGrammarTable;
+  window.handleRemoveGrammarTableRow = handleRemoveGrammarTableRow;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,

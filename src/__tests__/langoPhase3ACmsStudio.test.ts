@@ -89,6 +89,22 @@ import {
   runBulkCmsValidationAudit,
   searchCmsContentStudio,
   clearCmsDraftAndHistoryForTrack,
+  analyzeCmsRemovalImpact,
+  removeCmsContentItemInDraft,
+  getCmsRemovedItemsInDraft,
+  restoreRemovedCmsItemInDraft,
+  undoLastCmsAction,
+  redoLastCmsAction,
+  getCmsUndoRedoState,
+  computeCmsDetailedChangeSummary,
+  addCmsSectionToModuleInDraft,
+  addCmsLessonToSectionInDraft,
+  duplicateCmsLessonInDraft,
+  addCmsActivityToLessonInDraft,
+  duplicateCmsActivityInDraft,
+  addCmsAnswerOptionInDraft,
+  addCmsLessonVocabularyRefInDraft,
+  addCmsLessonMediaRefInDraft,
 } from '../multilingual/cmsContentStudioEngine.ts';
 import {
   formatFriendlyCourseDisplayName,
@@ -929,5 +945,722 @@ test('Beginner UX Redesign (TEST A — TEST R): Plain-English course names, frie
     )
   );
 });
+
+// ============================================================================
+// SAFE CONTENT REMOVAL, UNDO, RESTORE, AND FULL COURSE STRUCTURE EDITING TESTS
+// (SECTION 17: TEST 1 — TEST 22)
+// ============================================================================
+
+test('TEST 1, TEST 2, TEST 3, TEST 4 & TEST 5: Remove Paragraph, Example Sentence, Grammar Table Row, and Entire Grammar Table in Draft with Immediate Undo & Targeted Restore', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // Inspect initial A0.1 lesson
+  const initialDraft = getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const initialMod = initialDraft.draftPackage.modules[0];
+  const initialLes = initialMod.sections![0].lessons![0];
+  const initialParagraphs = (initialLes.instructionalText || '')
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  assert.ok(initialParagraphs.length >= 2, 'Expected at least 2 paragraphs in A0.1_les_grammar');
+  const targetParaIdx = initialParagraphs.length - 1;
+  const removedParagraphText = initialParagraphs[targetParaIdx];
+
+  // TEST 1: Remove Paragraph in Draft (low-impact -> no confirmation required)
+  const paraImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'lesson_paragraph',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    paragraphIndex: targetParaIdx,
+  });
+  assert.equal(paraImpact.requiresConfirmation, false);
+  assert.equal(paraImpact.severity, 'low');
+
+  const paraRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'lesson_paragraph',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    paragraphIndex: targetParaIdx,
+  });
+  assert.equal(paraRemoval.removedRecord.status, 'REMOVED_IN_DRAFT');
+  assert.ok(paraRemoval.undoBannerMessage.includes('removed from your draft'));
+
+  // Verify Draft Preview no longer shows the removed paragraph, while Published Preview still shows it
+  const draftPrevAfterPara = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  const pubPrevAfterPara = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  const removedSnippet = removedParagraphText.slice(0, 30);
+  assert.equal(draftPrevAfterPara.html.includes(removedSnippet), false);
+  assert.equal(pubPrevAfterPara.html.includes(removedSnippet), true);
+
+  // TEST 2: Undo Paragraph Removal
+  const undoState1 = getCmsUndoRedoState(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(undoState1.canUndo, true);
+  const undoRes1 = undoLastCmsAction(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(undoRes1.success, true);
+
+  const draftAfterUndo = getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const lesAfterUndo = draftAfterUndo.draftPackage.modules[0].sections![0].lessons![0];
+  assert.ok((lesAfterUndo.instructionalText || '').includes(removedParagraphText));
+
+  // Verify Redo also works, then Undo again
+  const redoRes1 = redoLastCmsAction(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(redoRes1.success, true);
+  undoLastCmsAction(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST 3: Remove Example Sentence in Draft (`lesson_explanation` activity `A0.1_act_grammar`)
+  const rulesActBefore =
+    getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID).draftPackage.modules[0]
+      .sections![0].lessons![0].activities![0];
+  const initialExamplesCount = (rulesActBefore.payload!.examples as any[]).length;
+  assert.ok(initialExamplesCount >= 2);
+  const firstExampleUk = (rulesActBefore.payload!.examples as any[])[0].uk;
+
+  const exRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'example_sentence',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    activityId: 'A0.1_act_grammar',
+    exampleIndex: 0,
+  });
+  const rulesActAfter =
+    exRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities![0];
+  assert.equal(
+    (rulesActAfter.payload!.examples as any[]).length,
+    initialExamplesCount - 1
+  );
+  // Restore via Undo
+  undoLastCmsAction(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const rulesActRestored =
+    getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID).draftPackage.modules[0]
+      .sections![0].lessons![0].activities![0];
+  assert.equal(
+    (rulesActRestored.payload!.examples as any[])[0].uk,
+    firstExampleUk
+  );
+
+  // TEST 4: Remove Grammar Table Row in Draft (`A0.1_act_tables`)
+  const tablesActBefore =
+    getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID).draftPackage.modules[0]
+      .sections![0].lessons![0].activities![1];
+  const initialTables = tablesActBefore.payload!.tables as any[];
+  assert.ok(initialTables.length >= 1);
+  const initialRowCount = initialTables[0].rows.length;
+  const firstRowCell0 = initialTables[0].rows[0][0];
+
+  const rowImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'grammar_table_row',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    activityId: 'A0.1_act_tables',
+    tableIndex: 0,
+    rowIndex: 0,
+  });
+  assert.equal(rowImpact.requiresConfirmation, false);
+
+  const rowRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'grammar_table_row',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    activityId: 'A0.1_act_tables',
+    tableIndex: 0,
+    rowIndex: 0,
+  });
+  const tablesAfterRow =
+    rowRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities![1].payload!.tables as any[];
+  assert.equal(tablesAfterRow[0].rows.length, initialRowCount - 1);
+
+  // Restore row via Removed Items Restore
+  const restoreRowRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    rowRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreRowRes.success, true);
+  const tablesAfterRowRestore =
+    restoreRowRes.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities![1].payload!.tables as any[];
+  assert.equal(tablesAfterRowRestore[0].rows.length, initialRowCount);
+  assert.equal(tablesAfterRowRestore[0].rows[0][0], firstRowCell0);
+
+  // TEST 5: Remove Entire Grammar Table in Draft (requires confirmation because it is a structured table)
+  const initialTableCount = tablesAfterRowRestore.length;
+  const firstTableTitle = tablesAfterRowRestore[0].title;
+  const tableImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'grammar_table',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    activityId: 'A0.1_act_tables',
+    tableIndex: 0,
+  });
+  assert.equal(tableImpact.requiresConfirmation, true);
+
+  const tableRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'grammar_table',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_lesson',
+    lessonId: 'A0.1_les_grammar',
+    activityId: 'A0.1_act_tables',
+    tableIndex: 0,
+  });
+  const tablesAfterTableRemoval =
+    tableRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities![1].payload!.tables as any[];
+  assert.equal(tablesAfterTableRemoval.length, initialTableCount - 1);
+
+  // Verify Draft Preview vs Published Preview for grammar table removal
+  const draftPrevNoTable = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  const pubPrevWithTable = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  const escapedTableTitle = String(firstTableTitle)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;');
+  assert.equal(draftPrevNoTable.html.includes(escapedTableTitle), false);
+  assert.equal(pubPrevWithTable.html.includes(escapedTableTitle), true);
+
+  // Restore table from Removed Items
+  const restoreTableRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    tableRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreTableRes.success, true);
+  const tablesRestored =
+    restoreTableRes.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities![1].payload!.tables as any[];
+  assert.equal(tablesRestored.length, initialTableCount);
+  assert.equal(tablesRestored[0].title, firstTableTitle);
+});
+
+test('TEST 6, TEST 7 & TEST 8: Remove Practice Question, Non-Correct Answer Choice, and Correct Answer Choice (Blocking Validation Error)', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // Navigate to A0.1 Section 2 (CFU / Knowledge Checks): lesson `A0.1_les_checks`, activity `A0.1_cfu_1`
+  const draft0 = getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const cfuLesson0 = draft0.draftPackage.modules[0].sections![1].lessons![0];
+  const initialCfuCount = cfuLesson0.activities!.length;
+  const firstCfuId = cfuLesson0.activities![0].activityId;
+
+  // TEST 6: Remove Practice Question in Draft (requires confirmation)
+  const actImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'activity',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_checks',
+    lessonId: 'A0.1_les_checks',
+    activityId: firstCfuId,
+  });
+  assert.equal(actImpact.requiresConfirmation, true);
+
+  const actRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'activity',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_checks',
+    lessonId: 'A0.1_les_checks',
+    activityId: firstCfuId,
+  });
+  const cfuLessonAfter =
+    actRemoval.envelope.draftPackage.modules[0].sections![1].lessons![0];
+  assert.equal(cfuLessonAfter.activities!.length, initialCfuCount - 1);
+  assert.equal(
+    cfuLessonAfter.activities!.some((a) => a.activityId === firstCfuId),
+    false
+  );
+
+  // Restore the removed question from Removed Items
+  const restoreActRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    actRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreActRes.success, true);
+  assert.equal(
+    restoreActRes.envelope.draftPackage.modules[0].sections![1].lessons![0]
+      .activities!.length,
+    initialCfuCount
+  );
+
+  // TEST 7: Remove Non-Correct Answer Choice
+  const targetAct =
+    getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID).draftPackage.modules[0]
+      .sections![1].lessons![0].activities![0];
+  const optionsBefore = [...(targetAct.payload!.options as string[])];
+  const correctIdxBefore = Number(targetAct.payload!.correctIndex);
+  assert.ok(optionsBefore.length >= 3);
+  const correctAnswerText = optionsBefore[correctIdxBefore];
+  const nonCorrectIdx = correctIdxBefore === 0 ? 1 : 0;
+
+  const nonCorrectRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'answer_option',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_checks',
+      lessonId: 'A0.1_les_checks',
+      activityId: targetAct.activityId,
+      optionIndex: nonCorrectIdx,
+    }
+  );
+  const actAfterNonCorrect =
+    nonCorrectRemoval.envelope.draftPackage.modules[0].sections![1].lessons![0]
+      .activities![0];
+  const optionsAfterNonCorrect = actAfterNonCorrect.payload!.options as string[];
+  const newCorrectIdx = Number(actAfterNonCorrect.payload!.correctIndex);
+  assert.equal(optionsAfterNonCorrect.length, optionsBefore.length - 1);
+  assert.equal(
+    optionsAfterNonCorrect[newCorrectIdx],
+    correctAnswerText,
+    'Remaining correct answer must stay bound to the same choice text'
+  );
+
+  // Undo non-correct option removal so we have all original options back
+  undoLastCmsAction(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST 8: Remove the Currently Marked Correct Answer Choice
+  const actBeforeCorrectRemoval =
+    getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID).draftPackage.modules[0]
+      .sections![1].lessons![0].activities![0];
+  const currCorrectIdx = Number(actBeforeCorrectRemoval.payload!.correctIndex);
+
+  const correctChoiceImpact = analyzeCmsRemovalImpact(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'answer_option',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_checks',
+      lessonId: 'A0.1_les_checks',
+      activityId: actBeforeCorrectRemoval.activityId,
+      optionIndex: currCorrectIdx,
+    }
+  );
+  assert.equal(
+    correctChoiceImpact.requiresConfirmation,
+    true,
+    'Removing the currently marked correct answer must require confirmation'
+  );
+  assert.equal(correctChoiceImpact.willInvalidateCorrectAnswer, true);
+
+  const correctChoiceRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'answer_option',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_checks',
+      lessonId: 'A0.1_les_checks',
+      activityId: actBeforeCorrectRemoval.activityId,
+      optionIndex: currCorrectIdx,
+    }
+  );
+  const actAfterCorrectRemoval =
+    correctChoiceRemoval.envelope.draftPackage.modules[0].sections![1].lessons![0]
+      .activities![0];
+  assert.equal(
+    actAfterCorrectRemoval.payload!.correctIndex,
+    -1,
+    'Must NOT silently mark another choice as correct; correctIndex must be set to -1'
+  );
+
+  // Validation must block publication with MISSING_OR_INVALID_CORRECT_ANSWER
+  const valReport = validateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(valReport.canPublish, false);
+  assert.ok(
+    valReport.issues.some(
+      (i) => i.code === 'MISSING_OR_INVALID_CORRECT_ANSWER'
+    ),
+    'Expected blocking MISSING_OR_INVALID_CORRECT_ANSWER validation issue'
+  );
+});
+
+test('TEST 9, TEST 10, TEST 11 & TEST 12: Remove Vocabulary Link and Media Link (Preserving Global Assets), Remove Lesson, and Remove Section with Impact Confirmation', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST 9: Remove Vocabulary Reference from Lesson without deleting global vocabulary word
+  const draft0 = getOrCreateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  const mod0 = draft0.draftPackage.modules[0];
+  const les0 = mod0.sections![0].lessons![0];
+  const vocabToUnlink = les0.vocabularyRefs![0];
+  const initialVocabCount = les0.vocabularyRefs!.length;
+
+  const vocabRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'vocabulary_reference',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_lesson',
+      lessonId: 'A0.1_les_grammar',
+      vocabId: vocabToUnlink,
+    }
+  );
+  const lesAfterVocab =
+    vocabRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0];
+  assert.equal(lesAfterVocab.vocabularyRefs!.length, initialVocabCount - 1);
+  assert.equal(lesAfterVocab.vocabularyRefs!.includes(vocabToUnlink), false);
+
+  // Verify Draft Preview hides the unlinked vocabulary reference while Published Preview still shows it
+  const draftPrevVocab = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  const pubPrevVocab = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  assert.equal(
+    draftPrevVocab.html.includes(`data-testid="btn-add-track-vocab-${vocabToUnlink}"`),
+    false
+  );
+  assert.equal(
+    pubPrevVocab.html.includes(`data-testid="btn-add-track-vocab-${vocabToUnlink}"`),
+    true
+  );
+
+  // Verify global Ukrainian vocabulary & FSRS database remain 100% untouched
+  assert.equal(
+    COURSE_MODULES.reduce((acc, m) => acc + m.vocab.length, 0),
+    1810
+  );
+  assert.equal(FREQ_6000_DB.length, 2417);
+
+  // TEST 10: Link a media asset to the lesson, then remove the Media Reference without deleting the asset from Media Library
+  const mediaCatalogBefore = getCmsMediaLibraryCatalog();
+  assert.equal(mediaCatalogBefore.length, 100);
+  const sampleMediaPath = mediaCatalogBefore[0].assetPath;
+
+  addCmsLessonMediaRefInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'A0.1',
+    'A0.1_les_grammar',
+    sampleMediaPath
+  );
+  const draftPrevWithMedia = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  assert.equal(draftPrevWithMedia.html.includes(sampleMediaPath), true);
+
+  const mediaRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'media_reference',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_lesson',
+      lessonId: 'A0.1_les_grammar',
+      mediaPath: sampleMediaPath,
+    }
+  );
+  const lesAfterMedia =
+    mediaRemoval.envelope.draftPackage.modules[0].sections![0].lessons![0];
+  assert.equal((lesAfterMedia.mediaRefs || []).includes(sampleMediaPath), false);
+
+  // Global Media Library still has all 100 WebP photographs
+  assert.equal(getCmsMediaLibraryCatalog().length, 100);
+
+  // TEST 11: Remove Lesson in Draft (shows impact summary & requires confirmation)
+  const lessonImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'lesson',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_checks',
+    lessonId: 'A0.1_les_checks',
+  });
+  assert.equal(lessonImpact.requiresConfirmation, true);
+  assert.ok(lessonImpact.affectedCounts.questions >= 10);
+
+  const lessonRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'lesson',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_checks',
+      lessonId: 'A0.1_les_checks',
+    }
+  );
+  const secCfuAfterLessonRemoval =
+    lessonRemoval.envelope.draftPackage.modules[0].sections![1];
+  assert.equal(secCfuAfterLessonRemoval.lessons!.length, 0);
+
+  // Validation reports EMPTY_SECTION_IN_DRAFT warning
+  const valAfterEmptySec = validateCmsCourseDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.ok(
+    valAfterEmptySec.issues.some((i) => i.code === 'EMPTY_SECTION_IN_DRAFT')
+  );
+
+  // Restore Lesson from Removed Items
+  const restoreLessonRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    lessonRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreLessonRes.success, true);
+  assert.equal(
+    restoreLessonRes.envelope.draftPackage.modules[0].sections![1].lessons!
+      .length,
+    1
+  );
+
+  // TEST 12: Remove Section in Draft (shows impact summary & requires confirmation)
+  const sectionImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'section',
+    moduleId: 'A0.1',
+    sectionId: 'A0.1_sec_practice',
+  });
+  assert.equal(sectionImpact.requiresConfirmation, true);
+  assert.equal(sectionImpact.affectedCounts.lessons, 1);
+  assert.ok(sectionImpact.affectedCounts.questions >= 10);
+
+  const sectionRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'section',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_practice',
+    }
+  );
+  assert.equal(
+    sectionRemoval.envelope.draftPackage.modules[0].sections!.length,
+    4
+  );
+
+  // Restore Section from Removed Items
+  const restoreSecRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    sectionRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreSecRes.success, true);
+  assert.equal(
+    restoreSecRes.envelope.draftPackage.modules[0].sections!.length,
+    5
+  );
+  assert.equal(
+    restoreSecRes.envelope.draftPackage.modules[0].sections![2].sectionId,
+    'A0.1_sec_practice',
+    'Restored section must return to its original index'
+  );
+});
+
+test('TEST 13, TEST 14, TEST 15, TEST 16, TEST 17, TEST 18, TEST 19, TEST 20, TEST 21 & TEST 22: Module Removal in Draft, Targeted Restore from Removed Items, Discard Draft Changes, Cross-Track Isolation, and Full Learner Preservation', () => {
+  clearCmsDraftAndHistoryForTrack(PUBLISHED_UKRAINIAN_TRACK_ID);
+
+  // TEST 13: Remove Module in Draft (`C1.1`)
+  const modImpact = analyzeCmsRemovalImpact(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'module',
+    moduleId: 'C1.1',
+  });
+  assert.equal(modImpact.requiresConfirmation, true);
+  assert.equal(modImpact.affectedCounts.sections, 5);
+  assert.equal(modImpact.affectedCounts.lessons, 5);
+  assert.ok(modImpact.affectedCounts.questions >= 40);
+  assert.ok(modImpact.affectedCounts.vocabularyRefs >= 60);
+
+  const modRemoval = removeCmsContentItemInDraft(PUBLISHED_UKRAINIAN_TRACK_ID, {
+    itemType: 'module',
+    moduleId: 'C1.1',
+  });
+  // Draft now has 28 modules
+  assert.equal(modRemoval.envelope.draftPackage.modules.length, 28);
+  assert.equal(
+    modRemoval.envelope.draftPackage.modules.some((m) => m.moduleId === 'C1.1'),
+    false
+  );
+
+  // Published Baseline and learner COURSE_MODULES still have 29 modules!
+  const pubBaseline = getPublishedBaselineCoursePackage(
+    PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.ok(pubBaseline);
+  assert.equal(pubBaseline.modules.length, 29);
+  assert.equal(COURSE_MODULES.length, 29);
+
+  // Preview Draft has 28 modules, Preview Published has 29 modules
+  const prevDraft = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'draft'
+  );
+  const prevPub = renderIsolatedCmsDraftPreview(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    'published'
+  );
+  assert.equal(prevDraft.moduleCount, 28);
+  assert.equal(prevPub.moduleCount, 29);
+
+  // Also remove a paragraph in A0.1 so we have 2 distinct items in Removed Items
+  const paraRemoval = removeCmsContentItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    {
+      itemType: 'lesson_paragraph',
+      moduleId: 'A0.1',
+      sectionId: 'A0.1_sec_lesson',
+      lessonId: 'A0.1_les_grammar',
+      paragraphIndex: 0,
+    }
+  );
+
+  const removedItems = getCmsRemovedItemsInDraft(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(removedItems.length, 2);
+
+  // Check Unpublished Changes summary (Section 14)
+  const changeSummary = computeCmsDetailedChangeSummary(
+    PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.equal(changeSummary.modulesRemoved, 1);
+  assert.ok(changeSummary.lessonsModified >= 1);
+  assert.equal(changeSummary.pendingRemovedItemsCount, 2);
+
+  // TEST 14: Restore ONE specific removed item (C1.1 module) from Removed Items without restoring the removed paragraph
+  const restoreModRes = restoreRemovedCmsItemInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID,
+    modRemoval.removedRecord.removalId
+  );
+  assert.equal(restoreModRes.success, true);
+  assert.equal(restoreModRes.envelope.draftPackage.modules.length, 29);
+  assert.equal(
+    restoreModRes.envelope.draftPackage.modules[28].moduleId,
+    'C1.1'
+  );
+  // The paragraph removal must still remain in Removed Items
+  const remainingRemoved = getCmsRemovedItemsInDraft(
+    PUBLISHED_UKRAINIAN_TRACK_ID
+  );
+  assert.equal(remainingRemoved.length, 1);
+  assert.equal(
+    remainingRemoved[0].removalId,
+    paraRemoval.removedRecord.removalId
+  );
+
+  // TEST 15: Discard All Unpublished Draft Changes restores all 29 modules and clears Removed Items
+  const afterDiscard = discardCmsDraftOverlay(PUBLISHED_UKRAINIAN_TRACK_ID);
+  assert.equal(afterDiscard.draftPackage.modules.length, 29);
+  assert.equal(afterDiscard.hasDraftChanges, false);
+  assert.equal(
+    getCmsRemovedItemsInDraft(PUBLISHED_UKRAINIAN_TRACK_ID).length,
+    0
+  );
+
+  // TEST 16: Empty Course Track (`track:en-to-es`) Add + Remove + Restore
+  clearCmsDraftAndHistoryForTrack('track:en-to-es');
+  addOrUpdateCmsModuleInDraft('track:en-to-es', {
+    moduleId: 'es_m1',
+    title: 'Spanish Module 1',
+    sections: [
+      {
+        sectionId: 'es_s1',
+        title: 'Section 1',
+        lessons: [
+          {
+            lessonId: 'es_l1',
+            title: 'Lesson 1',
+            instructionalText: 'Hola! Welcome to Spanish Lesson 1.',
+            activities: [],
+          },
+        ],
+      },
+    ],
+  });
+  const addedSec = addCmsSectionToModuleInDraft('track:en-to-es', 'es_m1');
+  assert.equal(addedSec.envelope.draftPackage.modules[0].sections!.length, 2);
+  const addedLes = addCmsLessonToSectionInDraft(
+    'track:en-to-es',
+    'es_m1',
+    'es_s1'
+  );
+  assert.equal(
+    addedLes.envelope.draftPackage.modules[0].sections![0].lessons!.length,
+    2
+  );
+  const dupLes = duplicateCmsLessonInDraft('track:en-to-es', 'es_m1', 'es_l1');
+  assert.equal(
+    dupLes.envelope.draftPackage.modules[0].sections![0].lessons!.length,
+    3
+  );
+  const addedAct = addCmsActivityToLessonInDraft(
+    'track:en-to-es',
+    'es_m1',
+    'es_l1'
+  );
+  assert.equal(
+    addedAct.envelope.draftPackage.modules[0].sections![0].lessons![0]
+      .activities!.length,
+    1
+  );
+  const dupAct = duplicateCmsActivityInDraft(
+    'track:en-to-es',
+    'es_m1',
+    'es_l1',
+    addedAct.addedActivity.activityId
+  );
+  assert.equal(
+    dupAct.envelope.draftPackage.modules[0].sections![0].lessons![0].activities!
+      .length,
+    2
+  );
+  addCmsAnswerOptionInDraft(
+    'track:en-to-es',
+    'es_m1',
+    'es_l1',
+    addedAct.addedActivity.activityId
+  );
+
+  // Remove the duplicated lesson in `track:en-to-es` and restore it
+  const remEsLes = removeCmsContentItemInDraft('track:en-to-es', {
+    itemType: 'lesson',
+    moduleId: 'es_m1',
+    sectionId: 'es_s1',
+    lessonId: dupLes.duplicatedLesson.lessonId,
+  });
+  assert.equal(
+    remEsLes.envelope.draftPackage.modules[0].sections![0].lessons!.length,
+    2
+  );
+  const restEsLes = restoreRemovedCmsItemInDraft(
+    'track:en-to-es',
+    remEsLes.removedRecord.removalId
+  );
+  assert.equal(
+    restEsLes.envelope.draftPackage.modules[0].sections![0].lessons!.length,
+    3
+  );
+
+  // TEST 17: Bilingual English Track Isolation (`track:es-to-en` vs `track:ja-to-en`)
+  clearCmsDraftAndHistoryForTrack('track:es-to-en');
+  clearCmsDraftAndHistoryForTrack('track:ja-to-en');
+  importCourseJsonIntoCmsDraft(
+    SYNTHETIC_SPANISH_TO_ENGLISH_TEST_FIXTURE_JSON,
+    'track:es-to-en'
+  );
+  removeCmsContentItemInDraft('track:es-to-en', {
+    itemType: 'module',
+    moduleId: 'es_en_test_m2',
+  });
+  assert.equal(
+    getOrCreateCmsCourseDraft('track:es-to-en').draftPackage.modules.length,
+    1
+  );
+  assert.equal(
+    getOrCreateCmsCourseDraft('track:ja-to-en').draftPackage.modules.length,
+    0,
+    'Removing content in track:es-to-en must never modify track:ja-to-en'
+  );
+  clearCmsDraftAndHistoryForTrack('track:es-to-en');
+  clearCmsDraftAndHistoryForTrack('track:en-to-es');
+
+  // TEST 18, 19, 20, 21 & 22: Learner Course, FSRS, Identify, and Security Verification
+  assert.equal(COURSE_MODULES.length, 29);
+  assert.equal(FREQ_6000_DB.length, 2417);
+  assert.equal(IDENTIFY_CATEGORIES.flatMap((c) => c.scenes).length, 100);
+  assert.equal(READER_PASSAGES.length > 0, true);
+});
+
 
 

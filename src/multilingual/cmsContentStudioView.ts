@@ -65,6 +65,22 @@ import {
   duplicateCmsModuleInDraft,
   updateCmsLessonInDraft,
   updateCmsActivityInDraft,
+  analyzeCmsRemovalImpact,
+  removeCmsContentItemInDraft,
+  getCmsRemovedItemsInDraft,
+  restoreRemovedCmsItemInDraft,
+  undoLastCmsAction,
+  redoLastCmsAction,
+  getCmsUndoRedoState,
+  computeCmsDetailedChangeSummary,
+  addCmsSectionToModuleInDraft,
+  addCmsLessonToSectionInDraft,
+  duplicateCmsLessonInDraft,
+  addCmsActivityToLessonInDraft,
+  duplicateCmsActivityInDraft,
+  addCmsAnswerOptionInDraft,
+  addCmsLessonVocabularyRefInDraft,
+  addCmsLessonMediaRefInDraft,
   importCourseJsonIntoCmsDraft,
   validateCmsCourseDraft,
   addCmsManualReviewNote,
@@ -86,6 +102,8 @@ import {
   searchCmsContentStudio,
   type CmsContentOriginStatus,
   type CmsLifecycleState,
+  type CmsRemovalImpactAnalysis,
+  type CmsRemovalTargetSpec,
   type CmsTrackSummary,
   type CmsValidationIssue,
   type CmsValidationReport,
@@ -143,6 +161,9 @@ interface CmsStudioUiState {
   collapsedSectionIds: Record<string, boolean>;
   showSourceJsonDrawer: boolean;
   showDraftVsPublishedDiffDrawer: boolean;
+  showRemovedItemsDrawer: boolean;
+  showUnpublishedChangesSummaryDrawer: boolean;
+  pendingRemovalConfirmation: CmsRemovalImpactAnalysis | null;
   hasUnsavedEditorChanges: boolean;
   // Preview mode
   previewMode: 'draft' | 'published';
@@ -182,6 +203,7 @@ interface CmsStudioUiState {
   bannerNotification: {
     type: 'success' | 'warn' | 'danger';
     message: string;
+    showUndoButton?: boolean;
   } | null;
 }
 
@@ -202,6 +224,9 @@ const cmsUiState: CmsStudioUiState = {
   collapsedSectionIds: {},
   showSourceJsonDrawer: false,
   showDraftVsPublishedDiffDrawer: false,
+  showRemovedItemsDrawer: false,
+  showUnpublishedChangesSummaryDrawer: false,
+  pendingRemovalConfirmation: null,
   hasUnsavedEditorChanges: false,
   previewMode: 'draft',
   importMode: 'full_draft_import',
@@ -237,9 +262,10 @@ function escapeHtml(str: string): string {
 
 function setCmsBanner(
   type: 'success' | 'warn' | 'danger',
-  message: string
+  message: string,
+  showUndoButton = false
 ): void {
-  cmsUiState.bannerNotification = { type, message };
+  cmsUiState.bannerNotification = { type, message, showUndoButton };
 }
 
 // ============================================================================
@@ -408,9 +434,10 @@ export function formatFriendlyValidationIssue(
   switch (issue.code) {
     case 'INVALID_ANSWER_KEY_INDEX':
     case 'MISSING_OR_INVALID_CORRECT_ANSWER':
-      whatIsWrong = "This question doesn't have a valid correct answer selected.";
+      whatIsWrong =
+        "This question doesn't have a valid correct answer selected.";
       whyItMatters =
-        'Without a valid correct answer choice, students cannot get credit when they answer this question.';
+        'This question needs a correct answer before it can be published. Without a valid correct answer choice, students cannot get credit when they answer this question.';
       howToFixIt =
         'Open this question in Edit Content and select one of the answer choices as the Correct Answer.';
       break;
@@ -422,6 +449,28 @@ export function formatFriendlyValidationIssue(
         'Students need at least two choices to pick from in a multiple-choice question.';
       howToFixIt =
         'Open this question in Edit Content and type at least two answer choices.';
+      break;
+    case 'EMPTY_SECTION_IN_DRAFT':
+      whatIsWrong = 'This section has no lessons.';
+      whyItMatters =
+        'An empty section appears blank to students unless you add a lesson or remove the empty section.';
+      howToFixIt =
+        'Add a lesson to this section in Edit Content, or remove the empty section from your draft.';
+      break;
+    case 'EMPTY_LESSON_CONTENT':
+      whatIsWrong = 'This lesson has no content.';
+      whyItMatters =
+        'Students opening this lesson would see an empty page with no explanation or practice items.';
+      howToFixIt =
+        'Open this lesson in Edit Content to add explanation text or questions, or remove the empty lesson.';
+      break;
+    case 'BROKEN_INTERNAL_LINK':
+      whatIsWrong =
+        "This module links to a prerequisite module you've removed.";
+      whyItMatters =
+        'Prerequisite links tell the app which earlier module a student should complete first.';
+      howToFixIt =
+        'Restore the removed prerequisite module from Removed Items, or update this module in Edit Content.';
       break;
     case 'DUPLICATE_MODULE_ID':
       whatIsWrong =
@@ -481,11 +530,11 @@ export function formatFriendlyValidationIssue(
       break;
     case 'ACCIDENTAL_MODULE_DELETION_DETECTED':
       whatIsWrong =
-        'One or more published modules are missing from this draft.';
+        'One or more published modules were removed from this draft.';
       whyItMatters =
         'Publishing with missing modules would remove existing lessons that students rely on.';
       howToFixIt =
-        'Click "Discard Unpublished Changes" in Edit Content to restore all 29 published modules.';
+        'Open "Removed Items" in Edit Content to restore the removed module(s), or click "Discard Unpublished Changes" to restore all 29 published modules.';
       break;
     case 'SYNTHETIC_FIXTURE_PUBLICATION_BLOCKED':
       whatIsWrong =
@@ -667,11 +716,13 @@ export function getCmsCentralHelpTopics(): CmsCentralHelpTopic[] {
     {
       id: 'restore-version',
       title: 'How to undo mistakes or restore an earlier version',
-      summary: 'Recover previous versions or discard unpublished draft edits.',
+      summary:
+        'Remove items safely in your draft, undo actions, restore removed items, or recover previous versions.',
       steps: [
-        'To undo all unpublished edits on a published course (like Learn Ukrainian), click "Discard Unpublished Changes" in the editor.',
-        'To restore a specific saved checkpoint, open "Advanced Tools → Previous Versions".',
-        'Find the version in the timeline, click "Restore Version", and confirm. Content Studio automatically saves a backup before restoring.',
+        'When you click "Remove" on a module, section, lesson, question, paragraph, table, or answer choice, it is only removed from your private draft—never from the live published course.',
+        'Click "↩ Undo" in the editor toolbar or notification banner to immediately undo your last removal or edit.',
+        'Open "Removed Items" in the editor toolbar to see everything removed in your draft and click "Restore to Original Spot" on any item.',
+        'To undo all unpublished edits on a published course (like Learn Ukrainian), click "Discard Unpublished Changes", or open "Advanced Tools → Previous Versions" to restore an earlier backup.',
       ],
     },
   ];
@@ -949,7 +1000,7 @@ export function renderLangoContentStudio(): void {
   ];
 
   const bannerHtml = cmsUiState.bannerNotification
-    ? `<div data-testid="cms-status-banner" style="margin-bottom:14px; padding:12px 16px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; gap:10px; background:${
+    ? `<div data-testid="cms-status-banner" style="margin-bottom:14px; padding:12px 16px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:${
         cmsUiState.bannerNotification.type === 'success'
           ? 'var(--success-container)'
           : cmsUiState.bannerNotification.type === 'warn'
@@ -963,7 +1014,14 @@ export function renderLangoContentStudio(): void {
             : 'var(--danger-on-container)'
       }; font-size:13.5px; font-weight:700;">
         <span>${escapeHtml(cmsUiState.bannerNotification.message)}</span>
-        <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="dismissCmsBanner()">Dismiss</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          ${
+            cmsUiState.bannerNotification.showUndoButton
+              ? `<button type="button" class="btn" data-testid="cms-banner-btn-undo" style="min-height:28px; padding:3px 12px; font-size:11.5px; font-weight:800;" onclick="handleUndoCmsEditorAction()">↩ Undo</button>`
+              : ''
+          }
+          <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="dismissCmsBanner()">Dismiss</button>
+        </div>
       </div>`
     : '';
 
@@ -1696,10 +1754,22 @@ function renderCmsEditorTab(): string {
     (a) => a.activityId === cmsUiState.selectedActivityId
   );
 
+  const undoState = getCmsUndoRedoState(cmsUiState.selectedTrackId);
+  const removedItems = getCmsRemovedItemsInDraft(
+    cmsUiState.selectedTrackId,
+    false
+  );
+  const detailedSummary = computeCmsDetailedChangeSummary(
+    cmsUiState.selectedTrackId
+  );
+
   const modifiedCount = draft.modifiedModuleIds?.length || 0;
   const newDraftCount = draft.newDraftModuleIds?.length || 0;
-  const hasDraftEdits = Boolean(draft.hasDraftChanges);
-  const totalUnpublishedChanges = modifiedCount + newDraftCount;
+  const removedModCount = draft.removedBaselineModuleIds?.length || 0;
+  const hasDraftEdits =
+    Boolean(draft.hasDraftChanges) || removedItems.length > 0;
+  const totalUnpublishedChanges =
+    modifiedCount + newDraftCount + removedModCount + removedItems.length;
 
   const pubVsDraftDiff =
     cmsUiState.showDraftVsPublishedDiffDrawer && hasPublishedBaseline
@@ -1723,12 +1793,12 @@ function renderCmsEditorTab(): string {
           <div style="font-weight:800;">
             ${
               hasDraftEdits
-                ? `Unpublished Changes Saved: ${modifiedCount} modified module(s) and ${newDraftCount} new module(s) in your private draft`
+                ? `Unpublished Changes Saved: ${detailedSummary.plainEnglishBullets.join(' · ') || `${modifiedCount} modified module(s)`}`
                 : `Current Published Version: All ${baselinePkg?.modules.length || 29} published modules are loaded · No unpublished changes yet`
             }
           </div>
           <div style="font-size:12px; opacity:0.9; margin-top:2px;">
-            What students see is protected. Any edits you save here stay in your private draft until you review and publish them.
+            What students see is protected. Any edits or removals you make here stay in your private draft until you review and publish them.
           </div>
         </div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -1778,8 +1848,179 @@ function renderCmsEditorTab(): string {
     `
     : '';
 
+  const pendingConfirmationHtml = cmsUiState.pendingRemovalConfirmation
+    ? (() => {
+        const imp = cmsUiState.pendingRemovalConfirmation!;
+        const counts = imp.affectedCounts;
+        const countBadges: string[] = [];
+        if (counts.sections > 0)
+          countBadges.push(`${counts.sections} Section(s)`);
+        if (counts.lessons > 0) countBadges.push(`${counts.lessons} Lesson(s)`);
+        if (counts.questions > 0)
+          countBadges.push(`${counts.questions} Practice / Exam Question(s)`);
+        if (counts.vocabularyRefs > 0)
+          countBadges.push(`${counts.vocabularyRefs} Linked Vocabulary Word(s)`);
+        if (counts.mediaRefs > 0)
+          countBadges.push(`${counts.mediaRefs} Linked Photo(s)`);
+
+        return `
+          <div data-testid="cms-removal-confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="cms-removal-modal-title" class="card" style="margin-bottom:14px; padding:18px 20px; background:var(--surface-1); border:2px solid var(--danger); box-shadow:var(--shadow-card);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+              <div style="max-width:760px;">
+                <div style="font-size:11.5px; font-weight:800; color:var(--danger); text-transform:uppercase; letter-spacing:0.04em;">
+                  Confirm Draft Removal
+                </div>
+                <h3 id="cms-removal-modal-title" style="margin:4px 0 6px 0; font-size:17px; font-weight:900; color:var(--text);">
+                  Remove ${escapeHtml(imp.itemTypeLabel)} from Your Draft?
+                </h3>
+                <div style="font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:4px;">
+                  ${escapeHtml(imp.itemTitle)}
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
+                  Location: ${escapeHtml(imp.locationBreadcrumb)}
+                </div>
+
+                ${
+                  countBadges.length > 0
+                    ? `<div data-testid="cms-removal-impact-counts" style="padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12.5px; margin-bottom:10px;">
+                        <div style="font-weight:800; color:var(--text); margin-bottom:4px;">What is inside this ${escapeHtml(imp.itemTypeLabel.toLowerCase())}:</div>
+                        <div style="color:var(--text-secondary);">${escapeHtml(countBadges.join(' · '))}</div>
+                      </div>`
+                    : ''
+                }
+
+                ${
+                  imp.dependencyWarning
+                    ? `<div data-testid="cms-removal-dependency-warning" style="padding:10px 12px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700; margin-bottom:10px;">
+                        ⚠️ ${escapeHtml(imp.dependencyWarning)}
+                      </div>`
+                    : ''
+                }
+
+                ${
+                  imp.sharedAssetPreservedNote
+                    ? `<div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">
+                        🔒 <b>Shared Assets Protected:</b> ${escapeHtml(imp.sharedAssetPreservedNote)}
+                      </div>`
+                    : ''
+                }
+
+                <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.5;">
+                  ✅ <b>Safe & Reversible:</b> This only changes your unpublished draft. The published course students see will not change until you publish, and you can restore this ${escapeHtml(imp.itemTypeLabel.toLowerCase())} anytime from <b>Removed Items</b> or click <b>Undo</b>.
+                </div>
+              </div>
+
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+                <button
+                  type="button"
+                  class="btn btn-sec"
+                  data-testid="cms-btn-cancel-removal"
+                  style="min-height:38px; padding:6px 14px; font-size:13px; font-weight:800;"
+                  onclick="cancelPendingCmsRemoval()"
+                >
+                  Keep ${escapeHtml(imp.itemTypeLabel)}
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  data-testid="cms-btn-confirm-removal"
+                  style="min-height:38px; padding:6px 16px; font-size:13px; font-weight:800; background:var(--danger); border-color:var(--danger); color:#fff;"
+                  onclick="confirmPendingCmsRemoval()"
+                >
+                  🗑️ Remove from Draft
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      })()
+    : '';
+
+  const removedItemsDrawerHtml = cmsUiState.showRemovedItemsDrawer
+    ? `
+      <div data-testid="cms-removed-items-drawer" class="card" style="margin-bottom:14px; padding:16px 18px; background:var(--surface-1); border:1px solid var(--border-strong);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div>
+            <h3 style="margin:0; font-size:15.5px; font-weight:800; color:var(--text);">
+              🗑️ Removed Items in Your Draft (${removedItems.length})
+            </h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+              Items you remove stay safely here while you edit. Click <b>Restore</b> on any item to put it right back where it was.
+            </div>
+          </div>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="toggleCmsRemovedItemsDrawer()">Close Removed Items</button>
+        </div>
+        ${
+          removedItems.length === 0
+            ? `<div data-testid="cms-removed-items-empty" style="padding:14px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12.5px; color:var(--text-secondary);">
+                No removed items in this course draft. Any module, section, lesson, paragraph, example, table row, or question you remove will appear here so you can restore it anytime.
+              </div>`
+            : `<div style="display:flex; flex-direction:column; gap:8px; max-height:320px; overflow-y:auto;">
+                ${removedItems
+                  .map(
+                    (rec) => `
+                  <div data-testid="cms-removed-item-row-${rec.removalId}" style="padding:10px 12px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span class="tag" style="background:var(--danger-container); color:var(--danger-on-container); font-size:10.5px; font-weight:800;">${escapeHtml(rec.itemTypeLabel)}</span>
+                        <span style="font-size:13px; font-weight:800; color:var(--text);">${escapeHtml(rec.itemTitle)}</span>
+                      </div>
+                      <div style="font-size:11.5px; color:var(--text-secondary); margin-top:3px;">
+                        Original Location: <b>${escapeHtml(rec.locationBreadcrumb)}</b> · Removed at ${new Date(rec.removedAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-sec"
+                      data-testid="cms-btn-restore-item-${rec.removalId}"
+                      style="min-height:32px; padding:4px 12px; font-size:12px; font-weight:800;"
+                      onclick="handleRestoreRemovedCmsItem('${rec.removalId}')"
+                    >
+                      ↩ Restore
+                    </button>
+                  </div>
+                `
+                  )
+                  .join('')}
+              </div>`
+        }
+      </div>
+    `
+    : '';
+
+  const unpublishedChangesDrawerHtml = cmsUiState.showUnpublishedChangesSummaryDrawer
+    ? `
+      <div data-testid="cms-unpublished-changes-drawer" class="card" style="margin-bottom:14px; padding:16px 18px; background:var(--surface-1); border:1px solid var(--border-strong);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div>
+            <h3 style="margin:0; font-size:15.5px; font-weight:800; color:var(--text);">
+              📋 Your Unpublished Changes
+            </h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+              A plain-English summary of everything added, edited, or removed in your private draft compared to the published course.
+            </div>
+          </div>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="toggleCmsUnpublishedChangesDrawer()">Close Summary</button>
+        </div>
+        ${
+          detailedSummary.plainEnglishBullets.length === 0
+            ? `<div style="padding:12px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12.5px; color:var(--text-secondary);">
+                No unpublished changes yet. Your draft matches the published course.
+              </div>`
+            : `<ul data-testid="cms-unpublished-changes-bullets" style="margin:0; padding-left:20px; font-size:13px; color:var(--text); line-height:1.7;">
+                ${detailedSummary.plainEnglishBullets.map((b) => `<li><b>${escapeHtml(b)}</b></li>`).join('')}
+              </ul>`
+        }
+      </div>
+    `
+    : '';
+
   return `
     <div data-testid="cms-editor-view">
+      ${pendingConfirmationHtml}
+      ${removedItemsDrawerHtml}
+      ${unpublishedChangesDrawerHtml}
+
       <!-- Top Guided Editor Bar -->
       <div class="card" style="margin-bottom:14px; padding:16px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
@@ -1798,6 +2039,48 @@ function renderCmsEditorTab(): string {
           </div>
 
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button
+              type="button"
+              class="btn btn-sec"
+              data-testid="cms-btn-undo-action"
+              style="min-height:36px; padding:6px 10px; font-size:12px;"
+              ${undoState.canUndo ? '' : 'disabled'}
+              onclick="handleUndoCmsEditorAction()"
+              title="${undoState.lastUndoLabel ? `Undo: ${escapeHtml(undoState.lastUndoLabel)}` : 'Nothing to undo yet'}"
+            >
+              ↩ Undo
+            </button>
+            <button
+              type="button"
+              class="btn btn-sec"
+              data-testid="cms-btn-redo-action"
+              style="min-height:36px; padding:6px 10px; font-size:12px;"
+              ${undoState.canRedo ? '' : 'disabled'}
+              onclick="handleRedoCmsEditorAction()"
+              title="${undoState.lastRedoLabel ? `Redo: ${escapeHtml(undoState.lastRedoLabel)}` : 'Nothing to redo yet'}"
+            >
+              ↪ Redo
+            </button>
+            <button
+              type="button"
+              class="btn btn-sec"
+              data-testid="cms-btn-toggle-removed-items"
+              style="min-height:36px; padding:6px 11px; font-size:12px;"
+              onclick="toggleCmsRemovedItemsDrawer()"
+              title="View and restore items removed from your draft"
+            >
+              🗑️ Removed Items (${removedItems.length})
+            </button>
+            <button
+              type="button"
+              class="btn btn-sec"
+              data-testid="cms-btn-toggle-change-summary"
+              style="min-height:36px; padding:6px 11px; font-size:12px;"
+              onclick="toggleCmsUnpublishedChangesDrawer()"
+              title="See a plain-English summary of your unpublished changes"
+            >
+              📋 Changes (${detailedSummary.plainEnglishBullets.length})
+            </button>
             <button
               type="button"
               class="btn btn-sec"
@@ -1871,10 +2154,15 @@ function renderCmsEditorTab(): string {
           ? `<div class="card" data-testid="cms-editor-empty-state" style="padding:32px 24px; text-align:center;">
               <h3 style="margin:0 0 8px 0; font-size:18px;">No lessons yet</h3>
               <p style="margin:0 0 18px 0; color:var(--text-secondary); font-size:13.5px; max-width:520px; margin-left:auto; margin-right:auto; line-height:1.5;">
-                Start by adding your first module or importing a course file.
+                Start by adding your first module, restoring a removed module, or importing a course file.
               </p>
               <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
                 <button type="button" class="btn" data-testid="cms-btn-create-first-module" onclick="handleAddCmsModulePrompt()">Create a Module</button>
+                ${
+                  removedItems.length > 0
+                    ? `<button type="button" class="btn btn-sec" onclick="toggleCmsRemovedItemsDrawer()">View Removed Items (${removedItems.length})</button>`
+                    : ''
+                }
                 <button type="button" class="btn btn-sec" onclick="openCmsAdvancedSubTab('importer')">Import Course Content</button>
               </div>
             </div>`
@@ -1919,7 +2207,7 @@ function renderCmsEditorTab(): string {
                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 9px; font-size:11.5px;" onclick="handleAddCmsModulePrompt()">+ Add Module</button>
               </div>
               <div style="font-size:11.5px; color:var(--text-secondary); margin-bottom:10px;">
-                Click a module and lesson below to open it in the editor.
+                Click a module and lesson below to edit, reorder, duplicate, or remove it from your draft.
               </div>
               <div data-testid="cms-editor-module-tree-list" style="max-height:640px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
                 ${pkg.modules
@@ -1948,10 +2236,11 @@ function renderCmsEditorTab(): string {
                           >
                             ${escapeHtml(displayModPrefix)}${escapeHtml(m.title)}
                           </button>
-                          <div style="display:flex; gap:3px; flex-shrink:0;">
+                          <div style="display:flex; gap:3px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end;">
                             <button type="button" class="btn btn-sec" aria-label="Move module ${escapeHtml(m.title)} up" title="Move Up" style="min-height:24px; padding:1px 6px; font-size:10.5px;" ${mIdx === 0 ? 'disabled' : ''} onclick="handleMoveCmsModule(${mIdx}, ${mIdx - 1})">↑</button>
                             <button type="button" class="btn btn-sec" aria-label="Move module ${escapeHtml(m.title)} down" title="Move Down" style="min-height:24px; padding:1px 6px; font-size:10.5px;" ${mIdx === pkg.modules.length - 1 ? 'disabled' : ''} onclick="handleMoveCmsModule(${mIdx}, ${mIdx + 1})">↓</button>
                             <button type="button" class="btn btn-sec" aria-label="Duplicate module ${escapeHtml(m.title)}" title="Duplicate Module" style="min-height:24px; padding:1px 6px; font-size:10.5px;" onclick="handleDuplicateCmsModule('${m.moduleId}')">Copy</button>
+                            <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-module-${m.moduleId}" aria-label="Remove module ${escapeHtml(m.title)} from draft" title="Remove Module from Draft" style="min-height:24px; padding:1px 6px; font-size:10.5px; color:var(--danger); border-color:var(--border-subtle);" onclick="handleRequestRemoveModule('${m.moduleId}')">Remove</button>
                           </div>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:6px;">
@@ -1961,6 +2250,10 @@ function renderCmsEditorTab(): string {
                         ${
                           isSelectedMod
                             ? `<div style="margin-top:10px; padding-left:8px; border-left:2px solid var(--accent); display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                  <span style="font-size:10.5px; font-weight:800; color:var(--text-secondary);">SECTIONS IN MODULE</span>
+                                  <button type="button" class="btn btn-sec" data-testid="cms-btn-add-section-${m.moduleId}" style="min-height:22px; padding:1px 7px; font-size:10.5px;" onclick="handleAddCmsSection('${m.moduleId}')">+ Add Section</button>
+                                </div>
                                 ${(m.sections || [])
                                   .map((sec) => {
                                     const isCollapsed = Boolean(
@@ -1969,34 +2262,42 @@ function renderCmsEditorTab(): string {
                                       ]
                                     );
                                     return `
-                                    <div>
-                                      <button
-                                        type="button"
-                                        style="background:none; border:none; padding:2px 0; width:100%; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:11px; font-weight:800; color:var(--text-secondary); text-align:left;"
-                                        onclick="toggleCmsOutlineSection('${sec.sectionId}')"
-                                      >
-                                        <span>📂 ${escapeHtml(sec.title)}</span>
-                                        <span>${isCollapsed ? '▸' : '▾'}</span>
-                                      </button>
+                                    <div data-testid="cms-tree-section-${sec.sectionId}" style="padding:6px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs);">
+                                      <div style="display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                                        <button
+                                          type="button"
+                                          style="background:none; border:none; padding:2px 0; flex:1; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:11px; font-weight:800; color:var(--text-secondary); text-align:left;"
+                                          onclick="toggleCmsOutlineSection('${sec.sectionId}')"
+                                        >
+                                          <span>📂 ${escapeHtml(sec.title)}</span>
+                                          <span>${isCollapsed ? '▸' : '▾'}</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sec" data-testid="cms-btn-add-lesson-${sec.sectionId}" title="Add Lesson to Section" style="min-height:22px; padding:1px 5px; font-size:10px;" onclick="handleAddCmsLesson('${m.moduleId}', '${sec.sectionId}')">+ Lesson</button>
+                                        <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-section-${sec.sectionId}" title="Remove Section from Draft" style="min-height:22px; padding:1px 5px; font-size:10px; color:var(--danger);" onclick="handleRequestRemoveSection('${m.moduleId}', '${sec.sectionId}')">Remove</button>
+                                      </div>
                                       ${
                                         isCollapsed
                                           ? ''
-                                          : `<div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+                                          : `<div style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">
                                               ${(sec.lessons || [])
                                                 .map((les) => {
                                                   const isLesSel =
                                                     les.lessonId ===
                                                     cmsUiState.selectedLessonId;
                                                   return `
-                                                    <button
-                                                      type="button"
-                                                      data-testid="cms-tree-lesson-${les.lessonId}"
-                                                      class="btn ${isLesSel ? '' : 'btn-sec'}"
-                                                      style="text-align:left; justify-content:space-between; min-height:32px; padding:5px 9px; font-size:12px;"
-                                                      onclick="selectCmsEditorLesson('${m.moduleId}', '${sec.sectionId}', '${les.lessonId}')"
-                                                    >
-                                                      <span>📄 ${escapeHtml(les.title)}</span>
-                                                    </button>
+                                                    <div style="display:flex; gap:4px; align-items:center;">
+                                                      <button
+                                                        type="button"
+                                                        data-testid="cms-tree-lesson-${les.lessonId}"
+                                                        class="btn ${isLesSel ? '' : 'btn-sec'}"
+                                                        style="flex:1; text-align:left; justify-content:space-between; min-height:30px; padding:4px 8px; font-size:11.5px;"
+                                                        onclick="selectCmsEditorLesson('${m.moduleId}', '${sec.sectionId}', '${les.lessonId}')"
+                                                      >
+                                                        <span>📄 ${escapeHtml(les.title)}</span>
+                                                      </button>
+                                                      <button type="button" class="btn btn-sec" data-testid="cms-btn-duplicate-lesson-${les.lessonId}" title="Duplicate Lesson" style="min-height:28px; padding:2px 6px; font-size:10px;" onclick="handleDuplicateCmsLesson('${m.moduleId}', '${les.lessonId}')">Copy</button>
+                                                      <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-lesson-${les.lessonId}" title="Remove Lesson from Draft" style="min-height:28px; padding:2px 6px; font-size:10px; color:var(--danger);" onclick="handleRequestRemoveLesson('${m.moduleId}', '${sec.sectionId}', '${les.lessonId}')">✕</button>
+                                                    </div>
                                                   `;
                                                 })
                                                 .join('')}
@@ -2042,9 +2343,20 @@ function renderCmsEditorTab(): string {
                           }
                         | undefined;
 
+                      const lessonParagraphs = String(
+                        activeLesson.instructionalText || ''
+                      )
+                        .split(/\n\s*\n/)
+                        .map((p) => p.trim())
+                        .filter(Boolean);
+
+                      const lessonVocabRefs = activeLesson.vocabularyRefs || [];
+                      const lessonMediaRefs =
+                        (activeLesson.mediaRefs as string[]) || [];
+
                       return `
                         <!-- Lesson Header -->
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle); flex-wrap:wrap;">
                           <div>
                             <div style="font-size:11.5px; font-weight:800; color:var(--accent);">
                               Step 4: Make Changes to Your Lesson
@@ -2056,7 +2368,18 @@ function renderCmsEditorTab(): string {
                               In <b>${escapeHtml(activeMod?.title || '')}</b> · ${escapeHtml(activeSec?.title || 'Lesson Section')}
                             </div>
                           </div>
-                          ${renderCmsOriginStatusBadge(lesOrigin, 'cms-active-lesson-origin-badge')}
+                          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                            ${renderCmsOriginStatusBadge(lesOrigin, 'cms-active-lesson-origin-badge')}
+                            <button
+                              type="button"
+                              class="btn btn-sec"
+                              data-testid="cms-btn-remove-active-lesson"
+                              style="min-height:28px; padding:3px 9px; font-size:11px; color:var(--danger); border-color:var(--border-subtle);"
+                              onclick="handleRequestRemoveLesson('${activeMod?.moduleId || ''}', '${activeSec?.sectionId || ''}', '${activeLesson.lessonId}')"
+                            >
+                              🗑️ Remove Lesson
+                            </button>
+                          </div>
                         </div>
 
                         <!-- Part 1: Lesson Title, Summary & Explanation Form -->
@@ -2104,7 +2427,7 @@ function renderCmsEditorTab(): string {
                               Explanation
                             </label>
                             <div style="font-size:11.5px; color:var(--text-secondary); margin-bottom:5px;">
-                              Explain the concept in a way students can understand.
+                              Explain the concept in a way students can understand. Separate paragraphs with a blank line.
                             </div>
                             <textarea
                               id="cms-edit-lesson-text"
@@ -2114,6 +2437,38 @@ function renderCmsEditorTab(): string {
                               style="width:100%; min-height:155px; font-size:13px; line-height:1.55;"
                               oninput="markCmsEditorUnsavedChanges()"
                             >${escapeHtml(activeLesson.instructionalText || '')}</textarea>
+
+                            ${
+                              lessonParagraphs.length > 0
+                                ? `<div data-testid="cms-lesson-paragraphs-list" style="margin-top:8px; padding:10px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-xs);">
+                                    <div style="font-size:11.5px; font-weight:800; color:var(--text-secondary); margin-bottom:6px;">
+                                      Individual Explanation Paragraphs (${lessonParagraphs.length}) — Remove any paragraph in 1 click:
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; gap:6px;">
+                                      ${lessonParagraphs
+                                        .map(
+                                          (para, pIdx) => `
+                                          <div data-testid="cms-lesson-paragraph-item-${pIdx}" style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 8px; background:var(--surface-1); border-radius:var(--radius-xs); font-size:12px;">
+                                            <span style="color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:460px;">
+                                              <b>#${pIdx + 1}:</b> ${escapeHtml(para.slice(0, 95))}${para.length > 95 ? '…' : ''}
+                                            </span>
+                                            <button
+                                              type="button"
+                                              class="btn btn-sec"
+                                              data-testid="cms-btn-remove-paragraph-${pIdx}"
+                                              style="min-height:24px; padding:2px 8px; font-size:11px; color:var(--danger); flex-shrink:0;"
+                                              onclick="handleRemoveLessonParagraph(${pIdx})"
+                                            >
+                                              Remove Paragraph
+                                            </button>
+                                          </div>
+                                        `
+                                        )
+                                        .join('')}
+                                    </div>
+                                  </div>`
+                                : ''
+                            }
                           </div>
 
                           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-sm);">
@@ -2140,6 +2495,104 @@ function renderCmsEditorTab(): string {
                           </div>
                         </div>
 
+                        <!-- Part 1B: Lesson Vocabulary & Photo Links Manager -->
+                        <div data-testid="cms-lesson-links-manager" style="padding:12px; margin-bottom:18px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:12px;">
+                          <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                              <span style="font-size:12.5px; font-weight:800; color:var(--text);">
+                                🔤 Linked Vocabulary Words in This Lesson (${lessonVocabRefs.length})
+                              </span>
+                              <span style="font-size:11px; color:var(--text-secondary);">
+                                Removing a word link here keeps the word safely in the shared Vocabulary Bank.
+                              </span>
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                              ${
+                                lessonVocabRefs.length === 0
+                                  ? `<span style="font-size:12px; color:var(--text-secondary);">No vocabulary words linked to this lesson.</span>`
+                                  : lessonVocabRefs
+                                      .slice(0, 24)
+                                      .map(
+                                        (vRef) => `
+                                        <span data-testid="cms-lesson-vocab-chip-${vRef}" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); font-size:11.5px; font-weight:700;">
+                                          <span>${escapeHtml(vRef)}</span>
+                                          <button
+                                            type="button"
+                                            data-testid="cms-btn-remove-vocab-ref-${vRef}"
+                                            aria-label="Remove vocabulary link ${escapeHtml(vRef)} from lesson"
+                                            title="Remove word from this lesson only (keeps word in dictionary)"
+                                            style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:900; padding:0 2px;"
+                                            onclick="handleRemoveLessonVocabRef('${vRef}')"
+                                          >
+                                            ✕
+                                          </button>
+                                        </span>
+                                      `
+                                      )
+                                      .join('')
+                              }
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                              <input
+                                id="cms-add-lesson-vocab-input"
+                                data-testid="cms-add-lesson-vocab-input"
+                                type="text"
+                                class="input-box"
+                                style="flex:1; min-width:160px; min-height:32px; font-size:12px;"
+                                placeholder="Vocabulary ID (e.g., en_lex_0001)"
+                              />
+                              <button type="button" class="btn btn-sec" data-testid="cms-btn-add-vocab-ref" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="handleAddLessonVocabRefFromInput()">+ Link Word to Lesson</button>
+                            </div>
+                          </div>
+
+                          <div style="padding-top:10px; border-top:1px solid var(--border-subtle);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                              <span style="font-size:12.5px; font-weight:800; color:var(--text);">
+                                🖼️ Linked Lesson Photos (${lessonMediaRefs.length})
+                              </span>
+                              <span style="font-size:11px; color:var(--text-secondary);">
+                                Removing a photo link here keeps the image file safely in the Media Library.
+                              </span>
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+                              ${
+                                lessonMediaRefs.length === 0
+                                  ? `<span style="font-size:12px; color:var(--text-secondary);">No photos linked to this lesson.</span>`
+                                  : lessonMediaRefs
+                                      .map(
+                                        (mRef, mIdx) => `
+                                        <span data-testid="cms-lesson-media-chip-${mIdx}" style="display:inline-flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); font-size:11.5px; font-weight:700;">
+                                          <span>🖼️ ${escapeHtml(mRef.split('/').pop() || mRef)}</span>
+                                          <button
+                                            type="button"
+                                            data-testid="cms-btn-remove-media-ref-${mIdx}"
+                                            aria-label="Remove photo link ${escapeHtml(mRef)} from lesson"
+                                            title="Remove photo from this lesson only (keeps file in Media Library)"
+                                            style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:900; padding:0 2px;"
+                                            onclick="handleRemoveLessonMediaRef('${mRef}')"
+                                          >
+                                            ✕
+                                          </button>
+                                        </span>
+                                      `
+                                      )
+                                      .join('')
+                              }
+                            </div>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                              <input
+                                id="cms-add-lesson-media-input"
+                                data-testid="cms-add-lesson-media-input"
+                                type="text"
+                                class="input-box"
+                                style="flex:1; min-width:180px; min-height:32px; font-size:12px;"
+                                placeholder="/identify-media/home-and-living-room/cozy-living-room.webp"
+                              />
+                              <button type="button" class="btn btn-sec" data-testid="cms-btn-add-media-ref" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="handleAddLessonMediaRefFromInput()">+ Link Photo to Lesson</button>
+                            </div>
+                          </div>
+                        </div>
+
                         <!-- Part 2: Practice Questions & Lesson Activities -->
                         <div style="padding-top:16px; border-top:1px solid var(--border-subtle);">
                           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
@@ -2148,18 +2601,44 @@ function renderCmsEditorTab(): string {
                                 Practice Questions & Lesson Items (${activeLesson.activities?.length || 0})
                               </h4>
                               <div style="font-size:12px; color:var(--text-secondary);">
-                                Select an item below to edit its question prompt, answer choices, or explanation.
+                                Select an item below to edit, duplicate, or remove its question, answer choices, or grammar examples.
                               </div>
                             </div>
-                            <button
-                              type="button"
-                              class="btn btn-sec"
-                              data-testid="cms-btn-add-question"
-                              style="min-height:30px; padding:4px 10px; font-size:11.5px;"
-                              onclick="handleAddCmsActivityToLesson()"
-                            >
-                              + Add Practice Question
-                            </button>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                              <button
+                                type="button"
+                                class="btn btn-sec"
+                                data-testid="cms-btn-add-question"
+                                style="min-height:30px; padding:4px 10px; font-size:11.5px;"
+                                onclick="handleAddCmsActivityToLesson()"
+                              >
+                                + Add Practice Question
+                              </button>
+                              ${
+                                activeActivity
+                                  ? `
+                                    <button
+                                      type="button"
+                                      class="btn btn-sec"
+                                      data-testid="cms-btn-duplicate-activity-${activeActivity.activityId}"
+                                      style="min-height:30px; padding:4px 10px; font-size:11.5px;"
+                                      onclick="handleDuplicateActiveCmsActivity()"
+                                    >
+                                      Copy Question
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="btn btn-sec"
+                                      data-testid="cms-btn-remove-activity-${activeActivity.activityId}"
+                                      style="min-height:30px; padding:4px 10px; font-size:11.5px; color:var(--danger);"
+                                      onclick="handleRequestRemoveActiveActivity()"
+                                    >
+                                      🗑️ Remove Question
+                                    </button>
+                                  `
+                                  : ''
+                              }
+                            </div>
                           </div>
 
                           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; max-height:115px; overflow-y:auto;">
@@ -2236,21 +2715,14 @@ function renderCmsEditorTab(): string {
               <div style="padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12px; line-height:1.45;">
                 <div style="font-weight:800; color:var(--text);">Will students see my changes right away?</div>
                 <div style="color:var(--text-secondary); margin-top:2px;">
-                  <b>No.</b> Pressing <b>Save Draft</b> saves your work privately. Students continue to see the current published course until you approve and publish in <b>Review & Publish</b>.
+                  <b>No.</b> Pressing <b>Save Draft</b> or removing an item only updates your private draft. Students continue to see the current published course until you approve and publish in <b>Review & Publish</b>.
                 </div>
               </div>
 
               <div style="padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12px; line-height:1.45;">
-                <div style="font-weight:800; color:var(--text);">How do I test my changes?</div>
+                <div style="font-weight:800; color:var(--text);">How do I undo or restore something I removed?</div>
                 <div style="color:var(--text-secondary); margin-top:2px;">
-                  Click <b>Preview as Student</b> to try your lesson inside the course player. Previewing never affects real student flashcards or XP.
-                </div>
-              </div>
-
-              <div style="padding:10px 12px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12px; line-height:1.45;">
-                <div style="font-weight:800; color:var(--text);">How do I undo a mistake?</div>
-                <div style="color:var(--text-secondary); margin-top:2px;">
-                  Click <b>Discard Unpublished Changes</b> to reset back to the published course, or open <b>Advanced Tools → Previous Versions</b> to restore an earlier backup.
+                  Click <b>↩ Undo</b> at the top of the editor, or open <b>🗑️ Removed Items (${removedItems.length})</b> to restore any individual item without losing your other edits.
                 </div>
               </div>
 
@@ -2318,6 +2790,11 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
     options?: string[];
     correctIndex?: number;
     explanation?: string;
+    rules?: string[];
+    examples?: Array<{ uk?: string; en?: string }>;
+    lines?: Array<{ speaker?: string; uk?: string; en?: string }>;
+    prompts?: Array<{ front?: string; back?: string }>;
+    tables?: Array<{ title?: string; headers?: string[]; rows?: string[][] }>;
     vocabItems?: Array<{ uk: string; en: string }>;
     dialogueLines?: Array<{ speaker?: string; uk?: string; en?: string }>;
     patternTables?: Array<{ title?: string }>;
@@ -2330,25 +2807,34 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
     activeActivity.activityType === 'module_mastery_exam';
 
   if (!isMultipleChoice) {
-    // Provide a clear, supportive read-only preview + title/prompt editor for specialized structured items
+    const rulesList = Array.isArray(payload.rules) ? payload.rules : [];
+    const examplesList = Array.isArray(payload.examples)
+      ? payload.examples
+      : Array.isArray(payload.lines)
+        ? payload.lines
+        : Array.isArray(payload.prompts)
+          ? payload.prompts
+          : [];
+    const tablesList = Array.isArray(payload.tables) ? payload.tables : [];
+
     const itemSummary = Array.isArray(payload.vocabItems)
       ? `Displays ${payload.vocabItems.length} vocabulary words with Ukrainian audio and English translations.`
-      : Array.isArray(payload.dialogueLines)
-        ? `Displays a ${payload.dialogueLines.length}-line conversation with native audio playback.`
-        : Array.isArray(payload.patternTables)
-          ? `Displays ${payload.patternTables.length} structured grammar reference table(s) and charts.`
+      : examplesList.length > 0 || rulesList.length > 0
+        ? `Contains ${rulesList.length} grammar note(s) and ${examplesList.length} example sentence(s) / dialogue line(s).`
+        : tablesList.length > 0
+          ? `Displays ${tablesList.length} structured grammar reference table(s) and rows.`
           : 'Displays structured lesson reference content in the student course player.';
 
     return `
-      <div style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:10px;">
+      <div style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:12px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
           <span style="font-size:12.5px; font-weight:800; color:var(--text);">
             Structured Lesson Item: ${escapeHtml(activeActivity.title || activeActivity.activityId)}
           </span>
-          <span style="font-size:11.5px; color:var(--text-secondary);">Formatting Protected</span>
+          <span style="font-size:11.5px; color:var(--text-secondary);">Editable & Reversible</span>
         </div>
         <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.45;">
-          ${escapeHtml(itemSummary)} You can update its heading and description below, or click <b>Preview as Student</b> to interact with it.
+          ${escapeHtml(itemSummary)} You can update its heading below or remove individual grammar notes, example sentences, tables, or table rows from your draft.
         </div>
         <div>
           <label for="cms-edit-activity-title" style="font-size:12px; font-weight:800; color:var(--text); display:block; margin-bottom:4px;">Item Heading</label>
@@ -2373,6 +2859,82 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
             oninput="markCmsEditorUnsavedChanges()"
           />
         </div>
+
+        ${
+          rulesList.length > 0
+            ? `<div data-testid="cms-structured-rules-list" style="padding:10px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs);">
+                <div style="font-size:12px; font-weight:800; margin-bottom:6px;">Grammar Notes & Headings (${rulesList.length})</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  ${rulesList
+                    .map(
+                      (rText, rIdx) => `
+                      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 8px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12px;">
+                        <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:440px;">${escapeHtml(String(rText).replace(/<[^>]+>/g, '').slice(0, 85))}</span>
+                        <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-grammar-rule-${rIdx}" style="min-height:24px; padding:2px 8px; font-size:11px; color:var(--danger);" onclick="handleRemoveGrammarRule(${rIdx})">Remove Note</button>
+                      </div>
+                    `
+                    )
+                    .join('')}
+                </div>
+              </div>`
+            : ''
+        }
+
+        ${
+          examplesList.length > 0
+            ? `<div data-testid="cms-structured-examples-list" style="padding:10px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs);">
+                <div style="font-size:12px; font-weight:800; margin-bottom:6px;">Example Sentences & Translations (${examplesList.length})</div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  ${examplesList
+                    .map((exItem: any, exIdx: number) => {
+                      const primary =
+                        exItem.uk || exItem.front || exItem.text || '';
+                      const secondary = exItem.en || exItem.back || '';
+                      return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 8px; background:var(--surface-2); border-radius:var(--radius-xs); font-size:12px;">
+                          <span><b>${escapeHtml(primary)}</b> ${secondary ? `— ${escapeHtml(secondary)}` : ''}</span>
+                          <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-example-${exIdx}" style="min-height:24px; padding:2px 8px; font-size:11px; color:var(--danger);" onclick="handleRemoveExampleSentence(${exIdx})">Remove Example</button>
+                        </div>
+                      `;
+                    })
+                    .join('')}
+                </div>
+              </div>`
+            : ''
+        }
+
+        ${
+          tablesList.length > 0
+            ? `<div data-testid="cms-structured-tables-list" style="padding:10px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-xs); display:flex; flex-direction:column; gap:10px;">
+                <div style="font-size:12px; font-weight:800;">Grammar Tables (${tablesList.length})</div>
+                ${tablesList
+                  .map(
+                    (tbl, tIdx) => `
+                    <div data-testid="cms-editor-grammar-table-${tIdx}" style="padding:8px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-xs);">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:12px; font-weight:800;">📊 ${escapeHtml(tbl.title || `Table #${tIdx + 1}`)} (${(tbl.rows || []).length} rows)</span>
+                        <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-table-${tIdx}" style="min-height:24px; padding:2px 8px; font-size:11px; color:var(--danger);" onclick="handleRequestRemoveGrammarTable(${tIdx})">Remove Table</button>
+                      </div>
+                      <div style="display:flex; flex-direction:column; gap:4px;">
+                        ${(tbl.rows || [])
+                          .map(
+                            (row, rIdx) => `
+                            <div data-testid="cms-editor-table-row-${tIdx}-${rIdx}" style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:4px 6px; background:var(--surface-1); border-radius:var(--radius-xs); font-size:11.5px;">
+                              <span>${escapeHtml((row || []).join(' | '))}</span>
+                              <button type="button" class="btn btn-sec" data-testid="cms-btn-remove-table-row-${tIdx}-${rIdx}" style="min-height:22px; padding:1px 6px; font-size:10.5px; color:var(--danger);" onclick="handleRemoveGrammarTableRow(${tIdx}, ${rIdx})">Remove Row</button>
+                            </div>
+                          `
+                          )
+                          .join('')}
+                      </div>
+                    </div>
+                  `
+                  )
+                  .join('')}
+              </div>`
+            : ''
+        }
+
         <button
           type="button"
           class="btn"
@@ -2388,12 +2950,26 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
   const options =
     Array.isArray(payload.options) && payload.options.length > 0
       ? payload.options
-      : ['Option 1', 'Option 2', 'Option 3'];
+      : [];
   const correctIdx =
     typeof payload.correctIndex === 'number' ? payload.correctIndex : 0;
+  const hasValidCorrectChoice =
+    correctIdx >= 0 && correctIdx < options.length && options.length >= 2;
 
   return `
     <div style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); display:flex; flex-direction:column; gap:12px;">
+      ${
+        !hasValidCorrectChoice
+          ? `<div data-testid="cms-missing-correct-answer-warning" style="padding:10px 12px; background:var(--danger-container); color:var(--danger-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700;">
+              ⚠️ ${
+                options.length < 2
+                  ? 'This multiple-choice question needs at least 2 answer choices before it can be published.'
+                  : 'This question needs a correct answer before it can be published. Select the circle next to the correct choice below and click Save Question to Draft.'
+              }
+            </div>`
+          : ''
+      }
+
       <div>
         <label for="cms-edit-activity-title" style="font-size:12px; font-weight:800; color:var(--text); display:block; margin-bottom:3px;">
           Question Label
@@ -2428,10 +3004,21 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
         />
       </div>
 
-      <!-- Beginner-Friendly Answer Choices with Radio Button Selection -->
+      <!-- Beginner-Friendly Answer Choices with Radio Button Selection & Per-Choice Removal -->
       <div>
-        <div style="font-size:12px; font-weight:800; color:var(--text); margin-bottom:2px;">
-          Answer Choices (Select the circle next to the Correct Answer)
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:2px;">
+          <span style="font-size:12px; font-weight:800; color:var(--text);">
+            Answer Choices (Select the circle next to the Correct Answer)
+          </span>
+          <button
+            type="button"
+            class="btn btn-sec"
+            data-testid="cms-btn-add-option"
+            style="min-height:26px; padding:2px 8px; font-size:11px;"
+            onclick="handleAddCmsAnswerOption()"
+          >
+            + Add Answer Choice
+          </button>
         </div>
         <div style="font-size:11.5px; color:var(--text-secondary); margin-bottom:8px;">
           Students will see these choices and earn points when they pick the one marked "Correct".
@@ -2460,6 +3047,17 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
                   value="${escapeHtml(opt)}"
                   oninput="syncFriendlyMcChoicesToUnderlyingInputs()"
                 />
+                <button
+                  type="button"
+                  class="btn btn-sec"
+                  data-testid="cms-btn-remove-option-${oIdx}"
+                  aria-label="Remove answer choice ${oIdx + 1}"
+                  title="Remove this answer choice from draft"
+                  style="min-height:32px; padding:4px 8px; font-size:11px; color:var(--danger);"
+                  onclick="handleRequestRemoveAnswerOption(${oIdx})"
+                >
+                  Remove
+                </button>
               </div>
             `
             )
@@ -2491,9 +3089,16 @@ function renderBeginnerFriendlyActivityEditor(activeActivity: {
       </div>
 
       <div>
-        <label for="cms-edit-activity-explanation" style="font-size:12px; font-weight:800; color:var(--text); display:block; margin-bottom:3px;">
-          Why is this answer correct? (Explanation shown to students)
-        </label>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+          <label for="cms-edit-activity-explanation" style="font-size:12px; font-weight:800; color:var(--text);">
+            Why is this answer correct? (Explanation shown to students)
+          </label>
+          ${
+            payload.explanation
+              ? `<button type="button" class="btn btn-sec" data-testid="cms-btn-remove-explanation" style="min-height:24px; padding:1px 8px; font-size:11px; color:var(--danger);" onclick="handleRemoveQuestionExplanation()">Remove Explanation</button>`
+              : ''
+          }
+        </div>
         <textarea
           id="cms-edit-activity-explanation"
           class="input-box"
@@ -3622,6 +4227,442 @@ export function toggleCmsDraftVsPublishedDiffDrawer(): void {
   renderLangoContentStudio();
 }
 
+export function toggleCmsRemovedItemsDrawer(): void {
+  cmsUiState.showRemovedItemsDrawer = !cmsUiState.showRemovedItemsDrawer;
+  renderLangoContentStudio();
+}
+
+export function toggleCmsUnpublishedChangesDrawer(): void {
+  cmsUiState.showUnpublishedChangesSummaryDrawer =
+    !cmsUiState.showUnpublishedChangesSummaryDrawer;
+  renderLangoContentStudio();
+}
+
+export function requestCmsItemRemoval(target: CmsRemovalTargetSpec): void {
+  const impact = analyzeCmsRemovalImpact(cmsUiState.selectedTrackId, target);
+  if (impact.requiresConfirmation) {
+    cmsUiState.pendingRemovalConfirmation = impact;
+    renderLangoContentStudio();
+    return;
+  }
+  const res = removeCmsContentItemInDraft(cmsUiState.selectedTrackId, target);
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  setCmsBanner('success', res.undoBannerMessage, true);
+  renderLangoContentStudio();
+}
+
+export function confirmPendingCmsRemoval(): void {
+  const pending = cmsUiState.pendingRemovalConfirmation;
+  if (!pending) return;
+  cmsUiState.pendingRemovalConfirmation = null;
+  const res = removeCmsContentItemInDraft(
+    cmsUiState.selectedTrackId,
+    pending.target
+  );
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  setCmsBanner('success', res.undoBannerMessage, true);
+  renderLangoContentStudio();
+}
+
+export function cancelPendingCmsRemoval(): void {
+  cmsUiState.pendingRemovalConfirmation = null;
+  renderLangoContentStudio();
+}
+
+export function handleUndoCmsEditorAction(): void {
+  const res = undoLastCmsAction(cmsUiState.selectedTrackId);
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  if (res.success) {
+    setCmsBanner('success', res.message, false);
+  } else {
+    setCmsBanner('warn', res.message, false);
+  }
+  renderLangoContentStudio();
+}
+
+export function handleRedoCmsEditorAction(): void {
+  const res = redoLastCmsAction(cmsUiState.selectedTrackId);
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  if (res.success) {
+    setCmsBanner('success', res.message, false);
+  } else {
+    setCmsBanner('warn', res.message, false);
+  }
+  renderLangoContentStudio();
+}
+
+export function handleRestoreRemovedCmsItem(removalId: string): void {
+  const res = restoreRemovedCmsItemInDraft(
+    cmsUiState.selectedTrackId,
+    removalId
+  );
+  ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
+  if (res.success) {
+    setCmsBanner('success', res.message, false);
+  } else {
+    setCmsBanner('danger', res.message, false);
+  }
+  renderLangoContentStudio();
+}
+
+export function handleRequestRemoveModule(moduleId: string): void {
+  requestCmsItemRemoval({
+    itemType: 'module',
+    moduleId,
+  });
+}
+
+export function handleAddCmsSection(moduleId: string): void {
+  const res = addCmsSectionToModuleInDraft(
+    cmsUiState.selectedTrackId,
+    moduleId
+  );
+  cmsUiState.selectedModuleId = moduleId;
+  cmsUiState.selectedSectionId = res.addedSection.sectionId;
+  const firstLesson = res.addedSection.lessons?.[0];
+  if (firstLesson) {
+    cmsUiState.selectedLessonId = firstLesson.lessonId;
+    cmsUiState.selectedActivityId = firstLesson.activities?.[0]?.activityId || '';
+  }
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Added "${res.addedSection.title}" to Module ${moduleId} in your draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleRequestRemoveSection(
+  moduleId: string,
+  sectionId: string
+): void {
+  requestCmsItemRemoval({
+    itemType: 'section',
+    moduleId,
+    sectionId,
+  });
+}
+
+export function handleAddCmsLesson(
+  moduleId: string,
+  sectionId: string
+): void {
+  const res = addCmsLessonToSectionInDraft(
+    cmsUiState.selectedTrackId,
+    moduleId,
+    sectionId
+  );
+  cmsUiState.selectedModuleId = moduleId;
+  cmsUiState.selectedSectionId = sectionId;
+  cmsUiState.selectedLessonId = res.addedLesson.lessonId;
+  cmsUiState.selectedActivityId =
+    res.addedLesson.activities?.[0]?.activityId || '';
+  cmsUiState.mobileEditorPanel = 'lesson';
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Added "${res.addedLesson.title}" to your draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleDuplicateCmsLesson(
+  moduleId: string,
+  lessonId: string
+): void {
+  const res = duplicateCmsLessonInDraft(
+    cmsUiState.selectedTrackId,
+    moduleId,
+    lessonId
+  );
+  cmsUiState.selectedModuleId = moduleId;
+  cmsUiState.selectedLessonId = res.duplicatedLesson.lessonId;
+  cmsUiState.selectedActivityId =
+    res.duplicatedLesson.activities?.[0]?.activityId || '';
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Duplicated lesson as "${res.duplicatedLesson.title}" in your draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleRequestRemoveLesson(
+  moduleId: string,
+  sectionId: string,
+  lessonId: string
+): void {
+  requestCmsItemRemoval({
+    itemType: 'lesson',
+    moduleId,
+    sectionId,
+    lessonId,
+  });
+}
+
+export function handleRemoveLessonParagraph(paragraphIndex: number): void {
+  if (!cmsUiState.selectedModuleId || !cmsUiState.selectedLessonId) return;
+  requestCmsItemRemoval({
+    itemType: 'lesson_paragraph',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    paragraphIndex,
+  });
+}
+
+export function handleRemoveLessonVocabRef(vocabId: string): void {
+  if (!cmsUiState.selectedModuleId || !cmsUiState.selectedLessonId) return;
+  requestCmsItemRemoval({
+    itemType: 'vocabulary_reference',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    vocabId,
+  });
+}
+
+export function handleAddLessonVocabRefFromInput(): void {
+  const input = document.getElementById(
+    'cms-add-lesson-vocab-input'
+  ) as HTMLInputElement | null;
+  const vocabId = input?.value.trim() || '';
+  if (
+    !vocabId ||
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId
+  ) {
+    return;
+  }
+  addCmsLessonVocabularyRefInDraft(
+    cmsUiState.selectedTrackId,
+    cmsUiState.selectedModuleId,
+    cmsUiState.selectedLessonId,
+    vocabId
+  );
+  if (input) input.value = '';
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Linked vocabulary word "${vocabId}" to this lesson draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleRemoveLessonMediaRef(mediaPath: string): void {
+  if (!cmsUiState.selectedModuleId || !cmsUiState.selectedLessonId) return;
+  requestCmsItemRemoval({
+    itemType: 'media_reference',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    mediaPath,
+  });
+}
+
+export function handleAddLessonMediaRefFromInput(): void {
+  const select = document.getElementById(
+    'cms-add-lesson-media-select'
+  ) as HTMLSelectElement | null;
+  const mediaPath = select?.value.trim() || '';
+  if (
+    !mediaPath ||
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId
+  ) {
+    return;
+  }
+  addCmsLessonMediaRefInDraft(
+    cmsUiState.selectedTrackId,
+    cmsUiState.selectedModuleId,
+    cmsUiState.selectedLessonId,
+    mediaPath
+  );
+  if (select) select.value = '';
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Linked photo "${mediaPath}" to this lesson draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleDuplicateActiveCmsActivity(): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  const res = duplicateCmsActivityInDraft(
+    cmsUiState.selectedTrackId,
+    cmsUiState.selectedModuleId,
+    cmsUiState.selectedLessonId,
+    cmsUiState.selectedActivityId
+  );
+  cmsUiState.selectedActivityId = res.duplicatedActivity.activityId;
+  recordLastEditedLesson();
+  setCmsBanner(
+    'success',
+    `Duplicated activity as "${res.duplicatedActivity.title}" in your draft.`,
+    true
+  );
+  renderLangoContentStudio();
+}
+
+export function handleRequestRemoveActiveActivity(): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'activity',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+  });
+}
+
+export function handleAddCmsAnswerOption(): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  addCmsAnswerOptionInDraft(
+    cmsUiState.selectedTrackId,
+    cmsUiState.selectedModuleId,
+    cmsUiState.selectedLessonId,
+    cmsUiState.selectedActivityId
+  );
+  recordLastEditedLesson();
+  setCmsBanner('success', 'Added a new answer choice to this question.', true);
+  renderLangoContentStudio();
+}
+
+export function handleRequestRemoveAnswerOption(optionIndex: number): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'answer_option',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+    optionIndex,
+  });
+}
+
+export function handleRemoveQuestionExplanation(): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'question_explanation',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+  });
+}
+
+export function handleRemoveGrammarRule(ruleIndex: number): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'grammar_rule',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+    ruleIndex,
+  });
+}
+
+export function handleRemoveExampleSentence(exampleIndex: number): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'example_sentence',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+    exampleIndex,
+  });
+}
+
+export function handleRequestRemoveGrammarTable(tableIndex: number): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'grammar_table',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+    tableIndex,
+  });
+}
+
+export function handleRemoveGrammarTableRow(
+  tableIndex: number,
+  rowIndex: number
+): void {
+  if (
+    !cmsUiState.selectedModuleId ||
+    !cmsUiState.selectedLessonId ||
+    !cmsUiState.selectedActivityId
+  ) {
+    return;
+  }
+  requestCmsItemRemoval({
+    itemType: 'grammar_table_row',
+    moduleId: cmsUiState.selectedModuleId,
+    sectionId: cmsUiState.selectedSectionId,
+    lessonId: cmsUiState.selectedLessonId,
+    activityId: cmsUiState.selectedActivityId,
+    tableIndex,
+    rowIndex,
+  });
+}
+
 export function setCmsPreviewMode(mode: 'draft' | 'published'): void {
   cmsUiState.previewMode = mode;
   renderLangoContentStudio();
@@ -3636,6 +4677,7 @@ export function openCmsPreviewWithMode(mode: 'draft' | 'published'): void {
 export function handleDiscardCmsDraftOverlay(): void {
   const restored = discardCmsDraftOverlay(cmsUiState.selectedTrackId);
   cmsUiState.hasUnsavedEditorChanges = false;
+  cmsUiState.pendingRemovalConfirmation = null;
   ensureEditorSelectionForDraft(cmsUiState.selectedTrackId);
   setCmsBanner(
     'success',
@@ -3699,46 +4741,25 @@ export function handleAddCmsModulePrompt(): void {
   recordLastEditedLesson();
   setCmsBanner(
     'success',
-    `Added Module ${nextNum} to your private draft. Your changes are ready to edit and preview.`
+    `Added Module ${nextNum} to your private draft. Your changes are ready to edit and preview.`,
+    true
   );
   renderLangoContentStudio();
 }
 
 export function handleAddCmsActivityToLesson(): void {
-  const draft = getOrCreateCmsCourseDraft(cmsUiState.selectedTrackId);
-  const mod = draft.draftPackage.modules.find(
-    (m) => m.moduleId === cmsUiState.selectedModuleId
+  if (!cmsUiState.selectedModuleId || !cmsUiState.selectedLessonId) return;
+  const res = addCmsActivityToLessonInDraft(
+    cmsUiState.selectedTrackId,
+    cmsUiState.selectedModuleId,
+    cmsUiState.selectedLessonId
   );
-  if (!mod) return;
-  const sec = (mod.sections || []).find(
-    (s) => s.sectionId === cmsUiState.selectedSectionId
-  );
-  const les = (sec?.lessons || mod.lessons || []).find(
-    (l) => l.lessonId === cmsUiState.selectedLessonId
-  );
-  if (!les) return;
-
-  const nextActNum = (les.activities?.length || 0) + 1;
-  const newActId = `${les.lessonId}_q_${nextActNum}_${Date.now().toString().slice(-3)}`;
-  les.activities = les.activities || [];
-  les.activities.push({
-    activityId: newActId,
-    activityType: 'knowledge_check_mc',
-    title: `Question #${nextActNum}`,
-    prompt: 'Enter your practice question here:',
-    payload: {
-      options: ['Choice A', 'Choice B', 'Choice C'],
-      correctIndex: 0,
-      explanation: 'Explain why Choice A is correct.',
-    },
-  });
-
-  addOrUpdateCmsModuleInDraft(cmsUiState.selectedTrackId, mod);
-  cmsUiState.selectedActivityId = newActId;
+  cmsUiState.selectedActivityId = res.addedActivity.activityId;
   recordLastEditedLesson();
   setCmsBanner(
     'success',
-    `Added Question #${nextActNum} to your lesson draft.`
+    `Added "${res.addedActivity.title}" to your lesson draft.`,
+    true
   );
   renderLangoContentStudio();
 }
@@ -3747,7 +4768,8 @@ export function handleMoveCmsModule(fromIndex: number, toIndex: number): void {
   reorderCmsModulesInDraft(cmsUiState.selectedTrackId, fromIndex, toIndex);
   setCmsBanner(
     'success',
-    `Moved module from position ${fromIndex + 1} to ${toIndex + 1} in your draft.`
+    `Moved module from position ${fromIndex + 1} to ${toIndex + 1} in your draft.`,
+    true
   );
   renderLangoContentStudio();
 }
@@ -3755,7 +4777,11 @@ export function handleMoveCmsModule(fromIndex: number, toIndex: number): void {
 export function handleDuplicateCmsModule(moduleId: string): void {
   const newId = `${moduleId}_copy_${Date.now().toString().slice(-4)}`;
   duplicateCmsModuleInDraft(cmsUiState.selectedTrackId, moduleId, newId);
-  setCmsBanner('success', `Created a copy of module "${moduleId}" in your draft.`);
+  setCmsBanner(
+    'success',
+    `Created a copy of module "${moduleId}" in your draft.`,
+    true
+  );
   renderLangoContentStudio();
 }
 

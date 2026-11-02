@@ -178,6 +178,9 @@ export interface CmsMediaAssetRecord {
 const DRAFT_KEY_PREFIX = 'draft:';
 const VERSIONS_KEY_PREFIX = 'versions:';
 const REVIEW_NOTES_KEY_PREFIX = 'reviews:';
+const REMOVED_LEDGER_KEY_PREFIX = 'removed_ledger:';
+const UNDO_STACK_KEY_PREFIX = 'undo_stack:';
+const REDO_STACK_KEY_PREFIX = 'redo_stack:';
 const AUDIT_LOG_KEY = 'audit_log';
 const IMPORT_HISTORY_KEY = 'import_history';
 
@@ -275,6 +278,7 @@ export interface CmsCourseDraftEnvelope {
   hasDraftChanges?: boolean;
   modifiedModuleIds?: string[];
   newDraftModuleIds?: string[];
+  removedBaselineModuleIds?: string[];
   baselineModuleCount?: number;
 }
 
@@ -304,6 +308,7 @@ interface CmsCompactVersionRecord {
     modifiedModulesById: Record<string, UniversalModuleV1>;
     newDraftModules: UniversalModuleV1[];
     moduleOrder: string[];
+    confirmedDeletedModuleIds?: string[];
   };
 }
 
@@ -399,6 +404,20 @@ export function getPublishedUkrainianBaselinePackage(): UniversalCoursePackageV1
               sl.bigIdea?.keyInsight ||
               `Reference tables and grammar structures for ${mod.title}.`,
             payload: {
+              tables: (sl.patternTables || []).map((pt: any) => ({
+                title: pt.title || 'Grammar Pattern Table',
+                subtitle: pt.subtitle,
+                headers: Array.isArray(pt.headers) ? [...pt.headers] : [],
+                rows: (pt.rows || []).map((r: any) =>
+                  Array.isArray(r)
+                    ? r.map((c: any) => String(c))
+                    : Array.isArray(r?.cells)
+                      ? r.cells.map((c: any) =>
+                          typeof c === 'string' ? c : String(c?.text || '')
+                        )
+                      : []
+                ),
+              })),
               patternTables: deepClone(sl.patternTables || []),
               declensions: deepClone(sl.declensions || []),
               conjugations: deepClone(sl.conjugations || []),
@@ -702,12 +721,18 @@ function getRawSparseOverlayForUk(): CmsSparseTrackDraftOverlay | undefined {
   if ('isSparseOverlay' in raw && raw.isSparseOverlay === true) {
     const modIds = Object.keys(raw.modifiedModulesById || {});
     const newMods = raw.newDraftModules || [];
+    const delIds = raw.confirmedDeletedModuleIds || [];
     const baselineOrder = COURSE_MODULES.map((m) => m.id);
     const orderChanged =
       Array.isArray(raw.moduleOrder) &&
       raw.moduleOrder.length > 0 &&
       raw.moduleOrder.join(',') !== baselineOrder.join(',');
-    if (modIds.length === 0 && newMods.length === 0 && !orderChanged) {
+    if (
+      modIds.length === 0 &&
+      newMods.length === 0 &&
+      delIds.length === 0 &&
+      !orderChanged
+    ) {
       return undefined;
     }
     return raw;
@@ -754,6 +779,7 @@ function resolveUkrainianEffectiveEnvelopeFromOverlay(
       hasDraftChanges: false,
       modifiedModuleIds: [],
       newDraftModuleIds: [],
+      removedBaselineModuleIds: [],
       baselineModuleCount: baseline.modules.length,
     };
   }
@@ -765,7 +791,7 @@ function resolveUkrainianEffectiveEnvelopeFromOverlay(
   const newDraftIds = Array.from(newModsById.keys());
 
   // Reconcile ordered module IDs while guaranteeing all 29 published baseline modules
-  // remain present unless explicitly confirmed for deletion
+  // remain present unless explicitly confirmed for deletion in draft
   const deletedSet = new Set(overlay.confirmedDeletedModuleIds || []);
   const orderedIds: string[] = [];
   const seenIds = new Set<string>();
@@ -826,6 +852,7 @@ function resolveUkrainianEffectiveEnvelopeFromOverlay(
       hasDraftOverlay: true,
       modifiedModuleIds: modifiedIds,
       newDraftModuleIds: newDraftIds,
+      confirmedDeletedModuleIds: Array.from(deletedSet),
     },
   };
 
@@ -838,6 +865,7 @@ function resolveUkrainianEffectiveEnvelopeFromOverlay(
     hasDraftChanges: true,
     modifiedModuleIds: modifiedIds,
     newDraftModuleIds: newDraftIds,
+    removedBaselineModuleIds: Array.from(deletedSet),
     baselineModuleCount: baseline.modules.length,
   };
 }
@@ -945,6 +973,9 @@ export function discardCmsDraftOverlay(
 ): CmsCourseDraftEnvelope {
   assertCmsPermission('cms:edit_draft');
   cmsStorageAdapter.removeItem(`${DRAFT_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${REMOVED_LEDGER_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${UNDO_STACK_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${REDO_STACK_KEY_PREFIX}${courseTrackId}`);
   recordCmsAuditLog(
     'cms:delete_draft',
     courseTrackId,
@@ -981,6 +1012,7 @@ export function saveCmsCourseDraft(
     changeSummary?: string;
     revisionOrigin?: CmsVersionSnapshot['revisionOrigin'];
     createSnapshot?: boolean;
+    confirmedDeletedModuleIds?: string[];
   } = {}
 ): CmsCourseDraftEnvelope {
   assertCmsPermission('cms:edit_draft');
@@ -1006,6 +1038,23 @@ export function saveCmsCourseDraft(
       baseline.modules.map((m) => [m.moduleId, m])
     );
 
+    const existingSparse = getRawSparseOverlayForUk();
+    const presentModuleIds = new Set(
+      (draftPackage.modules || []).map((m) => m.moduleId)
+    );
+    const rawConfirmedDeleted =
+      options.confirmedDeletedModuleIds !== undefined
+        ? options.confirmedDeletedModuleIds
+        : (draftPackage.metadata?.confirmedDeletedModuleIds as
+            | string[]
+            | undefined) ||
+          existingSparse?.confirmedDeletedModuleIds ||
+          [];
+    // Any module currently present in draftPackage.modules is no longer deleted
+    const confirmedDeletedSet = new Set(
+      rawConfirmedDeleted.filter((id) => !presentModuleIds.has(id))
+    );
+
     const modifiedModulesById: Record<string, UniversalModuleV1> = {};
     const newDraftModules: UniversalModuleV1[] = [];
     const moduleOrder: string[] = [];
@@ -1022,9 +1071,12 @@ export function saveCmsCourseDraft(
       }
     }
 
-    // Ensure omitted baseline modules are never silently lost
+    // Ensure omitted baseline modules are never silently lost unless explicitly confirmed deleted in draft
     for (const baseMod of baseline.modules) {
-      if (!moduleOrder.includes(baseMod.moduleId)) {
+      if (
+        !confirmedDeletedSet.has(baseMod.moduleId) &&
+        !moduleOrder.includes(baseMod.moduleId)
+      ) {
         moduleOrder.push(baseMod.moduleId);
       }
     }
@@ -1038,6 +1090,7 @@ export function saveCmsCourseDraft(
       modifiedModulesById,
       newDraftModules,
       moduleOrder,
+      confirmedDeletedModuleIds: Array.from(confirmedDeletedSet),
     };
 
     cmsStorageAdapter.setItem(
@@ -1063,7 +1116,7 @@ export function saveCmsCourseDraft(
       'cms:edit_draft',
       PUBLISHED_UKRAINIAN_TRACK_ID,
       options.changeSummary ||
-        `Saved Ukrainian draft overlay (${Object.keys(modifiedModulesById).length} modified, ${newDraftModules.length} new, ${resolvedEnvelope.draftPackage.modules.length} effective modules)`
+        `Saved Ukrainian draft overlay (${Object.keys(modifiedModulesById).length} modified, ${newDraftModules.length} new, ${confirmedDeletedSet.size} removed in draft, ${resolvedEnvelope.draftPackage.modules.length} effective modules)`
     );
 
     return resolvedEnvelope;
@@ -1305,6 +1358,1960 @@ export function updateCmsActivityInDraft(
     lifecycleState: 'DRAFT',
     changeSummary: `Edited activity ${activityId} in lesson ${lessonId}`,
   });
+}
+
+// ============================================================================
+// 4B. SAFE CONTENT REMOVAL, UNDO / REDO, RESTORE & FULL STRUCTURE EDITING
+// ============================================================================
+
+export type CmsRemovableItemType =
+  | 'module'
+  | 'section'
+  | 'lesson'
+  | 'lesson_paragraph'
+  | 'activity'
+  | 'answer_option'
+  | 'question_explanation'
+  | 'grammar_rule'
+  | 'example_sentence'
+  | 'grammar_table'
+  | 'grammar_table_row'
+  | 'vocabulary_reference'
+  | 'media_reference'
+  | 'learning_objective';
+
+export interface CmsRemovalTargetSpec {
+  itemType: CmsRemovableItemType;
+  moduleId: string;
+  sectionId?: string;
+  lessonId?: string;
+  activityId?: string;
+  paragraphIndex?: number;
+  optionIndex?: number;
+  ruleIndex?: number;
+  exampleIndex?: number;
+  tableIndex?: number;
+  rowIndex?: number;
+  vocabularyId?: string;
+  vocabId?: string;
+  mediaAssetPath?: string;
+  mediaPath?: string;
+  objectiveIndex?: number;
+}
+
+export interface CmsRemovalImpactAnalysis {
+  courseTrackId: string;
+  target: CmsRemovalTargetSpec;
+  itemTypeLabel: string;
+  itemTitle: string;
+  locationBreadcrumb: string;
+  requiresConfirmation: boolean;
+  severity: 'high' | 'low';
+  affectedCounts: {
+    sections: number;
+    lessons: number;
+    questions: number;
+    vocabularyRefs: number;
+    mediaRefs: number;
+    dependentModuleIds: string[];
+  };
+  removesCorrectAnswer: boolean;
+  willInvalidateCorrectAnswer: boolean;
+  sharedAssetPreservedNote?: string;
+  sharedLibrarySafetyNote?: string;
+  dependencyWarning?: string;
+  prerequisiteDependents: string[];
+  friendlyImpactSummary: string;
+  confirmationHeadline: string;
+  confirmationExplanation: string;
+  keepButtonLabel: string;
+  removeButtonLabel: string;
+}
+
+export type CmsRemovalImpactSummary = CmsRemovalImpactAnalysis;
+
+export interface CmsRemovedItemRecord {
+  removalId: string;
+  courseTrackId: string;
+  itemType: CmsRemovableItemType;
+  itemTypeLabel: string;
+  itemId: string;
+  itemTitle: string;
+  locationBreadcrumb: string;
+  parentIds: {
+    moduleId: string;
+    sectionId?: string;
+    lessonId?: string;
+    activityId?: string;
+    tableIndex?: number;
+  };
+  originalIndex: number;
+  removedAt: number;
+  restoredAt?: number;
+  status: 'REMOVED_IN_DRAFT' | 'RESTORED';
+  impactSummary: string;
+  serializedPayload: unknown;
+  extraRestoreMetadata?: Record<string, unknown>;
+}
+
+export interface CmsUndoRedoActionEntry {
+  actionId: string;
+  courseTrackId: string;
+  timestamp: number;
+  actionLabel: string;
+  beforePackage: UniversalCoursePackageV1;
+  afterPackage: UniversalCoursePackageV1;
+  beforeConfirmedDeletedModuleIds: string[];
+  afterConfirmedDeletedModuleIds: string[];
+  beforeRemovedLedger: CmsRemovedItemRecord[];
+  afterRemovedLedger: CmsRemovedItemRecord[];
+}
+
+export interface CmsDetailedChangeSummary {
+  courseTrackId: string;
+  hasUnpublishedChanges: boolean;
+  counts: {
+    modulesAdded: number;
+    modulesEdited: number;
+    modulesRemoved: number;
+    sectionsRemoved: number;
+    lessonsRemoved: number;
+    paragraphsRemoved: number;
+    grammarRulesRemoved: number;
+    examplesRemoved: number;
+    tablesRemoved: number;
+    tableRowsRemoved: number;
+    questionsRemoved: number;
+    answerOptionsRemoved: number;
+    explanationsRemoved: number;
+    vocabularyLinksRemoved: number;
+    mediaLinksRemoved: number;
+    objectivesRemoved: number;
+  };
+  modulesAdded: number;
+  modulesModified: number;
+  modulesRemoved: number;
+  sectionsRemoved: number;
+  lessonsModified: number;
+  lessonsRemoved: number;
+  activitiesRemoved: number;
+  paragraphsRemoved: number;
+  tablesRemoved: number;
+  tableRowsRemoved: number;
+  vocabLinksRemoved: number;
+  mediaLinksRemoved: number;
+  pendingRemovedItemsCount: number;
+  activeRemovedItemsCount: number;
+  plainEnglishBullets: string[];
+  plainEnglishLines: string[];
+}
+
+function getFriendlyItemTypeLabel(itemType: CmsRemovableItemType): string {
+  switch (itemType) {
+    case 'module':
+      return 'Module';
+    case 'section':
+      return 'Section';
+    case 'lesson':
+      return 'Lesson';
+    case 'lesson_paragraph':
+      return 'Lesson Paragraph';
+    case 'activity':
+      return 'Practice / Assessment Item';
+    case 'answer_option':
+      return 'Answer Choice';
+    case 'question_explanation':
+      return 'Answer Explanation';
+    case 'grammar_rule':
+      return 'Grammar Note / Heading';
+    case 'example_sentence':
+      return 'Example Sentence';
+    case 'grammar_table':
+      return 'Grammar Table';
+    case 'grammar_table_row':
+      return 'Table Row';
+    case 'vocabulary_reference':
+      return 'Lesson Vocabulary Link';
+    case 'media_reference':
+      return 'Lesson Photo Link';
+    case 'learning_objective':
+      return 'Learning Goal';
+  }
+}
+
+function getCmsRemovedItemsLedgerRaw(
+  courseTrackId: string
+): CmsRemovedItemRecord[] {
+  return (
+    cmsStorageAdapter.getItem<CmsRemovedItemRecord[]>(
+      `${REMOVED_LEDGER_KEY_PREFIX}${courseTrackId}`
+    ) || []
+  );
+}
+
+function saveCmsRemovedItemsLedgerRaw(
+  courseTrackId: string,
+  records: CmsRemovedItemRecord[]
+): void {
+  cmsStorageAdapter.setItem(
+    `${REMOVED_LEDGER_KEY_PREFIX}${courseTrackId}`,
+    records.slice(0, 200)
+  );
+}
+
+export function getCmsRemovedItemsInDraft(
+  courseTrackId: string,
+  includeRestored = false
+): CmsRemovedItemRecord[] {
+  assertCmsPermission('cms:preview_readonly');
+  const all = getCmsRemovedItemsLedgerRaw(courseTrackId);
+  return includeRestored
+    ? deepClone(all)
+    : deepClone(all.filter((r) => r.status === 'REMOVED_IN_DRAFT'));
+}
+
+function getUndoStackRaw(courseTrackId: string): CmsUndoRedoActionEntry[] {
+  return (
+    cmsStorageAdapter.getItem<CmsUndoRedoActionEntry[]>(
+      `${UNDO_STACK_KEY_PREFIX}${courseTrackId}`
+    ) || []
+  );
+}
+
+function saveUndoStackRaw(
+  courseTrackId: string,
+  stack: CmsUndoRedoActionEntry[]
+): void {
+  cmsStorageAdapter.setItem(
+    `${UNDO_STACK_KEY_PREFIX}${courseTrackId}`,
+    stack.slice(0, 30)
+  );
+}
+
+function getRedoStackRaw(courseTrackId: string): CmsUndoRedoActionEntry[] {
+  return (
+    cmsStorageAdapter.getItem<CmsUndoRedoActionEntry[]>(
+      `${REDO_STACK_KEY_PREFIX}${courseTrackId}`
+    ) || []
+  );
+}
+
+function saveRedoStackRaw(
+  courseTrackId: string,
+  stack: CmsUndoRedoActionEntry[]
+): void {
+  cmsStorageAdapter.setItem(
+    `${REDO_STACK_KEY_PREFIX}${courseTrackId}`,
+    stack.slice(0, 30)
+  );
+}
+
+export function getCmsUndoRedoState(courseTrackId: string): {
+  canUndo: boolean;
+  canRedo: boolean;
+  lastUndoLabel: string | null;
+  lastRedoLabel: string | null;
+  undoCount: number;
+  redoCount: number;
+} {
+  const undoStack = getUndoStackRaw(courseTrackId);
+  const redoStack = getRedoStackRaw(courseTrackId);
+  return {
+    canUndo: undoStack.length > 0,
+    canRedo: redoStack.length > 0,
+    lastUndoLabel: undoStack.length > 0 ? undoStack[0].actionLabel : null,
+    lastRedoLabel: redoStack.length > 0 ? redoStack[0].actionLabel : null,
+    undoCount: undoStack.length,
+    redoCount: redoStack.length,
+  };
+}
+
+function findLessonInModule(
+  mod: UniversalModuleV1,
+  lessonId: string,
+  sectionId?: string
+): {
+  section?: UniversalSectionV1;
+  lesson: UniversalLessonV1;
+  lessonIndex: number;
+} | null {
+  if (sectionId && Array.isArray(mod.sections)) {
+    const sec = mod.sections.find((s) => s.sectionId === sectionId);
+    if (sec && Array.isArray(sec.lessons)) {
+      const idx = sec.lessons.findIndex((l) => l.lessonId === lessonId);
+      if (idx >= 0) {
+        return { section: sec, lesson: sec.lessons[idx], lessonIndex: idx };
+      }
+    }
+  }
+  for (const sec of mod.sections || []) {
+    const idx = (sec.lessons || []).findIndex((l) => l.lessonId === lessonId);
+    if (idx >= 0 && sec.lessons) {
+      return { section: sec, lesson: sec.lessons[idx], lessonIndex: idx };
+    }
+  }
+  if (Array.isArray(mod.lessons)) {
+    const idx = mod.lessons.findIndex((l) => l.lessonId === lessonId);
+    if (idx >= 0) {
+      return { lesson: mod.lessons[idx], lessonIndex: idx };
+    }
+  }
+  return null;
+}
+
+/**
+ * Inspects a removal target before executing it so the UI can decide whether
+ * to execute immediately (low-impact leaf item) or show a clear confirmation dialog
+ * listing all affected child lessons, questions, and dependencies (high-impact container
+ * or correct answer option).
+ */
+export function analyzeCmsRemovalImpact(
+  courseTrackId: string,
+  target: CmsRemovalTargetSpec
+): CmsRemovalImpactAnalysis {
+  assertCmsPermission('cms:preview_readonly');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const pkg = env.draftPackage;
+  const mod = pkg.modules.find((m) => m.moduleId === target.moduleId);
+  if (!mod) {
+    throw new Error(`Module "${target.moduleId}" not found in draft.`);
+  }
+
+  const itemTypeLabel = getFriendlyItemTypeLabel(target.itemType);
+  let itemTitle = mod.title;
+  let locationBreadcrumb = mod.title;
+  let requiresConfirmation = false;
+  let removesCorrectAnswer = false;
+  let sharedAssetPreservedNote: string | undefined;
+  let dependencyWarning: string | undefined;
+
+  const affectedCounts = {
+    sections: 0,
+    lessons: 0,
+    questions: 0,
+    vocabularyRefs: 0,
+    mediaRefs: 0,
+    dependentModuleIds: [] as string[],
+  };
+
+  if (target.itemType === 'module') {
+    requiresConfirmation = true;
+    itemTitle = `${mod.moduleId} — ${mod.title}`;
+    locationBreadcrumb = `Course Track (${courseTrackId}) → ${mod.title}`;
+    affectedCounts.sections = (mod.sections || []).length;
+    const allLessons = [
+      ...(mod.lessons || []),
+      ...(mod.sections || []).flatMap((s) => s.lessons || []),
+    ];
+    affectedCounts.lessons = allLessons.length;
+    for (const l of allLessons) {
+      affectedCounts.questions += (l.activities || []).length;
+      affectedCounts.vocabularyRefs += (l.vocabularyRefs || []).length;
+      affectedCounts.mediaRefs += ((l.mediaRefs as string[]) || []).length;
+    }
+    affectedCounts.vocabularyRefs = Math.max(
+      affectedCounts.vocabularyRefs,
+      (mod.vocabularyReferences || []).length
+    );
+    for (const otherMod of pkg.modules) {
+      if (
+        otherMod.moduleId !== mod.moduleId &&
+        (otherMod.prerequisites || []).includes(mod.moduleId)
+      ) {
+        affectedCounts.dependentModuleIds.push(otherMod.moduleId);
+      }
+    }
+    if (affectedCounts.dependentModuleIds.length > 0) {
+      dependencyWarning = `Prerequisite link warning: Module(s) ${affectedCounts.dependentModuleIds.join(', ')} list "${mod.title}" as a prerequisite.`;
+    }
+    sharedAssetPreservedNote =
+      'Removing this module from your draft does not delete any words from the global Vocabulary Bank or photos from the Media Library.';
+  } else if (target.itemType === 'section') {
+    const sec = (mod.sections || []).find(
+      (s) => s.sectionId === target.sectionId
+    );
+    if (!sec) {
+      throw new Error(
+        `Section "${target.sectionId}" not found in module "${mod.moduleId}".`
+      );
+    }
+    itemTitle = sec.title;
+    locationBreadcrumb = `${mod.title} → ${sec.title}`;
+    const lessons = sec.lessons || [];
+    affectedCounts.lessons = lessons.length;
+    for (const l of lessons) {
+      affectedCounts.questions += (l.activities || []).length;
+      affectedCounts.vocabularyRefs += (l.vocabularyRefs || []).length;
+      affectedCounts.mediaRefs += ((l.mediaRefs as string[]) || []).length;
+    }
+    requiresConfirmation =
+      affectedCounts.lessons > 0 || affectedCounts.questions > 0;
+  } else if (target.itemType === 'lesson') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found) {
+      throw new Error(
+        `Lesson "${target.lessonId}" not found in module "${mod.moduleId}".`
+      );
+    }
+    itemTitle = found.lesson.title;
+    locationBreadcrumb = found.section
+      ? `${mod.title} → ${found.section.title} → ${found.lesson.title}`
+      : `${mod.title} → ${found.lesson.title}`;
+    affectedCounts.questions = (found.lesson.activities || []).length;
+    affectedCounts.vocabularyRefs = (found.lesson.vocabularyRefs || []).length;
+    affectedCounts.mediaRefs = ((found.lesson.mediaRefs as string[]) || []).length;
+    requiresConfirmation = true;
+    sharedAssetPreservedNote =
+      'Linked vocabulary words and media photos stay safely in your shared libraries.';
+  } else if (target.itemType === 'lesson_paragraph') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found) {
+      throw new Error(`Lesson "${target.lessonId}" not found.`);
+    }
+    const paragraphs = String(found.lesson.instructionalText || '')
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const pIdx = target.paragraphIndex ?? 0;
+    const textPreview = (paragraphs[pIdx] || '').slice(0, 65);
+    itemTitle = textPreview
+      ? `Paragraph ${pIdx + 1}: "${textPreview}${paragraphs[pIdx] && paragraphs[pIdx].length > 65 ? '…' : ''}"`
+      : `Paragraph ${pIdx + 1}`;
+    locationBreadcrumb = `${mod.title} → ${found.lesson.title}`;
+    requiresConfirmation = false;
+  } else if (target.itemType === 'activity') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found) {
+      throw new Error(`Lesson "${target.lessonId}" not found.`);
+    }
+    const act = (found.lesson.activities || []).find(
+      (a) => a.activityId === target.activityId
+    );
+    if (!act) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    itemTitle = act.title || act.prompt || act.activityId;
+    locationBreadcrumb = `${mod.title} → ${found.lesson.title} → ${itemTitle}`;
+    affectedCounts.questions = 1;
+    affectedCounts.vocabularyRefs = (act.vocabularyRefs || []).length;
+    requiresConfirmation = true;
+  } else if (target.itemType === 'answer_option') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    if (!found || !act) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    const payload = (act.payload || {}) as {
+      options?: string[];
+      correctIndex?: number;
+    };
+    const options = Array.isArray(payload.options) ? payload.options : [];
+    const optIdx = target.optionIndex ?? -1;
+    const optText = options[optIdx] ?? `Option #${optIdx + 1}`;
+    itemTitle = `Choice "${optText}"`;
+    locationBreadcrumb = `${mod.title} → ${found.lesson.title} → ${act.title || act.activityId}`;
+    if (payload.correctIndex === optIdx) {
+      removesCorrectAnswer = true;
+      requiresConfirmation = true;
+      dependencyWarning =
+        'This choice is currently marked as the Correct Answer. Removing it will leave this question without a valid correct answer until you select a new one.';
+    } else if (options.length <= 2) {
+      requiresConfirmation = true;
+      dependencyWarning =
+        'Removing this choice leaves fewer than 2 answer options for this question.';
+    }
+  } else if (target.itemType === 'question_explanation') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    itemTitle = `Answer Explanation for "${act?.title || target.activityId}"`;
+    locationBreadcrumb = `${mod.title} → ${found?.lesson.title || target.lessonId}`;
+    requiresConfirmation = false;
+  } else if (
+    target.itemType === 'grammar_rule' ||
+    target.itemType === 'example_sentence' ||
+    target.itemType === 'grammar_table' ||
+    target.itemType === 'grammar_table_row'
+  ) {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    const payload = (act?.payload || {}) as Record<string, any>;
+    locationBreadcrumb = `${mod.title} → ${found?.lesson.title || ''} → ${act?.title || ''}`;
+    if (target.itemType === 'grammar_rule') {
+      const rules = Array.isArray(payload.rules) ? payload.rules : [];
+      const rText = stripHtmlTags(String(rules[target.ruleIndex ?? 0] || '')).slice(
+        0,
+        60
+      );
+      itemTitle = rText ? `Grammar Note: "${rText}…"` : `Grammar Note #${(target.ruleIndex ?? 0) + 1}`;
+    } else if (target.itemType === 'example_sentence') {
+      const exs = Array.isArray(payload.examples)
+        ? payload.examples
+        : Array.isArray(payload.lines)
+          ? payload.lines
+          : Array.isArray(payload.prompts)
+            ? payload.prompts
+            : [];
+      const ex = exs[target.exampleIndex ?? 0] as
+        | { uk?: string; en?: string; text?: string; front?: string }
+        | undefined;
+      itemTitle = ex
+        ? `Example: "${ex.uk || ex.text || ex.front || ''}"`
+        : `Example #${(target.exampleIndex ?? 0) + 1}`;
+    } else if (target.itemType === 'grammar_table') {
+    itemTitle = `Grammar Table #${(target.tableIndex ?? 0) + 1}`;
+      const tables = Array.isArray(payload.tables)
+        ? payload.tables
+        : Array.isArray(payload.patternTables)
+          ? payload.patternTables
+          : [];
+      const tbl = tables[target.tableIndex ?? 0] as
+        | { title?: string; rows?: unknown[] }
+        | undefined;
+      if (tbl?.title) {
+        itemTitle = `Grammar Table: "${tbl.title}"`;
+      }
+      requiresConfirmation = true;
+    } else {
+      itemTitle = `Table Row #${(target.rowIndex ?? 0) + 1}`;
+    }
+  } else if (target.itemType === 'vocabulary_reference') {
+    const resolvedVocabId = target.vocabularyId || target.vocabId || '';
+    itemTitle = `Vocabulary Link "${resolvedVocabId}"`;
+    locationBreadcrumb = `${mod.title}${target.lessonId ? ` → ${target.lessonId}` : ''}`;
+    sharedAssetPreservedNote =
+      'Only the link to this lesson is removed. The word remains in the shared Vocabulary Bank and FSRS flashcards.';
+    requiresConfirmation = false;
+  } else if (target.itemType === 'media_reference') {
+    const resolvedMediaPath = target.mediaAssetPath || target.mediaPath || '';
+    itemTitle = `Photo Link "${resolvedMediaPath}"`;
+    locationBreadcrumb = `${mod.title}${target.lessonId ? ` → ${target.lessonId}` : ''}`;
+    sharedAssetPreservedNote =
+      'Only the photo link in this lesson is removed. The image file stays in the Media Library.';
+    requiresConfirmation = false;
+  } else if (target.itemType === 'learning_objective') {
+    const objText = (mod.learningObjectives || [])[target.objectiveIndex ?? 0] || '';
+    itemTitle = `Learning Goal: "${objText.slice(0, 60)}"`;
+    locationBreadcrumb = mod.title;
+    requiresConfirmation = false;
+  }
+
+  const summaryParts: string[] = [];
+  if (affectedCounts.sections > 0) {
+    summaryParts.push(`${affectedCounts.sections} section(s)`);
+  }
+  if (affectedCounts.lessons > 0) {
+    summaryParts.push(`${affectedCounts.lessons} lesson(s)`);
+  }
+  if (affectedCounts.questions > 0) {
+    summaryParts.push(`${affectedCounts.questions} practice/exam item(s)`);
+  }
+  if (affectedCounts.vocabularyRefs > 0) {
+    summaryParts.push(`${affectedCounts.vocabularyRefs} vocabulary link(s)`);
+  }
+  if (affectedCounts.mediaRefs > 0) {
+    summaryParts.push(`${affectedCounts.mediaRefs} photo link(s)`);
+  }
+
+  const friendlyImpactSummary =
+    summaryParts.length > 0
+      ? `Removing "${itemTitle}" from your draft will also remove ${summaryParts.join(', ')} inside it. Your published course will not change until you publish.`
+      : `Removes "${itemTitle}" from your unpublished draft only.`;
+
+  return {
+    courseTrackId,
+    target,
+    itemTypeLabel,
+    itemTitle,
+    locationBreadcrumb,
+    requiresConfirmation,
+    severity: requiresConfirmation ? 'high' : 'low',
+    affectedCounts,
+    removesCorrectAnswer,
+    willInvalidateCorrectAnswer: removesCorrectAnswer,
+    sharedAssetPreservedNote,
+    sharedLibrarySafetyNote: sharedAssetPreservedNote,
+    dependencyWarning,
+    prerequisiteDependents: affectedCounts.dependentModuleIds,
+    friendlyImpactSummary,
+    confirmationHeadline: `Remove ${itemTypeLabel} "${itemTitle}" from your draft?`,
+    confirmationExplanation:
+      dependencyWarning ||
+      `${friendlyImpactSummary} You can undo this immediately or restore it anytime from Removed Items.`,
+    keepButtonLabel: `Keep ${itemTypeLabel}`,
+    removeButtonLabel: 'Remove from Draft',
+  };
+}
+
+/**
+ * Safely and non-destructively removes any supported course content item from the
+ * Course Track's Studio Draft, records a soft-deleted entry in the track's Removed Items
+ * ledger, and pushes a reversible entry onto the track's Undo stack.
+ */
+export function removeCmsContentItemInDraft(
+  courseTrackId: string,
+  target: CmsRemovalTargetSpec
+): {
+  envelope: CmsCourseDraftEnvelope;
+  removedRecord: CmsRemovedItemRecord;
+  impact: CmsRemovalImpactAnalysis;
+  undoEntry: CmsUndoRedoActionEntry;
+  undoBannerMessage: string;
+  warningMessage?: string;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const impact = analyzeCmsRemovalImpact(courseTrackId, target);
+  const beforeEnv = getOrCreateCmsCourseDraft(courseTrackId);
+  const beforePackage = deepClone(beforeEnv.draftPackage);
+  const beforeConfirmedDeleted =
+    courseTrackId === PUBLISHED_UKRAINIAN_TRACK_ID
+      ? [...(getRawSparseOverlayForUk()?.confirmedDeletedModuleIds || [])]
+      : [];
+  const beforeLedger = getCmsRemovedItemsLedgerRaw(courseTrackId);
+
+  const pkg = deepClone(beforeEnv.draftPackage);
+  const afterConfirmedDeleted = new Set<string>(beforeConfirmedDeleted);
+
+  let itemId = target.moduleId;
+  let originalIndex = 0;
+  let serializedPayload: unknown = null;
+  const extraRestoreMetadata: Record<string, unknown> = {};
+  let warningMessage: string | undefined;
+
+  const modIdx = pkg.modules.findIndex((m) => m.moduleId === target.moduleId);
+  if (modIdx < 0) {
+    throw new Error(`Module "${target.moduleId}" not found in draft.`);
+  }
+  const mod = pkg.modules[modIdx];
+
+  if (target.itemType === 'module') {
+    itemId = mod.moduleId;
+    originalIndex = modIdx;
+    serializedPayload = deepClone(mod);
+    pkg.modules.splice(modIdx, 1);
+    if (courseTrackId === PUBLISHED_UKRAINIAN_TRACK_ID) {
+      afterConfirmedDeleted.add(mod.moduleId);
+    }
+  } else if (target.itemType === 'section') {
+    if (!Array.isArray(mod.sections)) {
+      throw new Error(`Module "${mod.moduleId}" has no sections.`);
+    }
+    const sIdx = mod.sections.findIndex((s) => s.sectionId === target.sectionId);
+    if (sIdx < 0) {
+      throw new Error(`Section "${target.sectionId}" not found.`);
+    }
+    itemId = mod.sections[sIdx].sectionId;
+    originalIndex = sIdx;
+    serializedPayload = deepClone(mod.sections[sIdx]);
+    mod.sections.splice(sIdx, 1);
+  } else if (target.itemType === 'lesson') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found) {
+      throw new Error(`Lesson "${target.lessonId}" not found.`);
+    }
+    itemId = found.lesson.lessonId;
+    originalIndex = found.lessonIndex;
+    serializedPayload = deepClone(found.lesson);
+    if (found.section && Array.isArray(found.section.lessons)) {
+      extraRestoreMetadata.sectionId = found.section.sectionId;
+      found.section.lessons.splice(found.lessonIndex, 1);
+    } else if (Array.isArray(mod.lessons)) {
+      mod.lessons.splice(found.lessonIndex, 1);
+    }
+  } else if (target.itemType === 'lesson_paragraph') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found) {
+      throw new Error(`Lesson "${target.lessonId}" not found.`);
+    }
+    const paragraphs = String(found.lesson.instructionalText || '')
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const pIdx = target.paragraphIndex ?? 0;
+    if (pIdx < 0 || pIdx >= paragraphs.length) {
+      throw new Error(`Paragraph index ${pIdx} is out of range.`);
+    }
+    itemId = `${found.lesson.lessonId}_para_${pIdx + 1}`;
+    originalIndex = pIdx;
+    serializedPayload = paragraphs[pIdx];
+    paragraphs.splice(pIdx, 1);
+    found.lesson.instructionalText = paragraphs.join('\n\n');
+  } else if (target.itemType === 'activity') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    if (!found || !Array.isArray(found.lesson.activities)) {
+      throw new Error(`Lesson "${target.lessonId}" has no activities.`);
+    }
+    const aIdx = found.lesson.activities.findIndex(
+      (a) => a.activityId === target.activityId
+    );
+    if (aIdx < 0) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    itemId = found.lesson.activities[aIdx].activityId;
+    originalIndex = aIdx;
+    serializedPayload = deepClone(found.lesson.activities[aIdx]);
+    found.lesson.activities.splice(aIdx, 1);
+  } else if (target.itemType === 'answer_option') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    if (!found || !act) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    const payload = (act.payload || {}) as {
+      options?: string[];
+      correctIndex?: number;
+      answer?: string;
+    };
+    if (!Array.isArray(payload.options)) {
+      throw new Error(`Activity "${act.activityId}" has no answer options.`);
+    }
+    const optIdx = target.optionIndex ?? -1;
+    if (optIdx < 0 || optIdx >= payload.options.length) {
+      throw new Error(`Answer option index ${optIdx} is out of range.`);
+    }
+    const previousCorrectIndex =
+      typeof payload.correctIndex === 'number' ? payload.correctIndex : -1;
+    extraRestoreMetadata.previousCorrectIndex = previousCorrectIndex;
+    itemId = `${act.activityId}_opt_${optIdx + 1}`;
+    originalIndex = optIdx;
+    serializedPayload = payload.options[optIdx];
+    payload.options.splice(optIdx, 1);
+
+    if (optIdx === previousCorrectIndex) {
+      // NEVER silently assign another option as correct!
+      payload.correctIndex = -1;
+      payload.answer = '';
+      warningMessage =
+        'You removed the answer choice that was marked as correct. Please select a new correct answer before publishing.';
+    } else if (previousCorrectIndex > optIdx) {
+      payload.correctIndex = previousCorrectIndex - 1;
+      payload.answer = payload.options[payload.correctIndex] || '';
+    }
+    act.payload = { ...payload };
+  } else if (target.itemType === 'question_explanation') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    if (!found || !act) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    const payload = (act.payload || {}) as { explanation?: string };
+    itemId = `${act.activityId}_explanation`;
+    originalIndex = 0;
+    serializedPayload = payload.explanation || '';
+    payload.explanation = '';
+    act.payload = { ...payload };
+  } else if (target.itemType === 'grammar_rule') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    const payload = (act?.payload || {}) as { rules?: string[] };
+    if (!found || !act || !Array.isArray(payload.rules)) {
+      throw new Error(`Grammar rules array not found on "${target.activityId}".`);
+    }
+    const rIdx = target.ruleIndex ?? 0;
+    if (rIdx < 0 || rIdx >= payload.rules.length) {
+      throw new Error(`Grammar rule index ${rIdx} out of bounds.`);
+    }
+    itemId = `${act.activityId}_rule_${rIdx + 1}`;
+    originalIndex = rIdx;
+    serializedPayload = payload.rules[rIdx];
+    payload.rules.splice(rIdx, 1);
+    act.payload = { ...payload };
+  } else if (target.itemType === 'example_sentence') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    const payload = (act?.payload || {}) as Record<string, any>;
+    if (!found || !act) {
+      throw new Error(`Activity "${target.activityId}" not found.`);
+    }
+    const arrayKey = Array.isArray(payload.examples)
+      ? 'examples'
+      : Array.isArray(payload.lines)
+        ? 'lines'
+        : Array.isArray(payload.prompts)
+          ? 'prompts'
+          : null;
+    if (!arrayKey) {
+      throw new Error(`Example list not found on activity "${act.activityId}".`);
+    }
+    const list = payload[arrayKey] as unknown[];
+    const exIdx = target.exampleIndex ?? 0;
+    if (exIdx < 0 || exIdx >= list.length) {
+      throw new Error(`Example index ${exIdx} out of bounds.`);
+    }
+    extraRestoreMetadata.arrayKey = arrayKey;
+    itemId = `${act.activityId}_ex_${exIdx + 1}`;
+    originalIndex = exIdx;
+    serializedPayload = deepClone(list[exIdx]);
+    list.splice(exIdx, 1);
+    act.payload = { ...payload };
+  } else if (target.itemType === 'grammar_table') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    const payload = (act?.payload || {}) as {
+      tables?: unknown[];
+      patternTables?: unknown[];
+    };
+    const tablesArr = Array.isArray(payload.tables)
+      ? payload.tables
+      : Array.isArray(payload.patternTables)
+        ? payload.patternTables
+        : null;
+    if (!found || !act || !tablesArr) {
+      throw new Error(`Grammar tables not found on activity "${target.activityId}".`);
+    }
+    const tIdx = target.tableIndex ?? 0;
+    if (tIdx < 0 || tIdx >= tablesArr.length) {
+      throw new Error(`Table index ${tIdx} out of bounds.`);
+    }
+    itemId = `${act.activityId}_table_${tIdx + 1}`;
+    originalIndex = tIdx;
+    serializedPayload = deepClone(tablesArr[tIdx]);
+    if (Array.isArray(payload.tables)) {
+      payload.tables.splice(tIdx, 1);
+    }
+    if (Array.isArray(payload.patternTables)) {
+      payload.patternTables.splice(tIdx, 1);
+    }
+    act.payload = { ...payload };
+  } else if (target.itemType === 'grammar_table_row') {
+    const found = findLessonInModule(mod, target.lessonId || '', target.sectionId);
+    const act = found?.lesson.activities?.find(
+      (a) => a.activityId === target.activityId
+    );
+    const payload = (act?.payload || {}) as {
+      tables?: Array<{ title?: string; headers?: string[]; rows?: unknown[] }>;
+      patternTables?: Array<{ title?: string; headers?: string[]; rows?: unknown[] }>;
+    };
+    const tIdx = target.tableIndex ?? 0;
+    const rIdx = target.rowIndex ?? 0;
+    const tbl = payload.tables?.[tIdx] || payload.patternTables?.[tIdx];
+    if (!found || !act || !tbl || !Array.isArray(tbl.rows)) {
+      throw new Error(`Grammar table row not found.`);
+    }
+    if (rIdx < 0 || rIdx >= tbl.rows.length) {
+      throw new Error(`Row index ${rIdx} out of bounds.`);
+    }
+    itemId = `${act.activityId}_table_${tIdx + 1}_row_${rIdx + 1}`;
+    originalIndex = rIdx;
+    serializedPayload = deepClone(tbl.rows[rIdx]);
+    if (payload.tables?.[tIdx]?.rows) {
+      payload.tables[tIdx].rows!.splice(rIdx, 1);
+    }
+    if (payload.patternTables?.[tIdx]?.rows) {
+      payload.patternTables[tIdx].rows!.splice(rIdx, 1);
+    }
+    act.payload = { ...payload };
+  } else if (target.itemType === 'vocabulary_reference') {
+    const vocabId = target.vocabularyId || target.vocabId || '';
+    if (!vocabId) {
+      throw new Error('vocabularyId is required to remove a vocabulary reference.');
+    }
+    itemId = vocabId;
+    serializedPayload = vocabId;
+    if (target.lessonId) {
+      const found = findLessonInModule(mod, target.lessonId, target.sectionId);
+      if (!found) {
+        throw new Error(`Lesson "${target.lessonId}" not found.`);
+      }
+      const refs = found.lesson.vocabularyRefs || [];
+      originalIndex = Math.max(0, refs.indexOf(vocabId));
+      found.lesson.vocabularyRefs = refs.filter((r) => r !== vocabId);
+      const existingRemoved = Array.isArray(
+        found.lesson.metadata?.removedVocabularyRefs
+      )
+        ? (found.lesson.metadata!.removedVocabularyRefs as string[])
+        : [];
+      if (!existingRemoved.includes(vocabId)) {
+        found.lesson.metadata = {
+          ...(found.lesson.metadata || {}),
+          removedVocabularyRefs: [...existingRemoved, vocabId],
+        };
+      }
+      if (target.activityId && Array.isArray(found.lesson.activities)) {
+        const act = found.lesson.activities.find(
+          (a) => a.activityId === target.activityId
+        );
+        if (act && Array.isArray(act.vocabularyRefs)) {
+          act.vocabularyRefs = act.vocabularyRefs.filter((r) => r !== vocabId);
+        }
+      }
+    } else {
+      const refs = mod.vocabularyReferences || [];
+      originalIndex = Math.max(0, refs.indexOf(vocabId));
+      mod.vocabularyReferences = refs.filter((r) => r !== vocabId);
+    }
+  } else if (target.itemType === 'media_reference') {
+    const assetPath = target.mediaAssetPath || target.mediaPath || '';
+    if (!assetPath || !target.lessonId) {
+      throw new Error(
+        'lessonId and mediaAssetPath are required to remove a media reference.'
+      );
+    }
+    const found = findLessonInModule(mod, target.lessonId, target.sectionId);
+    if (!found) {
+      throw new Error(`Lesson "${target.lessonId}" not found.`);
+    }
+    const refs = ((found.lesson.mediaRefs as string[]) || []).slice();
+    originalIndex = Math.max(0, refs.indexOf(assetPath));
+    found.lesson.mediaRefs = refs.filter((r) => r !== assetPath);
+    itemId = assetPath;
+    serializedPayload = assetPath;
+  } else if (target.itemType === 'learning_objective') {
+    const objs = mod.learningObjectives || [];
+    const oIdx = target.objectiveIndex ?? 0;
+    if (oIdx < 0 || oIdx >= objs.length) {
+      throw new Error(`Objective index ${oIdx} out of bounds.`);
+    }
+    itemId = `${mod.moduleId}_obj_${oIdx + 1}`;
+    originalIndex = oIdx;
+    serializedPayload = objs[oIdx];
+    objs.splice(oIdx, 1);
+    mod.learningObjectives = objs;
+  }
+
+  const removedRecord: CmsRemovedItemRecord = {
+    removalId: `rem_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    courseTrackId,
+    itemType: target.itemType,
+    itemTypeLabel: impact.itemTypeLabel,
+    itemId,
+    itemTitle: impact.itemTitle,
+    locationBreadcrumb: impact.locationBreadcrumb,
+    parentIds: {
+      moduleId: target.moduleId,
+      sectionId:
+        (extraRestoreMetadata.sectionId as string | undefined) ||
+        target.sectionId,
+      lessonId: target.lessonId,
+      activityId: target.activityId,
+      tableIndex: target.tableIndex,
+    },
+    originalIndex,
+    removedAt: Date.now(),
+    status: 'REMOVED_IN_DRAFT',
+    impactSummary: impact.friendlyImpactSummary,
+    serializedPayload,
+    extraRestoreMetadata,
+  };
+
+  const afterLedger = [removedRecord, ...beforeLedger];
+  saveCmsRemovedItemsLedgerRaw(courseTrackId, afterLedger);
+
+  const savedEnvelope = saveCmsCourseDraft(courseTrackId, pkg, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Removed ${impact.itemTypeLabel.toLowerCase()} "${impact.itemTitle}" from draft`,
+    confirmedDeletedModuleIds: Array.from(afterConfirmedDeleted),
+  });
+
+  const undoEntry: CmsUndoRedoActionEntry = {
+    actionId: `undo_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    courseTrackId,
+    timestamp: Date.now(),
+    actionLabel: `Remove ${impact.itemTypeLabel}: ${impact.itemTitle}`,
+    beforePackage,
+    afterPackage: deepClone(savedEnvelope.draftPackage),
+    beforeConfirmedDeletedModuleIds: beforeConfirmedDeleted,
+    afterConfirmedDeletedModuleIds: Array.from(afterConfirmedDeleted),
+    beforeRemovedLedger: beforeLedger,
+    afterRemovedLedger: afterLedger,
+  };
+
+  const undoStack = getUndoStackRaw(courseTrackId);
+  undoStack.unshift(undoEntry);
+  saveUndoStackRaw(courseTrackId, undoStack);
+  saveRedoStackRaw(courseTrackId, []);
+
+  const undoBannerMessage = warningMessage
+    ? `${impact.itemTypeLabel} "${impact.itemTitle}" removed from your draft. ⚠️ ${warningMessage}`
+    : `${impact.itemTypeLabel} "${impact.itemTitle}" removed from your draft.`;
+
+  return {
+    envelope: savedEnvelope,
+    removedRecord,
+    impact,
+    undoEntry,
+    undoBannerMessage,
+    warningMessage,
+  };
+}
+
+/**
+ * Restores a single soft-deleted item from the track's Removed Items ledger back
+ * to its original parent and index without restoring unrelated removed items.
+ */
+export function restoreRemovedCmsItemInDraft(
+  courseTrackId: string,
+  removalId: string
+): {
+  success: boolean;
+  restoredRecord?: CmsRemovedItemRecord;
+  envelope: CmsCourseDraftEnvelope;
+  message: string;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const beforeEnv = getOrCreateCmsCourseDraft(courseTrackId);
+  const beforePackage = deepClone(beforeEnv.draftPackage);
+  const beforeConfirmedDeleted =
+    courseTrackId === PUBLISHED_UKRAINIAN_TRACK_ID
+      ? [...(getRawSparseOverlayForUk()?.confirmedDeletedModuleIds || [])]
+      : [];
+  const beforeLedger = getCmsRemovedItemsLedgerRaw(courseTrackId);
+
+  const recIdx = beforeLedger.findIndex(
+    (r) => r.removalId === removalId && r.status === 'REMOVED_IN_DRAFT'
+  );
+  if (recIdx < 0) {
+    return {
+      success: false,
+      envelope: beforeEnv,
+      message: `Removed item "${removalId}" was not found or was already restored.`,
+    };
+  }
+
+  const record = deepClone(beforeLedger[recIdx]);
+  const pkg = deepClone(beforeEnv.draftPackage);
+  const afterConfirmedDeleted = new Set<string>(beforeConfirmedDeleted);
+
+  if (record.itemType === 'module') {
+    const modPayload = deepClone(record.serializedPayload as UniversalModuleV1);
+    afterConfirmedDeleted.delete(modPayload.moduleId);
+    const existingIdx = pkg.modules.findIndex(
+      (m) => m.moduleId === modPayload.moduleId
+    );
+    if (existingIdx >= 0) {
+      pkg.modules[existingIdx] = modPayload;
+    } else {
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        pkg.modules.length
+      );
+      pkg.modules.splice(insertAt, 0, modPayload);
+    }
+  } else {
+    const mod = pkg.modules.find(
+      (m) => m.moduleId === record.parentIds.moduleId
+    );
+    if (!mod) {
+      return {
+        success: false,
+        envelope: beforeEnv,
+        message: `Cannot restore "${record.itemTitle}" because its parent module "${record.parentIds.moduleId}" is currently removed. Restore the parent module first.`,
+      };
+    }
+
+    if (record.itemType === 'section') {
+      const secPayload = deepClone(
+        record.serializedPayload as UniversalSectionV1
+      );
+      if (!Array.isArray(mod.sections)) mod.sections = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        mod.sections.length
+      );
+      mod.sections.splice(insertAt, 0, secPayload);
+    } else if (record.itemType === 'lesson') {
+      const lesPayload = deepClone(record.serializedPayload as UniversalLessonV1);
+      const secId = record.parentIds.sectionId;
+      if (secId && Array.isArray(mod.sections)) {
+        const sec = mod.sections.find((s) => s.sectionId === secId);
+        if (!sec) {
+          return {
+            success: false,
+            envelope: beforeEnv,
+            message: `Cannot restore lesson "${record.itemTitle}" because its parent section "${secId}" is currently removed. Restore the section first.`,
+          };
+        }
+        if (!Array.isArray(sec.lessons)) sec.lessons = [];
+        const insertAt = Math.min(
+          Math.max(0, record.originalIndex),
+          sec.lessons.length
+        );
+        sec.lessons.splice(insertAt, 0, lesPayload);
+      } else {
+        if (!Array.isArray(mod.lessons)) mod.lessons = [];
+        const insertAt = Math.min(
+          Math.max(0, record.originalIndex),
+          mod.lessons.length
+        );
+        mod.lessons.splice(insertAt, 0, lesPayload);
+      }
+    } else if (record.itemType === 'lesson_paragraph') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      if (!found) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore paragraph because its parent lesson is currently removed.`,
+        };
+      }
+      const paragraphs = String(found.lesson.instructionalText || '')
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter(Boolean);
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        paragraphs.length
+      );
+      paragraphs.splice(insertAt, 0, String(record.serializedPayload || ''));
+      found.lesson.instructionalText = paragraphs.join('\n\n');
+    } else if (record.itemType === 'activity') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      if (!found) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore activity because its parent lesson is currently removed.`,
+        };
+      }
+      if (!Array.isArray(found.lesson.activities)) found.lesson.activities = [];
+      const actPayload = deepClone(
+        record.serializedPayload as UniversalActivityItemV1
+      );
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        found.lesson.activities.length
+      );
+      found.lesson.activities.splice(insertAt, 0, actPayload);
+    } else if (record.itemType === 'answer_option') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      if (!found || !act) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore answer option because its parent question is currently removed.`,
+        };
+      }
+      const payload = (act.payload || {}) as {
+        options?: string[];
+        correctIndex?: number;
+        answer?: string;
+      };
+      if (!Array.isArray(payload.options)) payload.options = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        payload.options.length
+      );
+      const optText = String(record.serializedPayload || '');
+      payload.options.splice(insertAt, 0, optText);
+      const prevCorrect =
+        typeof record.extraRestoreMetadata?.previousCorrectIndex === 'number'
+          ? (record.extraRestoreMetadata.previousCorrectIndex as number)
+          : -1;
+      if (payload.correctIndex === -1 && prevCorrect === insertAt) {
+        payload.correctIndex = insertAt;
+        payload.answer = optText;
+      } else if (
+        typeof payload.correctIndex === 'number' &&
+        payload.correctIndex >= insertAt
+      ) {
+        payload.correctIndex += 1;
+        payload.answer = payload.options[payload.correctIndex] || '';
+      }
+      act.payload = { ...payload };
+    } else if (record.itemType === 'question_explanation') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      if (!found || !act) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore explanation because its parent question is currently removed.`,
+        };
+      }
+      const payload = (act.payload || {}) as { explanation?: string };
+      payload.explanation = String(record.serializedPayload || '');
+      act.payload = { ...payload };
+    } else if (record.itemType === 'grammar_rule') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      if (!found || !act) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore grammar note because its parent lesson item is currently removed.`,
+        };
+      }
+      const payload = (act.payload || {}) as { rules?: string[] };
+      if (!Array.isArray(payload.rules)) payload.rules = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        payload.rules.length
+      );
+      payload.rules.splice(insertAt, 0, String(record.serializedPayload || ''));
+      act.payload = { ...payload };
+    } else if (record.itemType === 'example_sentence') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      if (!found || !act) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore example sentence because its parent lesson item is currently removed.`,
+        };
+      }
+      const payload = (act.payload || {}) as Record<string, any>;
+      const arrayKey =
+        (record.extraRestoreMetadata?.arrayKey as string) || 'examples';
+      if (!Array.isArray(payload[arrayKey])) payload[arrayKey] = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        payload[arrayKey].length
+      );
+      payload[arrayKey].splice(insertAt, 0, deepClone(record.serializedPayload));
+      act.payload = { ...payload };
+    } else if (record.itemType === 'grammar_table') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      if (!found || !act) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore grammar table because its parent lesson item is currently removed.`,
+        };
+      }
+      const payload = (act.payload || {}) as {
+        tables?: unknown[];
+        patternTables?: unknown[];
+      };
+      if (!Array.isArray(payload.tables)) payload.tables = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        payload.tables.length
+      );
+      payload.tables.splice(insertAt, 0, deepClone(record.serializedPayload));
+      if (Array.isArray(payload.patternTables)) {
+        const ptInsert = Math.min(
+          Math.max(0, record.originalIndex),
+          payload.patternTables.length
+        );
+        payload.patternTables.splice(
+          ptInsert,
+          0,
+          deepClone(record.serializedPayload)
+        );
+      }
+      act.payload = { ...payload };
+    } else if (record.itemType === 'grammar_table_row') {
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      const act = found?.lesson.activities?.find(
+        (a) => a.activityId === record.parentIds.activityId
+      );
+      const payload = (act?.payload || {}) as {
+        tables?: Array<{ rows?: unknown[] }>;
+        patternTables?: Array<{ rows?: unknown[] }>;
+      };
+      const tIdx = record.parentIds.tableIndex ?? 0;
+      const tbl = payload.tables?.[tIdx] || payload.patternTables?.[tIdx];
+      if (!found || !act || !tbl) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore table row because its parent grammar table is currently removed.`,
+        };
+      }
+      if (payload.tables?.[tIdx]) {
+        if (!Array.isArray(payload.tables[tIdx].rows)) {
+          payload.tables[tIdx].rows = [];
+        }
+        const insertAt = Math.min(
+          Math.max(0, record.originalIndex),
+          payload.tables[tIdx].rows!.length
+        );
+        payload.tables[tIdx].rows!.splice(
+          insertAt,
+          0,
+          deepClone(record.serializedPayload)
+        );
+      }
+      if (payload.patternTables?.[tIdx]) {
+        if (!Array.isArray(payload.patternTables[tIdx].rows)) {
+          payload.patternTables[tIdx].rows = [];
+        }
+        const insertAt = Math.min(
+          Math.max(0, record.originalIndex),
+          payload.patternTables[tIdx].rows!.length
+        );
+        payload.patternTables[tIdx].rows!.splice(
+          insertAt,
+          0,
+          deepClone(record.serializedPayload)
+        );
+      }
+      act.payload = { ...payload };
+    } else if (record.itemType === 'vocabulary_reference') {
+      const vocabId = String(record.serializedPayload || record.itemId);
+      if (record.parentIds.lessonId) {
+        const found = findLessonInModule(
+          mod,
+          record.parentIds.lessonId,
+          record.parentIds.sectionId
+        );
+        if (!found) {
+          return {
+            success: false,
+            envelope: beforeEnv,
+            message: `Cannot restore vocabulary link because its parent lesson is currently removed.`,
+          };
+        }
+        if (!Array.isArray(found.lesson.vocabularyRefs)) {
+          found.lesson.vocabularyRefs = [];
+        }
+        if (!found.lesson.vocabularyRefs.includes(vocabId)) {
+          const insertAt = Math.min(
+            Math.max(0, record.originalIndex),
+            found.lesson.vocabularyRefs.length
+          );
+          found.lesson.vocabularyRefs.splice(insertAt, 0, vocabId);
+        }
+        if (Array.isArray(found.lesson.metadata?.removedVocabularyRefs)) {
+          found.lesson.metadata = {
+            ...found.lesson.metadata,
+            removedVocabularyRefs: (
+              found.lesson.metadata.removedVocabularyRefs as string[]
+            ).filter((id) => id !== vocabId),
+          };
+        }
+      } else {
+        if (!Array.isArray(mod.vocabularyReferences)) {
+          mod.vocabularyReferences = [];
+        }
+        if (!mod.vocabularyReferences.includes(vocabId)) {
+          const insertAt = Math.min(
+            Math.max(0, record.originalIndex),
+            mod.vocabularyReferences.length
+          );
+          mod.vocabularyReferences.splice(insertAt, 0, vocabId);
+        }
+      }
+    } else if (record.itemType === 'media_reference') {
+      const assetPath = String(record.serializedPayload || record.itemId);
+      const found = findLessonInModule(
+        mod,
+        record.parentIds.lessonId || '',
+        record.parentIds.sectionId
+      );
+      if (!found) {
+        return {
+          success: false,
+          envelope: beforeEnv,
+          message: `Cannot restore photo link because its parent lesson is currently removed.`,
+        };
+      }
+      const refs = Array.isArray(found.lesson.mediaRefs)
+        ? [...(found.lesson.mediaRefs as string[])]
+        : [];
+      if (!refs.includes(assetPath)) {
+        const insertAt = Math.min(
+          Math.max(0, record.originalIndex),
+          refs.length
+        );
+        refs.splice(insertAt, 0, assetPath);
+      }
+      found.lesson.mediaRefs = refs;
+    } else if (record.itemType === 'learning_objective') {
+      if (!Array.isArray(mod.learningObjectives)) mod.learningObjectives = [];
+      const insertAt = Math.min(
+        Math.max(0, record.originalIndex),
+        mod.learningObjectives.length
+      );
+      mod.learningObjectives.splice(
+        insertAt,
+        0,
+        String(record.serializedPayload || '')
+      );
+    }
+  }
+
+  const afterLedger = deepClone(beforeLedger);
+  afterLedger[recIdx] = {
+    ...afterLedger[recIdx],
+    status: 'RESTORED',
+    restoredAt: Date.now(),
+  };
+  saveCmsRemovedItemsLedgerRaw(courseTrackId, afterLedger);
+
+  const savedEnvelope = saveCmsCourseDraft(courseTrackId, pkg, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Restored ${record.itemTypeLabel.toLowerCase()} "${record.itemTitle}" to draft`,
+    confirmedDeletedModuleIds: Array.from(afterConfirmedDeleted),
+  });
+
+  const undoEntry: CmsUndoRedoActionEntry = {
+    actionId: `undo_restore_${Date.now()}`,
+    courseTrackId,
+    timestamp: Date.now(),
+    actionLabel: `Restore ${record.itemTypeLabel}: ${record.itemTitle}`,
+    beforePackage,
+    afterPackage: deepClone(savedEnvelope.draftPackage),
+    beforeConfirmedDeletedModuleIds: beforeConfirmedDeleted,
+    afterConfirmedDeletedModuleIds: Array.from(afterConfirmedDeleted),
+    beforeRemovedLedger: beforeLedger,
+    afterRemovedLedger: afterLedger,
+  };
+  const undoStack = getUndoStackRaw(courseTrackId);
+  undoStack.unshift(undoEntry);
+  saveUndoStackRaw(courseTrackId, undoStack);
+  saveRedoStackRaw(courseTrackId, []);
+
+  return {
+    success: true,
+    restoredRecord: afterLedger[recIdx],
+    envelope: savedEnvelope,
+    message: `Restored "${record.itemTitle}" to its original place in your draft.`,
+  };
+}
+
+/**
+ * Undoes the most recent removal or restoration action in the current Course Track's draft.
+ */
+export function undoLastCmsAction(courseTrackId: string): {
+  success: boolean;
+  undone: boolean;
+  message: string;
+  actionLabel?: string;
+  envelope: CmsCourseDraftEnvelope;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const undoStack = getUndoStackRaw(courseTrackId);
+  if (undoStack.length === 0) {
+    return {
+      success: false,
+      undone: false,
+      message: 'Nothing to undo in this session.',
+      envelope: getOrCreateCmsCourseDraft(courseTrackId),
+    };
+  }
+  const [entry, ...remainingUndo] = undoStack;
+  saveUndoStackRaw(courseTrackId, remainingUndo);
+
+  const redoStack = getRedoStackRaw(courseTrackId);
+  redoStack.unshift(entry);
+  saveRedoStackRaw(courseTrackId, redoStack);
+
+  saveCmsRemovedItemsLedgerRaw(courseTrackId, entry.beforeRemovedLedger);
+  const envelope = saveCmsCourseDraft(courseTrackId, entry.beforePackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Undo: ${entry.actionLabel}`,
+    confirmedDeletedModuleIds: entry.beforeConfirmedDeletedModuleIds,
+  });
+
+  return {
+    success: true,
+    undone: true,
+    message: `Undid: ${entry.actionLabel}`,
+    actionLabel: entry.actionLabel,
+    envelope,
+  };
+}
+
+/**
+ * Redoes the most recently undone action in the current Course Track's draft.
+ */
+export function redoLastCmsAction(courseTrackId: string): {
+  success: boolean;
+  redone: boolean;
+  message: string;
+  actionLabel?: string;
+  envelope: CmsCourseDraftEnvelope;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const redoStack = getRedoStackRaw(courseTrackId);
+  if (redoStack.length === 0) {
+    return {
+      success: false,
+      redone: false,
+      message: 'Nothing to redo in this session.',
+      envelope: getOrCreateCmsCourseDraft(courseTrackId),
+    };
+  }
+  const [entry, ...remainingRedo] = redoStack;
+  saveRedoStackRaw(courseTrackId, remainingRedo);
+
+  const undoStack = getUndoStackRaw(courseTrackId);
+  undoStack.unshift(entry);
+  saveUndoStackRaw(courseTrackId, undoStack);
+
+  saveCmsRemovedItemsLedgerRaw(courseTrackId, entry.afterRemovedLedger);
+  const envelope = saveCmsCourseDraft(courseTrackId, entry.afterPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Redo: ${entry.actionLabel}`,
+    confirmedDeletedModuleIds: entry.afterConfirmedDeletedModuleIds,
+  });
+
+  return {
+    success: true,
+    redone: true,
+    message: `Redid: ${entry.actionLabel}`,
+    actionLabel: entry.actionLabel,
+    envelope,
+  };
+}
+
+/**
+ * Structural creation and duplication helpers so every removable content level
+ * also supports full CREATE, REORDER, and DUPLICATE in the editor.
+ */
+export function addCmsSectionToModuleInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  sectionTitle: string = ''
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+  addedSection: UniversalSectionV1;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  if (!Array.isArray(mod.sections)) mod.sections = [];
+  const nextNum = mod.sections.length + 1;
+  const newSec: UniversalSectionV1 = {
+    sectionId: `${moduleId}_sec_custom_${Date.now()}`,
+    title: sectionTitle.trim() || `${nextNum}. New Section`,
+    lessons: [
+      {
+        lessonId: `${moduleId}_les_custom_${Date.now()}`,
+        title: 'Lesson 1',
+        summary: 'Lesson overview',
+        instructionalText: 'Write your lesson explanation here.',
+        vocabularyRefs: [],
+        mediaRefs: [],
+        activities: [],
+      },
+    ],
+  };
+  mod.sections.push(newSec);
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Added section "${newSec.title}" to module ${moduleId}`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+    addedSection: newSec,
+  };
+}
+
+export function addCmsLessonToSectionInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  sectionId: string,
+  lessonTitle: string = ''
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+  addedLesson: UniversalLessonV1;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const sec = (mod.sections || []).find((s) => s.sectionId === sectionId);
+  if (!sec) throw new Error(`Section "${sectionId}" not found.`);
+  if (!Array.isArray(sec.lessons)) sec.lessons = [];
+  const newLesson: UniversalLessonV1 = {
+    lessonId: `${moduleId}_les_${Date.now()}`,
+    title: lessonTitle.trim() || `New Lesson ${sec.lessons.length + 1}`,
+    summary: 'Short lesson summary',
+    instructionalText: 'Add clear explanation paragraphs for students here.',
+    vocabularyRefs: [],
+    mediaRefs: [],
+    activities: [],
+  };
+  sec.lessons.push(newLesson);
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Added lesson "${newLesson.title}" to section "${sec.title}"`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+    addedLesson: newLesson,
+  };
+}
+
+export function duplicateCmsLessonInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+  duplicatedLesson: UniversalLessonV1;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  if (!found) throw new Error(`Lesson "${lessonId}" not found.`);
+  const copy = deepClone(found.lesson);
+  const suffix = Date.now().toString(36).slice(-4);
+  copy.lessonId = `${found.lesson.lessonId}_copy_${suffix}`;
+  copy.title = `${found.lesson.title} (Copy)`;
+  copy.activities = (copy.activities || []).map((a, idx) => ({
+    ...a,
+    activityId: `${copy.lessonId}_act_${idx + 1}`,
+  }));
+  if (found.section && Array.isArray(found.section.lessons)) {
+    found.section.lessons.splice(found.lessonIndex + 1, 0, copy);
+  } else if (Array.isArray(mod.lessons)) {
+    mod.lessons.splice(found.lessonIndex + 1, 0, copy);
+  }
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Duplicated lesson "${found.lesson.title}"`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+    duplicatedLesson: copy,
+  };
+}
+
+export function addCmsActivityToLessonInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string,
+  activityType: string = 'knowledge_check_mc',
+  title: string = 'New Practice Question'
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+  addedActivity: UniversalActivityItemV1;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  if (!found) throw new Error(`Lesson "${lessonId}" not found.`);
+  if (!Array.isArray(found.lesson.activities)) found.lesson.activities = [];
+  const newAct: UniversalActivityItemV1 = {
+    activityId: `${lessonId}_act_${Date.now()}`,
+    activityType,
+    title: title.trim() || 'New Practice Question',
+    prompt: 'Write your question prompt here.',
+    vocabularyRefs: [],
+    payload: {
+      options: ['Option A', 'Option B', 'Option C'],
+      correctIndex: 0,
+      explanation: 'Explain why Option A is correct.',
+    },
+  };
+  found.lesson.activities.push(newAct);
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Added question "${newAct.title}" to lesson "${found.lesson.title}"`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+    addedActivity: newAct,
+  };
+}
+
+export function duplicateCmsActivityInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string,
+  activityId: string
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+  duplicatedActivity: UniversalActivityItemV1;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  if (!found || !Array.isArray(found.lesson.activities)) {
+    throw new Error(`Lesson "${lessonId}" not found.`);
+  }
+  const aIdx = found.lesson.activities.findIndex(
+    (a) => a.activityId === activityId
+  );
+  if (aIdx < 0) throw new Error(`Activity "${activityId}" not found.`);
+  const orig = found.lesson.activities[aIdx];
+  const copy = deepClone(orig);
+  copy.activityId = `${orig.activityId}_copy_${Date.now().toString(36).slice(-4)}`;
+  copy.title = `${orig.title || orig.activityId} (Copy)`;
+  found.lesson.activities.splice(aIdx + 1, 0, copy);
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Duplicated question "${orig.title || orig.activityId}"`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+    duplicatedActivity: copy,
+  };
+}
+
+export function addCmsAnswerOptionInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string,
+  activityId: string,
+  optionText: string = ''
+): CmsCourseDraftEnvelope & {
+  envelope: CmsCourseDraftEnvelope;
+} {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  const act = found?.lesson.activities?.find((a) => a.activityId === activityId);
+  if (!found || !act) throw new Error(`Activity "${activityId}" not found.`);
+  const payload = (act.payload || {}) as {
+    options?: string[];
+    correctIndex?: number;
+  };
+  if (!Array.isArray(payload.options)) payload.options = [];
+  payload.options.push(
+    optionText.trim() || `Option ${payload.options.length + 1}`
+  );
+  act.payload = { ...payload };
+  const saved = saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Added answer choice to "${act.title || act.activityId}"`,
+  });
+  return {
+    ...saved,
+    envelope: saved,
+  };
+}
+
+export function addCmsLessonVocabularyRefInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string,
+  vocabularyId: string
+): CmsCourseDraftEnvelope {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  if (!found) throw new Error(`Lesson "${lessonId}" not found.`);
+  const cleanId = vocabularyId.trim();
+  if (!cleanId) return env;
+  if (!Array.isArray(found.lesson.vocabularyRefs)) {
+    found.lesson.vocabularyRefs = [];
+  }
+  if (!found.lesson.vocabularyRefs.includes(cleanId)) {
+    found.lesson.vocabularyRefs.push(cleanId);
+  }
+  if (Array.isArray(found.lesson.metadata?.removedVocabularyRefs)) {
+    found.lesson.metadata = {
+      ...found.lesson.metadata,
+      removedVocabularyRefs: (
+        found.lesson.metadata.removedVocabularyRefs as string[]
+      ).filter((id) => id !== cleanId),
+    };
+  }
+  return saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Linked vocabulary "${cleanId}" to lesson "${found.lesson.title}"`,
+  });
+}
+
+export function addCmsLessonMediaRefInDraft(
+  courseTrackId: string,
+  moduleId: string,
+  lessonId: string,
+  mediaAssetPath: string
+): CmsCourseDraftEnvelope {
+  assertCmsPermission('cms:edit_draft');
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const mod = env.draftPackage.modules.find((m) => m.moduleId === moduleId);
+  if (!mod) throw new Error(`Module "${moduleId}" not found.`);
+  const found = findLessonInModule(mod, lessonId);
+  if (!found) throw new Error(`Lesson "${lessonId}" not found.`);
+  const cleanPath = (mediaAssetPath || '').trim();
+  if (!cleanPath) return env;
+  const refs = Array.isArray(found.lesson.mediaRefs)
+    ? [...(found.lesson.mediaRefs as string[])]
+    : [];
+  if (!refs.includes(cleanPath)) {
+    refs.push(cleanPath);
+  }
+  found.lesson.mediaRefs = refs;
+  return saveCmsCourseDraft(courseTrackId, env.draftPackage, {
+    lifecycleState: 'DRAFT',
+    changeSummary: `Linked photo "${cleanPath}" to lesson "${found.lesson.title}"`,
+  });
+}
+
+/**
+ * Computes a beginner-friendly, accurate summary of all unpublished additions,
+ * edits, and removals for the "Your unpublished changes" panel.
+ */
+export function computeCmsDetailedChangeSummary(
+  courseTrackId: string
+): CmsDetailedChangeSummary {
+  const env = getOrCreateCmsCourseDraft(courseTrackId);
+  const activeRemoved = getCmsRemovedItemsInDraft(courseTrackId, false);
+  const diffVsPub = computeCmsDraftVsPublishedDiff(courseTrackId);
+  const countByType = (t: CmsRemovableItemType) =>
+    activeRemoved.filter((r) => r.itemType === t).length;
+
+  const counts = {
+    modulesAdded: (env.newDraftModuleIds || []).length,
+    modulesEdited: (env.modifiedModuleIds || []).length,
+    modulesRemoved: Math.max(
+      countByType('module'),
+      (env.removedBaselineModuleIds || []).length
+    ),
+    sectionsRemoved: countByType('section'),
+    lessonsRemoved: countByType('lesson'),
+    paragraphsRemoved: countByType('lesson_paragraph'),
+    grammarRulesRemoved: countByType('grammar_rule'),
+    examplesRemoved: countByType('example_sentence'),
+    tablesRemoved: countByType('grammar_table'),
+    tableRowsRemoved: countByType('grammar_table_row'),
+    questionsRemoved: countByType('activity'),
+    answerOptionsRemoved: countByType('answer_option'),
+    explanationsRemoved: countByType('question_explanation'),
+    vocabularyLinksRemoved: countByType('vocabulary_reference'),
+    mediaLinksRemoved: countByType('media_reference'),
+    objectivesRemoved: countByType('learning_objective'),
+  };
+
+  const bullets: string[] = [];
+  if (counts.modulesAdded > 0) {
+    bullets.push(`${counts.modulesAdded} module(s) added`);
+  }
+  if (counts.modulesEdited > 0) {
+    bullets.push(`${counts.modulesEdited} module(s) edited`);
+  }
+  if (counts.modulesRemoved > 0) {
+    bullets.push(`${counts.modulesRemoved} module(s) removed`);
+  }
+  if (counts.sectionsRemoved > 0) {
+    bullets.push(`${counts.sectionsRemoved} section(s) removed`);
+  }
+  if (counts.lessonsRemoved > 0) {
+    bullets.push(`${counts.lessonsRemoved} lesson(s) removed`);
+  }
+  if (counts.paragraphsRemoved > 0) {
+    bullets.push(`${counts.paragraphsRemoved} paragraph(s) removed`);
+  }
+  if (counts.grammarRulesRemoved > 0) {
+    bullets.push(`${counts.grammarRulesRemoved} grammar note(s) removed`);
+  }
+  if (counts.examplesRemoved > 0) {
+    bullets.push(`${counts.examplesRemoved} example sentence(s) removed`);
+  }
+  if (counts.tablesRemoved > 0 || counts.tableRowsRemoved > 0) {
+    bullets.push(
+      `${counts.tablesRemoved} grammar table(s) & ${counts.tableRowsRemoved} table row(s) removed`
+    );
+  }
+  if (counts.questionsRemoved > 0) {
+    bullets.push(`${counts.questionsRemoved} question(s) removed`);
+  }
+  if (counts.answerOptionsRemoved > 0) {
+    bullets.push(`${counts.answerOptionsRemoved} answer choice(s) removed`);
+  }
+  if (counts.explanationsRemoved > 0) {
+    bullets.push(`${counts.explanationsRemoved} answer explanation(s) removed`);
+  }
+  if (counts.vocabularyLinksRemoved > 0) {
+    bullets.push(`${counts.vocabularyLinksRemoved} vocabulary link(s) removed`);
+  }
+  if (counts.mediaLinksRemoved > 0) {
+    bullets.push(`${counts.mediaLinksRemoved} photo link(s) removed`);
+  }
+  if (counts.objectivesRemoved > 0) {
+    bullets.push(`${counts.objectivesRemoved} learning goal(s) removed`);
+  }
+  if (bullets.length === 0) {
+    bullets.push('No unpublished removals or additions recorded yet.');
+  }
+
+  const hasUnpublishedChanges =
+    Boolean(env.hasDraftChanges) || activeRemoved.length > 0;
+
+  return {
+    courseTrackId,
+    hasUnpublishedChanges,
+    counts,
+    modulesAdded: counts.modulesAdded,
+    modulesModified: counts.modulesEdited,
+    modulesRemoved: counts.modulesRemoved,
+    sectionsRemoved: counts.sectionsRemoved,
+    lessonsModified: diffVsPub
+      ? diffVsPub.modifiedLessonIds.length
+      : counts.modulesEdited,
+    lessonsRemoved: counts.lessonsRemoved,
+    activitiesRemoved: counts.questionsRemoved,
+    paragraphsRemoved: counts.paragraphsRemoved,
+    tablesRemoved: counts.tablesRemoved,
+    tableRowsRemoved: counts.tableRowsRemoved,
+    vocabLinksRemoved: counts.vocabularyLinksRemoved,
+    mediaLinksRemoved: counts.mediaLinksRemoved,
+    pendingRemovedItemsCount: activeRemoved.length,
+    activeRemovedItemsCount: activeRemoved.length,
+    plainEnglishBullets: bullets,
+    plainEnglishLines: bullets,
+  };
 }
 
 // ============================================================================
@@ -1762,6 +3769,31 @@ export function validateCmsCourseDraft(
           }
         }
       }
+
+      const hasInstructionalText =
+        typeof les.instructionalText === 'string' &&
+        les.instructionalText.trim().length > 0;
+      const hasActivities =
+        Array.isArray(les.activities) && les.activities.length > 0;
+      const hasVocabRefs =
+        Array.isArray(les.vocabularyRefs) && les.vocabularyRefs.length > 0;
+      const hasMediaRefs =
+        Array.isArray(les.mediaRefs) && les.mediaRefs.length > 0;
+      if (
+        !hasInstructionalText &&
+        !hasActivities &&
+        !hasVocabRefs &&
+        !hasMediaRefs
+      ) {
+        issues.push({
+          issueId: `warn_empty_lesson_${les.lessonId || lesPath}`,
+          severity: 'WARNING',
+          code: 'EMPTY_LESSON_CONTENT',
+          courseTrackId,
+          locationPath: lesPath,
+          message: `Lesson "${les.title || les.lessonId}" has no explanation text, practice questions, or vocabulary links.`,
+        });
+      }
     };
 
     for (let sIdx = 0; sIdx < (mod.sections || []).length; sIdx++) {
@@ -1780,6 +3812,19 @@ export function validateCmsCourseDraft(
         } else {
           seenSectionIds.add(sec.sectionId);
         }
+      }
+      if (
+        (!sec.lessons || sec.lessons.length === 0) &&
+        (!sec.activities || sec.activities.length === 0)
+      ) {
+        issues.push({
+          issueId: `warn_empty_sec_${sec.sectionId || sIdx}`,
+          severity: 'WARNING',
+          code: 'EMPTY_SECTION_IN_DRAFT',
+          courseTrackId,
+          locationPath: secPath,
+          message: `Section "${sec.title || sec.sectionId}" has no lessons or activities.`,
+        });
       }
       for (let lIdx = 0; lIdx < (sec.lessons || []).length; lIdx++) {
         inspectLesson(sec.lessons![lIdx], `${secPath}.lessons[${lIdx}]`);
@@ -2155,6 +4200,8 @@ function hydrateCompactUkSnapshot(
       modifiedModulesById: rec.sparseOverlaySnapshot.modifiedModulesById || {},
       newDraftModules: rec.sparseOverlaySnapshot.newDraftModules || [],
       moduleOrder: rec.sparseOverlaySnapshot.moduleOrder || [],
+      confirmedDeletedModuleIds:
+        rec.sparseOverlaySnapshot.confirmedDeletedModuleIds || [],
     });
     return {
       versionId: rec.versionId,
@@ -2223,6 +4270,12 @@ export function createCmsVersionSnapshot(
     const baselineById = new Map<string, UniversalModuleV1>(
       baseline.modules.map((m) => [m.moduleId, m])
     );
+    const presentIds = new Set((pkg.modules || []).map((m) => m.moduleId));
+    const confirmedDeletedModuleIds = baseline.modules
+      .map((m) => m.moduleId)
+      .filter((id) => !presentIds.has(id));
+    const confirmedDeletedSet = new Set(confirmedDeletedModuleIds);
+
     const modifiedModulesById: Record<string, UniversalModuleV1> = {};
     const newDraftModules: UniversalModuleV1[] = [];
     const moduleOrder: string[] = [];
@@ -2239,7 +4292,10 @@ export function createCmsVersionSnapshot(
       }
     }
     for (const baseMod of baseline.modules) {
-      if (!moduleOrder.includes(baseMod.moduleId)) {
+      if (
+        !confirmedDeletedSet.has(baseMod.moduleId) &&
+        !moduleOrder.includes(baseMod.moduleId)
+      ) {
         moduleOrder.push(baseMod.moduleId);
       }
     }
@@ -2258,6 +4314,7 @@ export function createCmsVersionSnapshot(
         modifiedModulesById,
         newDraftModules,
         moduleOrder,
+        confirmedDeletedModuleIds,
       },
     };
     rawRecords.unshift(compactRec);
@@ -2968,7 +5025,8 @@ export function getAllCmsTrackSummaries(): CmsTrackSummary[] {
 
     const ukDraftChangeCount = isUk
       ? (effectiveEnv.modifiedModuleIds?.length || 0) +
-        (effectiveEnv.newDraftModuleIds?.length || 0)
+        (effectiveEnv.newDraftModuleIds?.length || 0) +
+        (effectiveEnv.removedBaselineModuleIds?.length || 0)
       : modCount;
 
     return {
@@ -3184,4 +5242,7 @@ export function clearCmsDraftAndHistoryForTrack(courseTrackId: string): void {
   cmsStorageAdapter.removeItem(`${DRAFT_KEY_PREFIX}${courseTrackId}`);
   cmsStorageAdapter.removeItem(`${VERSIONS_KEY_PREFIX}${courseTrackId}`);
   cmsStorageAdapter.removeItem(`${REVIEW_NOTES_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${REMOVED_LEDGER_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${UNDO_STACK_KEY_PREFIX}${courseTrackId}`);
+  cmsStorageAdapter.removeItem(`${REDO_STACK_KEY_PREFIX}${courseTrackId}`);
 }
