@@ -11,11 +11,16 @@ import {
   BATCH_4_CANDIDATE_REVIEWS,
   BATCH_5_CANDIDATE_REVIEWS,
   BATCH_6_CANDIDATE_REVIEWS,
+  BATCH_7_CANDIDATE_REVIEWS,
   IDENTIFY_BATCH_2_DUPLICATE_AND_SENSE_RECORDS,
   IDENTIFY_BATCH_3_DUPLICATE_AND_SENSE_RECORDS,
   IDENTIFY_BATCH_4_DUPLICATE_AND_SENSE_RECORDS,
   IDENTIFY_BATCH_5_SEMANTIC_DUPLICATE_RECORDS,
   IDENTIFY_BATCH_6_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_7_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_7_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_7_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  IDENTIFY_PRIOR_BATCH_PRIORITY_RECONCILIATION_FLAGS,
   IDENTIFY_BATCH_6_MISSING_CONCEPT_VISUAL_SUITABILITY_RECORDS,
   IDENTIFY_BATCH_6_HEADWORD_NORMALIZATION_TRACKER,
   IDENTIFY_VOCABULARY_COVERAGE_GAP_ENTRIES,
@@ -29,6 +34,7 @@ import {
   getBatch4CorrectedVocabularyGapReport,
   getBatch5CoverageGapPlanningView,
   getBatch6CoverageGapAndHeadwordReport,
+  getBatch7CurationAndHeadwordReport,
   getSavedCurationDecision,
   getAllSavedCurationDecisions,
   recordCandidateCurationDecision,
@@ -336,8 +342,8 @@ test('Phase 1 Batch 2 & Batch 3 High-Value Candidates & Duplicate/Lexical Sense 
   assert.equal(IDENTIFY_BATCH_3_NEW_COVERAGE_GAP_ENTRIES.length, 7);
 });
 
-test('Phase 1 Cumulative Progress, Batch 4, Batch 5 & Batch 6 Integrity, Semantic Relationships & Decision Store: verifies Batches 1–6 (1,200 reviewed, 816 accepted), 34 protected missing concepts, and Batch 7 preview', () => {
-  // 1. Batch 4 & Batch 5 remain intact
+test('Phase 1 Cumulative Progress, Batches 4–7 Integrity, Headword Normalizations, Semantic Relationships & Decision Store: verifies Batches 1–7 (1,400 reviewed, 920 accepted), 34 protected missing concepts, and Batch 8 preview', () => {
+  // 1. Batch 4, Batch 5 & Batch 6 remain intact
   assert.equal(BATCH_4_CANDIDATE_REVIEWS.length, 200);
   const stats4 = computeCurationBatchStatistics(BATCH_4_CANDIDATE_REVIEWS);
   assert.equal(stats4.batchNumber, 4);
@@ -362,7 +368,6 @@ test('Phase 1 Cumulative Progress, Batch 4, Batch 5 & Batch 6 Integrity, Semanti
   );
   assert.equal(IDENTIFY_BATCH_5_SEMANTIC_DUPLICATE_RECORDS.length, 23);
 
-  // 2. Batch 6 contains exactly 200 new candidates (108 KEEP, 38 REVIEW, 54 EXCLUDE)
   assert.equal(BATCH_6_CANDIDATE_REVIEWS.length, 200);
   const stats6 = computeCurationBatchStatistics(BATCH_6_CANDIDATE_REVIEWS);
   assert.equal(stats6.batchNumber, 6);
@@ -378,52 +383,92 @@ test('Phase 1 Cumulative Progress, Batch 4, Batch 5 & Batch 6 Integrity, Semanti
   );
   assert.equal(IDENTIFY_BATCH_6_SEMANTIC_RELATIONSHIP_RECORDS.length, 28);
 
-  // 3. Zero overlap between Batch 6 and Batches 1–5; all 1,200 reviewed candidates have unique vocabulary IDs and concept IDs
-  const prev1000Reviews = [
+  // 2. Batch 7 contains exactly 200 new candidates (104 KEEP, 36 REVIEW, 60 EXCLUDE)
+  assert.equal(BATCH_7_CANDIDATE_REVIEWS.length, 200);
+  const stats7 = computeCurationBatchStatistics(BATCH_7_CANDIDATE_REVIEWS);
+  assert.equal(stats7.batchNumber, 7);
+  assert.equal(stats7.candidatesReviewedCount, 200);
+  assert.equal(stats7.recommendedKeepCount, 104);
+  assert.equal(stats7.recommendedReviewCount, 36);
+  assert.equal(stats7.recommendedExcludeCount, 60);
+  assert.equal(
+    stats7.recommendedKeepCount +
+      stats7.recommendedReviewCount +
+      stats7.recommendedExcludeCount,
+    200
+  );
+  assert.equal(IDENTIFY_BATCH_7_SEMANTIC_RELATIONSHIP_RECORDS.length, 39);
+  assert.equal(IDENTIFY_BATCH_7_HEADWORD_NORMALIZATION_RECORDS.length, 10);
+  assert.equal(IDENTIFY_BATCH_7_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS.length, 34);
+  assert.equal(IDENTIFY_PRIOR_BATCH_PRIORITY_RECONCILIATION_FLAGS.length, 12);
+
+  // 3. Zero overlap between Batch 7 and Batches 1–6; all 1,400 reviewed candidates have unique vocabulary IDs and concept IDs
+  const prev1200Reviews = [
     ...BATCH_1_CANDIDATE_REVIEWS,
     ...BATCH_2_CANDIDATE_REVIEWS,
     ...BATCH_3_CANDIDATE_REVIEWS,
     ...BATCH_4_CANDIDATE_REVIEWS,
     ...BATCH_5_CANDIDATE_REVIEWS,
+    ...BATCH_6_CANDIDATE_REVIEWS,
   ];
-  const prev1000VocabIds = new Set(prev1000Reviews.map((r) => r.vocabularyId));
-  const prev1000ConceptIds = new Set(prev1000Reviews.map((r) => r.conceptId));
-  for (const r of BATCH_6_CANDIDATE_REVIEWS) {
-    assert.equal(r.batchNumber, 6);
-    assert.equal(prev1000VocabIds.has(r.vocabularyId), false);
-    assert.equal(prev1000ConceptIds.has(r.conceptId), false);
+  const prev1200VocabIds = new Set(prev1200Reviews.map((r) => r.vocabularyId));
+  const prev1200ConceptIds = new Set(prev1200Reviews.map((r) => r.conceptId));
+  for (const r of BATCH_7_CANDIDATE_REVIEWS) {
+    assert.equal(r.batchNumber, 7);
+    assert.equal(prev1200VocabIds.has(r.vocabularyId), false);
+    assert.equal(prev1200ConceptIds.has(r.conceptId), false);
     assert.ok(['keep', 'review', 'exclude'].includes(r.recommendation));
   }
 
-  const all1200Reviews = [...prev1000Reviews, ...BATCH_6_CANDIDATE_REVIEWS];
-  assert.equal(all1200Reviews.length, 1200);
-  const all1200VocabIds = new Set(all1200Reviews.map((r) => r.vocabularyId));
-  const all1200ConceptIds = new Set(all1200Reviews.map((r) => r.conceptId));
-  assert.equal(all1200VocabIds.size, 1200);
-  assert.equal(all1200ConceptIds.size, 1200);
+  const all1400Reviews = [...prev1200Reviews, ...BATCH_7_CANDIDATE_REVIEWS];
+  assert.equal(all1400Reviews.length, 1400);
+  const all1400VocabIds = new Set(all1400Reviews.map((r) => r.vocabularyId));
+  const all1400ConceptIds = new Set(all1400Reviews.map((r) => r.conceptId));
+  assert.equal(all1400VocabIds.size, 1400);
+  assert.equal(all1400ConceptIds.size, 1400);
 
-  // 4. Cumulative progress across Batches 1–6
+  // 4. Verify pending Batch 7 headword normalizations (id-v2-487 вершко́ве ма́сло -> ма́сло, id-v2-646 чек ка́совий -> чек)
+  const butterDecision = getSavedCurationDecision('id-v2-487');
+  assert.ok(butterDecision);
+  assert.equal(butterDecision.batchNumber, 7);
+  assert.equal(butterDecision.recommendation, 'keep');
+  assert.equal(butterDecision.recommendedPriority, 'essential_everyday');
+
+  const receiptDecision = getSavedCurationDecision('id-v2-646');
+  assert.ok(receiptDecision);
+  assert.equal(receiptDecision.batchNumber, 7);
+  assert.equal(receiptDecision.recommendation, 'keep');
+  assert.equal(receiptDecision.recommendedPriority, 'essential_everyday');
+
+  const batteryDecision = getSavedCurationDecision('id-v2-1712');
+  assert.ok(batteryDecision);
+  assert.equal(batteryDecision.batchNumber, 7);
+  assert.equal(batteryDecision.recommendation, 'keep');
+  assert.equal(batteryDecision.recommendedPriority, 'essential_everyday');
+
+  // 5. Cumulative progress across Batches 1–7
   const progress = computeCumulativeCurationProgress();
   assert.equal(progress.targetUniqueNouns, 1200);
   assert.equal(progress.totalMasterCandidates, 2000);
-  assert.deepEqual(progress.batchesCompleted, [1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(progress.batchesCompleted, [1, 2, 3, 4, 5, 6, 7]);
   assert.equal(progress.batch1Stats.recommendedKeepCount, 150);
   assert.equal(progress.batch2Stats.recommendedKeepCount, 154);
   assert.equal(progress.batch3Stats.recommendedKeepCount, 132);
   assert.equal(progress.batch4Stats.recommendedKeepCount, 146);
   assert.equal(progress.batch5Stats.recommendedKeepCount, 126);
   assert.equal(progress.batch6Stats.recommendedKeepCount, 108);
-  assert.equal(progress.totalCandidatesReviewed, 1200);
-  assert.equal(progress.totalRecommendedKeep, 816);
-  assert.equal(progress.totalRecommendedReview, 172);
-  assert.equal(progress.totalRecommendedExclude, 212);
-  assert.equal(progress.totalUniqueProvisionallyAcceptedConcepts, 816);
-  assert.equal(progress.remainingUnreviewedCandidates, 800);
-  assert.equal(progress.remainingNeededToReach1200Target, 384);
+  assert.equal(progress.batch7Stats.recommendedKeepCount, 104);
+  assert.equal(progress.totalCandidatesReviewed, 1400);
+  assert.equal(progress.totalRecommendedKeep, 920);
+  assert.equal(progress.totalRecommendedReview, 208);
+  assert.equal(progress.totalRecommendedExclude, 272);
+  assert.equal(progress.totalUniqueProvisionallyAcceptedConcepts, 920);
+  assert.equal(progress.remainingUnreviewedCandidates, 600);
+  assert.equal(progress.remainingNeededToReach1200Target, 280);
 
-  // Decision store has all 1,200 decisions and 816 unique accepted concepts
-  assert.equal(getAllSavedCurationDecisions().length, 1200);
-  assert.equal(getApprovedUniqueNounCount(), 816);
+  // Decision store has all 1,400 decisions and 920 unique accepted concepts
+  assert.equal(getAllSavedCurationDecisions().length, 1400);
+  assert.equal(getApprovedUniqueNounCount(), 920);
 
   // Refuses silent overwrite of approved Batch 3 decision
   const washingMachineDecision = getSavedCurationDecision('id-v2-151');
@@ -435,7 +480,7 @@ test('Phase 1 Cumulative Progress, Batch 4, Batch 5 & Batch 6 Integrity, Semanti
   assert.equal(blockedAttempt.ok, false);
   assert.equal(getSavedCurationDecision('id-v2-151')?.recommendation, 'keep');
 
-  // 5. Coverage-gap classifications, Batch 5 reconciliation view, and Batch 6 headword/suitability report are preserved
+  // 6. Coverage-gap classifications, Batch 5 reconciliation view, Batch 6 report, and Batch 7 report are preserved
   const gapReport = getIdentifyVocabularyCoverageGapReport();
   assert.equal(gapReport.totalDomainsAudited, 13);
   assert.equal(IDENTIFY_VOCABULARY_COVERAGE_GAP_ENTRIES.length, gapReport.entries.length);
@@ -469,24 +514,23 @@ test('Phase 1 Cumulative Progress, Batch 4, Batch 5 & Batch 6 Integrity, Semanti
   assert.equal(batch6GapReport.preservedReclassifiedNonMissingCount, 20);
   assert.equal(batch6GapReport.headwordNormalizationsCompletedInBatch6Count, 3);
   assert.equal(batch6GapReport.headwordNormalizationsPendingInBatch7Count, 2);
-  assert.equal(
-    IDENTIFY_BATCH_6_HEADWORD_NORMALIZATION_TRACKER.length,
-    batch6GapReport.headwordNormalizationTracker.length
-  );
-  assert.equal(
-    IDENTIFY_BATCH_6_MISSING_CONCEPT_VISUAL_SUITABILITY_RECORDS.length,
-    batch6GapReport.missingConceptVisualSuitabilityAssessments.length
-  );
 
-  // 6. Next batch preview now points to Batch 7 with 800 remaining unreviewed candidates
-  const batch7Preview = getNextRecommendedBatchPreview(200);
-  assert.equal(batch7Preview.nextBatchNumber, 7);
-  assert.equal(batch7Preview.targetBatchSize, 200);
-  assert.equal(batch7Preview.totalRemainingUnreviewedCandidates, 800);
-  assert.equal(batch7Preview.sampleTopCandidatesForNextBatch.length, 25);
+  const batch7Report = getBatch7CurationAndHeadwordReport();
+  assert.equal(batch7Report.reportVersion, '7.0.0-batch7');
+  assert.equal(batch7Report.preservedGenuineMissingConceptsCount, 34);
+  assert.equal(batch7Report.headwordNormalizationsCompletedInBatch7Count, 10);
+  assert.equal(batch7Report.essentialEverydayWithIndependentJustificationCount, 34);
+  assert.equal(batch7Report.priorBatchPriorityReconciliationFlagsCount, 12);
+
+  // 7. Next batch preview now points to Batch 8 with 600 remaining unreviewed candidates
+  const batch8Preview = getNextRecommendedBatchPreview(200);
+  assert.equal(batch8Preview.nextBatchNumber, 8);
+  assert.equal(batch8Preview.targetBatchSize, 200);
+  assert.equal(batch8Preview.totalRemainingUnreviewedCandidates, 600);
+  assert.equal(batch8Preview.sampleTopCandidatesForNextBatch.length, 25);
 });
 
-test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies master identity, duplicate/canonical/comparison links, shortlist flags, assessment keys, and priority-list ID alignment', async () => {
+test('Phase 1 Referential Integrity Regression Suite (Batches 1–7): verifies master identity, duplicate/canonical/comparison links, shortlist flags, assessment keys, and priority-list ID alignment', async () => {
   const fs = await import('node:fs');
   const { EXPLICIT_BATCH_2_ASSESSMENTS } = await import(
     '../identifyCurriculumCurationPhase1Batch2.ts'
@@ -503,6 +547,9 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
   const { EXPLICIT_BATCH_6_ASSESSMENTS } = await import(
     '../identifyCurriculumCurationPhase1Batch6.ts'
   );
+  const { EXPLICIT_BATCH_7_ASSESSMENTS } = await import(
+    '../identifyCurriculumCurationPhase1Batch7.ts'
+  );
 
   // A. Master registry identity (2,000 unique vocabularyIds and 2,000 unique conceptIds)
   assert.equal(IDENTIFY_MASTER_2000_NOUNS.length, 2000);
@@ -515,7 +562,7 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
   assert.equal(masterByVocabId.size, 2000);
   assert.equal(masterByConceptId.size, 2000);
 
-  // B. Primary curation decisions across all 1,200 reviewed candidates
+  // B. Primary curation decisions across all 1,400 reviewed candidates
   const allReviews = [
     ...BATCH_1_CANDIDATE_REVIEWS,
     ...BATCH_2_CANDIDATE_REVIEWS,
@@ -523,10 +570,11 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
     ...BATCH_4_CANDIDATE_REVIEWS,
     ...BATCH_5_CANDIDATE_REVIEWS,
     ...BATCH_6_CANDIDATE_REVIEWS,
+    ...BATCH_7_CANDIDATE_REVIEWS,
   ];
-  assert.equal(allReviews.length, 1200);
+  assert.equal(allReviews.length, 1400);
   const reviewByVocabId = new Map(allReviews.map((r) => [r.vocabularyId, r]));
-  assert.equal(reviewByVocabId.size, 1200);
+  assert.equal(reviewByVocabId.size, 1400);
 
   for (const r of allReviews) {
     const master = masterByVocabId.get(r.vocabularyId);
@@ -584,6 +632,7 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
   const comparisonTables = [
     ...IDENTIFY_BATCH_5_SEMANTIC_DUPLICATE_RECORDS,
     ...IDENTIFY_BATCH_6_SEMANTIC_RELATIONSHIP_RECORDS,
+    ...IDENTIFY_BATCH_7_SEMANTIC_RELATIONSHIP_RECORDS,
   ];
   for (const rec of comparisonTables) {
     const candMaster = masterByVocabId.get(rec.candidateVocabularyId);
@@ -598,6 +647,53 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
       compMaster.conceptId,
       `Compared conceptId for ${rec.comparedVocabularyId} (referenced by ${rec.candidateVocabularyId}) must match master`
     );
+  }
+
+  for (const rec of IDENTIFY_BATCH_7_SEMANTIC_RELATIONSHIP_RECORDS) {
+    const compMaster = masterByVocabId.get(rec.comparedVocabularyId)!;
+    assert.equal(rec.comparedUk, compMaster.uk);
+    assert.equal(rec.comparedEn, compMaster.en);
+  }
+
+  // C2. Batch 7 headword normalizations, essential_everyday pedagogical justifications, and prior-batch priority flags
+  for (const norm of IDENTIFY_BATCH_7_HEADWORD_NORMALIZATION_RECORDS) {
+    const master = masterByVocabId.get(norm.vocabularyId);
+    assert.ok(master, `Headword normalization ${norm.vocabularyId} must exist in master`);
+    assert.equal(norm.conceptId, master.conceptId);
+    assert.equal(norm.originalMasterHeadwordUk, master.uk);
+    assert.equal(norm.englishGlossEn, master.en);
+    assert.equal(norm.gender, master.gender);
+    const saved = reviewByVocabId.get(norm.vocabularyId);
+    assert.ok(saved, `Headword normalization ${norm.vocabularyId} must be reviewed in Batch 7`);
+    assert.equal(saved.batchNumber, 7);
+    assert.equal(saved.recommendation, 'keep');
+  }
+
+  const batch7EssentialIds = new Set(
+    BATCH_7_CANDIDATE_REVIEWS.filter(
+      (r) => r.recommendation === 'keep' && r.recommendedPriority === 'essential_everyday'
+    ).map((r) => r.vocabularyId)
+  );
+  assert.equal(batch7EssentialIds.size, 34);
+  for (const reason of IDENTIFY_BATCH_7_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS) {
+    const master = masterByVocabId.get(reason.vocabularyId);
+    assert.ok(master);
+    assert.equal(reason.conceptId, master.conceptId);
+    assert.equal(reason.uk, master.uk);
+    assert.equal(reason.en, master.en);
+    assert.equal(batch7EssentialIds.has(reason.vocabularyId), true);
+  }
+
+  for (const flag of IDENTIFY_PRIOR_BATCH_PRIORITY_RECONCILIATION_FLAGS) {
+    const master = masterByVocabId.get(flag.vocabularyId);
+    assert.ok(master);
+    assert.equal(flag.conceptId, master.conceptId);
+    assert.equal(flag.uk, master.uk);
+    assert.equal(flag.en, master.en);
+    const priorSaved = reviewByVocabId.get(flag.vocabularyId);
+    assert.ok(priorSaved);
+    assert.equal(priorSaved.batchNumber, flag.batchNumber);
+    assert.equal(priorSaved.recommendedPriority, flag.currentPriority);
   }
 
   // D. Shortlist reconciliation references
@@ -624,6 +720,7 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
     { batchNumber: 4, reviews: BATCH_4_CANDIDATE_REVIEWS, assessments: EXPLICIT_BATCH_4_ASSESSMENTS },
     { batchNumber: 5, reviews: BATCH_5_CANDIDATE_REVIEWS, assessments: EXPLICIT_BATCH_5_ASSESSMENTS },
     { batchNumber: 6, reviews: BATCH_6_CANDIDATE_REVIEWS, assessments: EXPLICIT_BATCH_6_ASSESSMENTS },
+    { batchNumber: 7, reviews: BATCH_7_CANDIDATE_REVIEWS, assessments: EXPLICIT_BATCH_7_ASSESSMENTS },
   ];
 
   for (const { batchNumber, reviews, assessments } of batchAssessmentPairs) {
@@ -660,13 +757,13 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
     }
   }
 
-  // G. Preserve existing totals and verify priority-tier distributions
+  // G. Preserve existing totals and verify priority-tier distributions across Batches 1–7
   const progress = computeCumulativeCurationProgress();
-  assert.equal(progress.totalCandidatesReviewed, 1200);
-  assert.equal(progress.totalRecommendedKeep, 816);
-  assert.equal(progress.totalRecommendedReview, 172);
-  assert.equal(progress.totalRecommendedExclude, 212);
-  assert.equal(progress.remainingUnreviewedCandidates, 800);
+  assert.equal(progress.totalCandidatesReviewed, 1400);
+  assert.equal(progress.totalRecommendedKeep, 920);
+  assert.equal(progress.totalRecommendedReview, 208);
+  assert.equal(progress.totalRecommendedExclude, 272);
+  assert.equal(progress.remainingUnreviewedCandidates, 600);
 
   assert.deepEqual(progress.batch1Stats.priorityBreakdownOfKept, {
     essential_everyday: 80,
@@ -697,6 +794,11 @@ test('Phase 1 Referential Integrity Regression Suite (Batches 1–6): verifies m
     essential_everyday: 38,
     common_situational: 65,
     useful_extended: 5,
+  });
+  assert.deepEqual(progress.batch7Stats.priorityBreakdownOfKept, {
+    essential_everyday: 34,
+    common_situational: 56,
+    useful_extended: 14,
   });
 
   // H. Learner safety (10 verified scenes, 49 active targets, 2,471 unverified excluded)
