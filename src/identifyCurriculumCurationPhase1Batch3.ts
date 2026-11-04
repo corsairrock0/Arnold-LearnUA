@@ -39,6 +39,7 @@ export interface IdentifyBatch3DuplicateAndSenseRecord {
     | 'polysemy_sense_disambiguated';
   recommendedCanonicalEntry: string;
   curationActionOnBatch3Candidate: IdentifyCurationRecommendation;
+  countsAsDuplicateConcept?: boolean;
   reasonEn: string;
 }
 
@@ -559,10 +560,9 @@ export const EXPLICIT_BATCH_3_ASSESSMENTS: Record<string, Batch3ManualAssessment
     recommendedVisualFraming: 'full_room_scene',
     candidateSceneCategories: ['bathroom'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept', 'unnatural_scene_filler'],
-    duplicateOfVocabularyId: 'id-v2-1166',
+    issueFlags: ['obscure_or_rare', 'unnatural_scene_filler'],
     rationaleEn:
-      'щі́тка для уніта́за (йоржик) duplicates id-v2-1166 (йоржик для уніта́зу), which was already excluded in Batch 1 as inappropriate bathroom filler.',
+      'щі́тка для уніта́за (йоржик) (toilet bowl brush) has low everyday conversational priority and acts as unnatural bathroom scene filler (Batch 1 id-v2-292 йоржик was also excluded; no approved KEEP toilet-brush concept exists).',
   },
   'id-v2-360': {
     everydayRelevance: 'low_niche',
@@ -778,10 +778,8 @@ export const EXPLICIT_BATCH_3_ASSESSMENTS: Record<string, Batch3ManualAssessment
     candidateSceneCategories: ['bathroom'],
     recommendation: 'exclude',
     issueFlags: ['inflected_plural_duplicate'],
-    duplicateOfVocabularyId: 'id-v2-316',
-    canonicalConceptId: 'noun-concept-0098',
     rationaleEn:
-      'ва́тні па́лички (id-v2-1771) is an inflected plural duplicate of id-v2-316 (ва́тна па́личка, noun-concept-0098) in the same batch.',
+      'ва́тні па́лички (id-v2-1771) is an inflected plural form of Batch 3 REVIEW candidate id-v2-316 (ва́тна па́личка, noun-concept-0098); excluded because singular id-v2-316 is held in REVIEW and no approved KEEP cotton-swab concept exists.',
   },
   'id-v2-1772': {
     everydayRelevance: 'high_daily',
@@ -791,10 +789,8 @@ export const EXPLICIT_BATCH_3_ASSESSMENTS: Record<string, Batch3ManualAssessment
     candidateSceneCategories: ['bathroom'],
     recommendation: 'exclude',
     issueFlags: ['inflected_plural_duplicate'],
-    duplicateOfVocabularyId: 'id-v2-317',
-    canonicalConceptId: 'noun-concept-0117',
     rationaleEn:
-      'ва́тні ди́ски (id-v2-1772) is an inflected plural duplicate of id-v2-317 (ва́тний диск, noun-concept-0117) in the same batch.',
+      'ва́тні ди́ски (id-v2-1772) is an inflected plural form of Batch 3 REVIEW candidate id-v2-317 (ва́тний диск, noun-concept-0117); excluded because singular id-v2-317 is held in REVIEW and no approved KEEP cotton-pad concept exists.',
   },
   'id-v2-1157': {
     everydayRelevance: 'high_daily',
@@ -1029,10 +1025,11 @@ export const IDENTIFY_BATCH_3_DUPLICATE_AND_SENSE_RECORDS: readonly IdentifyBatc
     canonicalUk: 'ва́тна па́личка',
     canonicalEn: 'cotton swab',
     relationshipType: 'inflected_plural_duplicate_within_batch3',
-    recommendedCanonicalEntry: 'id-v2-316 (ва́тна па́личка)',
+    recommendedCanonicalEntry: 'id-v2-316 (ва́тна па́личка — held in REVIEW)',
     curationActionOnBatch3Candidate: 'exclude',
+    countsAsDuplicateConcept: false,
     reasonEn:
-      'Inflected nominative plural of id-v2-316 (ва́тна па́личка) entered as a separate concept ID in the legacy 2,000-noun list.',
+      'Inflected nominative plural of Batch 3 REVIEW candidate id-v2-316 (ва́тна па́личка); recorded as comparison-only (countsAsDuplicateConcept: false) because id-v2-316 is REVIEW rather than an approved KEEP target.',
   },
   {
     batchNumber: 3,
@@ -1045,10 +1042,11 @@ export const IDENTIFY_BATCH_3_DUPLICATE_AND_SENSE_RECORDS: readonly IdentifyBatc
     canonicalUk: 'ва́тний диск',
     canonicalEn: 'cotton pad',
     relationshipType: 'inflected_plural_duplicate_within_batch3',
-    recommendedCanonicalEntry: 'id-v2-317 (ва́тний диск)',
+    recommendedCanonicalEntry: 'id-v2-317 (ва́тний диск — held in REVIEW)',
     curationActionOnBatch3Candidate: 'exclude',
+    countsAsDuplicateConcept: false,
     reasonEn:
-      'Inflected nominative plural of id-v2-317 (ва́тний диск) entered as a separate concept ID in the legacy 2,000-noun list.',
+      'Inflected nominative plural of Batch 3 REVIEW candidate id-v2-317 (ва́тний диск); recorded as comparison-only (countsAsDuplicateConcept: false) because id-v2-317 is REVIEW rather than an approved KEEP target.',
   },
   {
     batchNumber: 3,

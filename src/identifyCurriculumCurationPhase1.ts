@@ -88,6 +88,56 @@ import {
   type IdentifyPriorBatchPriorityReconciliationFlag,
   type IdentifyBatch7CurationAndHeadwordSummary,
 } from './identifyCurriculumCurationPhase1Batch7.ts';
+import {
+  EXPLICIT_BATCH_8_ASSESSMENTS,
+  IDENTIFY_BATCH_8_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_8_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_8_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  getBatch8CurationAndHeadwordReport,
+  type ExplicitBatch8Assessment,
+  type IdentifyBatch8SemanticRelationshipType,
+  type IdentifyBatch8SemanticRelationshipRecord,
+  type IdentifyBatch8HeadwordNormalizationRecord,
+  type IdentifyBatch8EssentialEverydayPedagogicalReason,
+  type IdentifyBatch8CurationAndHeadwordSummary,
+} from './identifyCurriculumCurationPhase1Batch8.ts';
+import {
+  EXPLICIT_BATCH_9_ASSESSMENTS,
+  IDENTIFY_BATCH_9_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_9_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_9_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  getBatch9CurationAndHeadwordReport,
+  type ExplicitBatch9Assessment,
+  type IdentifyBatch9SemanticRelationshipType,
+  type IdentifyBatch9SemanticRelationshipRecord,
+  type IdentifyBatch9HeadwordNormalizationRecord,
+  type IdentifyBatch9EssentialEverydayPedagogicalReason,
+  type IdentifyBatch9CurationAndHeadwordSummary,
+} from './identifyCurriculumCurationPhase1Batch9.ts';
+import {
+  IDENTIFY_BATCH_10_FROZEN_MANIFEST,
+  IDENTIFY_BATCH_10_MANIFEST_SHA256_FULL,
+  IDENTIFY_BATCH_10_MANIFEST_SHA256_PREFIX,
+  EXPLICIT_BATCH_10_ASSESSMENTS,
+  IDENTIFY_BATCH_10_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_10_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_10_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  IDENTIFY_BATCH_10_STAGE_1_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_2_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_3_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_4_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_PIPE_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_PIPE_DECISION_SHA256_PREFIX,
+  IDENTIFY_BATCH_10_FULL_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_FULL_DECISION_SHA256_PREFIX,
+  getBatch10CurationAndHeadwordReport,
+  type ExplicitBatch10Assessment,
+  type IdentifyBatch10SemanticRelationshipType,
+  type IdentifyBatch10SemanticRelationshipRecord,
+  type IdentifyBatch10HeadwordNormalizationRecord,
+  type IdentifyBatch10EssentialEverydayPedagogicalReason,
+  type IdentifyBatch10CurationAndHeadwordSummary,
+} from './identifyCurriculumCurationPhase1Batch10.ts';
 
 export {
   IDENTIFY_BATCH_2_DUPLICATE_AND_SENSE_RECORDS,
@@ -99,6 +149,27 @@ export {
   IDENTIFY_BATCH_7_HEADWORD_NORMALIZATION_RECORDS,
   IDENTIFY_BATCH_7_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
   IDENTIFY_PRIOR_BATCH_PRIORITY_RECONCILIATION_FLAGS,
+  IDENTIFY_BATCH_8_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_8_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_8_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  IDENTIFY_BATCH_9_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_9_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_9_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  IDENTIFY_BATCH_10_FROZEN_MANIFEST,
+  IDENTIFY_BATCH_10_MANIFEST_SHA256_FULL,
+  IDENTIFY_BATCH_10_MANIFEST_SHA256_PREFIX,
+  EXPLICIT_BATCH_10_ASSESSMENTS,
+  IDENTIFY_BATCH_10_SEMANTIC_RELATIONSHIP_RECORDS,
+  IDENTIFY_BATCH_10_HEADWORD_NORMALIZATION_RECORDS,
+  IDENTIFY_BATCH_10_ESSENTIAL_EVERYDAY_PEDAGOGICAL_REASONS,
+  IDENTIFY_BATCH_10_STAGE_1_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_2_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_3_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_STAGE_4_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_PIPE_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_PIPE_DECISION_SHA256_PREFIX,
+  IDENTIFY_BATCH_10_FULL_DECISION_SHA256_FULL,
+  IDENTIFY_BATCH_10_FULL_DECISION_SHA256_PREFIX,
   IDENTIFY_VOCABULARY_COVERAGE_GAP_ENTRIES,
   IDENTIFY_BATCH_3_NEW_COVERAGE_GAP_ENTRIES,
   IDENTIFY_BATCH_4_LEXICAL_GAP_AUDIT_RECORDS,
@@ -111,6 +182,9 @@ export {
   getBatch5VocabularyGapReconciliationPlan,
   getBatch6CoverageGapAndHeadwordReport,
   getBatch7CurationAndHeadwordReport,
+  getBatch8CurationAndHeadwordReport,
+  getBatch9CurationAndHeadwordReport,
+  getBatch10CurationAndHeadwordReport,
   resolveMasterNounById,
   resolveMasterConceptId,
   classifyEntryIntoPedagogicalDomainBucket,
@@ -141,6 +215,24 @@ export {
   type IdentifyBatch7EssentialEverydayPedagogicalReason,
   type IdentifyPriorBatchPriorityReconciliationFlag,
   type IdentifyBatch7CurationAndHeadwordSummary,
+  type ExplicitBatch8Assessment,
+  type IdentifyBatch8SemanticRelationshipType,
+  type IdentifyBatch8SemanticRelationshipRecord,
+  type IdentifyBatch8HeadwordNormalizationRecord,
+  type IdentifyBatch8EssentialEverydayPedagogicalReason,
+  type IdentifyBatch8CurationAndHeadwordSummary,
+  type ExplicitBatch9Assessment,
+  type IdentifyBatch9SemanticRelationshipType,
+  type IdentifyBatch9SemanticRelationshipRecord,
+  type IdentifyBatch9HeadwordNormalizationRecord,
+  type IdentifyBatch9EssentialEverydayPedagogicalReason,
+  type IdentifyBatch9CurationAndHeadwordSummary,
+  type ExplicitBatch10Assessment,
+  type IdentifyBatch10SemanticRelationshipType,
+  type IdentifyBatch10SemanticRelationshipRecord,
+  type IdentifyBatch10HeadwordNormalizationRecord,
+  type IdentifyBatch10EssentialEverydayPedagogicalReason,
+  type IdentifyBatch10CurationAndHeadwordSummary,
   type IdentifyCoverageDomainId,
   type IdentifyMissingVocabularyGapEntry,
   type IdentifyVocabularyCoverageGapReport,
@@ -2677,6 +2769,7 @@ export function getBatch5CoverageGapPlanningView(): IdentifyBatch5CoverageGapPla
     ...BATCH_5_CANDIDATE_REVIEWS,
     ...BATCH_6_CANDIDATE_REVIEWS,
     ...BATCH_7_CANDIDATE_REVIEWS,
+    ...BATCH_8_CANDIDATE_REVIEWS,
   ]) {
     if (r.recommendation === 'keep' && !r.duplicateOfVocabularyId) {
       acceptedVocabularyIds.add(r.vocabularyId);
@@ -3032,6 +3125,396 @@ export function getBatch7CandidateReviews(): readonly IdentifyCandidateReviewRec
 }
 
 // ----------------------------------------------------------------------------
+// 4G. Batch 8 Selective Everyday Vocabulary Curation (Candidates 1401..1600)
+// ----------------------------------------------------------------------------
+
+const BATCH_8_PRIORITY_PRACTICAL_IDS = new Set<string>([
+  'id-v2-1599', // повіде́ць
+  'id-v2-1602', // аква́ріум
+  'id-v2-1615', // папу́га
+  'id-v2-1617', // пінгві́н
+  'id-v2-1620', // аку́ла
+  'id-v2-1181', // мийний за́сіб
+  'id-v2-1775', // ваги́ підлогові́
+  'id-v2-1443', // закла́дка книжко́ва
+  'id-v2-1682', // бату́т
+  'id-v2-1686', // самока́т дитя́чий
+  'id-v2-1183', // фільтр-гле́чик для води́
+  'id-v2-1302', // па́ска велико́дня
+  'id-v2-1794', // насі́ння гарбузо́ве
+  'id-v2-1797', // порі́чка (черво́на сморо́дина)
+  'id-v2-1867', // календа́р перекидни́й
+  'id-v2-1295', // спаге́ті
+  'id-v2-1298', // лава́ш
+  'id-v2-1305', // екле́р
+  'id-v2-1310', // льодяни́к
+  'id-v2-1619', // кит
+  'id-v2-1621', // восьмині́г
+  'id-v2-1717', // макетна пла́та
+  'id-v2-1865', // паліту́рна маши́на (біндер)
+]);
+
+function isBatch8PriorityPracticalEntry(entry: IdentifyMasterNounEntry): boolean {
+  return BATCH_8_PRIORITY_PRACTICAL_IDS.has(entry.vocabularyId);
+}
+
+function selectBatch8CandidateEntries(): Array<{
+  entry: IdentifyMasterNounEntry;
+  bucket: IdentifyBatch4PedagogicalDomainBucket;
+  bestFreqRank: number | null;
+  bestCourseModuleId: string | null;
+}> {
+  const reviewedVocabIds = new Set<string>([
+    ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+  ]);
+
+  const unreviewed = IDENTIFY_MASTER_2000_NOUNS.filter(
+    (n) => !reviewedVocabIds.has(n.vocabularyId)
+  );
+
+  const priorityPracticalUnreviewed = unreviewed.filter(
+    isBatch8PriorityPracticalEntry
+  );
+  const remainingUnreviewed = unreviewed.filter(
+    (n) => !isBatch8PriorityPracticalEntry(n)
+  );
+
+  return [
+    ...rankUnreviewedByMultiDomainPedagogicalUtility(priorityPracticalUnreviewed),
+    ...rankUnreviewedByMultiDomainPedagogicalUtility(remainingUnreviewed),
+  ].slice(0, 200);
+}
+
+function buildBatch8Reviews(): IdentifyCandidateReviewRecord[] {
+  const candidates = selectBatch8CandidateEntries();
+
+  return candidates.map((item, idx) => {
+    const { entry, bestFreqRank, bestCourseModuleId } = item;
+
+    const recordedRegistryFreqRank =
+      typeof entry.freqRank === 'number' ? entry.freqRank : null;
+    const crossReferencedFreqDbRank = bestFreqRank;
+    const crossReferencedCourseModuleId = bestCourseModuleId;
+
+    let frequencyEvidenceStatus: IdentifyFrequencyEvidenceStatus;
+    if (recordedRegistryFreqRank !== null && crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_registry_and_freq_db';
+    } else if (crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_freq_db_unrecorded_in_registry';
+    } else if (crossReferencedCourseModuleId !== null) {
+      frequencyEvidenceStatus = 'verified_in_course_modules_only';
+    } else {
+      frequencyEvidenceStatus = 'unverified_supplemental_no_rank';
+    }
+
+    const explicit = EXPLICIT_BATCH_8_ASSESSMENTS[entry.vocabularyId];
+    if (!explicit) {
+      throw new Error(
+        `Missing explicit Batch 8 assessment for candidate ${entry.vocabularyId} (${entry.uk})`
+      );
+    }
+
+    return {
+      batchNumber: 8,
+      reviewOrder: idx + 1,
+      conceptId: entry.conceptId,
+      vocabularyId: entry.vocabularyId,
+      uk: entry.uk,
+      en: entry.en,
+      gender: entry.gender,
+      intendedLexicalSenseEn: entry.intendedMeaningEn,
+      recordedRegistryFreqRank,
+      crossReferencedFreqDbRank,
+      crossReferencedCourseModuleId,
+      independentStatisticalCorpusRank: null,
+      frequencyEvidenceStatus,
+      everydayRelevance: explicit.everydayRelevance,
+      visualRecognizability: explicit.visualRecognizability,
+      recommendedPriority: explicit.recommendedPriority,
+      recommendedVisualFraming: explicit.recommendedVisualFraming,
+      candidateSceneCategories: explicit.candidateSceneCategories,
+      recommendation: explicit.recommendation,
+      issueFlags: explicit.issueFlags || [],
+      duplicateOfVocabularyId: explicit.duplicateOfVocabularyId,
+      canonicalConceptId: explicit.canonicalConceptId,
+      rationaleEn: explicit.rationaleEn,
+    };
+  });
+}
+
+export const BATCH_8_CANDIDATE_REVIEWS: readonly IdentifyCandidateReviewRecord[] =
+  buildBatch8Reviews();
+
+export function getBatch8CandidateReviews(): readonly IdentifyCandidateReviewRecord[] {
+  return BATCH_8_CANDIDATE_REVIEWS;
+}
+
+// ----------------------------------------------------------------------------
+// 4H. Batch 9 Selective Everyday Vocabulary Curation (Candidates 1601..1800)
+// ----------------------------------------------------------------------------
+
+const BATCH_9_PRIORITY_PRACTICAL_IDS = new Set<string>([
+  'id-v2-1202', // ніж для пі́ци
+  'id-v2-1204', // підста́вка для ножі́в
+  'id-v2-1753', // москі́тна сі́тка
+  'id-v2-1160', // суша́рка для рушникі́в
+  'id-v2-1755', // очи́щувач пові́тря
+  'id-v2-1161', // ко́шик для папе́рів
+  'id-v2-1320', // галу́шки полта́вські
+  'id-v2-1322', // котле́та по-ки́ївськи
+  'id-v2-1323', // ква́шена капу́ста
+  'id-v2-1324', // соло́ний огіро́к
+  'id-v2-1280', // згуще́не молоко́
+  'id-v2-1297', // баге́т францу́зький
+  'id-v2-1333', // табли́чка з на́звою ву́лиці
+  'id-v2-1347', // зупи́нковий павільйо́н
+  'id-v2-1348', // сміттє́вий бак
+  'id-v2-1349', // конте́йнер для сортува́ння
+  'id-v2-1350', // ка́мера відеоспостере́ження
+  'id-v2-1352', // пра́пор держа́вний
+  'id-v2-1830', // пандус для візкі́в
+  'id-v2-1831', // кно́пка ви́клику лі́фта
+  'id-v2-1363', // холоди́льна вітри́на
+  'id-v2-1337', // газе́тний кіо́ск
+  'id-v2-1839', // валі́за на коліща́тах
+  'id-v2-1840', // бі́рка бага́жна
+  'id-v2-1841', // рамка металошукача́
+  'id-v2-1844', // ілюміна́тор літака́
+  'id-v2-1845', // відкидни́й сто́лик у літаку́
+  'id-v2-1860', // пена́л шкільни́й
+  'id-v2-1861', // лу́па чита́цька
+  'id-v2-1868', // штамп самонабірни́й
+  'id-v2-1869', // ште́мпельна поду́шка
+  'id-v2-1895', // віяло склада́не
+  'id-v2-1896', // серве́тка для окуля́рів
+  'id-v2-1898', // пудре́ниця з дзеркальцем
+  'id-v2-1901', // туш для вій
+  'id-v2-1902', // щи́пчики для брів (пінце́т)
+  'id-v2-1905', // помазо́к для голі́ння
+  'id-v2-1909', // мальва садо́ва
+  'id-v2-1910', // воло́шка польова́
+  'id-v2-1915', // дупло́ в де́реві
+  'id-v2-1916', // шпакі́вня дерев’я́на
+  'id-v2-1919', // мура́шник лісови́й
+  'id-v2-1923', // корито для худо́би
+  'id-v2-1924', // підко́ва стале́ва
+  'id-v2-1928', // тепли́ця скляна́ (оранжере́я)
+  'id-v2-1930', // сека́тор садо́вий
+  'id-v2-1949', // банда́ж еласти́чний
+  'id-v2-1978', // палі́тра акваре́льна з лу́нками
+  'id-v2-1980', // наву́шники-вкла́диші бездрото́ві
+  'id-v2-1491', // суддя́ спортивний
+  'id-v2-1492', // рятува́льник пля́жний
+  'id-v2-1886', // нами́сто кора́лове
+  'id-v2-1889', // підтя́жки для штані́в
+  'id-v2-1891', // шнурі́вка взуттє́ва
+  'id-v2-1596', // соба́ча бу́дка
+  'id-v2-1597', // ми́ска для корму́
+  'id-v2-1598', // наши́йник соба́чий
+  'id-v2-1920', // ву́лик бджоли́ний
+  'id-v2-1922', // сі́но в копи́ці (стіг)
+  'id-v2-1680', // матра́ц надувни́й
+  'id-v2-1681', // ма́ска з тру́бкою
+  'id-v2-1691', // ша́хова фігу́ра
+  'id-v2-1692', // гра́льний ку́бик
+  'id-v2-1674', // ке́гля боулінго́ва
+  'id-v2-1675', // ку́ля для бо́улінгу
+  'id-v2-1947', // мили́ця підпахвова́
+  'id-v2-1688', // триколі́сний велосипе́д
+  'id-v2-1959', // пісо́чниця дерев’я́на з дашко́м
+  'id-v2-1152', // клубо́к во́вни
+  'id-v2-1153', // спи́ці в’яза́льні
+]);
+
+function isBatch9PriorityPracticalEntry(entry: IdentifyMasterNounEntry): boolean {
+  return BATCH_9_PRIORITY_PRACTICAL_IDS.has(entry.vocabularyId);
+}
+
+function selectBatch9CandidateEntries(): Array<{
+  entry: IdentifyMasterNounEntry;
+  bucket: IdentifyBatch4PedagogicalDomainBucket;
+  bestFreqRank: number | null;
+  bestCourseModuleId: string | null;
+}> {
+  const reviewedVocabIds = new Set<string>([
+    ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+    ...BATCH_8_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+  ]);
+
+  const unreviewed = IDENTIFY_MASTER_2000_NOUNS.filter(
+    (n) => !reviewedVocabIds.has(n.vocabularyId)
+  );
+
+  const priorityPracticalUnreviewed = unreviewed.filter(
+    isBatch9PriorityPracticalEntry
+  );
+  const remainingUnreviewed = unreviewed.filter(
+    (n) => !isBatch9PriorityPracticalEntry(n)
+  );
+
+  return [
+    ...rankUnreviewedByMultiDomainPedagogicalUtility(priorityPracticalUnreviewed),
+    ...rankUnreviewedByMultiDomainPedagogicalUtility(remainingUnreviewed),
+  ].slice(0, 200);
+}
+
+function buildBatch9Reviews(): IdentifyCandidateReviewRecord[] {
+  const candidates = selectBatch9CandidateEntries();
+
+  return candidates.map((item, idx) => {
+    const { entry, bestFreqRank, bestCourseModuleId } = item;
+
+    const recordedRegistryFreqRank =
+      typeof entry.freqRank === 'number' ? entry.freqRank : null;
+    const crossReferencedFreqDbRank = bestFreqRank;
+    const crossReferencedCourseModuleId = bestCourseModuleId;
+
+    let frequencyEvidenceStatus: IdentifyFrequencyEvidenceStatus;
+    if (recordedRegistryFreqRank !== null && crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_registry_and_freq_db';
+    } else if (crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_freq_db_unrecorded_in_registry';
+    } else if (crossReferencedCourseModuleId !== null) {
+      frequencyEvidenceStatus = 'verified_in_course_modules_only';
+    } else {
+      frequencyEvidenceStatus = 'unverified_supplemental_no_rank';
+    }
+
+    const explicit = EXPLICIT_BATCH_9_ASSESSMENTS[entry.vocabularyId];
+    if (!explicit) {
+      throw new Error(
+        `Missing explicit Batch 9 assessment for candidate ${entry.vocabularyId} (${entry.uk})`
+      );
+    }
+
+    return {
+      batchNumber: 9,
+      reviewOrder: idx + 1,
+      conceptId: entry.conceptId,
+      vocabularyId: entry.vocabularyId,
+      uk: entry.uk,
+      en: entry.en,
+      gender: entry.gender,
+      intendedLexicalSenseEn: entry.intendedMeaningEn,
+      recordedRegistryFreqRank,
+      crossReferencedFreqDbRank,
+      crossReferencedCourseModuleId,
+      independentStatisticalCorpusRank: null,
+      frequencyEvidenceStatus,
+      everydayRelevance: explicit.everydayRelevance,
+      visualRecognizability: explicit.visualRecognizability,
+      recommendedPriority: explicit.recommendedPriority,
+      recommendedVisualFraming: explicit.recommendedVisualFraming,
+      candidateSceneCategories: explicit.candidateSceneCategories,
+      recommendation: explicit.recommendation,
+      issueFlags: explicit.issueFlags || [],
+      duplicateOfVocabularyId: explicit.duplicateOfVocabularyId,
+      canonicalConceptId: explicit.canonicalConceptId,
+      rationaleEn: explicit.rationaleEn,
+    };
+  });
+}
+
+export const BATCH_9_CANDIDATE_REVIEWS: readonly IdentifyCandidateReviewRecord[] =
+  buildBatch9Reviews();
+
+export function getBatch9CandidateReviews(): readonly IdentifyCandidateReviewRecord[] {
+  return BATCH_9_CANDIDATE_REVIEWS;
+}
+
+// ----------------------------------------------------------------------------
+// 4I. Batch 10 (Final 200 Candidates: 1,801..2,000) Selector & Review Builder
+// ----------------------------------------------------------------------------
+
+function buildBatch10Reviews(): IdentifyCandidateReviewRecord[] {
+  const masterByVocabId = new Map(
+    IDENTIFY_MASTER_2000_NOUNS.map((m) => [m.vocabularyId, m])
+  );
+  const { freqNounByBareUk, courseNounByBareUk } = buildInternalEvidenceMaps();
+
+  return IDENTIFY_BATCH_10_FROZEN_MANIFEST.map((manifestEntry, idx) => {
+    const entry = masterByVocabId.get(manifestEntry.vocabularyId);
+    if (!entry) {
+      throw new Error(
+        `Batch 10 manifest entry ${manifestEntry.vocabularyId} not found in IDENTIFY_MASTER_2000_NOUNS`
+      );
+    }
+
+    const bareUk = stripUkrainianStressAndParens(entry.uk);
+    const freqMatch = freqNounByBareUk.get(bareUk);
+    const courseMatch = courseNounByBareUk.get(bareUk);
+
+    const recordedRegistryFreqRank =
+      typeof entry.freqRank === 'number' ? entry.freqRank : null;
+    const crossReferencedFreqDbRank = freqMatch ? freqMatch.rank : null;
+    const crossReferencedCourseModuleId = courseMatch ? courseMatch.moduleId : null;
+
+    let frequencyEvidenceStatus: IdentifyFrequencyEvidenceStatus;
+    if (recordedRegistryFreqRank !== null && crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_registry_and_freq_db';
+    } else if (crossReferencedFreqDbRank !== null) {
+      frequencyEvidenceStatus = 'verified_in_freq_db_unrecorded_in_registry';
+    } else if (crossReferencedCourseModuleId !== null) {
+      frequencyEvidenceStatus = 'verified_in_course_modules_only';
+    } else {
+      frequencyEvidenceStatus = 'unverified_supplemental_no_rank';
+    }
+
+    const explicit = EXPLICIT_BATCH_10_ASSESSMENTS[entry.vocabularyId];
+    if (!explicit) {
+      throw new Error(
+        `Missing explicit Batch 10 assessment for candidate ${entry.vocabularyId} (${entry.uk})`
+      );
+    }
+
+    return {
+      batchNumber: 10,
+      reviewOrder: idx + 1,
+      conceptId: entry.conceptId,
+      vocabularyId: entry.vocabularyId,
+      uk: entry.uk,
+      en: entry.en,
+      gender: entry.gender,
+      intendedLexicalSenseEn: entry.intendedMeaningEn,
+      recordedRegistryFreqRank,
+      crossReferencedFreqDbRank,
+      crossReferencedCourseModuleId,
+      independentStatisticalCorpusRank: null,
+      frequencyEvidenceStatus,
+      everydayRelevance: explicit.everydayRelevance,
+      visualRecognizability: explicit.visualRecognizability,
+      recommendedPriority: explicit.recommendedPriority,
+      recommendedVisualFraming: explicit.recommendedVisualFraming,
+      candidateSceneCategories: explicit.candidateSceneCategories,
+      recommendation: explicit.recommendation,
+      issueFlags: explicit.issueFlags || [],
+      duplicateOfVocabularyId: explicit.duplicateOfVocabularyId,
+      canonicalConceptId: explicit.canonicalConceptId,
+      rationaleEn: explicit.rationaleEn,
+    };
+  });
+}
+
+export const BATCH_10_CANDIDATE_REVIEWS: readonly IdentifyCandidateReviewRecord[] =
+  buildBatch10Reviews();
+
+export function getBatch10CandidateReviews(): readonly IdentifyCandidateReviewRecord[] {
+  return BATCH_10_CANDIDATE_REVIEWS;
+}
+
+// ----------------------------------------------------------------------------
 // 5. Selection Statistics & Reusable Multi-Batch Curation State
 // ----------------------------------------------------------------------------
 
@@ -3166,6 +3649,15 @@ for (const r of BATCH_6_CANDIDATE_REVIEWS) {
 for (const r of BATCH_7_CANDIDATE_REVIEWS) {
   approvedDecisionsStore.set(r.vocabularyId, r);
 }
+for (const r of BATCH_8_CANDIDATE_REVIEWS) {
+  approvedDecisionsStore.set(r.vocabularyId, r);
+}
+for (const r of BATCH_9_CANDIDATE_REVIEWS) {
+  approvedDecisionsStore.set(r.vocabularyId, r);
+}
+for (const r of BATCH_10_CANDIDATE_REVIEWS) {
+  approvedDecisionsStore.set(r.vocabularyId, r);
+}
 
 export function getSavedCurationDecision(
   vocabularyId: string
@@ -3225,7 +3717,7 @@ export function getApprovedUniqueNounCount(): number {
 export interface IdentifyCumulativeCurationProgress {
   targetUniqueNouns: 1200;
   totalMasterCandidates: number;
-  batchesCompleted: readonly [1, 2, 3, 4, 5, 6, 7];
+  batchesCompleted: readonly [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   batch1Stats: IdentifyCurationBatchStatistics;
   batch2Stats: IdentifyCurationBatchStatistics;
   batch3Stats: IdentifyCurationBatchStatistics;
@@ -3233,6 +3725,9 @@ export interface IdentifyCumulativeCurationProgress {
   batch5Stats: IdentifyCurationBatchStatistics;
   batch6Stats: IdentifyCurationBatchStatistics;
   batch7Stats: IdentifyCurationBatchStatistics;
+  batch8Stats: IdentifyCurationBatchStatistics;
+  batch9Stats: IdentifyCurationBatchStatistics;
+  batch10Stats?: IdentifyCurationBatchStatistics;
   totalCandidatesReviewed: number;
   totalRecommendedKeep: number;
   totalRecommendedReview: number;
@@ -3253,6 +3748,9 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
   const batch5Stats = computeCurationBatchStatistics(BATCH_5_CANDIDATE_REVIEWS);
   const batch6Stats = computeCurationBatchStatistics(BATCH_6_CANDIDATE_REVIEWS);
   const batch7Stats = computeCurationBatchStatistics(BATCH_7_CANDIDATE_REVIEWS);
+  const batch8Stats = computeCurationBatchStatistics(BATCH_8_CANDIDATE_REVIEWS);
+  const batch9Stats = computeCurationBatchStatistics(BATCH_9_CANDIDATE_REVIEWS);
+  const batch10Stats = computeCurationBatchStatistics(BATCH_10_CANDIDATE_REVIEWS);
   const correctedGapSummary = getBatch4CorrectedVocabularyGapReport();
 
   const allReviewed = [
@@ -3263,6 +3761,9 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
     ...BATCH_5_CANDIDATE_REVIEWS,
     ...BATCH_6_CANDIDATE_REVIEWS,
     ...BATCH_7_CANDIDATE_REVIEWS,
+    ...BATCH_8_CANDIDATE_REVIEWS,
+    ...BATCH_9_CANDIDATE_REVIEWS,
+    ...BATCH_10_CANDIDATE_REVIEWS,
   ];
   const uniqueReviewedIds = new Set(allReviewed.map((r) => r.vocabularyId));
 
@@ -3280,7 +3781,10 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
     batch4Stats.recommendedKeepCount +
     batch5Stats.recommendedKeepCount +
     batch6Stats.recommendedKeepCount +
-    batch7Stats.recommendedKeepCount;
+    batch7Stats.recommendedKeepCount +
+    batch8Stats.recommendedKeepCount +
+    batch9Stats.recommendedKeepCount +
+    batch10Stats.recommendedKeepCount;
   const totalRecommendedReview =
     batch1Stats.recommendedReviewCount +
     batch2Stats.recommendedReviewCount +
@@ -3288,7 +3792,10 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
     batch4Stats.recommendedReviewCount +
     batch5Stats.recommendedReviewCount +
     batch6Stats.recommendedReviewCount +
-    batch7Stats.recommendedReviewCount;
+    batch7Stats.recommendedReviewCount +
+    batch8Stats.recommendedReviewCount +
+    batch9Stats.recommendedReviewCount +
+    batch10Stats.recommendedReviewCount;
   const totalRecommendedExclude =
     batch1Stats.recommendedExcludeCount +
     batch2Stats.recommendedExcludeCount +
@@ -3296,13 +3803,16 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
     batch4Stats.recommendedExcludeCount +
     batch5Stats.recommendedExcludeCount +
     batch6Stats.recommendedExcludeCount +
-    batch7Stats.recommendedExcludeCount;
+    batch7Stats.recommendedExcludeCount +
+    batch8Stats.recommendedExcludeCount +
+    batch9Stats.recommendedExcludeCount +
+    batch10Stats.recommendedExcludeCount;
   const totalUniqueProvisionallyAcceptedConcepts = acceptedConcepts.size;
 
   return {
     targetUniqueNouns: 1200,
     totalMasterCandidates: IDENTIFY_MASTER_2000_NOUNS.length,
-    batchesCompleted: [1, 2, 3, 4, 5, 6, 7],
+    batchesCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     batch1Stats,
     batch2Stats,
     batch3Stats,
@@ -3310,6 +3820,9 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
     batch5Stats,
     batch6Stats,
     batch7Stats,
+    batch8Stats,
+    batch9Stats,
+    batch10Stats,
     totalCandidatesReviewed: uniqueReviewedIds.size,
     totalRecommendedKeep,
     totalRecommendedReview,
@@ -3326,7 +3839,10 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
       batch4Stats.duplicateOrAmbiguousCount +
       batch5Stats.duplicateOrAmbiguousCount +
       batch6Stats.duplicateOrAmbiguousCount +
-      batch7Stats.duplicateOrAmbiguousCount,
+      batch7Stats.duplicateOrAmbiguousCount +
+      batch8Stats.duplicateOrAmbiguousCount +
+      batch9Stats.duplicateOrAmbiguousCount +
+      batch10Stats.duplicateOrAmbiguousCount,
     potentialMissingHighValueNounsCount:
       correctedGapSummary.genuinelyMissingConceptsCount,
     potentialModifierOnlyNounsNeedingBaseNormalizationCount:
@@ -3335,7 +3851,7 @@ export function computeCumulativeCurationProgress(): IdentifyCumulativeCurationP
 }
 
 export interface NextBatchRecommendationPreview {
-  nextBatchNumber: 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  nextBatchNumber: 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
   targetBatchSize: number;
   totalRemainingUnreviewedCandidates: number;
   unreviewedWithVerifiedFreqDbMatchCount: number;
@@ -3364,14 +3880,15 @@ export interface NextBatchRecommendationPreview {
 
 /**
  * Identifies the next `batchSize` (default 200) highest-priority unreviewed
- * candidates for the upcoming batch (now Batch 8, after Batches 1–7 are saved)
- * without executing Batch 8 curation decisions.
+ * candidates for a specified historical batch (`options.forBatchNumber`) or
+ * reports 0 remaining unreviewed candidates now that Batches 1–10 are complete.
  */
 export function getNextRecommendedBatchPreview(
   batchSize = 200,
-  options?: { forBatchNumber?: 2 | 3 | 4 | 5 | 6 | 7 | 8 }
+  options?: { forBatchNumber?: 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 }
 ): NextBatchRecommendationPreview {
-  const targetBatchNumber = options?.forBatchNumber ?? 8;
+  const targetBatchNumber = options?.forBatchNumber ?? 10;
+  const includeBatch10AsCompleted = options?.forBatchNumber === undefined;
   const reviewedVocabIds = new Set<string>(
     targetBatchNumber === 2
       ? BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId)
@@ -3395,7 +3912,7 @@ export function getNextRecommendedBatchPreview(
               ]
             : targetBatchNumber === 6
               ? [
-                   ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                  ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
                   ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
                   ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
                   ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
@@ -3410,15 +3927,51 @@ export function getNextRecommendedBatchPreview(
                     ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
                     ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
                   ]
-                : [
-                    ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                    ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
-                  ]
+                : targetBatchNumber === 8
+                  ? [
+                      ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                    ]
+                  : targetBatchNumber === 9
+                    ? [
+                        ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ...BATCH_8_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                      ]
+                    : includeBatch10AsCompleted
+                      ? [
+                          ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_8_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_9_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_10_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ]
+                      : [
+                          ...BATCH_1_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_2_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_3_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_4_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_5_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_6_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_7_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_8_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                          ...BATCH_9_CANDIDATE_REVIEWS.map((r) => r.vocabularyId),
+                        ]
   );
 
   const unreviewed = IDENTIFY_MASTER_2000_NOUNS.filter(
@@ -3436,7 +3989,25 @@ export function getNextRecommendedBatchPreview(
               unreviewed.filter((n) => !isBatch7PriorityCoreOrHeadwordEntry(n))
             ),
           ]
-        : rankUnreviewedByMultiDomainPedagogicalUtility(unreviewed);
+        : targetBatchNumber === 8
+          ? [
+              ...rankUnreviewedByMultiDomainPedagogicalUtility(
+                unreviewed.filter(isBatch8PriorityPracticalEntry)
+              ),
+              ...rankUnreviewedByMultiDomainPedagogicalUtility(
+                unreviewed.filter((n) => !isBatch8PriorityPracticalEntry(n))
+              ),
+            ]
+          : targetBatchNumber === 9
+            ? [
+                ...rankUnreviewedByMultiDomainPedagogicalUtility(
+                  unreviewed.filter(isBatch9PriorityPracticalEntry)
+                ),
+                ...rankUnreviewedByMultiDomainPedagogicalUtility(
+                  unreviewed.filter((n) => !isBatch9PriorityPracticalEntry(n))
+                ),
+              ]
+            : rankUnreviewedByMultiDomainPedagogicalUtility(unreviewed);
     let unreviewedWithVerifiedFreqDbMatchCount = 0;
     let unreviewedWithCourseModuleMatchCount = 0;
     for (const item of ranked) {

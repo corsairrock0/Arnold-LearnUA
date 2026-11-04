@@ -745,11 +745,9 @@ export const EXPLICIT_BATCH_5_ASSESSMENTS: Record<
     recommendedVisualFraming: 'full_room_scene',
     candidateSceneCategories: ['office'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-770',
-    canonicalConceptId: 'noun-concept-1125',
+    issueFlags: ['overly_specialized', 'modifier_padded_duplicate'],
     rationaleEn:
-      'шредер (зни́щувач папе́рів) (office paper shredder) is an exact within-batch duplicate of id-v2-770 (шре́дер, noun-concept-1125).',
+      'шредер (зни́щувач папе́рів) (office paper shredder) is a parenthetical-gloss duplicate of Batch 5 REVIEW candidate id-v2-770 (шре́дер, noun-concept-1125) and has low everyday priority; excluded without canonical KEEP target link because id-v2-770 is held in REVIEW.',
   },
 
   // 24 Specialist, Lab, Clinical, Hardware & Industrial Exclusions
@@ -1087,11 +1085,11 @@ export const IDENTIFY_BATCH_5_SEMANTIC_DUPLICATE_RECORDS: readonly IdentifyBatch
     comparedUk: 'шре́дер',
     comparedEn: 'paper shredder',
     relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
+    countsAsDuplicateConcept: false,
     curationActionOnBatch5Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'шре́дер',
     reasonEn:
-      'Exact within-batch duplicate of id-v2-770 (шре́дер, noun-concept-1125).',
+      'Parenthetical-gloss duplicate of Batch 5 REVIEW candidate id-v2-770 (шре́дер, noun-concept-1125); recorded as comparison-only (countsAsDuplicateConcept: false) because id-v2-770 is held in REVIEW rather than an approved KEEP target.',
   },
   {
     batchNumber: 5,

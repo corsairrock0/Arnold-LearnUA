@@ -63,10 +63,11 @@ export function resolveMasterConceptId(vocabularyId: string): string {
   return resolveMasterNounById(vocabularyId).conceptId;
 }
 
-// ----------------------------------------------------------------------------
+// // ----------------------------------------------------------------------------
 // 1. Explicit Batch 7 Assessments (144 Explicit Records:
-//    34 essential_everyday KEEP + 14 useful_extended KEEP + 36 REVIEW + 60 EXCLUDE;
-//    plus 56 common_situational KEEP records handled in buildBatch7Reviews = 200)
+//    34 essential_everyday KEEP + 1 common_situational KEEP (id-v2-684) +
+//    14 useful_extended KEEP + 36 REVIEW + 59 EXCLUDE;
+//    plus 56 default common_situational KEEP records in buildBatch7Reviews = 200)
 // ----------------------------------------------------------------------------
 
 export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
@@ -202,7 +203,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['kitchen', 'dining-room', 'cafe'],
     recommendation: 'keep',
     rationaleEn:
-      'бутербро́д (sandwich / open-faced sandwich, A1.1) is the standard everyday Ukrainian word for a breakfast or snack sandwich.',
+      'бутербро́д (open-faced sandwich, A1.1) is the primary everyday Ukrainian noun for a slice-of-bread breakfast or snack sandwich, visually distinct from a closed two-slice сендвіч (id-v2-580).',
   },
   'id-v2-581': {
     everydayRelevance: 'high_daily',
@@ -242,7 +243,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['farmers-market', 'supermarket', 'kitchen'],
     recommendation: 'keep',
     rationaleEn:
-      'сала́т листови́й (lettuce) represents the core leafy lettuce / salad greens concept; keep and normalize preferred learner headword to сала́т.',
+      'сала́т листови́й (leaf lettuce) represents the leafy green vegetable concept; keep and normalize preferred learner headword to unambiguous листови́й сала́т (with сала́т as context-dependent alternate) so raw lettuce is not conflated with a prepared mixed salad dish.',
   },
   'id-v2-487': {
     everydayRelevance: 'high_daily',
@@ -283,7 +284,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendation: 'keep',
     issueFlags: ['polysemy_sense_preserved'],
     rationaleEn:
-      'ми́ша (тварина) (mouse animal) is a core animal noun and an explicit polysemy sense contrast with ми́ша (комп’ю́терна) (noun-mysha-mouse).',
+      'ми́ша (тварина) (mouse animal) is a core animal noun and an explicit polysemy sense contrast with ми́ша (комп’ю́терна) (noun-mysha-computer / of-mouse).',
   },
   'id-v2-527': {
     everydayRelevance: 'high_daily',
@@ -293,7 +294,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['kitchen', 'supermarket', 'farmers-market'],
     recommendation: 'keep',
     rationaleEn:
-      'олі́я со́няшникова (sunflower cooking oil, FREQ_6000_DB #218 олі́я, A0.2) is the canonical Ukrainian vegetable oil concept; normalize preferred learner headword to олі́я.',
+      'олі́я со́няшникова (sunflower oil, FREQ_6000_DB #218 олі́я, A0.2) is the primary Ukrainian cooking oil entry; preserve its authoritative master meaning (sunflower oil) while normalizing the preferred learner headword to олі́я.',
   },
   'id-v2-591': {
     everydayRelevance: 'high_daily',
@@ -303,7 +304,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['kitchen', 'dining-room', 'cafe'],
     recommendation: 'keep',
     rationaleEn:
-      'чайник зава́рювальний (teapot) represents the canonical ча́йник / зава́рник tea-brewing pot distinct from electric appliance електроча́йник (id-v2-154).',
+      'чайник зава́рювальний (teapot) represents the tea-brewing pot normalized to preferred learner headword зава́рник (with зава́рювальний ча́йник as an explanatory alternate form), clearly distinguished from electric water kettle електроча́йник (id-v2-154).',
   },
   'id-v2-207': {
     everydayRelevance: 'high_daily',
@@ -535,7 +536,7 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['city-streets'],
     recommendation: 'keep',
     rationaleEn:
-      'будіве́льний кран (tower construction crane) is a prominent urban skyline structure distinct from sink faucet кран (водопрові́дний) (noun-kran-faucet).',
+      'будіве́льний кран (tower construction crane) is a prominent urban skyline structure distinct from sink faucet кран (ba-faucet / noun-kran-tap).',
   },
   'id-v2-954': {
     everydayRelevance: 'moderate_situational',
@@ -928,21 +929,20 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
       'табло́ прибуття́ тра́нспорту (digital transit arrival board) is a common bus/tram stop fixture, but табло́ інформаці́йне (id-v2-676, Batch 4 KEEP) already covers the canonical табло́ concept.',
   },
 
-  // === D. 60 EXCLUDE CANDIDATES (29 DUPLICATES/SUBTYPES + 31 LOW-NICHE/OBSCURE) ===
-  // --- D1. 29 Duplicate, Modifier-Padded, or Overly Narrow Subtype Exclusions ---
+  // === D. 1 RESTORED COMMON_SITUATIONAL KEEP + 59 EXCLUDE CANDIDATES ===
+  // --- D0. Preauthorized Semantic Integrity Repair: id-v2-684 Restored to KEEP ---
   'id-v2-684': {
     everydayRelevance: 'moderate_situational',
     visualRecognizability: 'clear_distinct_object',
-    recommendedPriority: 'none_exclude',
+    recommendedPriority: 'common_situational',
     recommendedVisualFraming: 'public_service_environment',
-    candidateSceneCategories: ['airport-station'],
-    recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1848',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1848'),
+    candidateSceneCategories: ['airport-station', 'public-transportation'],
+    recommendation: 'keep',
     rationaleEn:
-      'ілюміна́тор (airplane cabin window) duplicates Batch 4 accepted id-v2-1848 (ілюміна́тор літака́, airplane window).',
+      'ілюміна́тор (airplane cabin window) is a useful, visually recognizable aviation and travel noun with a clean canonical headword (previously mislinked to unrelated unreviewed id-v2-1848 підскля́нник метале́вий).',
   },
+
+  // --- D1. Duplicate, Modifier-Padded, Subtype, or Semantic-Boundary Exclusions ---
   'id-v2-695': {
     everydayRelevance: 'low_niche',
     visualRecognizability: 'context_dependent',
@@ -976,11 +976,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'food_table_display',
     candidateSceneCategories: ['cafe', 'kitchen'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-579',
-    canonicalConceptId: resolveMasterConceptId('id-v2-579'),
+    issueFlags: ['overly_specialized'],
     rationaleEn:
-      'сендвіч (loanword sandwich) is visually and pedagogically redundant with Batch 7 accepted id-v2-579 (бутербро́д, the primary Ukrainian sandwich noun).',
+      'сендвіч (closed two-slice sandwich) is a related but visually distinct culinary object from open-faced бутербро́д (id-v2-579, Batch 7 KEEP); excluded by curriculum-space priority so scenes focus on the primary everyday Ukrainian sandwich target бутербро́д without claiming strict lexical synonymy.',
   },
   'id-v2-488': {
     everydayRelevance: 'high_daily',
@@ -1028,11 +1026,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'food_table_display',
     candidateSceneCategories: ['kitchen', 'supermarket'],
     recommendation: 'exclude',
-    issueFlags: ['modifier_padded_duplicate', 'duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-527',
-    canonicalConceptId: resolveMasterConceptId('id-v2-527'),
+    issueFlags: ['hypernym_ambiguous'],
     rationaleEn:
-      'оли́вкова олі́я (olive oil) is visually indistinguishable in a bottle from Batch 7 accepted id-v2-527 (олі́я со́няшникова, normalized to олі́я).',
+      'оли́вкова олі́я (olive oil) is a coordinate cooking-oil variety alongside Batch 7 accepted id-v2-527 (олі́я со́няшникова, whose learner headword is normalized to олі́я), not a subtype of sunflower oil; excluded to avoid overrepresenting visually indistinguishable cooking-oil varieties.',
   },
   'id-v2-535': {
     everydayRelevance: 'moderate_situational',
@@ -1158,11 +1154,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'public_service_environment',
     candidateSceneCategories: ['airport-station'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1841',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1841'),
+    issueFlags: ['hypernym_ambiguous', 'overly_specialized'],
     rationaleEn:
-      'ми́тний контро́ль (glossed as security scanner archway) duplicates Batch 4 accepted id-v2-1841 (рамка металошукача́, security scanner arch) and conflates an abstract procedure with physical hardware.',
+      'ми́тний контро́ль (glossed as security scanner archway) conflates an abstract customs-control checkpoint procedure with physical security-scanner hardware and is excluded without linking to unreviewed id-v2-1841 (рамка металошукача́).',
   },
   'id-v2-698': {
     everydayRelevance: 'high_daily',
@@ -1172,10 +1166,10 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['public-transportation'],
     recommendation: 'exclude',
     issueFlags: ['modifier_padded_duplicate', 'duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-690',
-    canonicalConceptId: resolveMasterConceptId('id-v2-690'),
+    duplicateOfVocabularyId: 'id-v2-691',
+    canonicalConceptId: resolveMasterConceptId('id-v2-691'),
     rationaleEn:
-      'ваго́н метро́ (subway car) is a modifier-padded subtype of Batch 4 accepted id-v2-690 (ваго́н, train/subway car) and Batch 1 pt-subway (метро́).',
+      'ваго́н метро́ (subway car) is a specific railcar subtype of Batch 4 accepted id-v2-691 (ваго́н, railroad car / carriage) and Batch 1 pt-subway (метро́).',
   },
   'id-v2-918': {
     everydayRelevance: 'high_daily',
@@ -1223,11 +1217,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'street_urban_scene',
     candidateSceneCategories: ['city-streets'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1809',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1809'),
+    issueFlags: ['overly_specialized'],
     rationaleEn:
-      'но́мер буди́нку (house number plaque) visually overlaps on building facades with Batch 7 id-v2-1809 (ву́личний пока́жчик, street name & house number sign).',
+      'но́мер буди́нку (house number plaque) is a small facade sub-part that visually overlaps on building walls with Batch 7 REVIEW candidate id-v2-1809 (ву́личний пока́жчик); excluded without attaching a canonical link to an unapproved REVIEW item.',
   },
   'id-v2-1408': {
     everydayRelevance: 'low_niche',
@@ -1263,10 +1255,10 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     candidateSceneCategories: ['hallway-entry', 'clothing-store', 'countryside'],
     recommendation: 'exclude',
     issueFlags: ['modifier_padded_duplicate', 'duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-836',
-    canonicalConceptId: resolveMasterConceptId('id-v2-836'),
+    duplicateOfVocabularyId: 'id-v2-841',
+    canonicalConceptId: resolveMasterConceptId('id-v2-841'),
     rationaleEn:
-      'гумові чо́боти (rubber rain boots) is a material-modified duplicate of Batch 2 accepted id-v2-836 (чо́боти, boots).',
+      'гумові чо́боти (rubber rain boots / wellingtons) is a material-specific footwear subtype of Batch 2 accepted id-v2-841 (чо́боти, tall boots).',
   },
   'id-v2-1813': {
     everydayRelevance: 'low_niche',
@@ -1275,11 +1267,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'street_urban_scene',
     candidateSceneCategories: ['city-streets'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1357',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1357'),
+    issueFlags: ['modifier_padded_duplicate', 'overly_specialized'],
     rationaleEn:
-      'стовпчик обмежувальний (street bollard post) is a word-order duplicate of Batch 5 accepted id-v2-1357 (обмежувальний стовпчик, street bollard).',
+      'стовпчик обмежувальний (street bollard post) is a redundant word-order/modifier variant of Batch 5 REVIEW candidate id-v2-1342 (стовпчи́к тротуа́рний, street bollard) with low incremental curriculum value; excluded without promoting REVIEW candidate id-v2-1342 to an approved canonical KEEP target.',
   },
   'id-v2-1411': {
     everydayRelevance: 'low_niche',
@@ -1288,11 +1278,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'outdoor_nature_scene',
     candidateSceneCategories: ['beach-nature'],
     recommendation: 'exclude',
-    issueFlags: ['modifier_padded_duplicate', 'duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1848',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1848'),
+    issueFlags: ['overly_specialized'],
     rationaleEn:
-      'ілюміна́тор корабе́льний (ship porthole) duplicates the canonical ілюміна́тор concept already accepted in Batch 4 (id-v2-1848).',
+      'ілюміна́тор корабе́льний (round ship porthole) is a specialized maritime vessel subtype distinct from airplane cabin window ілюміна́тор (id-v2-684, Batch 7 KEEP) and excluded due to limited everyday curriculum utility.',
   },
   'id-v2-1575': {
     everydayRelevance: 'low_niche',
@@ -1301,11 +1289,9 @@ export const EXPLICIT_BATCH_7_ASSESSMENTS: Record<
     recommendedVisualFraming: 'outdoor_nature_scene',
     candidateSceneCategories: ['countryside'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1884',
-    canonicalConceptId: resolveMasterConceptId('id-v2-1884'),
+    issueFlags: ['overly_specialized', 'obscure_or_rare'],
     rationaleEn:
-      'льодови́к (glacier) is an exact duplicate of Batch 6 excluded id-v2-1884 (льодови́к гірськи́й, mountain glacier).',
+      'льодови́к (glacier) is a specialized high-mountain geographical landform outside everyday Ukrainian learner scenes and excluded for low everyday utility.',
   },
 
   // --- D2. 31 Low-Niche, Specialist, or Visually Subtle Exclusions ---
@@ -1719,56 +1705,26 @@ function buildVerifiedBatch7SemanticRelationshipRecord(
 }
 
 const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSeed[] = [
-  // === 29 EXCLUDED DUPLICATES, MODIFIER-PADDED VARIANTS, SUBTYPES & PART-WHOLE ITEMS ===
-  {
-    candidateVocabularyId: 'id-v2-684',
-    comparedVocabularyId: 'id-v2-1848',
-    relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
-    curationActionOnBatch7Candidate: 'exclude',
-    preferredCanonicalHeadwordUk: 'ілюміна́тор',
-    reasonEn:
-      'Exact same airplane-window concept as Batch 4 accepted id-v2-1848 (ілюміна́тор літака́).',
-  },
-  {
-    candidateVocabularyId: 'id-v2-683',
-    comparedVocabularyId: 'id-v2-1841',
-    relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
-    curationActionOnBatch7Candidate: 'exclude',
-    preferredCanonicalHeadwordUk: 'металошука́ч',
-    reasonEn:
-      'Glossed as "security scanner archway", duplicating Batch 4 accepted id-v2-1841 (рамка металошукача́).',
-  },
+  // === EXCLUDED DUPLICATES, SUBTYPES, PART-WHOLE & COMPARISON-ONLY RECORDS ===
   {
     candidateVocabularyId: 'id-v2-1813',
-    comparedVocabularyId: 'id-v2-1357',
-    relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
+    comparedVocabularyId: 'id-v2-1342',
+    relationshipType: 'SYNONYM_OR_ALTERNATE_HEADWORD',
+    countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'exclude',
-    preferredCanonicalHeadwordUk: 'обмежувальний стовпчик',
+    preferredCanonicalHeadwordUk: 'стовпчи́к',
     reasonEn:
-      'Word-order variant of Batch 5 accepted id-v2-1357 (обмежувальний стовпчик, street bollard).',
-  },
-  {
-    candidateVocabularyId: 'id-v2-1575',
-    comparedVocabularyId: 'id-v2-1884',
-    relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
-    curationActionOnBatch7Candidate: 'exclude',
-    preferredCanonicalHeadwordUk: 'льодови́к',
-    reasonEn:
-      'Same glacier concept as Batch 6 excluded id-v2-1884 (льодови́к гірськи́й).',
+      'стовпчик обмежувальний (street bollard post) describes the same sidewalk bollard object as Batch 5 REVIEW candidate id-v2-1342 (стовпчи́к тротуа́рний); recorded as a comparison-only reference without promoting REVIEW candidate id-v2-1342 to an approved canonical KEEP target.',
   },
   {
     candidateVocabularyId: 'id-v2-580',
     comparedVocabularyId: 'id-v2-579',
-    relationshipType: 'SYNONYM_OR_ALTERNATE_HEADWORD',
-    countsAsDuplicateConcept: true,
+    relationshipType: 'RELATED_BUT_DISTINCT_OBJECT',
+    countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'бутербро́д',
     reasonEn:
-      'Loanword сендвіч overlaps with the primary everyday Ukrainian sandwich noun бутербро́д (id-v2-579, Batch 7 KEEP).',
+      'сендвіч (closed two-slice sandwich) and бутербро́д (id-v2-579, open-faced sandwich, Batch 7 KEEP) are related but visually distinct culinary objects (RELATED_BUT_DISTINCT_OBJECT), not strict lexical synonyms; сендвіч is excluded for curriculum-space priority.',
   },
   {
     candidateVocabularyId: 'id-v2-953',
@@ -1842,13 +1798,13 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
   },
   {
     candidateVocabularyId: 'id-v2-698',
-    comparedVocabularyId: 'id-v2-690',
-    relationshipType: 'MODIFIER_PADDED_DUPLICATE',
+    comparedVocabularyId: 'id-v2-691',
+    relationshipType: 'MORE_SPECIFIC_SUBTYPE',
     countsAsDuplicateConcept: true,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'ваго́н',
     reasonEn:
-      'Modifier-padded duplicate of Batch 4 accepted id-v2-690 (ваго́н).',
+      'ваго́н метро́ (subway car) is a specific railcar subtype of Batch 4 accepted id-v2-691 (ваго́н, railroad car / carriage), not locomotive id-v2-690 (локомоти́в).',
   },
   {
     candidateVocabularyId: 'id-v2-918',
@@ -1872,23 +1828,23 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
   },
   {
     candidateVocabularyId: 'id-v2-1522',
-    comparedVocabularyId: 'id-v2-836',
-    relationshipType: 'MODIFIER_PADDED_DUPLICATE',
+    comparedVocabularyId: 'id-v2-841',
+    relationshipType: 'MORE_SPECIFIC_SUBTYPE',
     countsAsDuplicateConcept: true,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'чо́боти',
     reasonEn:
-      'Material-modified duplicate of Batch 2 accepted id-v2-836 (чо́боти, boots).',
+      'гумові чо́боти (rain boots / wellingtons) is a more specific footwear subtype of Batch 2 accepted id-v2-841 (чо́боти, tall boots), not swimsuit id-v2-836 (купа́льник).',
   },
   {
     candidateVocabularyId: 'id-v2-1411',
-    comparedVocabularyId: 'id-v2-1848',
-    relationshipType: 'MODIFIER_PADDED_DUPLICATE',
-    countsAsDuplicateConcept: true,
+    comparedVocabularyId: 'id-v2-684',
+    relationshipType: 'RELATED_BUT_DISTINCT_OBJECT',
+    countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'ілюміна́тор',
     reasonEn:
-      'Modifier-padded duplicate of canonical ілюміна́тор (id-v2-1848).',
+      'ілюміна́тор корабе́льний (round ship porthole) is a maritime vessel window distinct from airplane cabin window ілюміна́тор (id-v2-684, Batch 7 KEEP); excluded for limited everyday curriculum utility without claiming exact concept equivalence.',
   },
   {
     candidateVocabularyId: 'id-v2-496',
@@ -1903,12 +1859,12 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
   {
     candidateVocabularyId: 'id-v2-528',
     comparedVocabularyId: 'id-v2-527',
-    relationshipType: 'MORE_SPECIFIC_SUBTYPE',
-    countsAsDuplicateConcept: true,
+    relationshipType: 'RELATED_BUT_DISTINCT_OBJECT',
+    countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'олі́я',
     reasonEn:
-      'Olive oil bottle is visually indistinguishable without text from Batch 7 accepted id-v2-527 (олі́я со́няшникова -> олі́я).',
+      'оли́вкова олі́я (olive oil) and олі́я со́няшникова (id-v2-527, sunflower oil, normalized for learner practice to generic олі́я) are coordinate cooking-oil varieties (RELATED_BUT_DISTINCT_OBJECT), not a subtype of sunflower oil; id-v2-528 is excluded to avoid overrepresenting cooking-oil varieties.',
   },
   {
     candidateVocabularyId: 'id-v2-375',
@@ -2004,11 +1960,11 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
     candidateVocabularyId: 'id-v2-1810',
     comparedVocabularyId: 'id-v2-1809',
     relationshipType: 'PART_VERSUS_WHOLE',
-    countsAsDuplicateConcept: true,
+    countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'ву́личний пока́жчик',
     reasonEn:
-      'House number plate (но́мер буди́нку) is part of the same facade signage as Batch 7 id-v2-1809 (ву́личний пока́жчик).',
+      'House number plate (но́мер буди́нку) is part of the same facade signage as Batch 7 REVIEW candidate id-v2-1809 (ву́личний пока́жчик); recorded as a comparison-only reference without promoting REVIEW candidate id-v2-1809 to an approved canonical KEEP target.',
   },
 
   // === 10 KEPT DISTINCT SENSES & RELATED-BUT-DISTINCT EVERYDAY OBJECTS ===
@@ -2020,7 +1976,7 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
     curationActionOnBatch7Candidate: 'keep',
     preferredCanonicalHeadwordUk: 'ми́ша',
     reasonEn:
-      'Distinct lexical sense: ми́ша (тварина) (mouse animal) vs Batch 1 accepted noun-mysha-computer (ми́ша (комп’ю́терна), computer mouse). Both are kept.',
+      'Distinct lexical sense: ми́ша (тварина) (mouse animal) vs noun-mysha-computer (ми́ша (комп’ю́терна), computer mouse).',
   },
   {
     candidateVocabularyId: 'id-v2-661',
@@ -2048,9 +2004,9 @@ const BATCH_7_SEMANTIC_RELATIONSHIP_SEEDS: readonly Batch7SemanticRelationshipSe
     relationshipType: 'RELATED_BUT_DISTINCT_OBJECT',
     countsAsDuplicateConcept: false,
     curationActionOnBatch7Candidate: 'keep',
-    preferredCanonicalHeadwordUk: 'ча́йник',
+    preferredCanonicalHeadwordUk: 'зава́рник',
     reasonEn:
-      'чайник зава́рювальний (ceramic tea-brewing pot, normalized to ча́йник / зава́рник) is distinct from electric water-boiling appliance електроча́йник (id-v2-154, Batch 3 KEEP).',
+      'чайник зава́рювальний (ceramic tea-brewing pot, normalized to preferred headword зава́рник with alternate зава́рювальний ча́йник) is a related but distinct object from electric water-boiling appliance електроча́йник (id-v2-154, Batch 3 KEEP).',
   },
   {
     candidateVocabularyId: 'id-v2-594',
@@ -2197,7 +2153,7 @@ const BATCH_7_HEADWORD_NORMALIZATION_SEEDS: readonly Batch7HeadwordNormalization
     acceptedConversationalSynonymsUk: ['со́няшникова олі́я', 'олі́я со́няшникова'],
     recommendedPriority: 'essential_everyday',
     normalizationRationaleEn:
-      'In Ukrainian, олі́я (FREQ_6000_DB #218, A0.2) is the standard base noun for liquid cooking/vegetable oil (contrasting with solid butter ма́сло).',
+      'Preserves the authoritative master meaning (sunflower oil, олі́я со́няшникова) while normalizing the learner-facing headword to олі́я (FREQ_6000_DB #218, A0.2), the everyday Ukrainian noun for liquid cooking oil (contrasting with solid butter ма́сло and coordinate variety оли́вкова олі́я id-v2-528).',
   },
   {
     vocabularyId: 'id-v2-445',
@@ -2217,19 +2173,19 @@ const BATCH_7_HEADWORD_NORMALIZATION_SEEDS: readonly Batch7HeadwordNormalization
   },
   {
     vocabularyId: 'id-v2-458',
-    preferredLearnerHeadwordUk: 'сала́т',
-    acceptedConversationalSynonymsUk: ['листови́й сала́т', 'сала́т листови́й'],
+    preferredLearnerHeadwordUk: 'листови́й сала́т',
+    acceptedConversationalSynonymsUk: ['сала́т', 'сала́т листови́й'],
     recommendedPriority: 'essential_everyday',
     normalizationRationaleEn:
-      'Normalizes inverted botanical phrase сала́т листови́й to natural everyday Ukrainian сала́т (lettuce / salad greens).',
+      'Normalizes inverted botanical phrase сала́т листови́й to the unambiguous teaching headword листови́й сала́т (leaf lettuce), retaining shorter сала́т only as a context-dependent alternate so leafy lettuce is not silently conflated with a prepared mixed salad dish.',
   },
   {
     vocabularyId: 'id-v2-591',
-    preferredLearnerHeadwordUk: 'ча́йник / зава́рник',
+    preferredLearnerHeadwordUk: 'зава́рник',
     acceptedConversationalSynonymsUk: ['зава́рювальний ча́йник', 'чайник зава́рювальний'],
     recommendedPriority: 'essential_everyday',
     normalizationRationaleEn:
-      'Normalizes inverted catalog label чайник зава́рювальний to natural everyday ча́йник / зава́рник.',
+      'Normalizes inverted catalog label чайник зава́рювальний to unambiguous preferred learner headword зава́рник (with зава́рювальний ча́йник as an explanatory alternate form) so a tea-steeping teapot is never confused with electric water-boiling kettle електроча́йник (id-v2-154).',
   },
   {
     vocabularyId: 'id-v2-594',
@@ -2338,7 +2294,7 @@ const BATCH_7_ESSENTIAL_EVERYDAY_REASON_SEEDS: readonly Batch7EssentialEverydayR
   {
     vocabularyId: 'id-v2-579',
     domainId: 'food_and_drinks',
-    educationalReasonEn: 'Primary everyday Ukrainian noun for a breakfast or snack sandwich (бутербро́д).',
+    educationalReasonEn: 'Primary everyday Ukrainian noun for an open-faced breakfast or snack sandwich (бутербро́д), distinct from closed сендвіч.',
   },
   {
     vocabularyId: 'id-v2-581',
@@ -2358,7 +2314,7 @@ const BATCH_7_ESSENTIAL_EVERYDAY_REASON_SEEDS: readonly Batch7EssentialEverydayR
   {
     vocabularyId: 'id-v2-458',
     domainId: 'food_and_drinks',
-    educationalReasonEn: 'Essential everyday leafy greens / salad noun (normalized to сала́т).',
+    educationalReasonEn: 'Essential everyday leafy lettuce vegetable (normalized to unambiguous листови́й сала́т to distinguish raw lettuce greens from a prepared mixed salad).',
   },
   {
     vocabularyId: 'id-v2-487',
@@ -2383,12 +2339,12 @@ const BATCH_7_ESSENTIAL_EVERYDAY_REASON_SEEDS: readonly Batch7EssentialEverydayR
   {
     vocabularyId: 'id-v2-527',
     domainId: 'food_and_drinks',
-    educationalReasonEn: 'Foundational A0 Ukrainian cooking oil noun (normalized from олі́я со́няшникова to олі́я).',
+    educationalReasonEn: 'Foundational A0 Ukrainian cooking oil noun (sunflower oil олі́я со́няшникова, normalized for learner practice to олі́я).',
   },
   {
     vocabularyId: 'id-v2-591',
     domainId: 'home_and_furniture',
-    educationalReasonEn: 'Core kitchen and café tea-brewing vessel (normalized to ча́йник / зава́рник).',
+    educationalReasonEn: 'Core kitchen and café tea-brewing vessel (normalized to unambiguous зава́рник, with зава́рювальний ча́йник as alternate form, distinct from електроча́йник).',
   },
   {
     vocabularyId: 'id-v2-207',

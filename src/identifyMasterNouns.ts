@@ -7,6 +7,7 @@
 // ============================================================================
 
 export type IdentifyNounPriorityTier = 'foundational' | 'intermediate' | 'specialized';
+export type IdentifyTopicGroupId = string;
 
 export interface IdentifyMasterNounEntry {
   conceptId: string;

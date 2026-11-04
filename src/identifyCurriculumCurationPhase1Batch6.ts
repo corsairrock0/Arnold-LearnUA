@@ -695,10 +695,8 @@ export const EXPLICIT_BATCH_6_ASSESSMENTS: Record<
     candidateSceneCategories: ['city-streets'],
     recommendation: 'exclude',
     issueFlags: ['modifier_padded_duplicate'],
-    duplicateOfVocabularyId: 'id-v2-609',
-    canonicalConceptId: 'noun-concept-0818',
     rationaleEn:
-      'бруківка кам’яна́ (cobblestone pavement) is a modifier-padded duplicate of Batch 4 reviewed id-v2-609 (брукі́вка, noun-concept-0818).',
+      'бруківка кам’яна́ (cobblestone pavement) is a modifier-padded variant of Batch 4 REVIEW candidate id-v2-609 (брукі́вка, noun-concept-0818); excluded without canonical KEEP target link because id-v2-609 is held in REVIEW.',
   },
   'id-v2-1807': {
     everydayRelevance: 'moderate_situational',
@@ -720,11 +718,9 @@ export const EXPLICIT_BATCH_6_ASSESSMENTS: Record<
     recommendedVisualFraming: 'street_urban_scene',
     candidateSceneCategories: ['airport-station'],
     recommendation: 'exclude',
-    issueFlags: ['duplicate_concept'],
-    duplicateOfVocabularyId: 'id-v2-1843',
-    canonicalConceptId: 'noun-concept-0954',
+    issueFlags: ['overly_specialized', 'modifier_padded_duplicate'],
     rationaleEn:
-      'рука́в посадко́вий (телетрап) (aerobridge / jet bridge) is an exact within-batch duplicate of id-v2-1843 (телетра́п (рука́в посадкóвий), noun-concept-0954).',
+      'рука́в посадко́вий (телетрап) (aerobridge / jet bridge) is an inverted-headword variant of Batch 6 REVIEW candidate id-v2-1843 (телетра́п (рука́в посадкóвий), noun-concept-0954); excluded without canonical KEEP target link because id-v2-1843 is held in REVIEW.',
   },
   'id-v2-1367': {
     everydayRelevance: 'low_niche',
@@ -1317,11 +1313,11 @@ export const IDENTIFY_BATCH_6_SEMANTIC_RELATIONSHIP_RECORDS: readonly IdentifyBa
     comparedUk: 'телетра́п (рука́в посадкóвий)',
     comparedEn: 'jet bridge walkway',
     relationshipType: 'EXACT_SAME_CONCEPT',
-    countsAsDuplicateConcept: true,
+    countsAsDuplicateConcept: false,
     curationActionOnBatch6Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'телетра́п',
     reasonEn:
-      'Exact within-batch duplicate of id-v2-1843 (телетра́п (рука́в посадкóвий), noun-concept-0954).',
+      'Inverted-headword variant of Batch 6 REVIEW candidate id-v2-1843 (телетра́п (рука́в посадкóвий), noun-concept-0954); recorded as comparison-only (countsAsDuplicateConcept: false) because id-v2-1843 is held in REVIEW rather than an approved KEEP target.',
   },
   {
     batchNumber: 6,
@@ -1419,11 +1415,11 @@ export const IDENTIFY_BATCH_6_SEMANTIC_RELATIONSHIP_RECORDS: readonly IdentifyBa
     comparedUk: 'брукі́вка',
     comparedEn: 'cobblestone pavement',
     relationshipType: 'MODIFIER_PADDED_DUPLICATE',
-    countsAsDuplicateConcept: true,
+    countsAsDuplicateConcept: false,
     curationActionOnBatch6Candidate: 'exclude',
     preferredCanonicalHeadwordUk: 'брукі́вка',
     reasonEn:
-      'Modifier-padded duplicate of Batch 4 reviewed id-v2-609 (брукі́вка, noun-concept-0818).',
+      'Modifier-padded variant of Batch 4 REVIEW candidate id-v2-609 (брукі́вка, noun-concept-0818); recorded as comparison-only (countsAsDuplicateConcept: false) because id-v2-609 is held in REVIEW rather than an approved KEEP target.',
   },
   {
     batchNumber: 6,

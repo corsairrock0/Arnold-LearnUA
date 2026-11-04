@@ -2475,3 +2475,33 @@ export function verifySceneAcrossRepresentativeViewports(scene: IdentifyScene): 
     viewportChecks,
   };
 }
+
+export {
+  IDENTIFY_RETIRED_OUTDATED_EXTENSIONS_28,
+  IDENTIFY_MISSING_CONCEPT_EXTENSIONS_28,
+  IDENTIFY_CONTEXTUAL_NON_CLICKABLE_MISSING_WORDS_6,
+  IDENTIFY_RECONCILED_DEMOTED_PROVISIONAL_KEEPS_14,
+  IDENTIFY_RECONCILED_PROMOTED_REVIEWS_7,
+  IDENTIFY_LEGACY_HOTSPOT_ALIAS_MAP,
+  IDENTIFY_FINAL_1200_CURRICULUM_CONCEPTS,
+  IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN,
+  IDENTIFY_IMAGE_GENERATION_PROBE_RESULT,
+  resolveCanonicalVocabularyIdForHotspot,
+  normalizeConceptSceneCategories,
+  isConceptSemanticallyCompatibleWithSceneCategory,
+  getIdentifyFinal1200And80SceneSummary,
+} from './identifyCurriculumFinal1200.ts';
+export type {
+  IdentifyRetiredOutdatedExtensionRecord,
+  IdentifyMissingConceptExtensionEntry,
+  IdentifyContextualNonClickableMissingEntry,
+  IdentifyReconciledDemotedKeepRecord,
+  IdentifyReconciledPromotedReviewRecord,
+  IdentifyLegacyHotspotAliasRecord,
+  IdentifyFinal1200CurriculumConcept,
+  IdentifyUkrainian80SceneTargetAssociation,
+  IdentifyUkrainian80SceneSpec,
+  IdentifyFinal1200And80SceneSummary,
+} from './identifyCurriculumFinal1200.ts';
+
+

@@ -317,7 +317,8 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 40 verified scenes, 
         normalizeIdentifyUk
     } = await import('../identifyEngine.ts');
 
-    assert.equal(IDENTIFY_CATEGORIES.length, 20, 'Expected 20 everyday Identify categories');
+    const { getPlayableIdentifyCategories, getApprovedLearnerTargets } = await import('../identifyData.ts');
+    assert.equal(IDENTIFY_CATEGORIES.length, 28, 'Expected 28 everyday Identify categories');
     assert.equal(IDENTIFY_AUDIT_40_SUMMARY.originalScenesAudited, 100);
     assert.equal(IDENTIFY_AUDIT_40_SUMMARY.validScenesKept, 4);
     assert.equal(IDENTIFY_AUDIT_40_SUMMARY.invalidScenesRegenerated, 24);
@@ -325,12 +326,21 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 40 verified scenes, 
     assert.equal(IDENTIFY_AUDIT_40_SUMMARY.finalTotalScenes, 40);
 
     let totalScenes = 0;
-    const uniqueAssetPaths = new Set<string>();
     for (const cat of IDENTIFY_CATEGORIES) {
-        assert.equal(cat.scenes.length, 2, `Category ${cat.id} must have 2 complementary verified scenes`);
+        totalScenes += cat.scenes.length;
+    }
+    assert.equal(totalScenes, 120, 'Expected 120 total scenes across 28 categories');
+
+    const playableCats = getPlayableIdentifyCategories();
+    let playableSceneCount = 0;
+    let verifiedTargetCount = 0;
+    const uniqueAssetPaths = new Set<string>();
+    for (const cat of playableCats) {
         for (const sc of cat.scenes) {
-            totalScenes++;
-            assert.ok(sc.targets.length >= 4 && sc.targets.length <= 10, `Scene ${sc.id} must have 4–10 targets, got ${sc.targets.length}`);
+            playableSceneCount++;
+            const approved = getApprovedLearnerTargets(sc);
+            verifiedTargetCount += approved.length;
+            assert.ok(approved.length >= 4 && approved.length <= 10, `Playable scene ${sc.id} must have 4–10 approved targets, got ${approved.length}`);
             const assetUri = renderIdentifySceneSvgDataUri(sc);
             assert.ok(
                 (assetUri.startsWith(`/assets/identify/${cat.id}/`) || assetUri.startsWith('/assets/identify/regenerated/')) &&
@@ -345,7 +355,7 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 40 verified scenes, 
             const stat = fs.statSync(diskPath);
             assert.ok(stat.size > 5000, `Scene image file for ${sc.id} is too small (${stat.size} bytes)`);
 
-            for (const t of sc.targets) {
+            for (const t of approved) {
                 assert.ok(t.x >= 0 && t.x <= 1 && t.y >= 0 && t.y <= 1, `Invalid normalized x/y in ${t.id}`);
                 assert.ok(t.width > 0 && t.x + t.width <= 1.01, `Invalid normalized width in ${t.id}`);
                 assert.ok(t.height > 0 && t.y + t.height <= 1.01, `Invalid normalized height in ${t.id}`);
@@ -360,27 +370,29 @@ test('9. Identify Visual Vocabulary Feature: 20 categories, 40 verified scenes, 
             }
         }
     }
-    assert.equal(uniqueAssetPaths.size, 40, 'Expected 40 distinct .webp asset paths across all 40 scenes');
-    assert.equal(totalScenes, 40, 'Expected 40 total scenes across 20 categories');
+    assert.equal(playableSceneCount, 10, 'Expected 10 verified playable scenes');
+    assert.equal(verifiedTargetCount, 49, 'Expected 49 verified active hotspots');
+    assert.equal(uniqueAssetPaths.size, 10, 'Expected 10 distinct .webp asset paths across all 10 playable scenes');
+
 
     // Verify Fill-in-the-Blank normalization, synonyms, and Ukrainian letter checks
-    const sinkTarget = IDENTIFY_CATEGORIES[0].scenes[0].targets.find((t) => t.vocabularyId === 'k-sink')!;
+    const kitchenScene5 = playableCats[0].scenes.find((s) => s.id === 'kitchen-scene-5')!;
+    const sinkTarget = kitchenScene5.targets.find((t) => t.vocabularyId === 'k-sink')!;
     assert.equal(validateIdentifyTypedAnswer('мийка', sinkTarget).isCorrect, true, 'Should accept unstressed мийка');
     assert.equal(validateIdentifyTypedAnswer('  МИ́ЙКА ', sinkTarget).isCorrect, true, 'Should accept stressed uppercase with spaces');
     assert.equal(validateIdentifyTypedAnswer('раковина', sinkTarget).isCorrect, true, 'Should accept valid synonym раковина');
 
-    const fridgeTarget = IDENTIFY_CATEGORIES[0].scenes[0].targets.find((t) => t.vocabularyId === 'k-fridge')!;
+    const fridgeTarget = kitchenScene5.targets.find((t) => t.vocabularyId === 'k-fridge')!;
     const letterConf = validateIdentifyTypedAnswer('холодільнік', fridgeTarget);
     assert.equal(letterConf.isCorrect, false, 'Should reject и/і letter confusion');
     assert.equal(letterConf.errorType, 'ukrainian-letter-confusion');
 
     // Verify Show Answer tracking never counts as independent mastery
     const prog = createDefaultIdentifyProgress();
-    const kitchenScene1 = IDENTIFY_CATEGORIES[0].scenes[0];
-    recordIdentifyShowAnswer(prog, kitchenScene1, fridgeTarget);
-    recordIdentifyAttempt(prog, kitchenScene1, sinkTarget, 'mc', true, sinkTarget.uk, 'ok');
+    recordIdentifyShowAnswer(prog, kitchenScene5, fridgeTarget);
+    recordIdentifyAttempt(prog, kitchenScene5, sinkTarget, 'mc', true, sinkTarget.uk, 'ok');
 
-    const summary = computeIdentifySceneSummary(prog, kitchenScene1);
+    const summary = computeIdentifySceneSummary(prog, kitchenScene5);
     assert.equal(summary.revealedCount, 1, 'Expected 1 revealed target');
     assert.equal(summary.correctMCCount, 1, 'Expected 1 correct MC target (Show Answer must not increment correctMCCount)');
     assert.ok(summary.needsPracticeTargets.some((t) => t.id === fridgeTarget.id), 'Revealed target must be included in needsPracticeTargets');
