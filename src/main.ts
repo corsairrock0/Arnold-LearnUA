@@ -80,7 +80,14 @@ import {
   confirmDevPilotImport,
   resetDevPilotCourseTrack,
   syncMultilingualTrackUI,
+  getActiveCourseTrack,
+  registerOnCourseTrackChanged,
 } from './multilingual/multilingualSelectorView.ts';
+import { PUBLISHED_UKRAINIAN_TRACK_ID } from './multilingual/courseTrackRegistry.ts';
+import {
+  initAIConversationTab,
+  renderAIConversationTab,
+} from './aiConversationView';
 import {
   selectUniversalCourseModule,
   selectUniversalCourseLesson,
@@ -196,8 +203,27 @@ import {
 // ============================================================================
 // 0. iOS HAPTIC FEEDBACK, THEME APPEARANCE & BOTTOM SHEET CONTROLLER
 // ============================================================================
+let hasUserGestureActivated = false;
+if (typeof window !== 'undefined') {
+  const markActivated = () => {
+    hasUserGestureActivated = true;
+  };
+  window.addEventListener('pointerdown', markActivated, {
+    once: true,
+    passive: true,
+  });
+  window.addEventListener('keydown', markActivated, {
+    once: true,
+    passive: true,
+  });
+}
+
 export function triggerHaptic(style: 'light' | 'heavy' = 'light'): void {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+  if (
+    hasUserGestureActivated &&
+    typeof navigator !== 'undefined' &&
+    navigator.vibrate
+  ) {
     navigator.vibrate(style === 'heavy' ? 18 : 8);
   }
 }
@@ -241,6 +267,7 @@ export function openSettingsModal(): void {
   triggerHaptic('light');
   document.getElementById('lango-settings-modal')?.classList.remove('hidden');
   applyColorTheme(currentThemeMode);
+  syncDailyGoalButtonsUI();
 }
 
 export function closeSettingsModal(): void {
@@ -346,41 +373,59 @@ function injectOpenAIVoiceModal(): void {
 
   const modal = document.createElement('div');
   modal.id = 'voice-settings-modal';
-  modal.className = 'hidden';
-  modal.style.cssText =
-    'position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:18px;';
+  modal.className = 'modal-backdrop hidden';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'voice-modal-title');
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeVoiceModal();
+  });
   modal.innerHTML = `
-    <div class="card" style="max-width:420px; width:100%; background:var(--surface-1); border:1px solid var(--border-strong); box-shadow:var(--shadow-theater); margin:0;">
-      <h3 style="margin-top:0; font-size:19px; color:var(--accent);">🎙️ Dual-Accent Ukrainian/English Voice</h3>
-      <p style="font-size:13px; color:var(--text-secondary); margin-top:0; line-height:1.45;">
+    <div class="modal-dialog modal-dialog--sm">
+      <div class="modal-header">
+        <div>
+          <div class="modal-kicker">Audio &amp; Pronunciation</div>
+          <h3 id="voice-modal-title" class="modal-title">Dual-Accent Ukrainian &amp; English Voice</h3>
+        </div>
+        <button type="button" class="btn btn-sec btn--sm" onclick="closeVoiceModal()">Close</button>
+      </div>
+      <p class="hint hint--body">
         Built-in browser pronunciation works automatically. Optional: enter an OpenAI API key to enable <b>Studio Dual-Accent Neural TTS</b> (native American English + native literary Ukrainian).
       </p>
-      <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">OpenAI API Key (optional, sk-...):</label>
-      <input id="vc-oa-key" type="password" class="input-box" style="width:100%; margin-bottom:12px;" placeholder="sk-proj-... (leave blank for built-in browser voice)">
-      <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">OpenAI TTS Model:</label>
-      <select id="vc-oa-model" class="input-box" style="width:100%; margin-bottom:12px;">
-        <option value="gpt-4o-mini-tts">gpt-4o-mini-tts (Recommended — Native Dual-Accent Control)</option>
-        <option value="tts-1-hd">tts-1-hd (Studio HD)</option>
-      </select>
-      <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Speaker Voice:</label>
-      <select id="vc-oa-voice" class="input-box" style="width:100%; margin-bottom:12px;">
-        <option value="nova">Nova (Default — Warm, Clear Bilingual Female)</option>
-        <option value="coral">Coral (Expressive, Articulate Female)</option>
-        <option value="sage">Sage (Calm, Natural Instructor)</option>
-        <option value="onyx">Onyx (Deep, Authoritative Bilingual Male)</option>
-        <option value="shimmer">Shimmer (Clear Studio Female)</option>
-        <option value="echo">Echo (Smooth, Natural Male)</option>
-        <option value="alloy">Alloy (Balanced Studio Neutral)</option>
-      </select>
-      <label style="font-size:13px; font-weight:700; display:block; margin-bottom:4px;">Speaking Speed:</label>
-      <select id="vc-oa-speed" class="input-box" style="width:100%; margin-bottom:18px;">
-        <option value="0.85">0.85x (Slower — Clear Phonetic Study)</option>
-        <option value="0.92">0.92x (Default — Natural Learner Pace)</option>
-        <option value="1.0">1.00x (Full Native Speed)</option>
-      </select>
-      <div style="display:flex; gap:8px;">
-        <button class="btn" style="flex:1;" onclick="saveVoiceModal()">💾 Save & Test Voice</button>
-        <button class="btn btn-sec" onclick="closeVoiceModal()">Cancel</button>
+      <div class="form-field">
+        <label class="form-label" for="vc-oa-key">OpenAI API Key (optional, sk-…)</label>
+        <input id="vc-oa-key" type="password" class="input-box" placeholder="sk-proj-… (leave blank for built-in browser voice)">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="vc-oa-model">OpenAI TTS Model</label>
+        <select id="vc-oa-model" class="input-box">
+          <option value="gpt-4o-mini-tts">gpt-4o-mini-tts (Recommended — Native Dual-Accent Control)</option>
+          <option value="tts-1-hd">tts-1-hd (Studio HD)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="vc-oa-voice">Speaker Voice</label>
+        <select id="vc-oa-voice" class="input-box">
+          <option value="nova">Nova (Default — Warm, Clear Bilingual Female)</option>
+          <option value="coral">Coral (Expressive, Articulate Female)</option>
+          <option value="sage">Sage (Calm, Natural Instructor)</option>
+          <option value="onyx">Onyx (Deep, Authoritative Bilingual Male)</option>
+          <option value="shimmer">Shimmer (Clear Studio Female)</option>
+          <option value="echo">Echo (Smooth, Natural Male)</option>
+          <option value="alloy">Alloy (Balanced Studio Neutral)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="vc-oa-speed">Speaking Speed</label>
+        <select id="vc-oa-speed" class="input-box">
+          <option value="0.85">0.85x (Slower — Clear Phonetic Study)</option>
+          <option value="0.92">0.92x (Default — Natural Learner Pace)</option>
+          <option value="1.0">1.00x (Full Native Speed)</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sec" onclick="closeVoiceModal()">Cancel</button>
+        <button type="button" class="btn flex-1-min" onclick="saveVoiceModal()">Save &amp; Test Voice</button>
       </div>
     </div>
   `;
@@ -831,8 +876,17 @@ let lastCorrUserGuess = '';
 
 let currentInspectedRank = 1;
 
+let lastObservedDbXp: number = db.xp;
+
 function saveDB(): void {
   localStorage.setItem('slovo_ua_6000_anki_v1', JSON.stringify(db));
+  if (db.xp > lastObservedDbXp) {
+    const deltaXp = db.xp - lastObservedDbXp;
+    lastObservedDbXp = db.xp;
+    recordDailyStudyActivity(Math.min(4, Math.max(0.35, deltaXp / 30)));
+  } else {
+    lastObservedDbXp = db.xp;
+  }
   updateSidebarStats();
 }
 
@@ -1625,19 +1679,32 @@ export function toggleCourseSyllabusDrawer(force?: boolean): void {
 
 export function selectCourseModule(modId: string): void {
   triggerHaptic('light');
-  activeModId = modId;
+  const matched = COURSE_MODULES.find(
+    (m) => m.id.toLowerCase() === String(modId || '').toLowerCase()
+  );
+  activeModId = matched ? matched.id : modId;
   activeStage = 0;
+  saveCourseResumeBookmark(activeModId, activeStage, 'sec-learn');
   if (isCourseSyllabusOpen) {
     toggleCourseSyllabusDrawer(false);
   }
   renderCourseSyllabus();
   renderActiveModule();
+  if (
+    typeof document !== 'undefined' &&
+    !document.getElementById('tab-course')?.classList.contains('hidden')
+  ) {
+    syncHashForCurrentView('course');
+  }
+  refreshTodayIfVisible();
 }
 
 export function selectCourseStage(stageIdx: number): void {
   triggerHaptic('light');
   activeStage = stageIdx;
+  saveCourseResumeBookmark(activeModId, activeStage);
   renderActiveModule();
+  refreshTodayIfVisible();
 }
 
 export function renderCourseSyllabus(): void {
@@ -1774,6 +1841,7 @@ export function inspectCourseWord(rawWord: string): void {
 
 export function jumpToLessonSection(sectionId: string): void {
   triggerHaptic('light');
+  saveCourseResumeBookmark(activeModId, activeStage, sectionId);
   const el = document.getElementById(sectionId);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2265,7 +2333,7 @@ export function renderActiveModule(): void {
               }
             </div>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); inspectCourseWord('${escapeSingleQuotes(uk)}')">🔍 7-Case</button>
+              <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); inspectCourseWord('${escapeSingleQuotes(uk)}')">Word forms</button>
               ${
                 exUk
                   ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Example</button>`
@@ -3934,7 +4002,7 @@ export function renderEverydayVocabWorkspace(): void {
             </div>
           </div>
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 10px; font-size:12px;" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">🔍 7-Case</button>
+            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 10px; font-size:12px;" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Word forms</button>
             ${
               inDeck
                 ? `<span class="tag" style="background:var(--success-container); color:var(--success-on-container); font-weight:800;">✓ In FSRS</span>`
@@ -4202,34 +4270,1144 @@ export function renderEverydayVocabWorkspace(): void {
 }
 
 // ============================================================================
-// 6. NAVIGATION & INITIALIZATION
+// 6. PHASE 2 — TODAY STUDY HOME, 3-STEP ONBOARDING, 5-DESTINATION IA & ROUTER
 // ============================================================================
-const WORKSPACE_BREADCRUMBS: Record<string, string> = {
-  course: 'Structured Course · A0–C1',
-  reader: 'Comprehensible Reader · A0–C1',
-  identify: 'Visual Vocabulary · 67 Scenes',
-  vocab: 'Everyday Vocab Lab · 27 Topics',
-  srs: 'UK → EN Recognition · FSRS',
-  en2uk: 'EN → UK Active Recall · FSRS',
-  correction: 'Sentence & Case Repair · FSRS',
-  phonetics: 'Phonetics & Cursive Lab',
+const LANGO_ONBOARDING_STORAGE_KEY = 'slovo_ua_onboarding_v1';
+const LANGO_DAILY_GOAL_STORAGE_KEY = 'slovo_ua_daily_goal_v1';
+
+type OnboardingStartChoice = 'new' | 'alphabet' | 'place';
+type DailyGoalMinutes = 10 | 20 | 30;
+
+interface OnboardingStateV1 {
+  completed: boolean;
+  startingChoice: OnboardingStartChoice;
+  recommendedModId: string;
+  dailyGoalMinutes: DailyGoalMinutes;
+  lastModId: string;
+  lastStage: number;
+  lastSectionId: string;
+  completedAt?: string;
+}
+
+interface DailyGoalTrackerV1 {
+  dailyGoalMinutes: DailyGoalMinutes;
+  lastActiveDate: string;
+  streakDays: number;
+  todayDate: string;
+  minutesToday: number;
+  actionsToday: number;
+}
+
+function getLocalIsoDate(d: Date = new Date()): string {
+  const yr = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  return `${yr}-${mo}-${da}`;
+}
+
+function getYesterdayIsoDate(d: Date = new Date()): string {
+  const prev = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+  return getLocalIsoDate(prev);
+}
+
+function normalizeDailyGoalMinutes(val: unknown): DailyGoalMinutes {
+  if (val === 10 || val === '10') return 10;
+  if (val === 30 || val === '30') return 30;
+  return 20;
+}
+
+function loadOnboardingState(): OnboardingStateV1 {
+  const raw = localStorage.getItem(LANGO_ONBOARDING_STORAGE_KEY);
+  let parsed: Partial<OnboardingStateV1> = {};
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {};
+    }
+  }
+  const validMod = COURSE_MODULES.some((m) => m.id === parsed.lastModId)
+    ? (parsed.lastModId as string)
+    : COURSE_MODULES[0].id;
+  const validRec = COURSE_MODULES.some((m) => m.id === parsed.recommendedModId)
+    ? (parsed.recommendedModId as string)
+    : COURSE_MODULES[0].id;
+
+  return {
+    completed: Boolean(parsed.completed),
+    startingChoice:
+      parsed.startingChoice === 'alphabet' || parsed.startingChoice === 'place'
+        ? parsed.startingChoice
+        : 'new',
+    recommendedModId: validRec,
+    dailyGoalMinutes: normalizeDailyGoalMinutes(parsed.dailyGoalMinutes),
+    lastModId: validMod,
+    lastStage:
+      typeof parsed.lastStage === 'number' &&
+      parsed.lastStage >= 0 &&
+      parsed.lastStage <= 4
+        ? parsed.lastStage
+        : 0,
+    lastSectionId:
+      typeof parsed.lastSectionId === 'string' && parsed.lastSectionId
+        ? parsed.lastSectionId
+        : 'sec-learn',
+    completedAt: parsed.completedAt,
+  };
+}
+
+function saveOnboardingState(): void {
+  localStorage.setItem(
+    LANGO_ONBOARDING_STORAGE_KEY,
+    JSON.stringify(onboardingState)
+  );
+}
+
+function loadDailyGoalTracker(fallbackGoal: DailyGoalMinutes): DailyGoalTrackerV1 {
+  const today = getLocalIsoDate();
+  const yesterday = getYesterdayIsoDate();
+  const raw = localStorage.getItem(LANGO_DAILY_GOAL_STORAGE_KEY);
+  let parsed: Partial<DailyGoalTrackerV1> = {};
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {};
+    }
+  }
+  const goal = parsed.dailyGoalMinutes
+    ? normalizeDailyGoalMinutes(parsed.dailyGoalMinutes)
+    : fallbackGoal;
+  const savedToday = parsed.todayDate === today;
+  const lastActive =
+    typeof parsed.lastActiveDate === 'string' ? parsed.lastActiveDate : '';
+  let streak =
+    typeof parsed.streakDays === 'number' && parsed.streakDays >= 0
+      ? parsed.streakDays
+      : 0;
+  if (lastActive && lastActive !== today && lastActive !== yesterday) {
+    streak = 0;
+  }
+
+  return {
+    dailyGoalMinutes: goal,
+    lastActiveDate: lastActive,
+    streakDays: streak,
+    todayDate: today,
+    minutesToday:
+      savedToday && typeof parsed.minutesToday === 'number'
+        ? Math.max(0, parsed.minutesToday)
+        : 0,
+    actionsToday:
+      savedToday && typeof parsed.actionsToday === 'number'
+        ? Math.max(0, parsed.actionsToday)
+        : 0,
+  };
+}
+
+const onboardingState: OnboardingStateV1 = loadOnboardingState();
+const dailyGoalTracker: DailyGoalTrackerV1 = loadDailyGoalTracker(
+  onboardingState.dailyGoalMinutes
+);
+
+if (
+  COURSE_MODULES.some((m) => m.id === onboardingState.lastModId) &&
+  onboardingState.lastModId
+) {
+  activeModId = onboardingState.lastModId;
+  activeStage = onboardingState.lastStage;
+}
+
+let onboardingStep: 1 | 2 | 3 = 1;
+let forceShowOnboarding = false;
+const placementQuizSelections: Array<number | null> = [null, null, null];
+
+interface PlacementQuestion {
+  prompt: string;
+  options: string[];
+  correctIdx: number;
+}
+
+const ONBOARDING_PLACEMENT_QUESTIONS: PlacementQuestion[] = [
+  {
+    prompt: '1. Can you read this aloud? «Добрий день, кава будь ласка»',
+    options: ['Not yet — teach me the letters', 'Yes: Dobryi den, kava bud laska'],
+    correctIdx: 1,
+  },
+  {
+    prompt: '2. Choose the natural form: «Я живу в ___» (in Kyiv)',
+    options: ['Київ', 'Києві', 'Києва'],
+    correctIdx: 1,
+  },
+  {
+    prompt: '3. Completed action yesterday: «Вчора я ___ листа другу»',
+    options: ['писав', 'написав', 'пишу'],
+    correctIdx: 1,
+  },
+];
+
+function computePlacementRecommendation(): string {
+  let score = 0;
+  ONBOARDING_PLACEMENT_QUESTIONS.forEach((q, idx) => {
+    if (placementQuizSelections[idx] === q.correctIdx) score += 1;
+  });
+  if (score <= 0) return 'A0.1';
+  if (score === 1) return 'A1.1';
+  if (score === 2) return 'A2.1';
+  return 'B1.1';
+}
+
+function saveDailyGoalTracker(): void {
+  localStorage.setItem(
+    LANGO_DAILY_GOAL_STORAGE_KEY,
+    JSON.stringify(dailyGoalTracker)
+  );
+}
+
+function recordDailyStudyActivity(minutesDelta: number): void {
+  const today = getLocalIsoDate();
+  const yesterday = getYesterdayIsoDate();
+  if (dailyGoalTracker.todayDate !== today) {
+    dailyGoalTracker.todayDate = today;
+    dailyGoalTracker.minutesToday = 0;
+    dailyGoalTracker.actionsToday = 0;
+  }
+  if (dailyGoalTracker.lastActiveDate !== today) {
+    if (dailyGoalTracker.lastActiveDate === yesterday) {
+      dailyGoalTracker.streakDays += 1;
+    } else {
+      dailyGoalTracker.streakDays = Math.max(1, dailyGoalTracker.streakDays);
+    }
+    dailyGoalTracker.lastActiveDate = today;
+  }
+  dailyGoalTracker.minutesToday = Math.min(
+    180,
+    Math.round((dailyGoalTracker.minutesToday + minutesDelta) * 10) / 10
+  );
+  dailyGoalTracker.actionsToday += 1;
+  saveDailyGoalTracker();
+}
+
+function syncDailyGoalButtonsUI(): void {
+  document.querySelectorAll('[data-daily-goal-opt]').forEach((btn) => {
+    const val = Number(btn.getAttribute('data-daily-goal-opt'));
+    btn.classList.toggle('active', val === dailyGoalTracker.dailyGoalMinutes);
+  });
+}
+
+export function setDailyGoalMinutes(minutes: number): void {
+  triggerHaptic('light');
+  const clean = normalizeDailyGoalMinutes(minutes);
+  dailyGoalTracker.dailyGoalMinutes = clean;
+  onboardingState.dailyGoalMinutes = clean;
+  saveDailyGoalTracker();
+  saveOnboardingState();
+  syncDailyGoalButtonsUI();
+  renderTodayTab();
+  updateSidebarStats();
+}
+
+function saveCourseResumeBookmark(
+  modId: string,
+  stageIdx: number,
+  sectionId?: string
+): void {
+  onboardingState.lastModId = modId;
+  onboardingState.lastStage = stageIdx;
+  if (sectionId) {
+    onboardingState.lastSectionId = sectionId;
+  }
+  saveOnboardingState();
+}
+
+function refreshTodayIfVisible(): void {
+  if (typeof document === 'undefined') return;
+  const todaySection = document.getElementById('tab-today');
+  if (todaySection && !todaySection.classList.contains('hidden')) {
+    renderTodayTab();
+  }
+}
+
+export function reopenOnboardingSetup(): void {
+  triggerHaptic('light');
+  forceShowOnboarding = true;
+  onboardingStep = 1;
+  switchTab('today');
+  renderTodayTab();
+}
+
+export function skipOnboardingSetup(): void {
+  triggerHaptic('light');
+  onboardingState.completed = true;
+  onboardingState.completedAt = new Date().toISOString();
+  forceShowOnboarding = false;
+  saveOnboardingState();
+  renderTodayTab();
+}
+
+export function setOnboardingStep(step: number): void {
+  triggerHaptic('light');
+  if (step === 1 || step === 2 || step === 3) {
+    onboardingStep = step;
+    renderTodayTab();
+  }
+}
+
+export function selectOnboardingStartChoice(choice: string): void {
+  triggerHaptic('light');
+  if (choice === 'alphabet') {
+    onboardingState.startingChoice = 'alphabet';
+    onboardingState.recommendedModId = 'A1.1';
+  } else if (choice === 'place') {
+    onboardingState.startingChoice = 'place';
+    onboardingState.recommendedModId = computePlacementRecommendation();
+  } else {
+    onboardingState.startingChoice = 'new';
+    onboardingState.recommendedModId = 'A0.1';
+  }
+  saveOnboardingState();
+  renderTodayTab();
+}
+
+export function answerOnboardingPlacement(qIdx: number, optIdx: number): void {
+  triggerHaptic('light');
+  if (qIdx >= 0 && qIdx < placementQuizSelections.length) {
+    placementQuizSelections[qIdx] = optIdx;
+    onboardingState.startingChoice = 'place';
+    onboardingState.recommendedModId = computePlacementRecommendation();
+    saveOnboardingState();
+    renderTodayTab();
+  }
+}
+
+export function completeOnboardingSetup(openLessonNow = false): void {
+  triggerHaptic('heavy');
+  onboardingState.completed = true;
+  onboardingState.completedAt = new Date().toISOString();
+  forceShowOnboarding = false;
+  const targetMod = COURSE_MODULES.some(
+    (m) => m.id === onboardingState.recommendedModId
+  )
+    ? onboardingState.recommendedModId
+    : COURSE_MODULES[0].id;
+  activeModId = targetMod;
+  activeStage = 0;
+  onboardingState.lastModId = targetMod;
+  onboardingState.lastStage = 0;
+  onboardingState.lastSectionId = 'sec-learn';
+  saveOnboardingState();
+  renderCourseSyllabus();
+  renderActiveModule();
+  if (openLessonNow) {
+    switchTab('course');
+  } else {
+    renderTodayTab();
+  }
+}
+
+const LESSON_SECTION_SHORT_NAMES: Record<string, string> = {
+  'sec-learn': 'section A',
+  'sec-big-idea': 'section B',
+  'sec-action': 'section C',
+  'sec-pattern': 'section D',
+  'sec-steps': 'section E',
+  'sec-more-ex': 'section F',
+  'sec-exceptions': 'section G',
+  'sec-mistakes': 'section H',
+  'sec-inline-check': 'section I',
+  'sec-dialogue': 'section J',
+  'sec-reference': 'section K',
+  'sec-remember': 'section L',
 };
 
-export function switchTab(tab: string, btn?: HTMLElement): void {
+const PLAIN_LEVEL_NAMES: Record<string, string> = {
+  A0: 'First steps',
+  A1: 'Beginner',
+  A2: 'Elementary',
+  B1: 'Intermediate',
+  B2: 'Upper-Intermediate',
+  C1: 'Advanced',
+};
+
+function escapeHtmlSafe(raw?: string): string {
+  return String(raw || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+interface ReviewSummaryCounts {
+  srsDue: number;
+  en2ukDue: number;
+  corrDue: number;
+  totalDueNow: number;
+  srsNewAllowance: number;
+  totalActionable: number;
+  estimatedMinutes: number;
+  recommendedDeck: 'srs' | 'en2uk' | 'correction';
+}
+
+function getReviewSummaryCounts(): ReviewSummaryCounts {
+  const now = Date.now();
+  const srsDue = db.cards.filter(
+    (c) => (c.state === 'learning' || c.state === 'review') && c.due <= now
+  ).length;
+  const en2ukDue = db.en2ukCards.filter(
+    (c) => (c.state === 'learning' || c.state === 'review') && c.due <= now
+  ).length;
+  const corrDue = db.corrCards.filter(
+    (c) => (c.state === 'learning' || c.state === 'review') && c.due <= now
+  ).length;
+  const totalDueNow = srsDue + en2ukDue + corrDue;
+
+  const dailyNewCap = dailyGoalTracker.dailyGoalMinutes;
+  const srsNewRaw = db.cards.filter((c) => c.state === 'new').length;
+  const srsNewAllowance = Math.min(dailyNewCap, srsNewRaw);
+
+  const totalActionable =
+    totalDueNow > 0 ? totalDueNow : srsNewAllowance;
+  const estimatedMinutes =
+    totalActionable > 0
+      ? Math.max(1, Math.ceil(totalActionable * 0.25))
+      : 0;
+
+  let recommendedDeck: 'srs' | 'en2uk' | 'correction' = 'srs';
+  if (srsDue > 0) recommendedDeck = 'srs';
+  else if (en2ukDue > 0) recommendedDeck = 'en2uk';
+  else if (corrDue > 0) recommendedDeck = 'correction';
+
+  return {
+    srsDue,
+    en2ukDue,
+    corrDue,
+    totalDueNow,
+    srsNewAllowance,
+    totalActionable,
+    estimatedMinutes,
+    recommendedDeck,
+  };
+}
+
+export function continueCurrentCourseModule(): void {
   triggerHaptic('light');
-  ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'identify', 'reader'].forEach(
-    (t) => {
-      const el = document.getElementById('tab-' + t);
-      if (el) el.classList.add('hidden');
-    }
+  const sectionToRestore = onboardingState.lastSectionId;
+  const shouldScrollSection =
+    activeStage === 0 &&
+    sectionToRestore &&
+    sectionToRestore !== 'sec-learn';
+  switchTab('course');
+  if (shouldScrollSection) {
+    requestAnimationFrame(() => {
+      jumpToLessonSection(sectionToRestore);
+    });
+  }
+}
+
+export function openCourseModuleMapFromToday(): void {
+  triggerHaptic('light');
+  switchTab('course');
+  toggleCourseSyllabusDrawer(true);
+}
+
+export function openCourseLevelFromToday(levelCode: string): void {
+  triggerHaptic('light');
+  filterCourseByLevel(levelCode);
+  switchTab('course');
+  toggleCourseSyllabusDrawer(true);
+}
+
+export function startRecommendedReviewFromToday(): void {
+  triggerHaptic('light');
+  const counts = getReviewSummaryCounts();
+  switchTab(counts.recommendedDeck);
+}
+
+export function openSuggestedStoryFromToday(passageId: string): void {
+  triggerHaptic('light');
+  selectReaderPassage(passageId);
+  switchTab('reader');
+}
+
+function renderOnboardingCardHtml(): string {
+  const recMod =
+    COURSE_MODULES.find((m) => m.id === onboardingState.recommendedModId) ||
+    COURSE_MODULES[0];
+
+  if (onboardingStep === 1) {
+    const placementHtml =
+      onboardingState.startingChoice === 'place'
+        ? `
+          <div class="onboard-placement-quiz">
+            ${ONBOARDING_PLACEMENT_QUESTIONS.map(
+              (q, qIdx) => `
+                <div class="onboard-placement-q">
+                  <div class="hint hint--medium">${escapeHtmlSafe(q.prompt)}</div>
+                  <div class="onboard-placement-opts">
+                    ${q.options
+                      .map(
+                        (opt, oIdx) => `
+                          <button
+                            type="button"
+                            class="btn ${placementQuizSelections[qIdx] === oIdx ? '' : 'btn-sec'} btn--sm"
+                            onclick="answerOnboardingPlacement(${qIdx}, ${oIdx})"
+                          >${escapeHtmlSafe(opt)}</button>
+                        `
+                      )
+                      .join('')}
+                  </div>
+                </div>
+              `
+            ).join('')}
+            <div class="hint">
+              Recommended start: <b>${escapeHtmlSafe(recMod.id)} · ${escapeHtmlSafe(recMod.title)}</b> (Level ${escapeHtmlSafe(recMod.level)} · ${escapeHtmlSafe(PLAIN_LEVEL_NAMES[recMod.level] || recMod.level)})
+            </div>
+          </div>
+        `
+        : '';
+
+    return `
+      <section class="onboard-card" aria-label="Personalize Your Study Plan">
+        <div class="onboard-top">
+          <div>
+            <div class="onboard-steps-indicator">Step 1 of 3 · Starting point</div>
+            <h2 class="card-heading">Where should we start your Ukrainian path?</h2>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" onclick="skipOnboardingSetup()">Skip</button>
+        </div>
+
+        <div class="onboard-choices">
+          <button
+            type="button"
+            class="onboard-choice ${onboardingState.startingChoice === 'new' ? 'selected' : ''}"
+            onclick="selectOnboardingStartChoice('new')"
+          >
+            <span class="onboard-choice-title">I’m new to Ukrainian</span>
+            <span class="onboard-choice-desc">Begin at A0.1 with the Cyrillic alphabet, clear vowels, and first phrases.</span>
+          </button>
+
+          <button
+            type="button"
+            class="onboard-choice ${onboardingState.startingChoice === 'alphabet' ? 'selected' : ''}"
+            onclick="selectOnboardingStartChoice('alphabet')"
+          >
+            <span class="onboard-choice-title">I know the alphabet</span>
+            <span class="onboard-choice-desc">Start at A1.1 with everyday sentences, noun gender, and core verbs.</span>
+          </button>
+
+          <button
+            type="button"
+            class="onboard-choice ${onboardingState.startingChoice === 'place' ? 'selected' : ''}"
+            onclick="selectOnboardingStartChoice('place')"
+          >
+            <span class="onboard-choice-title">Place me</span>
+            <span class="onboard-choice-desc">Answer 3 quick questions to get a recommended starting module.</span>
+          </button>
+        </div>
+
+        ${placementHtml}
+
+        <div class="cluster--between">
+          <span class="hint">Nothing is locked — you can jump to any of the 29 modules anytime.</span>
+          <button type="button" class="btn" onclick="setOnboardingStep(2)">Next: Daily goal →</button>
+        </div>
+      </section>
+    `;
+  }
+
+  if (onboardingStep === 2) {
+    const goal = dailyGoalTracker.dailyGoalMinutes;
+    return `
+      <section class="onboard-card" aria-label="Daily Study Goal">
+        <div class="onboard-top">
+          <div>
+            <div class="onboard-steps-indicator">Step 2 of 3 · Daily pace</div>
+            <h2 class="card-heading">How much time feels sustainable most days?</h2>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" onclick="skipOnboardingSetup()">Skip</button>
+        </div>
+
+        <div class="onboard-choices">
+          <button
+            type="button"
+            class="onboard-choice ${goal === 10 ? 'selected' : ''}"
+            onclick="setDailyGoalMinutes(10)"
+          >
+            <span class="onboard-choice-title">10 min / day · Gentle</span>
+            <span class="onboard-choice-desc">Up to 10 new review words a day plus one short lesson section.</span>
+          </button>
+
+          <button
+            type="button"
+            class="onboard-choice ${goal === 20 ? 'selected' : ''}"
+            onclick="setDailyGoalMinutes(20)"
+          >
+            <span class="onboard-choice-title">20 min / day · Steady (Recommended)</span>
+            <span class="onboard-choice-desc">Up to 20 new review words a day plus steady module progress.</span>
+          </button>
+
+          <button
+            type="button"
+            class="onboard-choice ${goal === 30 ? 'selected' : ''}"
+            onclick="setDailyGoalMinutes(30)"
+          >
+            <span class="onboard-choice-title">30 min / day · Focused</span>
+            <span class="onboard-choice-desc">Up to 30 new review words a day plus reading and speaking practice.</span>
+          </button>
+        </div>
+
+        <div class="cluster--between">
+          <button type="button" class="btn btn-sec" onclick="setOnboardingStep(1)">← Back</button>
+          <button type="button" class="btn" onclick="setOnboardingStep(3)">Next: Audio check →</button>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="onboard-card" aria-label="Audio Check">
+      <div class="onboard-top">
+        <div>
+          <div class="onboard-steps-indicator">Step 3 of 3 · Audio check</div>
+          <h2 class="card-heading">Test your Ukrainian pronunciation playback</h2>
+        </div>
+        <button type="button" class="btn btn--ghost btn--sm" onclick="skipOnboardingSetup()">Skip</button>
+      </div>
+
+      <div class="onboard-audio-sample">
+        <div>
+          <div class="onboard-audio-uk">Приві́т! Ласка́во про́симо.</div>
+          <div class="hint">Sounds like <b>pry-VIT! las-KA-vo PRO-sy-mo</b> — Hello! Welcome.</div>
+        </div>
+        <div class="cluster">
+          <button type="button" class="btn btn-sec" onclick="speakUkrainian('Приві́т! Ласка́во про́симо.')">Listen</button>
+          <button type="button" class="btn btn--ghost btn--sm" onclick="openVoiceModal()">Voice options</button>
+        </div>
+      </div>
+
+      <div class="cluster--between">
+        <button type="button" class="btn btn-sec" onclick="setOnboardingStep(2)">← Back</button>
+        <div class="cluster">
+          <button type="button" class="btn btn-sec" onclick="completeOnboardingSetup(false)">Save for Today</button>
+          <button type="button" class="btn" onclick="completeOnboardingSetup(true)">Start ${escapeHtmlSafe(recMod.id)} →</button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+export function renderTodayTab(): void {
+  const root = document.getElementById('today-workspace-root');
+  if (!root) return;
+
+  const activeTrack = getActiveCourseTrack();
+  if (activeTrack.trackId !== PUBLISHED_UKRAINIAN_TRACK_ID) {
+    root.innerHTML = `
+      <div class="today-shell">
+        <div class="today-hero">
+          <div class="today-kicker">
+            <span class="today-kicker-accent">Selected track</span>
+            <span aria-hidden="true">·</span>
+            <span>${escapeHtmlSafe(activeTrack.trackId)}</span>
+          </div>
+          <h1 class="today-hero-title">${escapeHtmlSafe(activeTrack.courseTitle)}</h1>
+          <p class="today-hero-desc">${escapeHtmlSafe(activeTrack.comingSoonMessage)}</p>
+          <div class="cluster">
+            <button type="button" class="btn" onclick="switchTab('learn')">Open track workspace →</button>
+            <button type="button" class="btn btn-sec" onclick="selectCourseTrackById('${PUBLISHED_UKRAINIAN_TRACK_ID}')">Switch to Ukrainian (29 modules)</button>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const mod =
+    COURSE_MODULES.find((m) => m.id === activeModId) || COURSE_MODULES[0];
+  const stageNames = [
+    'Lesson',
+    'Check',
+    'Practice',
+    'Words',
+    'Mastery exam',
+  ];
+  const currentStageName = stageNames[activeStage] || 'Lesson';
+  const sectionSuffix =
+    activeStage === 0
+      ? `, ${LESSON_SECTION_SHORT_NAMES[onboardingState.lastSectionId] || 'section A'}`
+      : '';
+  const stepDescriptor = `${currentStageName}${sectionSuffix}`;
+
+  const hour = new Date().getHours();
+  const greetingUk =
+    hour < 12
+      ? 'Доброго ранку'
+      : hour < 18
+        ? 'Добрий день'
+        : 'Добрий вечір';
+
+  const today = getLocalIsoDate();
+  const minutesToday =
+    dailyGoalTracker.todayDate === today ? dailyGoalTracker.minutesToday : 0;
+  const goalMinutes = dailyGoalTracker.dailyGoalMinutes;
+  const ringCircumference = 169.65;
+  const ratio = Math.min(1, Math.max(0, minutesToday / goalMinutes));
+  const dashOffset = (ringCircumference * (1 - ratio)).toFixed(2);
+  const goalDone = minutesToday >= goalMinutes;
+
+  const showOnboarding =
+    forceShowOnboarding ||
+    (!onboardingState.completed &&
+      db.xp === 0 &&
+      db.passedMods.length === 0);
+
+  const coursePct = Math.max(
+    4,
+    Math.round((db.passedMods.length / COURSE_MODULES.length) * 100)
   );
-  document.getElementById('tab-' + tab)?.classList.remove('hidden');
+
+  const rev = getReviewSummaryCounts();
+  const reviewHeading =
+    rev.totalDueNow > 0
+      ? `Reviews due: ${rev.totalDueNow}`
+      : rev.srsNewAllowance > 0
+        ? `Reviews due: ${rev.srsNewAllowance} new`
+        : 'All caught up for today';
+  const reviewSubtext =
+    rev.totalDueNow > 0
+      ? `Estimated ~${rev.estimatedMinutes} min · UK→EN ${rev.srsDue} · EN→UK ${rev.en2ukDue} · Sentences ${rev.corrDue}`
+      : rev.srsNewAllowance > 0
+        ? `Estimated ~${rev.estimatedMinutes} min · Paced by your ${goalMinutes}-min daily goal`
+        : 'Every scheduled card is reviewed. Explore a short story or practice speaking.';
+
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
+      86400000
+  );
+  const wotdPool = FREQ_6000_DB.slice(0, Math.min(250, FREQ_6000_DB.length));
+  const wotd = wotdPool[dayOfYear % wotdPool.length] || FREQ_6000_DB[0];
+  const wotdPhon = generateUkrainianPhonetics(wotd.ru);
+
+  const levelPassages = READER_PASSAGES.filter((p) => p.level === mod.level);
+  const suggestedPassage: ReaderPassage =
+    levelPassages[0] || READER_PASSAGES[0];
+
+  const levelDefs = [
+    { code: 'A0', filter: 'A0', name: 'First steps' },
+    { code: 'A1', filter: 'A1', name: 'Beginner' },
+    { code: 'A2', filter: 'A2', name: 'Elementary' },
+    { code: 'B1', filter: 'B1', name: 'Intermediate' },
+    { code: 'B2', filter: 'B2-C1', name: 'Upper-Int.' },
+    { code: 'C1', filter: 'B2-C1', name: 'Advanced' },
+  ];
+
+  const levelStripHtml = levelDefs
+    .map((lvl) => {
+      const modsInLvl = COURSE_MODULES.filter((m) => m.level === lvl.code);
+      const doneInLvl = modsInLvl.filter((m) =>
+        db.passedMods.includes(m.id)
+      ).length;
+      const isCurrent = mod.level === lvl.code;
+      const isComplete =
+        modsInLvl.length > 0 && doneInLvl === modsInLvl.length;
+      const stateClass = isComplete
+        ? 'is-complete'
+        : isCurrent
+          ? 'is-current'
+          : '';
+      return `
+        <button
+          type="button"
+          class="today-level-step ${stateClass}"
+          onclick="openCourseLevelFromToday('${lvl.filter}')"
+        >
+          <span class="today-level-code">
+            <span>${lvl.code}</span>
+            <span>${doneInLvl}/${modsInLvl.length}</span>
+          </span>
+          <span class="today-level-name">${lvl.name}</span>
+        </button>
+      `;
+    })
+    .join('');
+
+  root.innerHTML = `
+    <div class="today-shell">
+      ${showOnboarding ? renderOnboardingCardHtml() : ''}
+
+      <header class="today-header">
+        <div>
+          <div class="today-greeting-kicker">${greetingUk}</div>
+          <h1 class="today-title">Today’s study plan</h1>
+          <div class="today-meta-line">
+            <span>Level ${escapeHtmlSafe(mod.level)} · ${escapeHtmlSafe(PLAIN_LEVEL_NAMES[mod.level] || mod.level)}</span>
+            <span aria-hidden="true">·</span>
+            <span>${db.passedMods.length} of ${COURSE_MODULES.length} modules mastered</span>
+            <span aria-hidden="true">·</span>
+            <button type="button" class="today-link-btn" onclick="reopenOnboardingSetup()">Personalize plan</button>
+          </div>
+        </div>
+
+        <div class="today-goal-cluster">
+          <div class="today-ring-wrap" role="img" aria-label="Daily study goal: ${Math.round(minutesToday)} of ${goalMinutes} minutes">
+            <svg class="today-ring-svg" viewBox="0 0 68 68" aria-hidden="true">
+              <circle class="today-ring-track" cx="34" cy="34" r="27"></circle>
+              <circle
+                class="today-ring-progress ${goalDone ? 'is-complete' : ''}"
+                cx="34"
+                cy="34"
+                r="27"
+                stroke-dasharray="${ringCircumference}"
+                stroke-dashoffset="${dashOffset}"
+              ></circle>
+            </svg>
+            <div class="today-ring-label">
+              <span>${Math.round(minutesToday)}/${goalMinutes}</span>
+              <span class="today-ring-sub">min</span>
+            </div>
+          </div>
+
+          <div class="today-goal-stats">
+            <span class="today-goal-headline">${
+              goalDone
+                ? 'Daily goal complete'
+                : `${Math.max(1, Math.ceil(goalMinutes - minutesToday))} min to daily goal`
+            }</span>
+            <span>
+              <span class="today-streak-text">${dailyGoalTracker.streakDays} day streak</span>
+              <span aria-hidden="true"> · </span>
+              <b>${db.xp}</b> XP
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <article class="today-hero">
+        <div>
+          <div class="today-kicker">
+            <span class="today-kicker-accent">Recommended next step</span>
+            <span aria-hidden="true">·</span>
+            <span>Level ${escapeHtmlSafe(mod.level)} · ${escapeHtmlSafe(PLAIN_LEVEL_NAMES[mod.level] || mod.level)}</span>
+          </div>
+          <h2 class="today-hero-title">Continue: ${escapeHtmlSafe(mod.id)} · ${escapeHtmlSafe(stepDescriptor)}</h2>
+        </div>
+
+        <p class="today-hero-desc">
+          <strong>${escapeHtmlSafe(mod.title)}</strong> — ${escapeHtmlSafe(mod.summary)}
+        </p>
+
+        <div class="today-hero-footer">
+          <div class="today-hero-progress">
+            <div class="today-hero-progress-meta">
+              <span>Course completion</span>
+              <span>${db.passedMods.length}/${COURSE_MODULES.length} modules</span>
+            </div>
+            <svg width="100%" height="6" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true">
+              <rect width="100" height="6" rx="3" fill="var(--surface-3)"></rect>
+              <rect width="${coursePct}" height="6" rx="3" fill="var(--lang)"></rect>
+            </svg>
+          </div>
+
+          <div class="cluster">
+            <button type="button" class="btn btn--lg" onclick="continueCurrentCourseModule()">
+              Continue ${escapeHtmlSafe(mod.id)} →
+            </button>
+            <button type="button" class="btn btn-sec" onclick="openCourseModuleMapFromToday()">
+              All 29 modules
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <div class="today-secondary-grid">
+        <article class="today-panel">
+          <div>
+            <div class="today-kicker">
+              <span class="today-kicker-accent">Spaced repetition</span>
+              <span aria-hidden="true">·</span>
+              <span>${db.cards.length} words in reviews</span>
+            </div>
+            <div class="today-review-number">${escapeHtmlSafe(reviewHeading)}</div>
+            <p class="hint hint--body">${escapeHtmlSafe(reviewSubtext)}</p>
+          </div>
+
+          <div class="cluster">
+            <button type="button" class="btn" onclick="startRecommendedReviewFromToday()">
+              ${rev.estimatedMinutes > 0 ? `Start review (~${rev.estimatedMinutes} min)` : 'Open reviews'}
+            </button>
+            <button type="button" class="btn btn-sec" onclick="switchTab('speak')">
+              Practice speaking
+            </button>
+          </div>
+        </article>
+
+        <article class="today-panel">
+          <div>
+            <div class="today-kicker">
+              <span class="today-kicker-accent">Word of the day</span>
+              <span aria-hidden="true">·</span>
+              <span>#${wotd.rank} · Level ${escapeHtmlSafe(wotd.level)}</span>
+            </div>
+            <div
+              class="today-wotd-word"
+              onclick="speakUkrainian('${escapeSingleQuotes(wotd.ru)}')"
+              title="Tap to hear Ukrainian pronunciation"
+            >${escapeHtmlSafe(wotd.ru)}</div>
+            <div class="today-wotd-gloss">${escapeHtmlSafe(wotd.en)}</div>
+            <div class="hint">Sounds like <b>${escapeHtmlSafe(wotdPhon.plainGuide)}</b></div>
+            <div class="cluster section-divider-top">
+              <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(wotd.ru)}')">Listen</button>
+              <button type="button" class="btn btn-sec btn--sm" onclick="inspectWordDeep(${wotd.rank}, true, true)">Word forms</button>
+            </div>
+          </div>
+
+          <div class="today-story-row">
+            <div>
+              <div class="hint">Suggested story · Level ${escapeHtmlSafe(suggestedPassage.level)}</div>
+              <div class="today-story-title">${escapeHtmlSafe(suggestedPassage.titleEn || suggestedPassage.title)}</div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-sec btn--sm"
+              onclick="openSuggestedStoryFromToday('${escapeSingleQuotes(suggestedPassage.id)}')"
+            >Read →</button>
+          </div>
+        </article>
+      </div>
+
+      <section class="today-path-section" aria-label="Course Level Path A0 to C1">
+        <div class="today-path-header">
+          <h2 class="card-heading">Course path · A0 to C1</h2>
+          <span class="hint">Choose any level to browse modules — recommended next is ${escapeHtmlSafe(mod.id)}</span>
+        </div>
+        <div class="today-level-strip">
+          ${levelStripHtml}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+// ============================================================================
+// 5-DESTINATION NAVIGATION, SUB-NAVIGATION & URL HASH ROUTER
+// ============================================================================
+const ALL_TAB_SECTION_IDS = [
+  'today',
+  'course',
+  'srs',
+  'en2uk',
+  'correction',
+  'reader',
+  'identify',
+  'vocab',
+  'phonetics',
+  'speak',
+] as const;
+
+type CanonicalTabId = (typeof ALL_TAB_SECTION_IDS)[number];
+type TopDestinationId = 'today' | 'learn' | 'review' | 'explore' | 'speak';
+
+const WORKSPACE_BREADCRUMBS: Record<string, string> = {
+  today: 'Today · Study Home',
+  course: 'Learn · Structured Course (A0–C1)',
+  reader: 'Explore · Graded Stories (A0–C1)',
+  identify: 'Explore · Visual Vocabulary (67 Scenes)',
+  vocab: 'Explore · Everyday Topics (27 Categories)',
+  srs: 'Review · UK → EN Recognition',
+  en2uk: 'Review · EN → UK Active Recall',
+  correction: 'Review · Sentence & Case Repair',
+  phonetics: 'Speak · Sounds & Script',
+  speak: 'Speak · AI Ukrainian Conversation',
+};
+
+let activeCanonicalTab: CanonicalTabId = 'today';
+let lastReviewSubTab: 'srs' | 'en2uk' | 'correction' = 'srs';
+let lastExploreSubTab: 'reader' | 'identify' | 'vocab' = 'reader';
+let lastSpeakSubTab: 'speak' | 'phonetics' = 'speak';
+let lexiconExploreMode = false;
+let currentRenderedHash = '';
+
+function getDestinationForTab(tab: CanonicalTabId): TopDestinationId {
+  if (tab === 'today') return 'today';
+  if (tab === 'course') return 'learn';
+  if (tab === 'srs' && lexiconExploreMode) return 'explore';
+  if (tab === 'srs' || tab === 'en2uk' || tab === 'correction') return 'review';
+  if (tab === 'reader' || tab === 'identify' || tab === 'vocab') return 'explore';
+  return 'speak';
+}
+
+function resolveCanonicalTab(rawTab: string): CanonicalTabId {
+  const clean = String(rawTab || '').trim().toLowerCase();
+  const currentDest = getDestinationForTab(activeCanonicalTab);
+
+  if (clean === 'today' || clean === 'home') {
+    lexiconExploreMode = false;
+    return 'today';
+  }
+  if (clean === 'learn' || clean === 'course') {
+    lexiconExploreMode = false;
+    return 'course';
+  }
+  if (clean === 'review') {
+    lexiconExploreMode = false;
+    return currentDest === 'review' ? 'srs' : lastReviewSubTab;
+  }
+  if (clean === 'explore') {
+    if (currentDest === 'explore') {
+      lexiconExploreMode = false;
+      return 'reader';
+    }
+    return lastExploreSubTab;
+  }
+  if (clean === 'speak') {
+    lexiconExploreMode = false;
+    return currentDest === 'speak' && activeCanonicalTab !== 'speak'
+      ? 'speak'
+      : lastSpeakSubTab;
+  }
+  if (clean === 'convo') {
+    lexiconExploreMode = false;
+    lastSpeakSubTab = 'speak';
+    return 'speak';
+  }
+  if (clean === 'sounds' || clean === 'phonetics') {
+    lexiconExploreMode = false;
+    lastSpeakSubTab = 'phonetics';
+    return 'phonetics';
+  }
+  if (clean === 'srs' || clean === 'en2uk' || clean === 'correction') {
+    lexiconExploreMode = false;
+    lastReviewSubTab = clean;
+    return clean;
+  }
+  if (clean === 'reader' || clean === 'identify' || clean === 'vocab') {
+    lexiconExploreMode = false;
+    lastExploreSubTab = clean;
+    return clean;
+  }
+  return 'today';
+}
+
+function computeHashForTab(tab: CanonicalTabId): string {
+  if (tab === 'today') return '#/today';
+  if (tab === 'course') return `#/learn/${activeModId}`;
+  if (tab === 'srs') {
+    return lexiconExploreMode ? '#/explore/lexicon' : '#/review/srs';
+  }
+  if (tab === 'en2uk') return '#/review/en2uk';
+  if (tab === 'correction') return '#/review/correction';
+  if (tab === 'reader') return '#/explore/reader';
+  if (tab === 'identify') return '#/explore/identify';
+  if (tab === 'vocab') return '#/explore/vocab';
+  if (tab === 'phonetics') return '#/speak/sounds';
+  return '#/speak';
+}
+
+function syncHashForCurrentView(
+  tab: CanonicalTabId,
+  replaceOnly = false
+): void {
+  if (typeof window === 'undefined') return;
+  if (
+    window.location.hash.startsWith('#cms') ||
+    window.location.search.includes('cms=1')
+  ) {
+    return;
+  }
+  const targetHash = computeHashForTab(tab);
+  currentRenderedHash = targetHash;
+  if (window.location.hash === targetHash) return;
+
+  if (replaceOnly && window.history?.replaceState) {
+    window.history.replaceState(null, '', targetHash);
+  } else {
+    window.location.hash = targetHash;
+  }
+}
+
+function syncSubnavAndBadgesUI(): void {
+  if (typeof document === 'undefined') return;
+  const counts = getReviewSummaryCounts();
+  const now = Date.now();
+  const srsActionable =
+    counts.srsDue > 0
+      ? counts.srsDue
+      : Math.min(
+          dailyGoalTracker.dailyGoalMinutes,
+          db.cards.filter((c) => c.state === 'new').length
+        );
+  const en2ukActionable =
+    counts.en2ukDue > 0
+      ? counts.en2ukDue
+      : db.en2ukCards.filter((c) => c.due <= now && c.state !== 'new').length;
+  const corrActionable =
+    counts.corrDue > 0
+      ? counts.corrDue
+      : db.corrCards.filter((c) => c.due <= now && c.state !== 'new').length;
+
+  const badgeEl = document.getElementById('nav-review-badge');
+  if (badgeEl) {
+    const badgeTotal = counts.totalActionable;
+    badgeEl.textContent = String(badgeTotal);
+    badgeEl.classList.toggle('hidden', badgeTotal <= 0);
+  }
+
+  const srsSubEl = document.getElementById('subnav-srs-due');
+  const en2ukSubEl = document.getElementById('subnav-en2uk-due');
+  const corrSubEl = document.getElementById('subnav-corr-due');
+  if (srsSubEl) srsSubEl.textContent = String(srsActionable);
+  if (en2ukSubEl) en2ukSubEl.textContent = String(en2ukActionable);
+  if (corrSubEl) corrSubEl.textContent = String(corrActionable);
+
+  const dest = getDestinationForTab(activeCanonicalTab);
+  const reviewSubnav = document.getElementById('review-subnav');
+  const exploreSubnav = document.getElementById('explore-subnav');
+  const speakSubnav = document.getElementById('speak-subnav');
+
+  reviewSubnav?.classList.toggle('hidden', dest !== 'review');
+  exploreSubnav?.classList.toggle('hidden', dest !== 'explore');
+  speakSubnav?.classList.toggle('hidden', dest !== 'speak');
+
+  document.querySelectorAll('.subnav-btn').forEach((btn) => {
+    const subtab = btn.getAttribute('data-subtab');
+    const isLexBtn =
+      btn.getAttribute('onclick')?.includes('openLexiconFromExplore') || false;
+    const isActive = lexiconExploreMode
+      ? isLexBtn
+      : Boolean(subtab && subtab === activeCanonicalTab);
+    btn.classList.toggle('active', isActive);
+    if (isActive) {
+      btn.setAttribute('aria-selected', 'true');
+    } else {
+      btn.removeAttribute('aria-selected');
+    }
+  });
+}
+
+export function switchTab(
+  tab: string,
+  btn?: HTMLElement,
+  options?: { skipHashUpdate?: boolean; preserveScroll?: boolean }
+): void {
+  triggerHaptic('light');
+  const canonical = resolveCanonicalTab(tab);
+  activeCanonicalTab = canonical;
+
+  ALL_TAB_SECTION_IDS.forEach((t) => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('tab-' + canonical)?.classList.remove('hidden');
+
+  const dest = getDestinationForTab(canonical);
   document.querySelectorAll('.nav-btn').forEach((b) => {
     b.classList.remove('active');
     b.removeAttribute('aria-current');
   });
+
   const matchingBtns = document.querySelectorAll(
-    `.nav-btn[onclick*="switchTab('${tab}'"]`
+    `.nav-btn[data-nav-dest="${dest}"]`
   );
   if (matchingBtns.length) {
     matchingBtns.forEach((el) => {
@@ -4240,18 +5418,150 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
     btn.classList.add('active');
     btn.setAttribute('aria-current', 'page');
   }
+
   const bcEl = document.getElementById('active-workspace-breadcrumb');
   if (bcEl) {
-    bcEl.textContent = WORKSPACE_BREADCRUMBS[tab] || 'Ukrainian Workspace';
+    bcEl.textContent =
+      WORKSPACE_BREADCRUMBS[canonical] || 'Ukrainian Workspace';
   }
-  if (tab === 'vocab') {
+
+  if (canonical === 'today') {
+    renderTodayTab();
+  } else if (canonical === 'vocab') {
     renderEverydayVocabTab();
-  } else if (tab === 'identify') {
+  } else if (canonical === 'identify') {
     renderIdentifyTab();
+  } else if (canonical === 'speak') {
+    renderAIConversationTab();
   }
+
+  syncSubnavAndBadgesUI();
   syncMultilingualTrackUI();
-  const mainEl = document.getElementById('main-scroll-container');
-  if (mainEl) mainEl.scrollTop = 0;
+
+  if (!options?.skipHashUpdate) {
+    syncHashForCurrentView(canonical);
+  }
+
+  if (!options?.preserveScroll) {
+    const mainEl = document.getElementById('main-scroll-container');
+    if (mainEl) mainEl.scrollTop = 0;
+  }
+}
+
+export function openLexiconFromExplore(options?: {
+  skipHashUpdate?: boolean;
+}): void {
+  triggerHaptic('light');
+  lexiconExploreMode = true;
+  activeCanonicalTab = 'srs';
+
+  ALL_TAB_SECTION_IDS.forEach((t) => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('tab-srs')?.classList.remove('hidden');
+
+  document.querySelectorAll('.nav-btn').forEach((b) => {
+    const isExplore = b.getAttribute('data-nav-dest') === 'explore';
+    b.classList.toggle('active', isExplore);
+    if (isExplore) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+
+  syncSubnavAndBadgesUI();
+  syncMultilingualTrackUI();
+
+  if (!options?.skipHashUpdate) {
+    syncHashForCurrentView('srs');
+  }
+
+  requestAnimationFrame(() => {
+    const lexEl = document.getElementById('lexicon-6000-card');
+    if (lexEl) {
+      lexEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+}
+
+function syncRouteFromHash(isInitialBoot = false): void {
+  if (typeof window === 'undefined') return;
+  const rawHash = window.location.hash || '';
+  if (
+    rawHash.startsWith('#cms') ||
+    window.location.search.includes('cms=1')
+  ) {
+    return;
+  }
+
+  if (!isInitialBoot && rawHash && rawHash === currentRenderedHash) {
+    return;
+  }
+
+  const cleaned = rawHash.replace(/^#\/?/, '').trim();
+  if (!cleaned || cleaned.toLowerCase() === 'today') {
+    switchTab('today', undefined, { skipHashUpdate: true });
+    syncHashForCurrentView('today', true);
+    return;
+  }
+
+  const parts = cleaned.split('/').filter(Boolean);
+  const head = (parts[0] || '').toLowerCase();
+  const sub = parts[1] || '';
+  const subLower = sub.toLowerCase();
+
+  if (head === 'learn' || head === 'course') {
+    if (sub) {
+      const matchedMod = COURSE_MODULES.find(
+        (m) => m.id.toLowerCase() === subLower
+      );
+      if (matchedMod && matchedMod.id !== activeModId) {
+        selectCourseModule(matchedMod.id);
+      }
+    }
+    switchTab('course', undefined, { skipHashUpdate: true });
+    currentRenderedHash = window.location.hash;
+    return;
+  }
+
+  if (head === 'review') {
+    if (subLower === 'en2uk' || subLower === 'recall') {
+      switchTab('en2uk', undefined, { skipHashUpdate: true });
+    } else if (subLower === 'correction' || subLower === 'sentences') {
+      switchTab('correction', undefined, { skipHashUpdate: true });
+    } else {
+      switchTab('srs', undefined, { skipHashUpdate: true });
+    }
+    currentRenderedHash = window.location.hash;
+    return;
+  }
+
+  if (head === 'explore') {
+    if (subLower === 'identify' || subLower === 'pictures') {
+      switchTab('identify', undefined, { skipHashUpdate: true });
+    } else if (subLower === 'vocab' || subLower === 'topics') {
+      switchTab('vocab', undefined, { skipHashUpdate: true });
+    } else if (subLower === 'lexicon') {
+      openLexiconFromExplore({ skipHashUpdate: true });
+    } else {
+      switchTab('reader', undefined, { skipHashUpdate: true });
+    }
+    currentRenderedHash = window.location.hash;
+    return;
+  }
+
+  if (head === 'speak') {
+    if (subLower === 'sounds' || subLower === 'phonetics') {
+      switchTab('phonetics', undefined, { skipHashUpdate: true });
+    } else {
+      switchTab('speak', undefined, { skipHashUpdate: true });
+    }
+    currentRenderedHash = window.location.hash;
+    return;
+  }
+
+  // Direct legacy hashes (#srs, #reader, #identify, etc.)
+  switchTab(head, undefined, { skipHashUpdate: true });
+  currentRenderedHash = window.location.hash;
 }
 
 function addWordByUkToFSRS(uk: string): boolean {
@@ -4289,6 +5599,9 @@ export function updateSidebarStats(): void {
   if (xpTop) xpTop.innerText = String(db.xp);
   if (deckTop) deckTop.innerText = String(db.cards.length);
   if (totalLexEl) totalLexEl.innerText = String(MAX_RANK);
+
+  syncSubnavAndBadgesUI();
+  refreshTodayIfVisible();
 }
 
 // Bind all interactive handlers to global window so HTML onclick attributes work seamlessly
@@ -4373,6 +5686,20 @@ declare global {
     initReader: typeof initReader;
     speakStory: typeof speakStory;
     switchTab: typeof switchTab;
+    openLexiconFromExplore: typeof openLexiconFromExplore;
+    renderTodayTab: typeof renderTodayTab;
+    setDailyGoalMinutes: typeof setDailyGoalMinutes;
+    reopenOnboardingSetup: typeof reopenOnboardingSetup;
+    skipOnboardingSetup: typeof skipOnboardingSetup;
+    setOnboardingStep: typeof setOnboardingStep;
+    selectOnboardingStartChoice: typeof selectOnboardingStartChoice;
+    answerOnboardingPlacement: typeof answerOnboardingPlacement;
+    completeOnboardingSetup: typeof completeOnboardingSetup;
+    continueCurrentCourseModule: typeof continueCurrentCourseModule;
+    openCourseModuleMapFromToday: typeof openCourseModuleMapFromToday;
+    openCourseLevelFromToday: typeof openCourseLevelFromToday;
+    startRecommendedReviewFromToday: typeof startRecommendedReviewFromToday;
+    openSuggestedStoryFromToday: typeof openSuggestedStoryFromToday;
     renderIdentifyTab: typeof renderIdentifyTab;
     selectIdentifyCategory: typeof selectIdentifyCategory;
     selectIdentifyScene: typeof selectIdentifyScene;
@@ -4602,6 +5929,20 @@ if (typeof window !== 'undefined') {
   window.initReader = initReader;
   window.speakStory = speakStory;
   window.switchTab = switchTab;
+  window.openLexiconFromExplore = openLexiconFromExplore;
+  window.renderTodayTab = renderTodayTab;
+  window.setDailyGoalMinutes = setDailyGoalMinutes;
+  window.reopenOnboardingSetup = reopenOnboardingSetup;
+  window.skipOnboardingSetup = skipOnboardingSetup;
+  window.setOnboardingStep = setOnboardingStep;
+  window.selectOnboardingStartChoice = selectOnboardingStartChoice;
+  window.answerOnboardingPlacement = answerOnboardingPlacement;
+  window.completeOnboardingSetup = completeOnboardingSetup;
+  window.continueCurrentCourseModule = continueCurrentCourseModule;
+  window.openCourseModuleMapFromToday = openCourseModuleMapFromToday;
+  window.openCourseLevelFromToday = openCourseLevelFromToday;
+  window.startRecommendedReviewFromToday = startRecommendedReviewFromToday;
+  window.openSuggestedStoryFromToday = openSuggestedStoryFromToday;
   window.renderIdentifyTab = renderIdentifyTab;
   window.selectIdentifyCategory = selectIdentifyCategory;
   window.selectIdentifyScene = selectIdentifyScene;
@@ -4771,9 +6112,9 @@ if (typeof window !== 'undefined') {
 
   // Boot application
   applyColorTheme(currentThemeMode);
+  syncDailyGoalButtonsUI();
   injectOpenAIVoiceModal();
   initCursivePad();
-  updateSidebarStats();
   renderAnkiStage();
   renderEn2UkStage();
   renderCorrectionStage();
@@ -4781,6 +6122,9 @@ if (typeof window !== 'undefined') {
   renderPhonetics6000();
   renderCourseSyllabus();
   renderActiveModule();
+  registerOnCourseTrackChanged(() => {
+    renderTodayTab();
+  });
   syncMultilingualTrackUI();
   renderEverydayVocabTab();
   registerIdentifyHooks({
@@ -4790,13 +6134,48 @@ if (typeof window !== 'undefined') {
     addWordByUkToFSRS: (uk) => addWordByUkToFSRS(uk),
   });
   renderIdentifyTab();
+  initAIConversationTab({
+    speakUkText: (textUk) => {
+      void speakUkrainian(textUk);
+    },
+    inspectWordIn7Cases: (wordUk) => inspectCourseWord(wordUk),
+    addWordToFlashcards: (wordUk, buttonEl) => {
+      const added = addWordByUkToFSRS(wordUk);
+      if (buttonEl) {
+        buttonEl.textContent = added ? '✓ Added to reviews' : '✓ In reviews';
+      }
+    },
+    openCourseModuleById: (moduleId) => {
+      selectCourseModule(moduleId);
+      switchTab('course');
+    },
+  });
   initReader();
   const initialBookWord =
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;
   inspectWordDeep(initialBookWord, false, false);
+  updateSidebarStats();
+  syncRouteFromHash(true);
   bootCmsStudioRouteIfRequested();
 
+  window.addEventListener('hashchange', () => {
+    syncRouteFromHash(false);
+  });
+
   window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      closeSettingsModal();
+      closeVoiceModal();
+      closeLanguageSelectorModal();
+      closeDevCourseImporterModal();
+      closeInspectorSheet();
+      const dockerModal = document.getElementById('lango-docker-zip-modal');
+      if (dockerModal && !dockerModal.classList.contains('hidden')) {
+        dockerModal.classList.add('hidden');
+      }
+      return;
+    }
+
     const target = e.target as HTMLElement | null;
     const tag = target?.tagName || '';
     if (
@@ -4805,18 +6184,6 @@ if (typeof window !== 'undefined') {
       tag === 'SELECT' ||
       target?.isContentEditable
     ) {
-      return;
-    }
-
-    if (e.key === 'Escape') {
-      closeSettingsModal();
-      closeVoiceModal();
-      closeLanguageSelectorModal();
-      closeInspectorSheet();
-      const dockerModal = document.getElementById('lango-docker-zip-modal');
-      if (dockerModal && !dockerModal.classList.contains('hidden')) {
-        dockerModal.classList.add('hidden');
-      }
       return;
     }
 

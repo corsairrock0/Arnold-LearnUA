@@ -1359,7 +1359,7 @@ function renderGrammarCorrectionCardPanel(
                             onclick="convoInspectWord('${escapeHtml(
                               adv.inspectWordUk
                             )}')"
-                          >🔍 Open 7-Case Inspector («${escapeHtml(
+                          >Word forms («${escapeHtml(
                             adv.inspectWordUk
                           )}»)</button>`
                         : ''

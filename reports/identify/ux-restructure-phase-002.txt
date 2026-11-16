@@ -1,0 +1,72 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution ID: ux-restructure-phase-002
+- Phase Completed: Phase 2 of 6 — 5-Destination Information Architecture, URL Hash Router, Today Study Home, 3-Step First-Run Onboarding, Daily Goal Ring & AI Speaking Studio Integration
+- Scope Discipline: Executed strictly Phase 2 only, stopping before Phase 3 (Course flow restructure) per the phased execution plan.
+- Core Outcomes:
+  1) Consolidated top-level navigation from 8 flat tabs into 5 clear learner destinations on desktop (left rail) and mobile (5-column bottom bar): Today, Learn, Review (with live due count badge), Explore, and Speak.
+  2) Added full URL hash routing (#/today, #/learn/<modId>, #/review/srs, #/review/en2uk, #/review/correction, #/explore/reader, #/explore/identify, #/explore/vocab, #/explore/lexicon, #/speak, #/speak/sounds) with browser Back/Forward history support while keeping switchTab() 100% backward-compatible with all legacy tab IDs and preserving #cms / ?cms=1 routes.
+  3) Built the new default Today Study Home (#tab-today) featuring a Ukrainian time-of-day greeting in Lora, SVG Daily Goal Ring (10 / 20 / 30 min), streak & XP readout, primary "Continue: <Module> · <Stage, section>" focal card with exact section bookmarking, live Reviews Due card with estimated minutes, deterministic Word of the Day + level-matched Story suggestion card, and interactive 6-level A0 → C1 path strip.
+  4) Implemented the 3-step inline first-run onboarding flow (starting point / 3-question mini placement check, daily study goal, Ukrainian audio playback check) persisted to new additive localStorage keys (slovo_ua_onboarding_v1 and slovo_ua_daily_goal_v1) without touching existing learner storage keys or shapes.
+  5) Verified and surfaced the end-to-end AI Ukrainian Conversation Studio (src/aiConversationView.ts + /api/convo/* + /api/convo/live WebSocket) under Speak (#/speak) alongside Sounds & Script (#/speak/sounds), mounting the Express API + WebSocket routes in Vite dev server as well as production server.ts, and renamed "7-Case Inspector" to plain-language "Word forms" across the UI.
+
+2. CHANGES COMPLETED
+- 5-Destination Navigation & Workspace Sub-Navigation (index.html, src/main.ts):
+  - Replaced the 8-tab primary nav with 5 destinations (Today, Learn, Review, Explore, Speak) using >= 44px touch targets (72x48px on 375px mobile, 0px horizontal overflow).
+  - Added contextual segmented sub-navigation bars: #review-subnav (UK→EN, EN→UK, Sentences, Topic exercises), #explore-subnav (Stories, Pictures, Topics, 6,000-word lexicon), and #speak-subnav (AI Conversation, Sounds & Script).
+  - Preserved all 8 original <section id="tab-*"> DOM containers alongside #tab-today and #tab-speak so every existing feature and automated test remains intact.
+- URL Hash Router & switchTab() Compatibility Layer (src/main.ts):
+  - Mapped legacy tab names ('course', 'srs', 'en2uk', 'correction', 'reader', 'identify', 'vocab', 'phonetics') and new destination aliases ('today', 'learn', 'review', 'explore', 'speak', 'convo', 'sounds') through resolveCanonicalTab().
+  - Added syncRouteFromHash() and hashchange listener supporting deep links such as #/learn/A1.2 and browser Back/Forward navigation.
+- Today Study Home & Daily Goal Progress Ring (index.html, src/main.ts):
+  - Rendered #today-workspace-root with zero inline style attributes, responsive Editorial Notebook cards, SVG circular progress ring (stroke-dashoffset driven by daily minutes vs. 10/20/30 min goal), automatic study-minute & day-streak tracking on XP gains, exact module/stage/section resume ("Continue: A1.2 · Lesson, section D"), daily-goal-paced review count & minute estimate, Word of the Day in Lora, suggested story, A0 → C1 level strip, and non-Ukrainian track awareness.
+  - Added "Daily study goal" (10 / 20 / 30 min + personalize trigger) to the Settings modal.
+- 3-Step First-Run Onboarding (src/main.ts):
+  - Added non-blocking inline 3-step onboarding at top of Today for brand-new learners (xp === 0 && passedMods.length === 0): Step 1 ("I'm new to Ukrainian" -> A0.1, "I know the alphabet" -> A1.1, "Place me" -> 3-question placement check recommending A0.1/A1.1/A2.1/B1.1), Step 2 (10 / 20 / 30 min daily pace), Step 3 (Ukrainian audio test «Приві́т! Ласка́во про́симо.» + Voice options), with Skip on every step.
+- AI Speaking Studio & Plain-Language "Word forms" Inspector (vite.config.ts, index.html, src/main.ts, src/aiConversationView.ts):
+  - Wired initAIConversationTab() and renderAIConversationTab() into #tab-speak, styled .convo-* components in index.html for both light and dark themes, and mounted createConvoApiApp() + attachConvoLiveWebSocket() in vite.config.ts so /api/convo/status, /api/convo/turn, /api/convo/analyze, /api/convo/tts, and /api/convo/live work identically in dev and production.
+  - Renamed "7-Case Inspector" / "🔍 7-Case" UI buttons and panel headers to "Word forms" (docked right panel on desktop, bottom sheet on mobile) and guarded navigator.vibrate behind first user gesture activation to eliminate cold-boot console warnings.
+
+3. FILES CREATED OR MODIFIED
+- Modified: index.html (5-destination sidebar/mobile bar, #tab-today, #review-subnav, #explore-subnav, #speak-subnav, #tab-speak, Settings daily goal row, Word forms header, and Phase 2 .today-* / .onboard-* / .convo-* / .workspace-subnav CSS; 0 inline style= attributes)
+- Modified: src/main.ts (Today renderer, 3-step onboarding, slovo_ua_onboarding_v1 & slovo_ua_daily_goal_v1 persistence, 5-destination switchTab compatibility layer, URL hash router, review due badges, AI Conversation initialization, user-gesture haptic guard)
+- Modified: src/aiConversationView.ts (updated inspector button label to plain-language "Word forms")
+- Modified: vite.config.ts (mounted createConvoApiApp and attachConvoLiveWebSocket in dev server when not in middlewareMode)
+- Created: reports/identify/ux-restructure-phase-002.txt
+- Modified: reports/identify/REPORT_INDEX.md
+- Modified: reports/identify/LATEST_REPORT.txt
+- Modified: src/identifyVisualBatchProgress.json
+
+4. VALIDATION RESULTS
+- Production Build (compile_applet / vite build): PASS (0 errors)
+- TypeScript Check (lint_applet / tsc --noEmit): PASS (0 errors)
+- Automated Test Suites (npx tsx --test src/__tests__/*.test.ts): PASS (100 / 100 tests passing, 0 failures across all 6 suites)
+- Static Hygiene Checks:
+  - Inline style= attributes in index.html: 0
+  - Forbidden textbook citations (Pugh, Press, Routledge, §): 0
+  - Existing localStorage keys (slovo_ua_6000_anki_v1, slovo_ua_theme_mode, slovo_openai_hd_cfg): Preserved unchanged
+- Real-Browser Playwright QA (1280x800 Desktop & 375x812 Mobile, Light & Dark Themes):
+  - Default route boots to #/today with 0 console errors and 0 page errors.
+  - 3-step onboarding ("Place me" -> A2.1, 20 min goal, audio check) saves to slovo_ua_onboarding_v1 and slovo_ua_daily_goal_v1 and updates Today plan.
+  - Deep link #/learn/A1.2 + jumping to Section D updates Today hero to "Continue: A1.2 · Lesson, section D"; browser Back (#/learn/A1.2) and Forward (#/today) verified.
+  - Grading a review card updates SVG Daily Goal Ring (1/20 min), streak (1 day streak), XP (15 XP), and Review due badge (19).
+  - Speak (#/speak) verified end-to-end against /api/convo/status (HTTP 200) and /api/convo/turn (live AI reply + inline Locative Case grammar correction card for «Я живу в Київ» -> «Я живу́ у Ки́єві»).
+  - Mobile 375x812 verified: 0px horizontal overflow, 5 bottom-bar buttons at 72x48px (>= 44px), and Word forms bottom sheet opens/closes cleanly.
+
+5. PERSISTENT CHECKPOINT
+- Persisted Archive Report: reports/identify/ux-restructure-phase-002.txt (Order 14 in reports/identify/REPORT_INDEX.md)
+- Latest Report Pointer: reports/identify/LATEST_REPORT.txt -> reports/identify/ux-restructure-phase-002.txt
+- Checkpoint Metadata Updated: src/identifyVisualBatchProgress.json (reportingStandard.latestSourceReportFile = "reports/identify/ux-restructure-phase-002.txt"; Identify scene data untouched at 67 approved scenes / 1,075 hotspots)
+- New Additive Learner Keys Introduced: slovo_ua_onboarding_v1, slovo_ua_daily_goal_v1
+
+6. REMAINING WORK
+- Phase 3 of 6: Course flow restructure — CEFR-grouped visual module map (unlocked with recommended next step), clear 5-step module progress header (Lesson -> Check -> Practice -> Words -> Exam) with check marks, sticky bottom Back / Next action bar on every step, collapsible Lesson flow with sticky scrollspy mini-TOC + reading-progress bar + expandable Complete Reference & Exceptions, plain-language Words step ("Add these N words to my reviews"), and end-of-module celebration screen.
+- Phase 4 of 6: Unified Review session UX — distraction-free full-height review session mode, unified mode picker including Mixed (recommended), plain-language grading interval buttons, end-of-session summary, and daily-goal-driven new card pacing (moving bulk +25/+100 into an Advanced menu).
+- Phase 5 of 6: Explore (Reader ~65ch column + contextual word bottom sheet with translation/audio/forms/"Add to reviews" + story level badges; Pictures control & right/wrong feedback polish; Sounds & Script polish) and app-wide plain-language microcopy & friendly empty states.
+- Phase 6 of 6: Final accessibility, keyboard focus, dark-mode contrast, responsive QA pass, and cleanup of remaining inline style= attributes inside TypeScript template strings.
+
+7. NEXT EXECUTION
+- Proceed to Phase 3 of 6 (ux-restructure-phase-003): Restructure the Learn (Course) experience (CEFR module map, 5-step progress header, sticky bottom navigation bar, readable Lesson flow with sticky scrollspy TOC & expandable reference/exceptions, plain-language Words step, and module completion celebration) while keeping all curriculum/assessment engines and 100 unit tests green.

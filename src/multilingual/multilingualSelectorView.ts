@@ -348,9 +348,9 @@ function ensureLanguageSelectorModalElement(): HTMLElement {
 
   modal = document.createElement('div');
   modal.id = 'lango-language-selector-modal';
-  modal.className = 'hidden';
-  modal.style.cssText =
-    'position:fixed; inset:0; background:rgba(0,0,0,0.62); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:1100; display:none; align-items:center; justify-content:center; padding:16px; overflow-y:auto;';
+  modal.className = 'modal-backdrop hidden';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeLanguageSelectorModal();
@@ -374,14 +374,12 @@ export function openLanguageSelectorModal(
   const modal = ensureLanguageSelectorModalElement();
   renderLanguageSelectorModalContent(modal);
   modal.classList.remove('hidden');
-  modal.style.display = 'flex';
 }
 
 export function closeLanguageSelectorModal(): void {
   const modal = document.getElementById('lango-language-selector-modal');
   if (modal) {
     modal.classList.add('hidden');
-    modal.style.display = 'none';
   }
 }
 
@@ -528,7 +526,7 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
   const allUiLanguages = getAllLanguages();
 
   modal.innerHTML = `
-    <div class="card" style="max-width:860px; width:100%; max-height:90dvh; overflow-y:auto; background:var(--surface-1); border:1px solid var(--border-strong); box-shadow:var(--shadow-theater); margin:0; padding:20px;">
+    <div class="modal-dialog modal-dialog--xl">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px;">
         <div>
           <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
@@ -605,9 +603,9 @@ function ensureDevImporterModalElement(): HTMLElement {
 
   modal = document.createElement('div');
   modal.id = 'lango-dev-importer-modal';
-  modal.className = 'hidden';
-  modal.style.cssText =
-    'position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:1150; display:none; align-items:center; justify-content:center; padding:16px; overflow-y:auto;';
+  modal.className = 'modal-backdrop hidden';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeDevCourseImporterModal();
@@ -628,7 +626,7 @@ export function openDevCourseImporterModal(defaultTrackId?: string): void {
   lastImportPreviewReport = null;
 
   modal.innerHTML = `
-    <div class="card" style="max-width:900px; width:100%; max-height:90dvh; overflow-y:auto; background:var(--surface-1); border:1px solid var(--border-strong); box-shadow:var(--shadow-theater); margin:0; padding:20px;">
+    <div class="modal-dialog modal-dialog--xl">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px;">
         <div>
           <span class="tag" style="background:var(--warn-container); color:var(--warn-on-container); font-weight:800;">
@@ -641,7 +639,7 @@ export function openDevCourseImporterModal(defaultTrackId?: string): void {
             Validates schemaVersion, targetLanguage, nativeLanguage, instructionalLanguage, courseTrackId, duplicate IDs, missing references, and unsupported activity types before requiring explicit confirmation.
           </p>
         </div>
-        <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12.5px;" onclick="closeDevCourseImporterModal()">✕ Close</button>
+        <button type="button" class="btn btn-sec btn--sm" onclick="closeDevCourseImporterModal()">✕ Close</button>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr auto; gap:10px; align-items:end; margin-bottom:10px;">
@@ -693,14 +691,12 @@ export function openDevCourseImporterModal(defaultTrackId?: string): void {
   `;
 
   modal.classList.remove('hidden');
-  modal.style.display = 'flex';
 }
 
 export function closeDevCourseImporterModal(): void {
   const modal = document.getElementById('lango-dev-importer-modal');
   if (modal) {
     modal.classList.add('hidden');
-    modal.style.display = 'none';
   }
 }
 

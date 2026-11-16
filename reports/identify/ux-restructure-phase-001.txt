@@ -1,0 +1,70 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution ID: ux-restructure-phase-001
+- Phase Completed: Phase 1 of 6 — Design Token System, Reusable Component Classes, Inline Style Removal in index.html, and Editorial Shell Restyling (Zero Behavior Change)
+- Phase 1 Design Plan & Token Specification:
+  - Aesthetic Direction: Calm, warm editorial language notebook (60% warm paper/slate-ink canvas, 30% crisp 1px hairline surfaces, 10% Ukrainian identity blue + Lango crest warm gold) with WCAG AA contrast verified in both Light and Dark themes.
+  - Color Tokens (OKLCH):
+    - Light Surfaces & Ink: --bg oklch(0.991 0.004 85), --surface-1 oklch(1 0 0), --surface-2 oklch(0.968 0.005 85), --surface-3 oklch(0.936 0.007 85), --sidebar-bg oklch(0.981 0.005 85), --sidebar-accent oklch(0.948 0.012 260), --text oklch(0.18 0.012 260), --text-secondary oklch(0.41 0.014 260), --muted oklch(0.505 0.014 260), --border-subtle oklch(0.912 0.006 85), --border-strong oklch(0.84 0.012 260).
+    - Dark Surfaces & Ink: --bg oklch(0.155 0.012 260), --surface-1 oklch(0.205 0.014 260), --surface-2 oklch(0.255 0.016 260), --surface-3 oklch(0.31 0.018 260), --sidebar-bg oklch(0.18 0.013 260), --sidebar-accent oklch(0.255 0.024 260), --text oklch(0.965 0.005 85), --text-secondary oklch(0.79 0.01 260), --muted oklch(0.69 0.012 260), --border-subtle oklch(1 0 0 / 10%), --border-strong oklch(1 0 0 / 18%).
+    - Primary Ukrainian Blue: --lang oklch(0.49 0.14 260) [light] / oklch(0.77 0.11 260) [dark], --lang-hover, --lang-soft, --lang-border, --lang-foreground.
+    - Secondary Lango Crest Gold (#e3ad4a family): --gold oklch(0.765 0.135 80) [light] / oklch(0.8 0.13 82) [dark], --gold-ink oklch(0.45 0.115 74) [light] / oklch(0.85 0.115 84) [dark], --gold-soft, --gold-border.
+    - Semantic & 7-Case Tokens: --success, --warn, --danger, --mark, and all 7 Ukrainian grammatical case hues (--nom, --gen, --dat, --acc, --ins, --loc, --voc).
+  - Spacing Scale: --space-1 (4px), --space-2 (8px), --space-3 (12px), --space-4 (16px), --space-5 (20px), --space-6 (24px), --space-8 (32px), --space-12 (48px).
+  - Typography Scale: IBM Plex Sans (--font-sans / --font-display), Lora Cyrillic (--font-word), JetBrains Mono (--font-mono); --text-xs (12px), --text-sm (14px), --text-base (16px), --text-lg (18px), --text-xl (22px), --text-2xl (28px), --text-3xl (36px); --leading-tight (1.2), --leading-snug (1.38), --leading-normal (1.6), --leading-reading (1.88); --measure-reading (65ch), --container-max (1080px).
+  - Radii, Elevation & Motion: --radius-xs (6px), --radius-sm (8px), --radius-md (12px), --radius-lg (16px), --radius-xl (20px), --radius-pill (9999px); 3-level elevation (--shadow-1, --shadow-2, --shadow-3); --ease-out cubic-bezier(0.16, 1, 0.3, 1), --dur-fast (150ms), --dur-base (200ms), --dur-slow (250ms), plus prefers-reduced-motion compliance.
+
+2. CHANGES COMPLETED
+- What the Learner Will Notice Immediately in Phase 1:
+  - Warmer, calmer editorial surfaces in both Light and Dark modes (warm-ivory paper & deep slate-ink instead of stark clinical white/black) with legible WCAG AA contrast across captions, hints, badges, and buttons.
+  - Refined 256px desktop sidebar with left-edge Ukrainian-blue active indicator bar, elevated language track selector button, and a structured study summary card highlighting XP in Lango crest gold.
+  - Upgraded mobile ergonomics at 375px: every top-bar trigger, bottom-bar tab, button, and form field meets >= 44px touch height while keeping combined top + bottom chrome at 13.7% of viewport height (54px + 57px on 812px).
+  - Cohesive modal and sheet system across Settings, Audio/Voice, Language Selector, Developer JSON Importer, Docker .ZIP Exporter, and the mobile Word & Paradigm bottom sheet, with consistent Escape and backdrop-click dismissal even when form inputs inside modals have focus.
+- Component & Layout Classes Added in index.html (Ready for Phases 2–6):
+  - Layout: .stack-1..6, .cluster, .cluster--tight, .cluster--between, .cluster--between-start, .flex-1-min, .grid-2-auto, .grid-2-actions, .toolbar-row, .pagination-bar, .divider, .section-divider-top.
+  - Surfaces & Controls: .card, .card--flat, .card--subtle, .card--hero, .card--interactive, .card--reader, .btn, .btn--primary, .btn-sec / .btn--secondary, .btn--ghost, .btn-success / .btn--success, .btn-warn / .btn--warn, .btn--gold, .btn--sm, .btn--lg, .btn--block, .icon-btn, .input-box / .input, .select (custom chevron), .form-field, .form-label, .segmented / .vb-seg-group, .chip / .tag, .badge-lang, .badge-gold, .progress-track, .progress-fill, .progress-ring, .sticky-actions.
+  - Overlays: .modal-backdrop / .vb-modal-backdrop, .modal-dialog (.modal-dialog--sm/md/lg/xl), .modal-header, .modal-kicker, .modal-title, .modal-footer, .sheet-backdrop, .inspector.
+- Inline Style Removal:
+  - Removed 100% of inline style="..." attributes in index.html (reduced from 60+ occurrences to 0).
+  - Replaced inline style.cssText modal wrappers on #voice-settings-modal (src/main.ts) and #lango-language-selector-modal / #lango-dev-importer-modal (src/multilingual/multilingualSelectorView.ts) with .modal-backdrop and .modal-dialog.
+- Deliberately Left Alone in Phase 1 (Scheduled for Phases 2–6):
+  - Navigation structure (still 8 tabs; Phase 2 introduces the 5-destination IA: Today, Learn, Review, Explore, Speak, hash router, Today home screen, and 3-step first-run onboarding).
+  - Course internal flow (Phase 3 introduces the CEFR-grouped module map, 5-step progress header, sticky Next/Back bar, lesson scrollspy TOC, collapsible Reference/Exceptions, and module completion celebration).
+  - Unified Review queue & daily-goal card pacing (Phase 4).
+  - Reader ~65ch column & word sheet, Pictures/Sounds layout polish, plain-language "Word forms" microcopy pass, and remaining template-string inline styles in main.ts / identifyView.ts / aiConversationView.ts (Phases 5–6).
+  - All curriculum, vocabulary, assessment, Identify scene data, FSRS engines, and localStorage keys/shapes (slovo_ua_6000_anki_v1, slovo_ua_theme_mode, slovo_openai_hd_cfg) were left 100% untouched.
+
+3. FILES CREATED OR MODIFIED
+- Modified: index.html (Phase 1 design token system, reusable component & layout classes, editorial shell restyling, and removal of all inline style="..." attributes)
+- Modified: src/main.ts (upgraded #voice-settings-modal to Phase 1 .modal-backdrop / .modal-dialog classes; ensured Escape closes all modals/sheets even when inputs/selects inside modals are focused)
+- Modified: src/multilingual/multilingualSelectorView.ts (aligned #lango-language-selector-modal and #lango-dev-importer-modal outer shells with .modal-backdrop and .modal-dialog--xl)
+- Created: reports/identify/ux-restructure-phase-001.txt
+- Modified: reports/identify/REPORT_INDEX.md
+- Modified: reports/identify/LATEST_REPORT.txt
+- Modified: src/identifyVisualBatchProgress.json (reportingStandard.latestSourceReportFile pointer only)
+
+4. VALIDATION RESULTS
+- Inline style="..." count in index.html: 0
+- TypeScript Lint (npm run lint / tsc --noEmit): PASS (0 errors)
+- Production Build (npm run build / compile_applet): PASS (0 errors)
+- Automated Test Suites (npx tsx --test src/__tests__/*.test.ts): PASS — 100 / 100 tests passing (0 failures) across all 6 test files (courseVocabExpansion, identifyCurationPhase1, identifyUpgrade, langoPhase1Multilingual, langoPhase3ACmsStudio, slovo)
+- Manual Browser & Responsive QA (Playwright Chromium):
+  - 1280x800 Light & Dark: PASS — scrollWidth 1280 === clientWidth 1280 (0px horizontal overflow), 256px sidebar, docked Grammar Inspector and Settings modal verified, Escape dismissal verified, 0 console errors, 0 page errors.
+  - 375x812 Light & Dark: PASS — scrollWidth 375 === clientWidth 375 (0px horizontal overflow), top bar 54px + bottom bar 57px = 13.7% viewport chrome (<= 15% budget), mobile language pill 44px height, top icon buttons 44x44px, bottom nav buttons 48px height (>= 44px touch targets), bottom-sheet Word & Paradigm drawer verified, 0 console errors, 0 page errors.
+
+5. PERSISTENT CHECKPOINT
+- Authoritative Identify Checkpoint: src/identifyVisualBatchProgress.json preserved intact (67 Approved & Playable scenes, 1,075 verified hotspots, 0 learner progress or curriculum data mutations).
+- Latest Persisted Report: reports/identify/ux-restructure-phase-001.txt (mirrored to reports/identify/LATEST_REPORT.txt and indexed as Order 13 in reports/identify/REPORT_INDEX.md).
+
+6. REMAINING WORK
+- Phase 2: 5-destination Information Architecture (Today, Learn, Review, Explore, Speak), hash router (#/today, #/learn/A1.2, etc.) with switchTab() backward compatibility, Today home screen with daily goal ring & Continue/Review hero cards, 3-step first-run onboarding (saved to a new localStorage key), and surfacing the end-to-end verified Speaking Studio (src/aiConversationView.ts).
+- Phase 3: Course flow restructure (CEFR-grouped module map, 5-step progress header, sticky Next/Back bar, lesson TOC with scrollspy & reading progress, collapsible Complete Reference & Exceptions, module-complete celebration).
+- Phase 4: Unified Review session + daily-goal-driven new card pacing (moving bulk +25 / +100 controls under Advanced).
+- Phase 5: Reader (~65ch column + word sheet), Pictures, Sounds, "Word forms" plain-language microcopy pass, and friendly empty states.
+- Phase 6: Final accessibility, dark-mode, responsive QA pass, and cleanup of remaining template-string inline styles.
+
+7. NEXT EXECUTION
+- Awaiting user review of Phase 1 to proceed with Phase 2 (5-destination IA, hash router, Today home screen, Speak tab integration, and 3-step first-run onboarding).

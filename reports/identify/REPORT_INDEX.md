@@ -5,7 +5,7 @@ This file indexes all persisted plain-text execution, audit, and recovery report
 ## Latest Report Pointer
 
 - **Latest Report File:** [`reports/identify/LATEST_REPORT.txt`](./LATEST_REPORT.txt)
-- **Current Latest Source Report:** [`reports/identify/vocabbuilder-ui-ux-redesign-001.txt`](./vocabbuilder-ui-ux-redesign-001.txt)
+- **Current Latest Source Report:** [`reports/identify/ux-restructure-phase-002.txt`](./ux-restructure-phase-002.txt)
 - **Authoritative Batch Checkpoint:** [`src/identifyVisualBatchProgress.json`](../../src/identifyVisualBatchProgress.json)
 
 ---
@@ -26,6 +26,8 @@ This file indexes all persisted plain-text execution, audit, and recovery report
 | 10 | [`docker-port-4000-export-002.txt`](./docker-port-4000-export-002.txt) | `docker-port-4000-export-002` | Dynamic Chunked Docker .ZIP Exporter Fix | `COMPLETE` | Replaced static 72 MB file with dynamic on-demand PKZIP exporter (`src/dockerZipExporter.ts`, `16.27 MB` full / `7.55 MB` lightweight) + 4 MB chunked downloader modal to bypass Cloud Run's 32 MB limit and container restarts. |
 | 11 | [`ui-ux-redesign-recovery-001.txt`](./ui-ux-redesign-recovery-001.txt) | `ui-ux-redesign-recovery-001` | Post-Restart Evaluation & Full UI/UX Redesign | `COMPLETE` | Evaluated post-restart state, completed end-to-end UI/UX redesign across `index.html`, `src/main.ts`, `src/identifyView.ts`, and `src/multilingual/multilingualSelectorView.ts`, and verified 0 errors across build, lint, 100 tests, and desktop/mobile Chromium. |
 | 12 | [`vocabbuilder-ui-ux-redesign-001.txt`](./vocabbuilder-ui-ux-redesign-001.txt) | `vocabbuilder-ui-ux-redesign-001` | Post-Restart Validation & VocabBuilder Gold-Standard UI/UX Redesign | `COMPLETE` | Validated saved work after container restart, completed `corsairrock0/vocabbuilder` UI/UX redesign across `index.html`, `src/main.ts`, `src/identifyView.ts`, `src/morphologyAndPhonetics.ts`, and `src/multilingual/multilingualSelectorView.ts` (OKLCH tokens, `Lora` Cyrillic `.word` typography, 7-case `.case-head` bars, sidebar/mobile shell, Settings dialog, keyboard shortcuts), and verified 100/100 tests, build, lint, and desktop/mobile Chromium. |
+| 13 | [`ux-restructure-phase-001.txt`](./ux-restructure-phase-001.txt) | `ux-restructure-phase-001` | UX Restructure Phase 1 of 6 (Tokens, Components & Shell) | `COMPLETE` | Established warm editorial OKLCH token system (Ukrainian blue + Lango crest gold + spacing/type/elevation/motion scales), reusable layout/component classes, zero inline styles in `index.html`, and restyled desktop/mobile shell & modals without changing behavior; verified 100/100 tests, build, lint, and 375px/1280px light & dark QA. |
+| 14 | [`ux-restructure-phase-002.txt`](./ux-restructure-phase-002.txt) | `ux-restructure-phase-002` | UX Restructure Phase 2 of 6 (5-Destination IA, Hash Router, Today Home, Onboarding & Speak) | `COMPLETE` | Implemented 5-destination navigation (`Today`, `Learn`, `Review`, `Explore`, `Speak`), URL hash router with `switchTab()` compatibility, Today study home with SVG daily goal ring & section-level Continue hero, 3-step inline onboarding (`slovo_ua_onboarding_v1`), end-to-end AI Ukrainian Conversation Studio under `Speak`, and `"Word forms"` inspector rename; verified 100/100 tests, build, lint, and desktop/mobile light & dark Playwright QA. |
 
 ---
 
