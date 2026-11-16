@@ -1,0 +1,68 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution Identifier: vocabbuilder-ui-ux-redesign-001
+- Post-Restart Validation & Recovery Audit:
+  1. Inspected workspace state following the interrupted turn ("agent task interrupted by server restart") and verified that edits to src/morphologyAndPhonetics.ts, src/multilingual/multilingualSelectorView.ts, src/identifyView.ts, and src/main.ts were saved cleanly without corruption, while index.html still held the pre-VocabBuilder layout.
+  2. Completed the end-to-end UX and UI redesign of Learn Ukrainian (Lango) modeled directly on the https://github.com/corsairrock0/vocabbuilder/ ("VocabBuilder by Lango") gold-standard reference.
+- Zero Functional Regressions:
+  - Preserved all 8 core learning workspaces (Course, Reader, Pictures/Identify, Topics/Vocab, UK→EN, EN→UK, Sentences, Sounds/Phonetics), 29 Ukrainian CEFR modules (A0.1–C1.1), 5,510 assessment items, 67 approved coherent Identify scenes (1,075 playable hotspots), 52 graded reader passages, 28 multilingual course tracks, 6,000-word lexicon, Content Studio (CMS), and the chunked Port 4000 Docker .ZIP exporter.
+
+2. CHANGES COMPLETED
+- VocabBuilder Color, Typography & Touch-Safe Hover System (index.html):
+  - Adopted VocabBuilder's OKLCH semantic palette (--bg, --surface-1..3, --sidebar-bg, --sidebar-accent, --border-subtle, --border-strong) paired with the Ukrainian identity hue (--lang: oklch(0.5 0.13 260) in light mode; oklch(0.78 0.1 260) in dark mode) and verdict tokens (--success, --warn, --danger, --mark).
+  - Configured Lora Cyrillic (--font-word: 'Lora', Georgia, serif) for all Ukrainian headwords, declined/conjugated forms, and reader word tokens, paired with IBM Plex Sans for UI chrome and JetBrains Mono (tabular-nums) for IPA, counters, and intervals.
+  - Guarded interactive :hover states inside @media (hover: hover) to prevent sticky touch hover artifacts and hid keyboard shortcut badges ([data-slot="kbd"]) on coarse touch pointers (@media (hover: none) and (pointer: coarse)).
+- VocabBuilder Responsive Application Shell & Settings Dialog (index.html, src/main.ts, src/multilingual/multilingualSelectorView.ts):
+  - Replaced the desktop top bar with VocabBuilder's sticky 248px left sidebar featuring the #1b2333 Lango crest SVG ("Learn Ukrainian / by Lango"), full-width LanguageButton (#lango-top-track-btn), single-line rounded-xl navigation links, and a quiet footer housing the 7-Case Inspector toggle, Settings trigger, compact study progress counters, and copyright.
+  - Added VocabBuilder's mobile shell (<= 960px): a 48px translucent mobile top bar (rounded-full language selector pill + 7-Case Inspector and Settings icon buttons) and a 52px 8-column bottom tab bar with rounded-full active icon pills (11.8% total sticky viewport height on 390x844).
+  - Added the VocabBuilder Settings dialog (#lango-settings-modal) with segmented Auto / Light / Dark appearance controls, Dual-Accent Voice settings, Language & Course Track switcher, Content Studio (CMS) launcher, and Port 4000 Docker .ZIP exporter.
+- 7-Case Paradigm Bars, Flashcards, Lexicon & Pictures Redesign (src/morphologyAndPhonetics.ts, src/main.ts, src/identifyView.ts):
+  - Styled all 7-case noun, pronoun, adjective, and verb paradigm tables with VocabBuilder's 3px colored .case-head left bars (.case-nom through .case-voc) and Lora serif Ukrainian forms.
+  - Redesigned UK→EN, EN→UK, and Sentence Repair stages with Lora headwords, centered .answer-line serif inputs, <mark class="mark"> repair highlights, outlined 4-grade FSRS RatingButtons (Again, Hard, Good, Easy) with next-interval labels and <kbd>1..4</kbd> hints, and global keyboard shortcuts (Space to reveal, 1–4 to grade or select Multiple Choice options, Escape to close dialogs).
+  - Redesigned Identify ("Pictures") with a segmented Practice | All 67 scenes header, coral focal marker badge on the selected hotspot, 2-column Lora Multiple Choice OptionButtons with <kbd>1..4</kbd> shortcut hints, and .answer-line typed Ukrainian input.
+
+3. FILES CREATED OR MODIFIED
+- Modified:
+  - index.html
+  - src/main.ts
+  - src/identifyView.ts
+  - src/morphologyAndPhonetics.ts
+  - src/multilingual/multilingualSelectorView.ts
+  - src/identifyVisualBatchProgress.json (updated reportingStandard.latestSourceReportFile pointer)
+  - reports/identify/REPORT_INDEX.md (appended Order 12 entry and updated latest source report pointer)
+  - reports/identify/LATEST_REPORT.txt (mirrored latest persisted execution report)
+- Created:
+  - reports/identify/vocabbuilder-ui-ux-redesign-001.txt
+
+4. VALIDATION RESULTS
+- Automated Test Suites (npx --yes tsx --test src/__tests__/*.test.ts):
+  - Total Tests: 100 / 100 PASS (0 failures across all 6 test suites, including TEST 26 8-tab navigation & UK→EN / EN→UK label verification, zero textbook citations, 29 CEFR modules, 5,510 assessments, 67 approved Identify scenes, 28 course tracks, CMS Studio, and Docker Port 4000 .ZIP manifest/archive integrity).
+- Production Build & Static Analysis:
+  - compile_applet (npm run build / tsc && vite build): PASS (0 errors)
+  - lint_applet (npm run lint / tsc --noEmit): PASS (0 errors)
+- Headless Chromium Live UI Verification (http://localhost:3000):
+  - Desktop 1440x900 (Light & Dark) across Course, Reader + 7-Case Inspector, Pictures (Identify), Words (UK→EN), Recall (EN→UK), and Settings Modal: PASS (0 console errors, 0 page errors).
+  - Mobile 390x844 (Light): PASS (0 horizontal overflow; 48px mobile top bar + 52px bottom pill tab bar = 11.8% sticky height, well within the 15% mobile sticky cap).
+- Errors Encountered During Execution:
+  - Initial post-edit test run flagged identifyUpgrade.test.ts TEST 26 expecting literal 'UK→EN' and 'EN→UK' labels in index.html navigation; immediately restored concise 'UK→EN' and 'EN→UK' labels and re-verified 100 / 100 tests passing.
+
+5. PERSISTENT CHECKPOINT
+- Authoritative Checkpoint File: src/identifyVisualBatchProgress.json
+  - lastBatchNumber: 10
+  - scenesWithVerifiedImagesTotal: 80
+  - coherenceAuditAndApproval.totalApprovedPlayableScenes: 67 (10 legacy + 57 coherent generated scenes; 1,075 approved playable hotspots)
+  - coherenceAuditAndApproval.removedIncoherentScenesCount: 13
+  - reportingStandard.latestSourceReportFile: "reports/identify/vocabbuilder-ui-ux-redesign-001.txt"
+- Persisted Report Archive:
+  - Source Report: reports/identify/vocabbuilder-ui-ux-redesign-001.txt
+  - Latest Mirror: reports/identify/LATEST_REPORT.txt
+  - Master Index: reports/identify/REPORT_INDEX.md (Order 12)
+
+6. REMAINING WORK
+- None. All post-restart validations, VocabBuilder UX/UI redesign updates, automated tests, production builds, and browser checks are complete.
+
+7. NEXT EXECUTION
+- Ready for interactive study across all 8 workspaces on port 3000 or local Windows Docker export via Settings -> Docker .ZIP (Port 4000).

@@ -1,0 +1,60 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+1. EXECUTION SUMMARY
+Execution ID: IDENTIFY-BATCH-006
+Batch Number: 6 (Scenes 37–46)
+Completed At: 2026-11-05T19:00:00.000Z
+Summary: Generated, visually verified, and saved all 10 contemporary Ukrainian photorealistic scenes for Batch 6 (Scenes 37–46) and annotated 180 candidate hotspots (18 per scene). Cumulative progress is now 46 scenes with verified images (10 legacy playable + 36 batch-generated) and 648 candidate hotspots awaiting human review.
+
+2. CHANGES COMPLETED
+- Performed pre-generation semantic alignment (batch6PrimarySwaps) restricted strictly to ungenerated scene indices (>= 36), keeping Scenes 1–36 100% locked and preserving relocated primaries (including id-v2-726 бензоколо́нка in Scene 42 and gm-machine тренаже́р in Scene 61).
+- Generated, inspected, and saved 10 real 1376x768 (16:9) JPEG scene images under public/assets/identify/:
+  * Scene 37 (uk_scene_37_city_winter_snow_street): /assets/identify/city-streets/uk_scene_37_city_winter_snow_street.jpg
+  * Scene 38 (uk_scene_38_public_transport_tram_trolleybus): /assets/identify/public-transportation/uk_scene_38_public_transport_tram_trolleybus.jpg
+  * Scene 39 (uk_scene_39_public_transport_kyiv_metro): /assets/identify/public-transportation/uk_scene_39_public_transport_kyiv_metro.jpg
+  * Scene 40 (uk_scene_40_railway_station_ukrposhta_uz): /assets/identify/airport-train-station/uk_scene_40_railway_station_ukrposhta_uz.jpg
+  * Scene 41 (uk_scene_41_airport_terminal_check_in): /assets/identify/airport-train-station/uk_scene_41_airport_terminal_check_in.jpg
+  * Scene 42 (uk_scene_42_automotive_car_service): /assets/identify/city-streets/uk_scene_42_automotive_car_service.jpg
+  * Scene 43 (uk_scene_43_hospital_clinic_consultation): /assets/identify/hospital-pharmacy/uk_scene_43_hospital_clinic_consultation.jpg
+  * Scene 44 (uk_scene_44_hospital_first_aid_treatment): /assets/identify/hospital-pharmacy/uk_scene_44_hospital_first_aid_treatment.jpg
+  * Scene 45 (uk_scene_45_pharmacy_apotheca): /assets/identify/hospital-pharmacy/uk_scene_45_pharmacy_apotheca.jpg
+  * Scene 46 (uk_scene_46_dental_and_optics_clinic): /assets/identify/hospital-pharmacy/uk_scene_46_dental_and_optics_clinic.jpg
+- Annotated 180 candidate bounding boxes across Scenes 37–46 in src/identifyCurriculumFinal1200.ts and src/identifyVisualBatchProgress.json, all gated behind hotspotReviewStatus = "needs_human_review" and learnerExposureAllowed = false.
+- Updated src/__tests__/identifyCurationPhase1.test.ts to validate Batches 1–6 (Scenes 11–46, 36 generated images, 648 candidate hotspots).
+
+3. FILES CREATED OR MODIFIED
+- public/assets/identify/city-streets/uk_scene_37_city_winter_snow_street.jpg (Created)
+- public/assets/identify/public-transportation/uk_scene_38_public_transport_tram_trolleybus.jpg (Created)
+- public/assets/identify/public-transportation/uk_scene_39_public_transport_kyiv_metro.jpg (Created)
+- public/assets/identify/airport-train-station/uk_scene_40_railway_station_ukrposhta_uz.jpg (Created)
+- public/assets/identify/airport-train-station/uk_scene_41_airport_terminal_check_in.jpg (Created)
+- public/assets/identify/city-streets/uk_scene_42_automotive_car_service.jpg (Created)
+- public/assets/identify/hospital-pharmacy/uk_scene_43_hospital_clinic_consultation.jpg (Created)
+- public/assets/identify/hospital-pharmacy/uk_scene_44_hospital_first_aid_treatment.jpg (Created)
+- public/assets/identify/hospital-pharmacy/uk_scene_45_pharmacy_apotheca.jpg (Created)
+- public/assets/identify/hospital-pharmacy/uk_scene_46_dental_and_optics_clinic.jpg (Created)
+- src/identifyCurriculumFinal1200.ts (Modified)
+- src/identifyVisualBatchProgress.json (Modified)
+- src/__tests__/identifyCurationPhase1.test.ts (Modified)
+
+4. VALIDATION RESULTS
+- Batch 6 source-identity mismatches: 0 across all 180 targets in Scenes 37–46.
+- All 36 batch-generated image files (Scenes 11–46) verified on disk (>100 KB each, 1376x768).
+- All 648 candidate hotspots across Scenes 11–46 have valid normalized coordinates and match authoritative master/extension records 1-to-1.
+- Learner safety gate intact: 10 playable scenes (49 verified hotspots) exposed; 70 scenes and 1,391 unverified associations gated.
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint file: src/identifyVisualBatchProgress.json
+- lastBatchNumber: 6
+- batchesCompleted: 6
+- scenesWithVerifiedImagesTotal: 46 (10 legacy playable + 36 batch-generated)
+- scenesRemainingWithoutImagesCount: 34
+- batchCreatedCandidateHotspotsAwaitingHumanReviewCount: 648
+
+6. REMAINING WORK
+- 34 ungenerated scenes remaining (Scenes 47–80).
+- 648 candidate hotspots across Scenes 11–46 awaiting human review before learner publication.
+
+7. NEXT EXECUTION
+- Execute Batch 7 (Scenes 47–56), starting with Scene 47: uk_scene_47_portrait_human_face_features.

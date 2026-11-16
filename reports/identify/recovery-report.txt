@@ -1,0 +1,56 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution ID: recovery-report
+- Task: Read-only recovery inspection after the Batch 6 execution interruption ("Invalid argument" error at response completion).
+- Result: All Batch 6 work (10 scene PNG illustrations for Scenes 37–46, 180 candidate hotspots in src/identifyCurriculumFinal1200.ts, checkpoint update in src/identifyVisualBatchProgress.json, and Batch 6 unit tests in src/__tests__/identifyCurationPhase1.test.ts) was completely saved to disk before the turn interruption occurred.
+- Zero unfinished, partial, or corrupted files were found. No repairs are required.
+
+2. CHANGES COMPLETED
+- Read-only inspection only; zero files were modified during the recovery check.
+- Verified presence and byte sizes of all 10 PNG assets for Scenes 37–46 under public/assets/identify/.
+- Verified 180 candidate hotspots (18 per scene) for Scenes 37–46 in src/identifyCurriculumFinal1200.ts.
+- Verified Batch 6 checkpoint entry and cumulative metrics in src/identifyVisualBatchProgress.json.
+- Verified Batch 6 regression assertions in src/__tests__/identifyCurationPhase1.test.ts.
+
+3. FILES CREATED OR MODIFIED
+- Modified during recovery inspection: None (READ-ONLY inspection).
+- Persisted report archive created during reporting-standard setup:
+  - reports/identify/recovery-report.txt
+
+4. VALIDATION RESULTS
+- Saved PNG assets verified for Scenes 37–46 (10 / 10 present):
+  - public/assets/identify/uk_scene_37_home_office_desk_stationery.png (764,877 bytes)
+  - public/assets/identify/uk_scene_38_Primary_School_Classroom_Board.png (591,829 bytes)
+  - public/assets/identify/uk_scene_39_science_laboratory_bench.png (707,603 bytes)
+  - public/assets/identify/uk_scene_40_art_studio_painting_desk.png (788,022 bytes)
+  - public/assets/identify/uk_scene_41_music_rehearsal_room_stage.png (713,581 bytes)
+  - public/assets/identify/uk_scene_42_library_reading_hall_shelves.png (768,546 bytes)
+  - public/assets/identify/uk_scene_43_geometry_drafting_measurement_board.png (652,188 bytes)
+  - public/assets/identify/uk_scene_44_computer_workstation_ui_screen.png (652,477 bytes)
+  - public/assets/identify/uk_scene_45_smartphone_messaging_interface.png (562,670 bytes)
+  - public/assets/identify/uk_scene_46_corporate_conference_boardroom.png (656,177 bytes)
+- Saved candidate hotspots verified: 180 / 180 across Scenes 37–46 (648 cumulative across Scenes 11–46).
+- Source-file consistency: 100% consistent across src/identifyCurriculumFinal1200.ts, src/identifyVisualBatchProgress.json, and src/__tests__/identifyCurationPhase1.test.ts.
+- Repairs required before resuming: None.
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint file: src/identifyVisualBatchProgress.json
+- Last successfully completed batch: Batch 6 (lastBatchNumber: 6, batchesCompleted: 6)
+- Last completed scene: Scene 46 (uk_scene_46_corporate_conference_boardroom)
+- Scenes with verified images: 46 / 80 (Scenes 1–10 playable + Scenes 11–46 candidate_review)
+- Scenes remaining without images: 34 (Scenes 47–80)
+- Manually verified active hotspots: 49
+- Candidate hotspots awaiting human review: 648
+- Remaining unverified planned associations: 1,391
+
+6. REMAINING WORK
+- Unfinished scenes in Batch 6 (Scenes 37–46): None (0 unfinished; all 10 scenes are complete).
+- Remaining scenes overall: 34 scenes (Scenes 47–80), starting at Scene 47 (uk_scene_47_portrait_human_face_features).
+- 648 candidate hotspots across Scenes 11–46 remain gated in candidate_review awaiting human QA promotion.
+
+7. NEXT EXECUTION
+- Exact next unfinished scene: Scene 47 — uk_scene_47_portrait_human_face_features ("Обличчя і портрет людини" / "Human Face & Portrait Features").
+- Next batch when authorized: Batch 7 covering Scenes 47–56 (uk_scene_47_portrait_human_face_features through uk_scene_56_bank_and_administrative_center).

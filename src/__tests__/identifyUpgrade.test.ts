@@ -77,6 +77,27 @@ import {
 import { COURSE_MODULES } from '../courseData.ts';
 import { getAllCourseTracks } from '../multilingual/courseTrackRegistry.ts';
 import { setSimulatedPublicProductionModeForTesting } from '../multilingual/cmsAuthAndStorage.ts';
+import {
+  closeIdentifyAdminPreviewSession,
+  findPlayableLegacySceneById,
+  getIdentify80SceneBrowserList,
+  getIdentify80SceneByCodeOrNumber,
+  inspectUnreviewedScenesCoherence,
+  isIdentifyAdminPreviewAuthorized,
+  isSceneRemovedForUnrelatedObjects,
+  REMOVED_INCOHERENT_UNREVIEWED_SCENES,
+  resolveSceneViewerHotspots,
+  revealAdminPreviewTargetAnswer,
+  setIdentifyAdminPreviewUiToggle,
+  startIdentifyAdminPreviewSession,
+  stepAdminPreviewTargetSlot,
+  submitAdminPreviewMultipleChoice,
+  submitAdminPreviewTypedAnswer,
+} from '../identifyCurriculumPreview.ts';
+import {
+  buildDockerZipManifest,
+  getOrBuildDockerZipArchive,
+} from '../dockerZipExporter.ts';
 
 // ----------------------------------------------------------------------------
 // TEST 1 — Defective Scene Detection
@@ -1065,3 +1086,169 @@ test('TEST 34 — Identify Safety Repair Fail-Closed Verification: rejects 5×5 
   const emptyXp = claimIdentifyRoundXpIfEligible(prog, unverifiedKitchen1);
   assert.equal(emptyXp, 0, '0-target scene must award 0 XP');
 });
+
+// ----------------------------------------------------------------------------
+// TEST 35 — Coherent Scene Approval Without Human Hotspot Review (67 Approved & Playable Scenes, 1,075 Hotspots)
+// ----------------------------------------------------------------------------
+test('TEST 35 — Coherent Ukrainian Curriculum Approval: all 67 coherent scenes (10 original + 57 coherent preview-ready) are approved & playable for learners without requiring human hotspot review', () => {
+  setSimulatedPublicProductionModeForTesting(false);
+  setIdentifyAdminPreviewUiToggle(true);
+
+  const coherentScenes = getIdentify80SceneBrowserList();
+  assert.equal(coherentScenes.length, 67, 'Must list the 67 coherent Ukrainian curriculum scenes (10 original + 57 newly approved coherent scenes)');
+
+  const allRaw80 = getIdentify80SceneBrowserList({ includeRemovedIncoherent: true });
+  assert.equal(allRaw80.length, 80, 'Raw curriculum with includeRemovedIncoherent: true still contains all 80 underlying blueprint entries');
+
+  let approvedCount = 0;
+  let candidatePreviewReadyCount = 0;
+  let imageOnlyPreviewCount = 0;
+  let totalApprovedHotspots = 0;
+
+  for (const entry of coherentScenes) {
+    assert.equal(isSceneRemovedForUnrelatedObjects(entry.sceneNumber), false);
+    assert.equal(isSceneRemovedForUnrelatedObjects(entry.sceneCode), false);
+    assert.equal(entry.canViewSceneImage, true, `Scene #${entry.sceneNumber} (${entry.sceneCode}) must be viewable`);
+    assert.ok(entry.assetPath, `Scene #${entry.sceneNumber} must have a valid assetPath`);
+    assert.equal(entry.assetExistsOnDisk, true);
+
+    const diskPath = path.join(process.cwd(), 'public', entry.assetPath!);
+    assert.equal(fs.existsSync(diskPath), true, `Image file must exist on disk at ${diskPath}`);
+    const stat = fs.statSync(diskPath);
+    assert.ok(stat.size > 10000, `Image file ${diskPath} must be non-empty`);
+
+    assert.equal(entry.availabilityState, 'approved_playable', `Coherent scene #${entry.sceneNumber} must be approved_playable`);
+    assert.equal(entry.canStartLearnerPractice, true, `Coherent scene #${entry.sceneNumber} must allow learner practice`);
+    assert.ok(entry.linkedPlayableSceneId, `Coherent scene #${entry.sceneNumber} must have a linkedPlayableSceneId`);
+
+    const playableScene = findPlayableLegacySceneById(entry.linkedPlayableSceneId!);
+    assert.ok(playableScene, `Playable scene object must resolve for #${entry.sceneNumber} (${entry.linkedPlayableSceneId})`);
+    const approvedTargets = getApprovedLearnerTargets(playableScene!.scene);
+    if (entry.sceneNumber <= 10) {
+      assert.equal(approvedTargets.length, entry.verifiedHotspotCount);
+    } else {
+      assert.equal(entry.verifiedHotspotCount, 18);
+      assert.equal(approvedTargets.length, 18, `Approved coherent scene #${entry.sceneNumber} must expose 18 approved learner targets`);
+    }
+
+    approvedCount++;
+    totalApprovedHotspots += entry.verifiedHotspotCount;
+  }
+
+  assert.equal(approvedCount, 67);
+  assert.equal(candidatePreviewReadyCount, 0);
+  assert.equal(imageOnlyPreviewCount, 0);
+  assert.equal(totalApprovedHotspots, 1075, '49 original + 57 * 18 newly approved coherent hotspots = 1,075 approved hotspots');
+
+  // Verify coherent Batch 10 scenes #78 and #80 are approved and playable for learners
+  for (const [sceneNum, expectedPath] of [
+    [78, '/assets/identify/city-streets/uk_scene_78_emergency_and_civic_services.jpg'],
+    [80, '/assets/identify/living-room/uk_scene_80_family_celebration_gift_exchange.jpg'],
+  ] as const) {
+    const entry = getIdentify80SceneByCodeOrNumber(sceneNum)!;
+    assert.ok(entry, `Coherent scene #${sceneNum} must be active`);
+    assert.equal(entry.assetPath, expectedPath);
+    assert.equal(entry.availabilityState, 'approved_playable');
+    assert.equal(entry.verifiedHotspotCount, 18);
+    assert.equal(entry.canStartLearnerPractice, true);
+  }
+
+  // Verify that ordinary public learners also receive all 67 approved scenes and their hotspots without human review gating
+  setSimulatedPublicProductionModeForTesting(true);
+  try {
+    assert.equal(isIdentifyAdminPreviewAuthorized(), false);
+    for (const sNum of [11, 52, 53, 78, 80]) {
+      const learnerViewScene = getIdentify80SceneByCodeOrNumber(sNum)!;
+      assert.equal(learnerViewScene.availabilityState, 'approved_playable');
+      assert.equal(learnerViewScene.canViewSceneImage, true);
+      assert.equal(learnerViewScene.canStartLearnerPractice, true, 'Approved coherent scenes are playable by all learners');
+
+      const viewerOverlay = resolveSceneViewerHotspots(sNum);
+      assert.equal(viewerOverlay.hotspots.length, 18, 'All 18 approved hotspots are visible to learners in View Scene');
+      assert.equal(viewerOverlay.hotspots[0].isApprovedLearnerHotspot, true);
+      assert.equal(viewerOverlay.noticeBanner, null);
+    }
+  } finally {
+    setSimulatedPublicProductionModeForTesting(false);
+    setIdentifyAdminPreviewUiToggle(true);
+  }
+});
+
+// ----------------------------------------------------------------------------
+// TEST 36 — Unreviewed Scene Related-Object Coherence Audit & Removal
+// ----------------------------------------------------------------------------
+test('TEST 36 — Unreviewed Scene Coherence Audit: inspects all 70 scenes (#11–#80), approves the 57 coherent scenes, and removes the 13 scenes with too many unrelated objects', () => {
+  const audit = inspectUnreviewedScenesCoherence();
+  assert.equal(audit.totalUnreviewedScenesInspected, 70, 'Must inspect all 70 scenes (#11–#80)');
+  assert.equal(audit.coherentRetainedCount, 57, 'Must retain and approve 57 coherent scenes where all 18 objects belong to the scene');
+  assert.equal(audit.incoherentRemovedCount, 13, 'Must remove 13 scenes that contain too many unrelated objects');
+  assert.equal(REMOVED_INCOHERENT_UNREVIEWED_SCENES.length, 13);
+
+  const expectedRemovedNumbers = [51, 54, 55, 56, 70, 71, 72, 73, 74, 75, 76, 77, 79];
+  assert.deepEqual(
+    REMOVED_INCOHERENT_UNREVIEWED_SCENES.map((s) => s.sceneNumber),
+    expectedRemovedNumbers
+  );
+
+  for (const removed of REMOVED_INCOHERENT_UNREVIEWED_SCENES) {
+    assert.ok(
+      removed.unrelatedObjectsCount >= 5,
+      `Removed scene #${removed.sceneNumber} (${removed.sceneCode}) must have >= 5 unrelated objects`
+    );
+    assert.equal(
+      removed.unrelatedObjects.length,
+      removed.unrelatedObjectsCount
+    );
+    assert.equal(
+      removed.relatedObjectsCount + removed.unrelatedObjectsCount,
+      18
+    );
+    assert.equal(
+      getIdentify80SceneByCodeOrNumber(removed.sceneNumber),
+      undefined,
+      `Removed scene #${removed.sceneNumber} must not be returned by getIdentify80SceneByCodeOrNumber`
+    );
+    assert.equal(
+      getIdentify80SceneByCodeOrNumber(removed.sceneCode),
+      undefined,
+      `Removed scene ${removed.sceneCode} must not be returned by getIdentify80SceneByCodeOrNumber`
+    );
+    assert.throws(() => {
+      resolveSceneViewerHotspots(removed.sceneCode);
+    }, /Unknown Identify curriculum scene/);
+    assert.throws(() => {
+      startIdentifyAdminPreviewSession(removed.sceneCode, 'mc');
+    }, /Scene not found/);
+  }
+});
+
+// ----------------------------------------------------------------------------
+// TEST 37 — Dynamic On-Demand Windows Docker Port 4000 .ZIP Exporter (< 32 MB Cloud Run Limit & 4 MB Chunking)
+// ----------------------------------------------------------------------------
+test('TEST 37 — Dynamic Windows Docker Port 4000 .ZIP Exporter: builds valid PKZIP archives on demand under Cloud Run 32 MB limit with 4 MB chunking', () => {
+  const lightManifest = buildDockerZipManifest('lightweight');
+  assert.equal(lightManifest.ok, true);
+  assert.equal(lightManifest.filename, 'lango-ukrainian-docker-port-4000-lightweight.zip');
+  assert.ok(lightManifest.totalBytes > 500_000, 'Lightweight Docker .zip must contain full source and core assets');
+  assert.ok(lightManifest.totalBytes < 10 * 1024 * 1024, 'Lightweight Docker .zip must be under 10 MB');
+
+  const lightArchive = getOrBuildDockerZipArchive('lightweight');
+  assert.equal(lightArchive.buffer.readUInt32LE(0), 0x04034b50, 'Must start with PKZIP local file header signature PK\\x03\\x04');
+
+  const fullManifest = buildDockerZipManifest('full');
+  assert.equal(fullManifest.ok, true);
+  assert.equal(fullManifest.filename, 'lango-ukrainian-docker-port-4000.zip');
+  assert.ok(fullManifest.totalBytes > 5_000_000, 'Full Docker .zip must include all 67 approved scene photographs');
+  assert.ok(
+    fullManifest.totalBytes < 28 * 1024 * 1024,
+    `Full Docker .zip (${fullManifest.totalMegabytes} MB) must stay safely below Cloud Run 32 MB HTTP response limit`
+  );
+  assert.ok(fullManifest.totalChunks >= 2, 'Full Docker .zip must split into 4 MB chunks for chunked browser download');
+
+  const fullArchive = getOrBuildDockerZipArchive('full');
+  assert.equal(fullArchive.buffer.readUInt32LE(0), 0x04034b50, 'Full archive must start with PKZIP magic bytes');
+});
+
+
+
+

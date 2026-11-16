@@ -1,0 +1,78 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Packaged the complete Learn Ukrainian (Lango) project as a self-contained Docker project configured to run on port 4000 (`0.0.0.0:4000` mapped to `localhost:4000` on Windows).
+- Created `Dockerfile`, `docker-compose.yml`, `.dockerignore`, and `WINDOWS_DOCKER_PORT_4000_GUIDE.txt` at the project root.
+- Built and verified the downloadable archive `public/downloads/lango-ukrainian-docker-port-4000.zip` containing the full project source, all 80 visual scene assets, reports, and Docker configuration files.
+- Added a direct one-click download button (`📦 Docker .ZIP (Port 4000)`) in the top header bar of the live application and exposed the direct download URL `/downloads/lango-ukrainian-docker-port-4000.zip`.
+
+2. CHANGES COMPLETED
+- Docker Configuration & Packaging (Port 4000):
+  - Created `Dockerfile` (`node:22-alpine`, installs dependencies, runs `npm run build`, sets `NODE_ENV=production` and `PORT=4000`, exposes port `4000`, and starts `node --experimental-strip-types server.ts`).
+  - Created `docker-compose.yml` defining the `lango-ukrainian` service with `ports: ["4000:4000"]`, `PORT=4000`, `NODE_ENV=production`, and optional `GEMINI_API_KEY` pass-through.
+  - Created `.dockerignore` excluding `node_modules`, `dist`, `.git`, `.aistudio`, `.playwright-cli`, and `.zip` archives from the Docker build context.
+  - Created `WINDOWS_DOCKER_PORT_4000_GUIDE.txt` with step-by-step instructions for Windows Docker Desktop (Docker Compose and plain Docker CLI).
+  - Generated `/public/downloads/lango-ukrainian-docker-port-4000.zip` and added the `📦 Docker .ZIP (Port 4000)` download button in `index.html`.
+- Download Links for the `.zip` File:
+  - In-App Button: Click `📦 Docker .ZIP (Port 4000)` in the top-right header bar of the app preview.
+  - Direct Shared App Download URL:
+    https://ais-pre-mosmue2vnet4h36dfttzfs-285083041531.europe-west2.run.app/downloads/lango-ukrainian-docker-port-4000.zip
+  - Direct Dev App Download URL:
+    https://ais-dev-mosmue2vnet4h36dfttzfs-285083041531.europe-west2.run.app/downloads/lango-ukrainian-docker-port-4000.zip
+- Step-by-Step Instructions to Run Locally on Windows on Port 4000 in Docker:
+  - Step 1 (Install & Start Docker Desktop):
+    Ensure Docker Desktop for Windows is installed and running ("Engine running" in the bottom-left corner).
+  - Step 2 (Download & Extract the .zip File):
+    Download `lango-ukrainian-docker-port-4000.zip` using the button or link above. Right-click the `.zip` file in Windows File Explorer and select "Extract All...", then open PowerShell or Command Prompt inside the extracted folder:
+      cd C:\Users\<YourUsername>\Downloads\lango-ukrainian-docker-port-4000
+  - Step 3A (Recommended — Run with Docker Compose on Port 4000):
+    Run:
+      docker compose up --build -d
+    Then open your browser on Windows to:
+      http://localhost:4000
+    Useful commands:
+      docker compose logs -f      (view logs)
+      docker compose down         (stop and remove container)
+  - Step 3B (Alternative — Run with Plain Docker CLI on Port 4000):
+    Run:
+      docker build -t lango-ukrainian:latest .
+      docker run -d --name lango-ukrainian-port-4000 -p 4000:4000 -e PORT=4000 -e NODE_ENV=production lango-ukrainian:latest
+    Then open your browser on Windows to:
+      http://localhost:4000
+    To stop and remove later:
+      docker stop lango-ukrainian-port-4000
+      docker rm lango-ukrainian-port-4000
+  - Step 4 (Optional — Gemini API Key for Live AI Voice Routes):
+    All core features (29-Module Ukrainian Course, 6,000-Word FSRS Flashcards, 67 Approved Identify Visual Scenes with 1,075 Hotspots, Sentence Correction, Phonetics & Cursive, and Graded Reader) run 100% locally offline without any API key. To enable the optional Gemini server routes, copy `.env.example` to `.env`, set `GEMINI_API_KEY=your_key`, and run `docker compose up --build -d`.
+
+3. FILES CREATED OR MODIFIED
+- Created: `Dockerfile`
+- Created: `docker-compose.yml`
+- Created: `.dockerignore`
+- Created: `WINDOWS_DOCKER_PORT_4000_GUIDE.txt`
+- Created: `public/downloads/lango-ukrainian-docker-port-4000.zip`
+- Modified: `index.html`
+- Created: `reports/identify/docker-port-4000-export-001.txt`
+- Modified: `reports/identify/LATEST_REPORT.txt`
+- Modified: `reports/identify/REPORT_INDEX.md`
+- Modified: `src/identifyVisualBatchProgress.json`
+
+4. VALIDATION RESULTS
+- Node 22 TypeScript Server Entrypoint (`node --experimental-strip-types`): PASS.
+- Unit & Regression Suites (`npx --yes tsx --test src/__tests__/identifyCurationPhase1.test.ts src/__tests__/identifyUpgrade.test.ts`): 49 / 49 tests PASS (0 failures).
+- Build & TypeScript (`compile_applet` & `lint_applet`): PASS (0 errors).
+- Headless Chromium Verification (`playwright-cli` at `http://localhost:3000`):
+  - Verified `📦 Docker .ZIP (Port 4000)` button is visible in the top header and `/downloads/lango-ukrainian-docker-port-4000.zip` returns HTTP `200 OK` (`application/zip`).
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint File: `src/identifyVisualBatchProgress.json`
+- Active Coherent Scenes Approved & Playable: 67 (`1,075` approved hotspots)
+- Latest Persisted Report: `reports/identify/docker-port-4000-export-001.txt` (mirrored to `reports/identify/LATEST_REPORT.txt`)
+
+6. REMAINING WORK
+- None. The Docker `.zip` archive (`lango-ukrainian-docker-port-4000.zip`) and Windows Port 4000 instructions are complete and ready for download.
+
+7. NEXT EXECUTION
+- Download `lango-ukrainian-docker-port-4000.zip` and run `docker compose up --build -d` on Windows to launch the application at `http://localhost:4000`.

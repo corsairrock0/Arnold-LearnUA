@@ -1,0 +1,7 @@
+node_modules
+dist
+.git
+.aistudio
+.playwright-cli
+npm-debug.log*
+public/downloads/*.zip

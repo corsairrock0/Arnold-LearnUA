@@ -1,0 +1,60 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+1. EXECUTION SUMMARY
+Execution ID: IDENTIFY-BATCH-005
+Batch Number: 5 (Scenes 27–36)
+Completed At: 2026-11-05T06:20:00.000Z
+Summary: Generated, visually inspected, and saved 10 contemporary Ukrainian photorealistic scenes (Scenes 27–36) and annotated 180 candidate hotspots (18 per scene), bringing cumulative totals to 36 scenes with verified images (10 legacy + 26 batch-generated) and 468 candidate hotspots awaiting human review.
+
+2. CHANGES COMPLETED
+- Applied semantic primary swaps (batch5PrimarySwaps) and spiral-review alignments for Scenes 27–36 in src/identifyCurriculumFinal1200.ts while preserving Scenes 1–26 untouched.
+- Generated and verified 10 real 1376x768 (16:9) JPEG scene assets under public/assets/identify/:
+  * Scene 27 (uk_scene_27_farmers_market_vegetables_herbs): /assets/identify/farmers-market/uk_scene_27_farmers_market_vegetables_herbs.jpg
+  * Scene 28 (uk_scene_28_bakery_craft_pastry): /assets/identify/bakery/uk_scene_28_bakery_craft_pastry.jpg
+  * Scene 29 (uk_scene_29_cafe_lviv_coffeehouse): /assets/identify/cafe/uk_scene_29_cafe_lviv_coffeehouse.jpg
+  * Scene 30 (uk_scene_30_restaurant_ukrainian_bistro): /assets/identify/restaurant/uk_scene_30_restaurant_ukrainian_bistro.jpg
+  * Scene 31 (uk_scene_31_clothing_store_boutique): /assets/identify/clothing-store/uk_scene_31_clothing_store_boutique.jpg
+  * Scene 32 (uk_scene_32_clothing_winter_outerwear): /assets/identify/clothing-store/uk_scene_32_clothing_winter_outerwear.jpg
+  * Scene 33 (uk_scene_33_shoe_and_tailor_atelier): /assets/identify/clothing-store/uk_scene_33_shoe_and_tailor_atelier.jpg
+  * Scene 34 (uk_scene_34_city_street_kyiv_chestnuts): /assets/identify/city-streets/uk_scene_34_city_street_kyiv_chestnuts.jpg
+  * Scene 35 (uk_scene_35_city_square_lviv_rynok): /assets/identify/city-streets/uk_scene_35_city_square_lviv_rynok.jpg
+  * Scene 36 (uk_scene_36_city_rainy_sidewalk): /assets/identify/city-streets/uk_scene_36_city_rainy_sidewalk.jpg
+- Regenerated Scenes 32 and 34 once each to remove unwanted text overlays before final verification.
+- Annotated 180 normalized candidate bounding boxes across Scenes 27–36 with hotspotReviewStatus = "needs_human_review" and learnerExposureAllowed = false.
+
+3. FILES CREATED OR MODIFIED
+- public/assets/identify/farmers-market/uk_scene_27_farmers_market_vegetables_herbs.jpg (Created)
+- public/assets/identify/bakery/uk_scene_28_bakery_craft_pastry.jpg (Created)
+- public/assets/identify/cafe/uk_scene_29_cafe_lviv_coffeehouse.jpg (Created)
+- public/assets/identify/restaurant/uk_scene_30_restaurant_ukrainian_bistro.jpg (Created)
+- public/assets/identify/clothing-store/uk_scene_31_clothing_store_boutique.jpg (Created)
+- public/assets/identify/clothing-store/uk_scene_32_clothing_winter_outerwear.jpg (Created)
+- public/assets/identify/clothing-store/uk_scene_33_shoe_and_tailor_atelier.jpg (Created)
+- public/assets/identify/city-streets/uk_scene_34_city_street_kyiv_chestnuts.jpg (Created)
+- public/assets/identify/city-streets/uk_scene_35_city_square_lviv_rynok.jpg (Created)
+- public/assets/identify/city-streets/uk_scene_36_city_rainy_sidewalk.jpg (Created)
+- src/identifyCurriculumFinal1200.ts (Modified)
+- src/identifyVisualBatchProgress.json (Modified)
+- src/__tests__/identifyCurationPhase1.test.ts (Modified)
+
+4. VALIDATION RESULTS
+- All 1,200 unique curriculum concepts and 1,440 scene-word associations preserved.
+- All 26 batch-generated scenes (Scenes 11–36) verified on disk (>100 KB each, 1376x768).
+- All 468 candidate hotspots across Scenes 11–36 verified for valid normalized coordinates and 1-to-1 authoritative vocabulary identity.
+- Active learner-facing scenes: 10 legacy scenes (49 verified hotspots); zero unverified hotspots exposed.
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint file: src/identifyVisualBatchProgress.json
+- lastBatchNumber: 5
+- batchesCompleted: 5
+- scenesWithVerifiedImagesTotal: 36 (10 legacy + 26 batch-generated)
+- scenesRemainingWithoutImagesCount: 44
+- batchCreatedCandidateHotspotsAwaitingHumanReviewCount: 468
+
+6. REMAINING WORK
+- 44 ungenerated scenes remaining (Scenes 37–80).
+- 468 candidate hotspots in Scenes 11–36 awaiting human review.
+
+7. NEXT EXECUTION
+- Execute Batch 6 (Scenes 37–46: uk_scene_37_city_winter_snow_street through uk_scene_46_dental_and_optics_clinic).

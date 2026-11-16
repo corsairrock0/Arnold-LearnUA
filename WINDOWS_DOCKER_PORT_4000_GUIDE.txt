@@ -1,0 +1,49 @@
+LEARN UKRAINIAN (LANGO) — WINDOWS DOCKER GUIDE (PORT 4000)
+==========================================================
+
+1. PREREQUISITES ON WINDOWS
+- Install and start Docker Desktop for Windows:
+  https://www.docker.com/products/docker-desktop/
+- Make sure the Docker Desktop engine status at the bottom-left says "Engine running".
+
+2. EXTRACT THE PROJECT ZIP
+- Right-click `lango-ukrainian-docker-port-4000.zip` in Windows File Explorer and select "Extract All...".
+- Open Windows PowerShell or Windows Terminal inside the extracted folder (where `Dockerfile` and `docker-compose.yml` are located):
+  cd C:\path\to\lango-ukrainian-docker-port-4000
+
+3. OPTION A — RUN WITH DOCKER COMPOSE (RECOMMENDED)
+Run this single command in PowerShell or Command Prompt:
+  docker compose up --build -d
+
+- What this does:
+  * Builds the Node 22 Alpine container image
+  * Compiles the Vite production bundle (`npm run build`)
+  * Starts the Express + WebSocket server on port 4000 inside the container
+  * Maps Windows host port 4000 -> container port 4000 (`-p 4000:4000`)
+
+- Open your browser on Windows to:
+  http://localhost:4000
+
+- Useful Docker Compose commands:
+  * View live logs:      docker compose logs -f
+  * Stop container:      docker compose down
+  * Restart container:   docker compose restart
+
+4. OPTION B — RUN WITH PLAIN DOCKER CLI
+If you prefer `docker build` and `docker run` directly in PowerShell:
+  docker build -t lango-ukrainian:latest .
+  docker run -d --name lango-ukrainian-port-4000 -p 4000:4000 -e PORT=4000 -e NODE_ENV=production lango-ukrainian:latest
+
+- Then open your browser to:
+  http://localhost:4000
+
+- To stop and remove the container later:
+  docker stop lango-ukrainian-port-4000
+  docker rm lango-ukrainian-port-4000
+
+5. OPTIONAL: ENABLE LIVE AI VOICE CONVERSATION (GEMINI API KEY)
+All core features (29-Module Ukrainian Course, 6,000-Word FSRS Flashcards, 67 Approved Identify Visual Scenes with 1,075 Hotspots, Sentence Correction, Phonetics & Cursive, and Graded Reader) work 100% offline inside the container without any API key.
+If you also want to use the optional Gemini Live API server proxy routes:
+1) Copy `.env.example` to `.env` in the extracted folder
+2) Add `GEMINI_API_KEY=your_api_key_here`
+3) Run `docker compose up --build -d`

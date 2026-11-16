@@ -76,24 +76,28 @@ export function syncMultilingualTrackUI(): void {
   const targetLang = getLanguageByCode(track.targetLanguage);
   const nativeLang = getLanguageByCode(track.nativeLanguage);
 
-  // 1. Update top header language selector button label
+  // 1. Update sidebar and mobile language selector button labels
+  const cleanLabel =
+    track.learningDirection === 'foreign_to_en'
+      ? `English (from ${nativeLang?.nameEn || track.nativeLanguage})`
+      : `${targetLang?.nameEn || track.targetLanguage}`;
   const topPillEl = document.getElementById('lango-top-track-label');
   if (topPillEl) {
-    if (track.learningDirection === 'foreign_to_en') {
-      topPillEl.textContent = `EN ← ${track.nativeLanguage.toUpperCase()} (${nativeLang?.nameEn || track.nativeLanguage})`;
-    } else {
-      topPillEl.textContent = `${targetLang?.nameEn || track.targetLanguage} (${track.nativeLanguage.toUpperCase()} → ${track.targetLanguage.toUpperCase()})`;
-    }
+    topPillEl.textContent = cleanLabel;
+  }
+  const mobilePillEl = document.getElementById('lango-mobile-track-label');
+  if (mobilePillEl) {
+    mobilePillEl.textContent = cleanLabel;
   }
 
-  // 1b. Sync top header Content Studio button visibility for trusted dev environment
+  // 1b. Sync Content Studio button visibility for trusted dev environment
   const isCmsAllowed = evaluateCmsAccessContext().isAllowed;
   const topStudioBtn = document.getElementById('lango-open-cms-studio-btn');
   if (topStudioBtn) {
     topStudioBtn.style.display = isCmsAllowed ? '' : 'none';
   }
 
-  // 2. Render the Course Tab Track Selector Banner
+  // 2. Render the minimal VocabBuilder-style Course Track Metadata Strip
   const bannerContainer = document.getElementById('lango-course-track-banner');
   if (bannerContainer) {
     const isUkPublished = track.trackId === PUBLISHED_UKRAINIAN_TRACK_ID;
@@ -111,40 +115,35 @@ export function syncMultilingualTrackUI(): void {
           : 'var(--secondary-on-container)';
     const statusText =
       track.availability === 'published'
-        ? '✓ Published (29 Modules)'
+        ? '29 CEFR Modules'
         : track.availability === 'dev_pilot_imported'
-          ? '🧪 Dev Pilot Imported'
-          : '⏳ Coming Soon';
+          ? 'Pilot Imported'
+          : 'Coming Soon';
 
     bannerContainer.innerHTML = `
-      <div style="background:var(--surface-1); border:1px solid var(--border-strong); border-radius:var(--radius-md); padding:12px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; box-shadow:var(--shadow-card);">
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800; font-size:12px;">
-            🌍 Active Track: ${escapeHtml(track.trackId)}
-          </span>
-          <strong style="font-size:15px; color:var(--text);" data-testid="active-course-track-title">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600; color:var(--text);" data-testid="active-course-track-title">
             ${escapeHtml(track.courseTitle)}
-          </strong>
-          <span class="tag" style="background:${statusBadgeBg}; color:${statusBadgeColor}; font-weight:800; font-size:11.5px;" data-testid="active-course-track-status">
+          </span>
+          <span class="tag" style="background:${statusBadgeBg}; color:${statusBadgeColor}; font-weight:600; font-size:11px; margin:0;" data-testid="active-course-track-status">
             ${escapeHtml(statusText)}
           </span>
-          <span style="font-size:12px; color:var(--text-secondary);">
-            Target: <b>${escapeHtml(targetLang?.nameEn || track.targetLanguage)} (${escapeHtml(track.targetLanguage)})</b> •
-            Native: <b>${escapeHtml(nativeLang?.nameEn || track.nativeLanguage)} (${escapeHtml(track.nativeLanguage)})</b> •
-            Instructional: <b>${escapeHtml(track.instructionalLanguage)}</b>
+          <span class="hint">
+            ${escapeHtml(nativeLang?.nameEn || track.nativeLanguage)} → ${escapeHtml(targetLang?.nameEn || track.targetLanguage)}
           </span>
         </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
           ${
             !isUkPublished
-              ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-return-ukrainian" onclick="selectCourseTrackById('${PUBLISHED_UKRAINIAN_TRACK_ID}')">🇺🇦 Ukrainian Course (29 Modules)</button>`
+              ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" data-testid="btn-return-ukrainian" onclick="selectCourseTrackById('${PUBLISHED_UKRAINIAN_TRACK_ID}')">Ukrainian Course</button>`
               : ''
           }
-          <button type="button" class="btn" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-open-language-selector" onclick="openLanguageSelectorModal()">🌐 Change Language / Track</button>
+          <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" data-testid="btn-open-language-selector" onclick="openLanguageSelectorModal()">Change language</button>
           ${
             isCmsAllowed
-              ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-banner-open-cms-studio" onclick="openLangoContentStudio(undefined, '${escapeHtml(track.trackId)}')">🎛️ Content Studio</button>
-                 <button type="button" class="btn btn-sec" style="min-height:36px; padding:5px 12px; font-size:12px;" data-testid="btn-open-dev-importer" onclick="openDevCourseImporterModal('${escapeHtml(track.trackId)}')">🛠️ JSON Importer</button>`
+              ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" data-testid="btn-banner-open-cms-studio" onclick="openLangoContentStudio(undefined, '${escapeHtml(track.trackId)}')">Content Studio</button>
+                 <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" data-testid="btn-open-dev-importer" onclick="openDevCourseImporterModal('${escapeHtml(track.trackId)}')">Import JSON</button>`
               : ''
           }
         </div>
@@ -153,6 +152,8 @@ export function syncMultilingualTrackUI(): void {
   }
 
   // 3. Toggle between the published Ukrainian course workspace and the Blank/Coming Soon track workspace
+  const heroBarEl = document.querySelector('#tab-course .course-hero-bar') as HTMLElement | null;
+  const syllabusDrawerEl = document.getElementById('course-syllabus-drawer');
   const filterBarEl = document.getElementById('course-level-filter-bar');
   const moduleGridEl = document.getElementById('module-grid');
   const moduleWorkspaceEl = document.getElementById('module-workspace');
@@ -170,6 +171,7 @@ export function syncMultilingualTrackUI(): void {
   const isUkrainianTrack = track.trackId === PUBLISHED_UKRAINIAN_TRACK_ID;
 
   if (isUkrainianTrack) {
+    heroBarEl?.classList.remove('hidden');
     filterBarEl?.classList.remove('hidden');
     moduleGridEl?.classList.remove('hidden');
     moduleWorkspaceEl?.classList.remove('hidden');
@@ -181,6 +183,8 @@ export function syncMultilingualTrackUI(): void {
       window.updateSidebarStats();
     }
   } else {
+    heroBarEl?.classList.add('hidden');
+    syllabusDrawerEl?.classList.add('hidden');
     filterBarEl?.classList.add('hidden');
     moduleGridEl?.classList.add('hidden');
     moduleWorkspaceEl?.classList.add('hidden');
@@ -308,9 +312,9 @@ function renderNonUkrainianTrackWorkspace(track: CourseTrack): string {
         </div>
       </div>
 
-      <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border-left:4px solid var(--accent); margin-bottom:16px;">
-        <div style="font-size:12.5px; font-weight:800; color:var(--text); margin-bottom:4px;">
-          🎯 Independent Curriculum Autonomy (${escapeHtml(track.courseTitle)})
+      <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:16px;">
+        <div style="font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:4px;">
+          Independent Curriculum Autonomy (${escapeHtml(track.courseTitle)})
         </div>
         <ul style="margin:0 0 0 18px; padding:0; font-size:13px; color:var(--text-secondary); line-height:1.55;">
           ${track.autonomyMetadata.l1ContrastiveConsiderations

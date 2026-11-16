@@ -1,0 +1,65 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Task: Inspect all unreviewed Identify scenes (Scenes 11–80) for related vs. unrelated objects and remove any unreviewed scenes that contain too many unrelated objects.
+- Execution / Batch ID: unreviewed-scene-coherence-removal-001
+- Timestamp: 2026-11-06T20:00:00.000Z
+- Outcome: Inspected all 70 unreviewed Ukrainian curriculum scenes (#11–#80, 1,260 candidate objects) and the unverified legacy category placeholder scenes. Retained the 57 coherent unreviewed scenes (1,026 candidate hotspots) where all 18 objects belong to the scene's setting, and removed the 13 unreviewed scenes (234 candidate hotspots) that contained 5 to 14 unrelated objects from foreign lexical domains. Also removed unverified legacy placeholder scene pills (0 verified objects) from the category scene selector bar. Active coherent Identify curriculum now exposes 67 scenes (10 approved learner-playable scenes with 49 verified hotspots + 57 coherent preview-ready scenes with 1,026 candidate hotspots).
+
+2. CHANGES COMPLETED
+- Audited all 70 unreviewed scenes (Scenes #11–#80) target-by-target against each scene's real-world environment and category:
+  * Retained 57 coherent unreviewed scenes (1,026 candidate hotspots):
+    - Scenes #11–#50 (40 scenes: Dining Room, Living Room, Music Corner, Bedroom, Vanity, Children's Room, Bathroom, Hygiene Shelf, Hallway, Balcony, Home Workshop, Supermarket Produce/Dairy/Checkout, Farmers' Market Honey/Vegetables, Craft Bakery, Lviv Coffeehouse, Ukrainian Bistro, Clothing Store, Winter Outerwear, Tailor Atelier, Kyiv Street, Lviv Square, Rainy Sidewalk, Winter Street, Tram Stop, Metro Station, Railway Station, Airport Terminal, Car Service, Doctor's Office, First-Aid Room, Pharmacy, Dental/Eyewear Clinic, Facial Portrait, Athletic Limbs Portrait, School Classroom, Student Desk).
+    - Scene #52 (`uk_scene_52_library_reading_hall` — University Library Reading Hall, 18/18 related objects).
+    - Scene #53 (`uk_scene_53_office_it_coworking_kyiv` — Modern IT Office and Coworking Space, 18/18 related objects).
+    - Scenes #57–#69 (13 scenes: Autumn City Park in Kyiv, Ukrainian Botanical Garden, Orchard & Garden Shed, Neighborhood Courtyard Playground, Modern Fitness Gym, Outdoor Sports Field, Sports Complex Pool & Winter Gear Rack, Ukrainian Village Homestead, Ukrainian Farmyard, Ukrainian Steppe Landscape, Carpathian Forest Trail, Carpathian Mountain Campsite, Dnipro Riverbank).
+    - Scene #78 (`uk_scene_78_emergency_and_civic_services` — Ukrainian Emergency Vehicles and Street Safety Scene, 18/18 related objects).
+    - Scene #80 (`uk_scene_80_family_celebration_gift_exchange` — Ukrainian Family Celebration in the Living Room, 18/18 related objects).
+  * Removed 13 incoherent unreviewed scenes (234 candidate hotspots) with too many unrelated objects:
+    1. Scene #51 (`uk_scene_51_school_science_laboratory`): Removed — 11/18 unrelated objects (`гуа́ш` gouache paint jars, `ксилофо́н` xylophone, `укуле́ле` ukulele, `ша́хова фігу́ра` chess piece, `шахівни́ця` chessboard, `гра́льний ку́бик` six-sided die, `доміно́` domino tile, `тюльпа́н` tulip, `па́пороть` fern, `жо́лудь` acorn, `ку́бок` trophy cup).
+    2. Scene #54 (`uk_scene_54_office_electronics_accessories`): Removed — 5/18 unrelated objects (`електробри́тва` electric shaver, `серветни́ця` napkin holder, `підста́вка під гаря́че` trivet, `пивни́й ке́лих / ку́холь` beer mug / stein, `відкрива́чка` bottle opener).
+    3. Scene #55 (`uk_scene_55_post_office_ukrposhta`): Removed — 6/18 unrelated objects (`кухо́нні ва́ги` kitchen scale, `шпале́ри` wallpaper, `щі́тка для о́дягу` lint brush, `сово́к для сміття́` dustpan, `сміттє́вий паке́т` garbage bag, `порі́г` threshold).
+    4. Scene #56 (`uk_scene_56_bank_and_administrative_center`): Removed — 12/18 unrelated objects (`пилосо́с` vacuum cleaner, `ганчі́рка для прибира́ння` cleaning cloth, `поліце́йська маши́на` police car, `ка́хель / пли́тка` ceramic tile, `будіве́льник` construction worker, `піло́т` airline pilot, `бортпровідни́ця / стюарде́са` flight attendant, `куха́р` chef / cook, `моря́к` sailor, `нарече́на` bride, `віно́к украї́нський` Ukrainian flower crown, `сміттє́вий бак` wheeled dumpster).
+    5. Scene #70 (`uk_scene_70_nature_insects_and_garden_macro`): Removed — 12/18 unrelated objects (`інжи́р` fig, `ма́нго` mango, `грана́т` pomegranate, `хурма́` persimmon, `кі́ві` kiwifruit, `авока́до` avocado, `коко́с` coconut, `анана́с` pineapple, `лайм` lime, `грейпфру́т` grapefruit, `базилі́к` basil, `шпина́т` spinach leaves).
+    6. Scene #71 (`uk_scene_71_pet_shop_and_vet_clinic`): Removed — 12/18 unrelated objects (`візо́к для поку́пок` shopping cart, `вівся́ні пла́стівці` rolled oats, `булгу́р` bulgur wheat, `перло́ва крупа́` pearl barley, `кукурудзя́на крупа́` cornmeal, `рис` rice, `бата́т` sweet potato, `горо́шок зеле́ний` green peas, `сочеви́ця` lentils, `нут` chickpeas, `селе́ра стеблова́` celery stalk, `насі́ння льо́ну` flaxseeds).
+    7. Scene #72 (`uk_scene_72_zoo_exotic_animals_kyiv`): Removed — 7/18 unrelated objects (`ара́хіс` peanut, `мигда́ль` almond, `фіста́шка` pistachio, `кеш’ю́` cashew, `родзи́нки` raisins, `чорно́слив` prunes, `курага́` dried apricots).
+    8. Scene #73 (`uk_scene_73_art_studio_and_museum`): Removed — 9/18 unrelated objects (`ку́ля для бо́улінгу` bowling ball, `ке́гля` bowling pin, `білья́рдна ку́ля` billiard ball, `кий білья́рдний` billiard cue stick, `вулка́н` volcano, `за́мок / форте́ця` castle, `спи́ці в’яза́льні` knitting needles, `гачо́к для в’яза́ння` crochet hook, `ке́лих для вина́` wineglass).
+    9. Scene #74 (`uk_scene_74_theater_and_concert_hall`): Removed — 10/18 unrelated objects (`космона́вт / астрона́вт` astronaut, `што́пор` corkscrew, `сік` juice, `цуке́рка` candy, `льодяни́к на па́личці` lollipop, `цу́кор` sugar, `масля́нка` butter dish, `фо́рма для льо́ду` ice cube tray, `креве́тка` raw shrimp / prawn, `ро́ли / су́ші` sushi roll).
+    10. Scene #75 (`uk_scene_75_photo_and_media_studio`): Removed — 14/18 unrelated objects (`овочечи́стка` vegetable peeler, `ві́ничок кухо́нний` whisk, `ополо́ник / черпа́к` soup ladle, `лопа́тка кухо́нна` spatula, `підста́вка для ножі́в` knife block, `точи́лка для ножі́в` knife sharpener, `ба́ночка для спе́цій` spice jar, `о́цет` vinegar, `поли́чка для спе́цій` spice rack, `гвозди́ка` cloves, `лосо́сь / сьо́мга` salmon fillet, `помідо́р` tomato, `обро́бна до́шка` cutting board, `огіро́к` cucumber).
+    11. Scene #76 (`uk_scene_76_hair_salon_barbershop`): Removed — 11/18 unrelated objects (`суша́рка для по́суду` dish drying rack, `соковижима́лка` juicer, `то́стер` toaster, `кукурудзя́ні пла́стівці` cornflakes cereal, `селе́ра корене́ва` celeriac, `ре́дька чо́рна` black radish, `крохма́ль картопля́ний` potato starch, `квасо́ля` beans, `пра́ска` clothes iron, `прасува́льна до́шка` ironing board, `моту́зка для біли́зни` clothesline).
+    12. Scene #77 (`uk_scene_77_hotel_reception_and_room`): Removed — 10/18 unrelated objects (`комо́ра` pantry, `морози́льна ка́мера` upright freezer, `посудоми́йна маши́на` dishwasher, `ви́тяжка кухо́нна` range hood, `мі́ксер ручни́й` hand mixer, `мультиварка́` multicooker, `м’ясору́бка` meat grinder, `фритю́рниця` deep fryer, `гриль електри́чний` contact grill, `ніж для пі́ци` pizza wheel cutter).
+    13. Scene #79 (`uk_scene_79_architecture_church_and_castle`): Removed — 13/18 unrelated objects (`яє́чня` fried eggs, `макаро́ни` macaroni, `ло́кшина` noodles, `листи́ для лаза́ньї` lasagna sheets, `дрі́жджі пека́рські` baker's yeast, `сухарі́ панірува́льні` breadcrumbs, `автокрі́сло дитя́че` child car seat, `ремі́нь безпе́ки` seatbelt, `навіга́тор автомобільний` GPS navigator, `підйо́мний кран` tower crane, `екскава́тор` excavator, `бульдо́зер` bulldozer, `бетономіша́лка` cement mixer).
+- Exported `REMOVED_INCOHERENT_UNREVIEWED_SCENES`, `isSceneRemovedForUnrelatedObjects()`, and `inspectUnreviewedScenesCoherence()` in `src/identifyCurriculumPreview.ts`, and filtered removed scenes out of `getIdentify80SceneBrowserList()`, `getIdentify80SceneByCodeOrNumber()`, `getIdentify80CategoriesWithSceneCounts()`, `resolveSceneViewerHotspots()`, and `startIdentifyAdminPreviewSession()`.
+- Updated `src/identifyView.ts` so the Curriculum Browser displays the 67 coherent scenes (10 Approved & Playable + 57 Preview Practice Ready with 1,026 Candidate Hotspots) and removes unverified legacy placeholder scene pills (`⏳ Awaiting Verification`) from the category scene selector bar.
+
+3. FILES CREATED OR MODIFIED
+- `src/identifyCurriculumPreview.ts` — Added `REMOVED_INCOHERENT_UNREVIEWED_SCENES` (13 scenes), `isSceneRemovedForUnrelatedObjects()`, `inspectUnreviewedScenesCoherence()`, and excluded removed scenes from the browser, viewer, and Preview Practice.
+- `src/identifyView.ts` — Updated Curriculum Browser headers, status filter badges, and category counts for the 67 coherent scenes, and removed unverified legacy placeholder scene pills from the category scene selector bar.
+- `src/__tests__/identifyUpgrade.test.ts` — Updated `TEST 35` and added `TEST 36` verifying the 70-scene coherence audit, removal of the 13 incoherent scenes, and retention of the 67 coherent scenes (10 approved + 57 preview-ready).
+- `src/identifyVisualBatchProgress.json` — Added `unreviewedScenesCoherenceAudit` and updated `reportingStandard` metadata.
+- `reports/identify/unreviewed-scene-coherence-removal-001.txt` — Created persisted plain-text audit & removal report.
+- `reports/identify/LATEST_REPORT.txt` — Updated latest report mirror.
+- `reports/identify/REPORT_INDEX.md` — Indexed `unreviewed-scene-coherence-removal-001.txt`.
+
+4. VALIDATION RESULTS
+- `compile_applet`: PASSED (0 errors)
+- `lint_applet` (`tsc --noEmit`): PASSED (0 errors)
+- `npx --yes tsx --test src/__tests__/identifyCurationPhase1.test.ts src/__tests__/identifyUpgrade.test.ts`: PASSED (49 / 49 tests passing)
+- Headless Chromium (`playwright-cli` on `http://localhost:3000`): PASSED (67 coherent scene cards rendered; 0 of the 13 removed scene cards present; 0 legacy `Awaiting Verification` scene pills rendered; 0 console/page errors)
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint file: `src/identifyVisualBatchProgress.json`
+- Active coherent scenes in Identify: 67 / 80
+- Original approved learner-playable scenes: 10 (Scenes #1–#10, 49 verified hotspots)
+- Retained coherent unreviewed scenes with candidate hotspots: 57 (1,026 candidate hotspots awaiting human verification)
+- Removed incoherent unreviewed scenes (too many unrelated objects): 13 (`#51, #54, #55, #56, #70, #71, #72, #73, #74, #75, #76, #77, #79`, 234 candidate hotspots excluded)
+
+6. REMAINING WORK
+- Human verification and approval of candidate hotspots on the 57 coherent unreviewed scenes before promoting them to standard student practice.
+- Optional future re-curation of the 13 removed scenes with domain-appropriate vocabulary if replacement scenes are desired.
+
+7. NEXT EXECUTION
+- Proceed with human hotspot review and verification on the 57 coherent preview-ready scenes in Content Studio / Identify Preview Practice.
+==================================================

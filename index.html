@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
@@ -7,171 +7,355 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Learn Ukrainian - Lango">
-<meta name="theme-color" content="#FBF9F5" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0D0F14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f131c" media="(prefers-color-scheme: dark)">
 <title>Learn Ukrainian - Lango</title>
 <meta name="description" content="Ukrainian Anki FSRS spaced repetition system, step-by-step A0–C1 CEFR grammar course, interactive phonetics analyzer, and graded audio reader.">
 <meta property="og:title" content="Learn Ukrainian - Lango">
 <meta property="og:description" content="Ukrainian Anki FSRS spaced repetition system, step-by-step A0–C1 CEFR grammar course, interactive phonetics analyzer, and graded audio reader.">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@500;600&family=Lora:ital,wght@0,400..700;1,400..600&display=swap" rel="stylesheet">
 <style>
     /* ==========================================================================
-       MATERIAL 3 EXPRESSIVE + iOS HIG SEMANTIC COLOR & DESIGN SYSTEM
-       Optimized for iPhone 16 Pro Max (440 × 956 pt Logical Viewport, 120Hz)
+       LANGO DESIGN SYSTEM — VOCABBUILDER GOLD STANDARD EDITION
+       60% Neutral Canvas · 30% Hairline Surfaces · 10% Ukrainian Identity Hue
+       Target-language headwords & paradigms set in Lora Cyrillic (VB Serif)
        ========================================================================== */
     :root {
-        --bg: #FBF9F5;
-        --surface-1: #FFFFFF;
-        --surface-2: #F3F0EA;
-        --surface-3: #E7E3DC;
-        --surface-elevated: rgba(255, 255, 255, 0.94);
-        --text: #18181B;
-        --text-secondary: #52525B;
-        --muted: #71717A;
-        --border-subtle: rgba(24, 24, 27, 0.08);
-        --border-strong: rgba(24, 24, 27, 0.15);
+        --radius: 0.625rem;
+        --radius-xs: 6px;
+        --radius-sm: 8px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 16px;
+        --radius-pill: 9999px;
 
-        /* Ukrainian Royal Azure & Warm Gold Expressive Accents */
-        --accent: #1D4ED8;
-        --accent-on: #FFFFFF;
-        --accent-container: #DBEAFE;
-        --accent-on-container: #1E3A8A;
-        --secondary-container: #FEF3C7;
-        --secondary-on-container: #78350F;
+        --bg: oklch(1 0 0);
+        --surface-1: oklch(1 0 0);
+        --surface-2: oklch(0.97 0 0);
+        --surface-3: oklch(0.94 0 0);
+        --surface-elevated: rgba(255, 255, 255, 0.92);
 
-        --success: #15803D;
-        --success-container: #DCFCE7;
-        --success-on-container: #14532D;
-        --warn: #B45309;
-        --warn-container: #FEF3C7;
-        --warn-on-container: #78350F;
-        --danger: #B91C1C;
-        --danger-container: #FEE2E2;
-        --danger-on-container: #7F1D1D;
+        --sidebar-bg: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.955 0 0);
+
+        --text: oklch(0.145 0 0);
+        --text-secondary: oklch(0.45 0 0);
+        --muted: oklch(0.556 0 0);
+
+        --border-subtle: oklch(0.922 0 0);
+        --border-strong: oklch(0.88 0 0);
+
+        /* Ukrainian Identity Hue (oklch hue 260) */
+        --lang: oklch(0.5 0.13 260);
+        --lang-hover: oklch(0.45 0.14 260);
+        --lang-soft: oklch(0.965 0.025 260);
+        --lang-foreground: oklch(0.99 0 0);
+
+        --accent: var(--lang);
+        --accent-hover: var(--lang-hover);
+        --accent-on: var(--lang-foreground);
+        --accent-container: var(--lang-soft);
+        --accent-on-container: var(--lang);
+
+        --secondary: oklch(0.55 0.12 85);
+        --secondary-container: oklch(0.977 0.055 95);
+        --secondary-on-container: oklch(0.42 0.11 75);
+
+        /* Exercise Verdicts */
+        --success: oklch(0.52 0.13 150);
+        --success-container: oklch(0.975 0.04 150);
+        --success-on-container: oklch(0.38 0.12 150);
+
+        --warn: oklch(0.55 0.12 85);
+        --warn-container: oklch(0.977 0.055 95);
+        --warn-on-container: oklch(0.42 0.11 75);
+
+        --danger: oklch(0.577 0.245 27.325);
+        --danger-container: oklch(0.971 0.022 25);
+        --danger-on-container: oklch(0.46 0.19 27);
+
+        --mark: oklch(0.95 0.09 100);
 
         /* 7 Ukrainian Grammatical Cases Palette */
-        --nom: #18181B;
-        --gen: #15803D;
-        --dat: #7E22CE;
-        --acc: #1D4ED8;
-        --ins: #C2410C;
-        --loc: #BE185D;
-        --voc: #B45309;
+        --nom: oklch(0.32 0.03 255);
+        --gen: oklch(0.48 0.13 150);
+        --dat: oklch(0.48 0.17 300);
+        --acc: oklch(0.49 0.15 255);
+        --ins: oklch(0.54 0.15 55);
+        --loc: oklch(0.48 0.17 15);
+        --voc: oklch(0.54 0.12 95);
 
         --panel: var(--surface-1);
         --panel-alt: var(--surface-2);
 
-        --radius-xs: 8px;
-        --radius-sm: 12px;
-        --radius-md: 16px;
-        --radius-lg: 24px;
-        --radius-xl: 28px;
-        --radius-pill: 9999px;
+        --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.03);
+        --shadow-theater: 0 4px 16px -4px rgba(15, 23, 42, 0.05);
+        --shadow-sheet: 0 -12px 36px rgba(15, 23, 42, 0.14);
+        --shadow-popover: 0 14px 36px -6px rgba(15, 23, 42, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
 
-        --shadow-card: 0 4px 20px -2px rgba(24, 24, 27, 0.05), 0 1px 3px rgba(24, 24, 27, 0.04);
-        --shadow-theater: 0 12px 34px -6px rgba(24, 24, 27, 0.07), 0 2px 6px rgba(24, 24, 27, 0.04);
-        --shadow-sheet: 0 -8px 40px rgba(0, 0, 0, 0.18);
+        --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-display: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --font-word: 'Lora', Georgia, 'Times New Roman', serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-        --spring-fast: 220ms cubic-bezier(0.22, 1, 0.36, 1);
-        --spring-expressive: 380ms cubic-bezier(0.175, 0.885, 0.32, 1.08);
-
-        --tabbar-height: 52px;
+        --spring-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+        --spring-expressive: 200ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
-            --bg: #0D0F14;
-            --surface-1: #161922;
-            --surface-2: #1E222E;
-            --surface-3: #282D3C;
-            --surface-elevated: rgba(22, 25, 34, 0.92);
-            --text: #F4F4F6;
-            --text-secondary: #A1A1AA;
-            --muted: #8E929F;
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.16);
+            --bg: oklch(0.145 0 0);
+            --surface-1: oklch(0.205 0 0);
+            --surface-2: oklch(0.269 0 0);
+            --surface-3: oklch(0.32 0 0);
+            --surface-elevated: rgba(26, 28, 34, 0.92);
 
-            --accent: #60A5FA;
-            --accent-on: #061A40;
-            --accent-container: #1E3A8A;
-            --accent-on-container: #DBEAFE;
-            --secondary-container: #3F2A08;
-            --secondary-on-container: #FDE68A;
+            --sidebar-bg: oklch(0.205 0 0);
+            --sidebar-accent: oklch(0.269 0 0);
 
-            --success: #4ADE80;
-            --success-container: #133A25;
-            --success-on-container: #BBF7D0;
-            --warn: #FBBF24;
-            --warn-container: #3F2A08;
-            --warn-on-container: #FDE68A;
-            --danger: #F87171;
-            --danger-container: #451519;
-            --danger-on-container: #FECACA;
+            --text: oklch(0.985 0 0);
+            --text-secondary: oklch(0.78 0 0);
+            --muted: oklch(0.708 0 0);
 
-            --nom: #F4F4F6;
-            --gen: #4ADE80;
-            --dat: #C084FC;
-            --acc: #60A5FA;
-            --ins: #FB923C;
-            --loc: #F472B6;
-            --voc: #FBBF24;
+            --border-subtle: oklch(1 0 0 / 10%);
+            --border-strong: oklch(1 0 0 / 16%);
 
-            --shadow-card: 0 4px 22px rgba(0, 0, 0, 0.35);
-            --shadow-theater: 0 14px 36px rgba(0, 0, 0, 0.45);
-            --shadow-sheet: 0 -10px 44px rgba(0, 0, 0, 0.65);
+            --lang: oklch(0.78 0.1 260);
+            --lang-hover: oklch(0.83 0.1 260);
+            --lang-soft: oklch(0.3 0.05 260);
+            --lang-foreground: oklch(0.145 0 0);
+
+            --secondary: oklch(0.84 0.13 88);
+            --secondary-container: oklch(0.31 0.05 88);
+            --secondary-on-container: oklch(0.9 0.1 88);
+
+            --success: oklch(0.79 0.15 150);
+            --success-container: oklch(0.29 0.05 150);
+            --success-on-container: oklch(0.88 0.11 150);
+
+            --warn: oklch(0.84 0.13 88);
+            --warn-container: oklch(0.31 0.05 88);
+            --warn-on-container: oklch(0.9 0.1 88);
+
+            --danger: oklch(0.704 0.191 22.216);
+            --danger-container: oklch(0.29 0.065 25);
+            --danger-on-container: oklch(0.88 0.1 25);
+
+            --mark: oklch(0.42 0.08 100);
+
+            --nom: oklch(0.9 0.02 255);
+            --gen: oklch(0.78 0.14 150);
+            --dat: oklch(0.76 0.15 300);
+            --acc: oklch(0.77 0.13 255);
+            --ins: oklch(0.8 0.14 55);
+            --loc: oklch(0.75 0.15 15);
+            --voc: oklch(0.84 0.12 95);
+
+            --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.28);
+            --shadow-theater: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-sheet: 0 -12px 44px rgba(0, 0, 0, 0.65);
+            --shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.58);
         }
     }
 
     :root[data-theme="dark"] {
-        --bg: #0D0F14;
-        --surface-1: #161922;
-        --surface-2: #1E222E;
-        --surface-3: #282D3C;
-        --surface-elevated: rgba(22, 25, 34, 0.92);
-        --text: #F4F4F6;
-        --text-secondary: #A1A1AA;
-        --muted: #8E929F;
-        --border-subtle: rgba(255, 255, 255, 0.08);
-        --border-strong: rgba(255, 255, 255, 0.16);
+        --bg: oklch(0.145 0 0);
+        --surface-1: oklch(0.205 0 0);
+        --surface-2: oklch(0.269 0 0);
+        --surface-3: oklch(0.32 0 0);
+        --surface-elevated: rgba(26, 28, 34, 0.92);
 
-        --accent: #60A5FA;
-        --accent-on: #061A40;
-        --accent-container: #1E3A8A;
-        --accent-on-container: #DBEAFE;
-        --secondary-container: #3F2A08;
-        --secondary-on-container: #FDE68A;
+        --sidebar-bg: oklch(0.205 0 0);
+        --sidebar-accent: oklch(0.269 0 0);
 
-        --success: #4ADE80;
-        --success-container: #133A25;
-        --success-on-container: #BBF7D0;
-        --warn: #FBBF24;
-        --warn-container: #3F2A08;
-        --warn-on-container: #FDE68A;
-        --danger: #F87171;
-        --danger-container: #451519;
-        --danger-on-container: #FECACA;
+        --text: oklch(0.985 0 0);
+        --text-secondary: oklch(0.78 0 0);
+        --muted: oklch(0.708 0 0);
 
-        --nom: #F4F4F6;
-        --gen: #4ADE80;
-        --dat: #C084FC;
-        --acc: #60A5FA;
-        --ins: #FB923C;
-        --loc: #F472B6;
-        --voc: #FBBF24;
+        --border-subtle: oklch(1 0 0 / 10%);
+        --border-strong: oklch(1 0 0 / 16%);
 
-        --shadow-card: 0 4px 22px rgba(0, 0, 0, 0.35);
-        --shadow-theater: 0 14px 36px rgba(0, 0, 0, 0.45);
-        --shadow-sheet: 0 -10px 44px rgba(0, 0, 0, 0.65);
+        --lang: oklch(0.78 0.1 260);
+        --lang-hover: oklch(0.83 0.1 260);
+        --lang-soft: oklch(0.3 0.05 260);
+        --lang-foreground: oklch(0.145 0 0);
+
+        --secondary: oklch(0.84 0.13 88);
+        --secondary-container: oklch(0.31 0.05 88);
+        --secondary-on-container: oklch(0.9 0.1 88);
+
+        --success: oklch(0.79 0.15 150);
+        --success-container: oklch(0.29 0.05 150);
+        --success-on-container: oklch(0.88 0.11 150);
+
+        --warn: oklch(0.84 0.13 88);
+        --warn-container: oklch(0.31 0.05 88);
+        --warn-on-container: oklch(0.9 0.1 88);
+
+        --danger: oklch(0.704 0.191 22.216);
+        --danger-container: oklch(0.29 0.065 25);
+        --danger-on-container: oklch(0.88 0.1 25);
+
+        --mark: oklch(0.42 0.08 100);
+
+        --nom: oklch(0.9 0.02 255);
+        --gen: oklch(0.78 0.14 150);
+        --dat: oklch(0.76 0.15 300);
+        --acc: oklch(0.77 0.13 255);
+        --ins: oklch(0.8 0.14 55);
+        --loc: oklch(0.75 0.15 15);
+        --voc: oklch(0.84 0.12 95);
+
+        --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.28);
+        --shadow-theater: 0 8px 24px rgba(0, 0, 0, 0.4);
+        --shadow-sheet: 0 -12px 44px rgba(0, 0, 0, 0.65);
+        --shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.58);
     }
 
-    * {
+    *, *::before, *::after {
         box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+        font-family: var(--font-sans);
         -webkit-tap-highlight-color: transparent;
         -webkit-font-smoothing: antialiased;
     }
 
-    html {
+    h1, h2, h3, .section-title {
+        font-family: var(--font-display);
+        text-wrap: balance;
+    }
+
+    /* VocabBuilder Signature Target-Language Typography (Lora Cyrillic) */
+    .word, .word span, .word b {
+        font-family: var(--font-word);
+    }
+
+    .word {
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        line-height: 1.18;
+    }
+
+    .hint {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.48;
+    }
+
+    .mark {
+        background: var(--mark);
+        color: var(--text);
+        padding: 0 4px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .answer-line {
+        display: block;
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--border-strong);
+        border-radius: 0;
+        padding: 10px 6px;
+        font-family: var(--font-word);
+        font-size: clamp(20px, 4vw, 26px);
+        font-weight: 500;
+        text-align: center;
+        color: var(--text);
+        outline: none;
+        transition: border-color var(--spring-fast);
+    }
+
+    .answer-line::placeholder {
+        font-family: var(--font-sans);
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--muted);
+    }
+
+    .answer-line:focus {
+        border-bottom-color: var(--lang);
+    }
+
+    .vb-kbd, kbd[data-slot="kbd"] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 5px;
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-2);
+        color: var(--muted);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+        [data-slot="kbd"] {
+            display: none !important;
+        }
+    }
+
+    /* VocabBuilder 7-Case Paradigm Bars */
+    .case-head {
+        display: block;
+        border-left: 3px solid var(--case, var(--border-subtle));
+        padding-left: 0.55rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+    .case-nom { --case: oklch(0.6 0.03 255); }
+    .case-gen { --case: oklch(0.58 0.13 150); }
+    .case-dat { --case: oklch(0.55 0.17 300); }
+    .case-acc { --case: oklch(0.56 0.15 255); }
+    .case-ins { --case: oklch(0.64 0.15 55); }
+    .case-loc { --case: oklch(0.53 0.17 15); }
+    .case-voc { --case: oklch(0.66 0.12 95); }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .case-nom { --case: oklch(0.8 0.03 255); }
+        :root:not([data-theme="light"]) .case-gen { --case: oklch(0.76 0.14 150); }
+        :root:not([data-theme="light"]) .case-dat { --case: oklch(0.74 0.15 300); }
+        :root:not([data-theme="light"]) .case-acc { --case: oklch(0.75 0.13 255); }
+        :root:not([data-theme="light"]) .case-ins { --case: oklch(0.78 0.14 55); }
+        :root:not([data-theme="light"]) .case-loc { --case: oklch(0.73 0.15 15); }
+        :root:not([data-theme="light"]) .case-voc { --case: oklch(0.82 0.12 95); }
+    }
+
+    :root[data-theme="dark"] .case-nom { --case: oklch(0.8 0.03 255); }
+    :root[data-theme="dark"] .case-gen { --case: oklch(0.76 0.14 150); }
+    :root[data-theme="dark"] .case-dat { --case: oklch(0.74 0.15 300); }
+    :root[data-theme="dark"] .case-acc { --case: oklch(0.75 0.13 255); }
+    :root[data-theme="dark"] .case-ins { --case: oklch(0.78 0.14 55); }
+    :root[data-theme="dark"] .case-loc { --case: oklch(0.73 0.15 15); }
+    :root[data-theme="dark"] .case-voc { --case: oklch(0.82 0.12 95); }
+
+    code, pre, .mono-num, #xp-display, #deck-count, #drills-display, #mods-display, .anki-counts b, .identify-metric-val {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    html, body {
         margin: 0;
         padding: 0;
         background: var(--bg);
@@ -183,134 +367,26 @@
     }
 
     body {
-        margin: 0;
-        padding: 0;
-        background: var(--bg);
-        color: var(--text);
         position: fixed;
         inset: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        overscroll-behavior-y: none;
         display: flex;
         flex-direction: column;
     }
 
-    /* ==========================================================================
-       TOP DYNAMIC ISLAND SAFE HEADER (iPhone 16 Pro Max 440pt Optimized)
-       ========================================================================== */
-    .ios-top-bar {
-        padding: calc(env(safe-area-inset-top, 14px) + 6px) 16px 10px 16px;
-        background: var(--surface-elevated);
-        backdrop-filter: saturate(180%) blur(20px);
-        -webkit-backdrop-filter: saturate(180%) blur(20px);
-        border-bottom: 1px solid var(--border-subtle);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        z-index: 60;
-        flex-shrink: 0;
-    }
-
-    .brand-cluster {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-        flex-shrink: 1;
-    }
-
-    .brand-badge {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: linear-gradient(145deg, #1D4ED8 50%, #FBBF24 100%);
-        color: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 900;
-        font-size: 13px;
-        letter-spacing: -0.5px;
-        flex-shrink: 0;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-    }
-
-    .brand-titles {
-        display: flex;
-        flex-direction: column;
-        white-space: nowrap;
-        min-width: 0;
-        overflow: hidden;
-    }
-
-    .logo {
-        font-size: 16px;
-        font-weight: 800;
-        color: var(--text);
-        letter-spacing: -0.3px;
-        line-height: 1.15;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .brand-subtitle {
-        font-size: 11px;
-        color: var(--muted);
-        font-weight: 600;
-    }
-
-    .top-telemetry {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        flex-wrap: nowrap;
-        flex-shrink: 0;
-    }
-
-    .stat-pill {
-        background: var(--surface-2);
-        border: 1px solid var(--border-subtle);
-        padding: 5px 9px;
-        border-radius: var(--radius-pill);
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text-secondary);
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        white-space: nowrap;
-    }
-
-    .icon-action-btn {
-        min-width: 38px;
-        min-height: 38px;
-        border-radius: var(--radius-pill);
-        border: 1px solid var(--border-subtle);
-        background: var(--surface-2);
-        color: var(--text);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        padding: 0 10px;
-        gap: 4px;
-        white-space: nowrap;
-        flex-shrink: 0;
-        transition: transform var(--spring-fast), background var(--spring-fast);
-    }
-
-    .icon-action-btn:active {
-        transform: scale(0.94);
+    :focus-visible {
+        outline: 2px solid var(--lang);
+        outline-offset: 2px;
     }
 
     /* ==========================================================================
-       MAIN WORKSPACE & ADAPTIVE DESKTOP/IPHONE CONTAINERS
+       VOCABBUILDER SHELL ARCHITECTURE
+       Desktop (>960px): Sticky 248px Left Sidebar (Zero Top Bar Clutter)
+       Mobile (<=960px): Compact Translucent Top Bar + Bottom Pill Tab Bar
        ========================================================================== */
+    .mobile-top-bar {
+        display: none;
+    }
+
     .app-shell {
         flex: 1;
         display: flex;
@@ -320,62 +396,214 @@
     }
 
     .sidebar {
-        width: 245px;
-        background: var(--surface-1);
-        padding: 16px 12px;
+        width: 248px;
+        background: var(--sidebar-bg);
+        padding: 14px 12px 12px 12px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 2px;
         border-right: 1px solid var(--border-subtle);
         flex-shrink: 0;
+        overflow-y: auto;
         z-index: 50;
     }
 
-    .stats-box {
-        background: var(--surface-2);
-        padding: 14px;
-        border-radius: var(--radius-md);
-        margin-bottom: 8px;
-        font-size: 13px;
+    .vb-brand-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px 10px 6px;
+        border: none;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        border-radius: 12px;
+        width: 100%;
+    }
+
+    .vb-brand-copy {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.15;
+    }
+
+    .vb-brand-title {
+        font-size: 14.5px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .vb-brand-sub {
+        font-size: 11.5px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    .vb-lang-btn {
+        width: 100%;
+        min-height: 38px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+        border-radius: 12px;
         border: 1px solid var(--border-subtle);
-        line-height: 1.65;
-        color: var(--text-secondary);
+        background: var(--surface-1);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background var(--spring-fast), border-color var(--spring-fast);
+    }
+
+    .vb-lang-btn-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .vb-lang-btn-left span:last-child {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .vb-nav-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
 
     .nav-btn {
         background: transparent;
-        color: var(--muted);
+        color: var(--text-secondary);
         border: none;
-        min-height: 46px;
-        padding: 10px 14px;
+        min-height: 38px;
+        padding: 7px 10px;
         text-align: left;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: var(--radius-pill);
+        font-size: 13.5px;
+        font-weight: 500;
+        border-radius: 12px;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 10px;
-        transition: all var(--spring-fast);
+        white-space: nowrap;
+        transition: background var(--spring-fast), color var(--spring-fast);
     }
 
     .nav-btn .nav-icon {
-        font-size: 18px;
-        line-height: 1;
+        width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: var(--muted);
+        transition: color var(--spring-fast), background var(--spring-fast);
     }
 
     .nav-btn.active {
-        background: var(--accent-container);
-        color: var(--accent-on-container);
-        font-weight: 700;
+        background: var(--sidebar-accent);
+        color: var(--text);
+        font-weight: 600;
     }
 
+    .nav-btn.active .nav-icon {
+        color: var(--lang);
+    }
+
+    .sidebar-footer {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .sidebar-util-btn {
+        width: 100%;
+        min-height: 36px;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 12px;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+        transition: background var(--spring-fast), color var(--spring-fast);
+    }
+
+    .sidebar-util-btn svg {
+        color: var(--muted);
+        flex-shrink: 0;
+    }
+
+    .sidebar-util-btn.inspector-active {
+        background: var(--lang-soft);
+        color: var(--lang);
+        font-weight: 600;
+    }
+
+    .sidebar-util-btn.inspector-active svg {
+        color: var(--lang);
+    }
+
+    .sidebar-meta {
+        padding: 8px 10px 2px 10px;
+        font-size: 11.5px;
+        color: var(--muted);
+        line-height: 1.5;
+    }
+
+    .sidebar-meta b {
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    @media (hover: hover) {
+        .vb-brand-row:hover {
+            background: var(--sidebar-accent);
+        }
+        .vb-lang-btn:hover {
+            background: var(--surface-2);
+            border-color: var(--border-strong);
+        }
+        .nav-btn:hover:not(.active) {
+            background: var(--sidebar-accent);
+            color: var(--text);
+        }
+        .sidebar-util-btn:hover:not(.inspector-active) {
+            background: var(--sidebar-accent);
+            color: var(--text);
+        }
+    }
+
+    /* ==========================================================================
+       PRIMARY WORKSPACE & DOCKABLE GRAMMAR INSPECTOR
+       ========================================================================== */
     .main {
         flex: 1;
         height: 100%;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 20px;
+        padding: 28px 32px 56px 32px;
         display: flex;
         justify-content: center;
         align-items: flex-start;
@@ -384,76 +612,87 @@
 
     .content-area {
         width: 100%;
-        max-width: 650px;
-        flex-shrink: 0;
+        max-width: 880px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .content-area:has(#tab-identify:not(.hidden)) {
+        max-width: 1180px;
     }
 
     /* ==========================================================================
-       MATERIAL 3 EXPRESSIVE CARDS, BUTTONS & CONTROLS
+       PAGE HEADERS, CARDS, BUTTONS & TAGS
        ========================================================================== */
     .section-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
 
     .section-title {
-        font-size: clamp(19px, 4.8vw, 23px);
-        font-weight: 800;
-        letter-spacing: -0.4px;
+        font-size: clamp(22px, 2.5vw, 26px);
+        font-weight: 600;
+        letter-spacing: -0.025em;
         margin: 0;
         color: var(--text);
         line-height: 1.2;
     }
 
     .section-subtitle {
-        color: var(--text-secondary);
-        margin: 3px 0 0 0;
-        font-size: 13px;
-        line-height: 1.4;
+        color: var(--muted);
+        margin: 4px 0 0 0;
+        font-size: 13.5px;
+        line-height: 1.5;
+        max-width: 66ch;
     }
 
     .card {
         background: var(--surface-1);
-        border-radius: var(--radius-lg);
-        padding: 18px;
+        border-radius: var(--radius-xl);
+        padding: 20px;
         margin-bottom: 16px;
         border: 1px solid var(--border-subtle);
-        box-shadow: var(--shadow-card);
+    }
+
+    .card .card {
+        box-shadow: none;
+        border-radius: var(--radius-lg);
     }
 
     .btn {
-        background: var(--accent);
-        color: var(--accent-on);
-        border: none;
-        min-height: 42px;
-        padding: 9px 16px;
-        border-radius: var(--radius-pill);
-        font-weight: 700;
+        background: var(--lang);
+        color: var(--lang-foreground);
+        border: 1px solid transparent;
+        min-height: 38px;
+        padding: 7px 15px;
+        border-radius: var(--radius-md);
+        font-weight: 500;
         font-size: 13.5px;
-        letter-spacing: -0.1px;
+        letter-spacing: -0.005em;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        transition: transform var(--spring-fast), opacity var(--spring-fast), background var(--spring-fast);
+        white-space: nowrap;
+        transition: background var(--spring-fast), border-color var(--spring-fast), transform var(--spring-fast), opacity var(--spring-fast);
     }
 
-    .btn:active {
-        transform: scale(0.96);
+    .btn:active:not(:disabled) {
+        transform: scale(0.985);
     }
 
     .btn:disabled {
-        opacity: 0.42;
+        opacity: 0.45;
         cursor: not-allowed;
     }
 
     .btn-sec {
-        background: var(--surface-2);
+        background: var(--surface-1);
         color: var(--text);
         border: 1px solid var(--border-subtle);
     }
@@ -461,11 +700,30 @@
     .btn-success {
         background: var(--success-container);
         color: var(--success-on-container);
+        border: 1px solid transparent;
     }
 
     .btn-warn {
         background: var(--warn-container);
         color: var(--warn-on-container);
+        border: 1px solid transparent;
+    }
+
+    @media (hover: hover) {
+        .btn:hover:not(:disabled) {
+            background: var(--lang-hover);
+        }
+        .btn-sec:hover:not(:disabled) {
+            background: var(--surface-2);
+            border-color: var(--border-strong);
+        }
+        .btn-success:hover:not(:disabled) {
+            background: var(--success);
+            color: #ffffff;
+        }
+        .btn-warn:hover:not(:disabled) {
+            background: var(--surface-2);
+        }
     }
 
     .tag {
@@ -473,12 +731,13 @@
         align-items: center;
         background: var(--surface-2);
         color: var(--text-secondary);
-        padding: 4px 10px;
-        border-radius: var(--radius-pill);
+        padding: 2px 8px;
+        border-radius: var(--radius-xs);
         font-size: 11.5px;
-        font-weight: 700;
+        font-weight: 500;
         margin: 2px 4px 2px 0;
         border: 1px solid var(--border-subtle);
+        white-space: nowrap;
     }
 
     .hidden {
@@ -486,134 +745,170 @@
     }
 
     /* ==========================================================================
-       ANKI FLASHCARD THEATER (EXPRESSIVE M3 + STICKY THUMB-ZONE ACTIONS)
+       COURSE MODULE HEADER & COLLAPSIBLE SYLLABUS DRAWER
+       ========================================================================== */
+    .course-hero-bar {
+        background: var(--surface-1);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-xl);
+        padding: 18px 20px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .course-syllabus-drawer {
+        background: var(--surface-1);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-xl);
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-theater);
+    }
+
+    /* ==========================================================================
+       FSRS FLASHCARD SESSION STAGE & VOCABBUILDER RATING BUTTONS
        ========================================================================== */
     .anki-stage {
         background: var(--surface-1);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-xl);
-        padding: 18px 18px 16px 18px;
+        padding: 24px;
         text-align: center;
-        min-height: 310px;
+        min-height: 320px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        box-shadow: var(--shadow-theater);
-        margin-bottom: 18px;
+        margin-bottom: 20px;
         position: relative;
-        transition: all var(--spring-expressive);
     }
 
     .anki-counts {
         display: inline-flex;
         align-self: center;
         justify-content: center;
-        gap: 14px;
-        font-size: 12px;
-        font-weight: 700;
-        margin: 0 auto 10px auto;
-        background: var(--surface-2);
-        padding: 6px 16px;
-        border-radius: var(--radius-pill);
-        border: 1px solid var(--border-subtle);
+        align-items: center;
+        gap: 12px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--muted);
+        margin: 0 auto 14px auto;
     }
 
     .anki-front-word {
-        font-size: clamp(32px, 8.5vw, 48px);
-        font-weight: 800;
+        font-family: var(--font-word);
+        font-size: clamp(34px, 6vw, 48px);
+        font-weight: 500;
         color: var(--text);
-        margin: 16px 0 14px 0;
+        margin: 18px 0 12px 0;
         cursor: pointer;
-        letter-spacing: -0.7px;
-        line-height: 1.18;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
         overflow-wrap: anywhere;
         word-break: break-word;
-        transition: transform var(--spring-fast);
+        transition: color var(--spring-fast);
     }
 
-    .anki-front-word:active {
-        transform: scale(0.97);
+    @media (hover: hover) {
+        .anki-front-word:hover {
+            color: var(--lang);
+        }
     }
 
     .anki-action-sticky {
         position: sticky;
         bottom: 0;
         background: var(--surface-1);
-        padding-top: 10px;
-        margin-top: 10px;
+        padding-top: 14px;
+        margin-top: 14px;
         border-top: 1px solid var(--border-subtle);
         z-index: 15;
     }
 
     .anki-reveal-btn {
         width: 100%;
-        min-height: 52px;
-        font-size: 15.5px;
-        font-weight: 800;
-        border-radius: 18px;
-        background: var(--accent);
-        color: var(--accent-on);
-        box-shadow: 0 6px 20px rgba(29, 78, 216, 0.22);
+        min-height: 46px;
+        font-size: 14.5px;
+        font-weight: 500;
+        border-radius: 12px;
+        background: var(--lang);
+        color: var(--lang-foreground);
     }
 
     .anki-grade-bar {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 8px;
     }
 
     .anki-btn {
+        background: var(--surface-1);
+        color: var(--text);
         border: 1px solid var(--border-subtle);
-        border-radius: 16px;
-        min-height: 54px;
-        padding: 8px 4px;
-        font-weight: 800;
-        font-size: 13px;
+        border-radius: 12px;
+        min-height: 56px;
+        padding: 8px 6px;
+        font-weight: 600;
+        font-size: 13.5px;
         cursor: pointer;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
-        transition: transform var(--spring-fast);
+        gap: 3px;
+        transition: background var(--spring-fast), border-color var(--spring-fast), transform var(--spring-fast);
     }
 
     .anki-btn:active {
-        transform: scale(0.94);
+        transform: scale(0.985);
     }
 
     .anki-btn small {
-        font-size: 10.5px;
-        font-weight: 700;
-        opacity: 0.85;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
     }
 
-    .anki-again { background: var(--danger-container); color: var(--danger-on-container); }
-    .anki-hard  { background: var(--warn-container); color: var(--warn-on-container); }
-    .anki-good  { background: var(--success-container); color: var(--success-on-container); }
-    .anki-easy  { background: var(--accent-container); color: var(--accent-on-container); }
+    .anki-again span { color: var(--danger); }
+    .anki-hard span  { color: var(--warn); }
+    .anki-good span  { color: var(--text); }
+    .anki-easy span  { color: var(--success); }
+
+    @media (hover: hover) {
+        .anki-again:hover { background: var(--danger-container); border-color: var(--danger); }
+        .anki-hard:hover  { background: var(--warn-container); border-color: var(--warn); }
+        .anki-good:hover  { background: var(--surface-2); border-color: var(--border-strong); }
+        .anki-easy:hover  { background: var(--success-container); border-color: var(--success); }
+    }
 
     /* ==========================================================================
-       GRAMMAR TABLES, COURSE MODULES & VOCABULARY ROWS
+       GRAMMAR TABLES, SEGMENTED CONTROLS & VOCABBUILDER OPTION BUTTONS
        ========================================================================== */
     .table-scroll-wrap {
         width: 100%;
         overflow-x: auto;
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         border: 1px solid var(--border-subtle);
         margin-top: 8px;
-        background: var(--surface-2);
+        background: var(--surface-1);
     }
 
     .gram-grid {
         width: 100%;
         border-collapse: collapse;
-        font-size: 12.5px;
+        font-size: 13px;
         text-align: left;
     }
 
     .gram-grid th, .gram-grid td {
-        padding: 7px 10px;
+        padding: 8px 11px;
         border-bottom: 1px solid var(--border-subtle);
     }
 
@@ -622,39 +917,33 @@
     }
 
     .gram-grid th {
-        background: var(--surface-3);
-        color: var(--text);
-        font-weight: 700;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
+        background: var(--surface-2);
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 11.5px;
     }
 
     .module-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
         gap: 10px;
-        margin-bottom: 16px;
+        margin-top: 12px;
     }
 
     .module-card {
         background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 13px;
+        border-radius: var(--radius-lg);
+        padding: 13px 14px;
         cursor: pointer;
-        transition: all var(--spring-fast);
+        transition: border-color var(--spring-fast), background var(--spring-fast);
         position: relative;
     }
 
-    .module-card:active {
-        transform: scale(0.98);
-    }
-
     .module-card.active {
-        border: 2px solid var(--accent);
-        background: var(--accent-container);
-        color: var(--accent-on-container);
+        border-color: var(--lang);
+        background: var(--lang-soft);
+        color: var(--lang);
     }
 
     .stage-bar {
@@ -662,7 +951,7 @@
         gap: 6px;
         margin-bottom: 16px;
         overflow-x: auto;
-        padding-bottom: 4px;
+        padding-bottom: 2px;
         scrollbar-width: none;
     }
 
@@ -673,32 +962,34 @@
     .stage-pill {
         flex: 0 0 auto;
         width: auto;
-        min-height: 38px;
-        padding: 7px 14px;
+        min-height: 34px;
+        padding: 5px 12px;
         background: var(--surface-2);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-pill);
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
         font-size: 12.5px;
-        font-weight: 700;
+        font-weight: 500;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         color: var(--text-secondary);
         white-space: nowrap;
-        transition: all var(--spring-fast);
+        transition: background var(--spring-fast), color var(--spring-fast), border-color var(--spring-fast);
     }
 
     .stage-pill.active {
-        background: var(--accent);
-        color: var(--accent-on);
-        border-color: transparent;
+        background: var(--surface-1);
+        color: var(--text);
+        border-color: var(--border-strong);
+        font-weight: 600;
+        box-shadow: var(--shadow-card);
     }
 
     .reader-passage-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
-        gap: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
         margin-top: 10px;
     }
 
@@ -709,41 +1000,64 @@
         justify-content: flex-start;
         text-align: left;
         width: 100%;
-        padding: 10px 12px;
-        background: var(--surface-2);
+        padding: 12px 14px;
+        background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         cursor: pointer;
-        transition: all var(--spring-fast);
+        transition: border-color var(--spring-fast), background var(--spring-fast);
         white-space: normal;
         word-break: break-word;
     }
 
-    .reader-passage-card:active {
-        transform: scale(0.98);
+    .reader-passage-card.active {
+        border-color: var(--lang);
+        background: var(--lang-soft);
+        color: var(--lang);
     }
 
-    .reader-passage-card.active {
-        border: 2px solid var(--accent);
-        background: var(--accent-container);
-        color: var(--accent-on-container);
+    @keyframes vb-shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+    }
+
+    .identify-options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 540px) {
+        .identify-options-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     .option-btn {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
         width: 100%;
-        min-height: 48px;
+        min-height: 52px;
         text-align: left;
-        background: var(--surface-2);
+        background: var(--surface-1);
         color: var(--text);
-        border: 1px solid var(--border-strong);
-        padding: 12px 16px;
-        margin: 8px 0;
-        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        padding: 11px 14px;
+        margin: 6px 0;
+        border-radius: 12px;
         font-size: 14.5px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
-        transition: all var(--spring-fast);
+        transition: border-color var(--spring-fast), background var(--spring-fast);
+    }
+
+    .identify-options-grid .option-btn {
+        margin: 0;
+        min-height: 54px;
     }
 
     .option-btn.correct {
@@ -756,77 +1070,92 @@
         border-color: var(--danger);
         background: var(--danger-container);
         color: var(--danger-on-container);
+        animation: vb-shake 220ms ease;
     }
 
     .input-box {
-        background: var(--surface-2);
+        background: var(--surface-1);
         color: var(--text);
-        border: 1px solid var(--border-strong);
-        min-height: 44px;
-        padding: 9px 14px;
-        font-size: 16px;
+        border: 1px solid var(--border-subtle);
+        min-height: 38px;
+        padding: 7px 12px;
+        font-size: 14px;
         border-radius: var(--radius-md);
         outline: none;
-        transition: border-color var(--spring-fast);
+        transition: border-color var(--spring-fast), box-shadow var(--spring-fast);
     }
 
     .input-box:focus {
-        border-color: var(--accent);
+        border-color: var(--lang);
+        box-shadow: 0 0 0 3px var(--lang-soft);
     }
 
     .freq-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 14px;
-        background: var(--surface-2);
+        padding: 12px 15px;
+        background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        margin-bottom: 8px;
-        gap: 10px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 6px;
+        gap: 12px;
         flex-wrap: wrap;
-        transition: background var(--spring-fast);
+        transition: border-color var(--spring-fast), background var(--spring-fast);
     }
 
     .example-chip {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-left: 4px solid var(--accent);
-        padding: 10px 13px;
-        border-radius: var(--radius-sm);
+        padding: 11px 14px;
+        border-radius: var(--radius-md);
         margin: 8px 0;
         cursor: pointer;
-        transition: transform var(--spring-fast);
+        transition: border-color var(--spring-fast), background var(--spring-fast);
     }
 
-    .example-chip:active {
-        transform: scale(0.99);
-    }
-
+    /* Editorial Reader Word Tokens — Lora Cyrillic + Dotted Hover Underline */
     .word-token {
+        font-family: var(--font-word);
         cursor: pointer;
-        padding: 4px 8px;
-        margin: 3px 2px;
-        border-radius: 10px;
-        font-size: 22px;
-        font-weight: 600;
-        line-height: 1.75;
+        padding: 1px 4px;
+        margin: 1px 1px;
+        border-radius: 5px;
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 1.8;
         display: inline-block;
-        background: var(--surface-2);
-        border-bottom: 2px solid var(--accent);
-        transition: transform var(--spring-fast), background var(--spring-fast);
+        background: transparent;
+        border-bottom: 1.5px dotted var(--border-strong);
+        transition: background var(--spring-fast), color var(--spring-fast), border-color var(--spring-fast);
     }
 
-    .word-token:active {
-        transform: scale(0.95);
-        background: var(--accent-container);
+    @media (hover: hover) {
+        .module-card:hover:not(.active),
+        .reader-passage-card:hover:not(.active),
+        .option-btn:hover:not(.correct):not(.wrong),
+        .freq-row:hover,
+        .example-chip:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-2);
+        }
+        .stage-pill:hover:not(.active) {
+            color: var(--text);
+            border-color: var(--border-subtle);
+        }
+        .word-token:hover {
+            background: var(--lang-soft);
+            color: var(--lang);
+            border-bottom-color: var(--lang);
+            border-bottom-style: solid;
+        }
     }
 
     /* ==========================================================================
-       VISUAL LESSON DESIGN SYSTEM (TABLES, DIAGRAMS, BREAKDOWNS, REFERENCES)
+       VISUAL LESSON DESIGN SYSTEM (CLEAN HAIRLINES — ZERO THICK LEFT STRIPES)
        ========================================================================== */
     .vc-section-block {
-        margin-bottom: 20px;
+        margin-bottom: 24px;
         scroll-margin-top: 16px;
     }
 
@@ -836,11 +1165,12 @@
         justify-content: space-between;
         gap: 8px;
         flex-wrap: wrap;
-        font-size: 16.5px;
-        font-weight: 800;
+        font-family: var(--font-display);
+        font-size: 16px;
+        font-weight: 600;
         color: var(--text);
-        margin: 18px 0 10px 0;
-        padding-bottom: 6px;
+        margin: 22px 0 12px 0;
+        padding-bottom: 8px;
         border-bottom: 1px solid var(--border-subtle);
     }
 
@@ -851,72 +1181,64 @@
         padding: 10px 12px;
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        margin-bottom: 14px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 16px;
     }
 
     .vc-jump-btn {
         background: var(--surface-1);
         color: var(--text-secondary);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius-xs);
         padding: 4px 10px;
-        font-size: 11.5px;
-        font-weight: 700;
+        font-size: 12px;
+        font-weight: 500;
         cursor: pointer;
         transition: all var(--spring-fast);
     }
 
-    .vc-jump-btn:hover, .vc-jump-btn:active {
-        background: var(--accent-container);
-        color: var(--accent-on-container);
-        border-color: var(--accent);
-    }
-
     .vc-highlight {
-        background: var(--accent-container);
-        color: var(--accent-on-container);
-        padding: 0 2px;
+        background: var(--mark);
+        color: var(--text);
+        padding: 0 3px;
         border-radius: 4px;
-        font-weight: 800;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
+        font-weight: 600;
     }
 
     .vc-context-tag {
         display: inline-block;
-        background: var(--accent-container);
-        color: var(--accent-on-container);
+        background: var(--lang-soft);
+        color: var(--lang);
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 600;
         padding: 2px 8px;
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius-xs);
         margin-bottom: 4px;
     }
 
     .vc-table-card {
-        background: var(--surface-2);
+        background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         margin-bottom: 14px;
         overflow: hidden;
     }
 
     .vc-table-header {
-        padding: 12px 14px;
-        background: var(--surface-1);
+        padding: 12px 16px;
+        background: var(--surface-2);
         border-bottom: 1px solid var(--border-subtle);
     }
 
     .vc-table-title {
-        font-size: 15px;
-        font-weight: 800;
+        font-size: 14.5px;
+        font-weight: 600;
         color: var(--text);
     }
 
     .vc-table-subtitle {
         font-size: 12.5px;
-        color: var(--text-secondary);
+        color: var(--muted);
         margin-top: 2px;
     }
 
@@ -939,39 +1261,37 @@
             font-size: 12px;
         }
         .vc-th, .vc-td {
-            padding: 7px 6px;
+            padding: 7px 8px;
         }
     }
 
     .vc-th {
         text-align: left;
-        padding: 10px 12px;
+        padding: 9px 14px;
         background: var(--surface-2);
-        color: var(--text-secondary);
+        color: var(--muted);
         font-size: 11.5px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        border-bottom: 1px solid var(--border-strong);
+        font-weight: 500;
+        border-bottom: 1px solid var(--border-subtle);
     }
 
     .vc-tr:nth-child(even) {
-        background: var(--surface-1);
+        background: var(--surface-2);
     }
 
     .vc-td {
-        padding: 10px 12px;
+        padding: 10px 14px;
         border-bottom: 1px solid var(--border-subtle);
         color: var(--text);
         vertical-align: middle;
     }
 
     .vc-group-row td {
-        background: var(--accent-container);
-        color: var(--accent-on-container);
-        font-weight: 800;
+        background: var(--lang-soft);
+        color: var(--lang);
+        font-weight: 600;
         font-size: 12px;
-        padding: 6px 12px;
+        padding: 6px 14px;
     }
 
     .vc-cell-main {
@@ -979,12 +1299,12 @@
         align-items: center;
         gap: 6px;
         flex-wrap: wrap;
-        font-weight: 700;
+        font-weight: 500;
     }
 
     .vc-cell-sub {
         font-size: 11.5px;
-        color: var(--text-secondary);
+        color: var(--muted);
         margin-top: 2px;
     }
 
@@ -992,9 +1312,9 @@
         background: var(--secondary-container);
         color: var(--secondary-on-container);
         font-size: 10.5px;
-        font-weight: 800;
-        padding: 2px 7px;
-        border-radius: var(--radius-pill);
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: var(--radius-xs);
     }
 
     .vc-audio-mini {
@@ -1009,19 +1329,19 @@
     .vc-table-footnote {
         padding: 9px 14px;
         font-size: 12.5px;
-        color: var(--text-secondary);
-        background: var(--surface-1);
+        color: var(--muted);
+        background: var(--surface-2);
         border-top: 1px solid var(--border-subtle);
     }
 
     .vc-example-card {
-        background: var(--surface-2);
+        background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-left: 4px solid var(--accent);
-        border-radius: var(--radius-md);
-        padding: 12px 14px;
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
         margin-bottom: 10px;
         cursor: pointer;
+        transition: border-color var(--spring-fast);
     }
 
     .vc-example-top {
@@ -1033,28 +1353,30 @@
     }
 
     .vc-example-uk {
-        font-size: 16.5px;
-        font-weight: 800;
+        font-family: var(--font-word);
+        font-size: 18px;
+        font-weight: 500;
         color: var(--text);
         margin-top: 2px;
     }
 
     .vc-example-phon {
-        font-size: 12.5px;
-        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--muted);
         margin-top: 2px;
     }
 
     .vc-example-en {
         font-size: 14px;
-        font-weight: 700;
-        color: var(--success);
+        font-weight: 500;
+        color: var(--text-secondary);
         margin-top: 2px;
     }
 
     .vc-example-why {
         font-size: 13px;
-        color: var(--text-secondary);
+        color: var(--muted);
         margin-top: 8px;
         padding-top: 8px;
         border-top: 1px solid var(--border-subtle);
@@ -1062,43 +1384,43 @@
 
     .vc-segments-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-        gap: 6px;
-        margin-top: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
     }
 
     .vc-segment-chip {
-        background: var(--surface-1);
+        background: var(--surface-2);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-sm);
-        padding: 7px 9px;
+        padding: 8px 10px;
         cursor: pointer;
     }
 
     .vc-segment-uk {
-        font-weight: 800;
-        font-size: 13.5px;
+        font-family: var(--font-word);
+        font-weight: 500;
+        font-size: 14.5px;
         color: var(--text);
     }
 
     .vc-segment-role {
-        font-size: 10.5px;
-        font-weight: 800;
-        color: var(--accent);
-        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--lang);
     }
 
     .vc-segment-exp {
         font-size: 11.5px;
-        color: var(--text-secondary);
+        color: var(--muted);
         margin-top: 2px;
     }
 
     .vc-rule-card {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 13px 15px;
+        border-radius: var(--radius-lg);
+        padding: 15px 16px;
         margin-bottom: 12px;
     }
 
@@ -1112,43 +1434,44 @@
     }
 
     .vc-step-num {
-        background: var(--accent);
-        color: var(--accent-on);
+        background: var(--lang-soft);
+        color: var(--lang);
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 600;
         padding: 2px 8px;
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius-xs);
     }
 
     .vc-rule-title {
         margin: 0;
         font-size: 15px;
-        font-weight: 800;
+        font-weight: 600;
         color: var(--text);
     }
 
     .vc-rule-text {
-        font-size: 13.8px;
+        font-size: 14px;
         color: var(--text);
         line-height: 1.6;
     }
 
     .vc-formula-box {
         background: var(--surface-1);
-        border: 1px dashed var(--accent);
+        border: 1px solid var(--border-subtle);
         border-radius: var(--radius-sm);
-        padding: 8px 11px;
+        padding: 9px 12px;
         margin-top: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--lang);
     }
 
     .vc-rule-examples {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin-top: 9px;
+        margin-top: 10px;
     }
 
     .vc-rule-ex-pill {
@@ -1156,32 +1479,33 @@
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-sm);
         padding: 5px 10px;
-        font-size: 12.5px;
+        font-size: 13px;
         cursor: pointer;
     }
 
     .vc-rule-ex-uk {
-        font-weight: 800;
+        font-family: var(--font-word);
+        font-weight: 500;
         color: var(--text);
     }
 
     .vc-rule-ex-en {
-        color: var(--success);
-        font-weight: 700;
+        color: var(--text-secondary);
+        font-weight: 500;
         margin-left: 4px;
     }
 
     .vc-rule-ex-note {
-        color: var(--text-secondary);
+        color: var(--muted);
         font-size: 11.5px;
         margin-left: 4px;
     }
 
     .vc-exception-box {
-        background: var(--surface-1);
-        border-left: 4px solid var(--warn);
-        border-radius: var(--radius-sm);
-        padding: 10px 12px;
+        background: var(--warn-container);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 11px 13px;
         margin-top: 10px;
     }
 
@@ -1195,12 +1519,12 @@
     }
 
     .vc-exception-badge {
-        background: var(--warn-container);
+        background: var(--surface-1);
         color: var(--warn-on-container);
-        font-size: 10.5px;
-        font-weight: 800;
+        font-size: 11px;
+        font-weight: 600;
         padding: 2px 7px;
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius-xs);
     }
 
     .vc-exception-body {
@@ -1217,10 +1541,10 @@
     }
 
     .vc-mini-word-btn {
-        background: var(--surface-2);
+        background: var(--surface-1);
         color: var(--text);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-xs);
         padding: 4px 9px;
         font-size: 12.5px;
         cursor: pointer;
@@ -1229,8 +1553,8 @@
     .vc-diagram-box {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 13px 14px;
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
         margin-bottom: 14px;
     }
 
@@ -1241,15 +1565,16 @@
     .vc-vowel-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 9px;
+        gap: 10px;
     }
 
     .vc-vowel-card {
         background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 10px 12px;
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
         cursor: pointer;
+        transition: border-color var(--spring-fast);
     }
 
     .vc-vowel-top {
@@ -1259,16 +1584,17 @@
     }
 
     .vc-vowel-letter {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--accent);
+        font-family: var(--font-word);
+        font-size: 23px;
+        font-weight: 600;
+        color: var(--lang);
     }
 
     .vc-vowel-ipa {
-        font-family: ui-monospace, SFMono-Regular, monospace;
+        font-family: var(--font-mono);
         font-size: 13px;
-        font-weight: 700;
-        color: var(--text-secondary);
+        font-weight: 500;
+        color: var(--muted);
     }
 
     .vc-vowel-sound {
@@ -1302,8 +1628,8 @@
     .vc-intonation-card {
         background: var(--surface-1);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 10px 12px;
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
         cursor: pointer;
     }
 
@@ -1325,27 +1651,28 @@
     }
 
     .vc-intonation-example {
-        font-size: 14px;
-        font-weight: 800;
+        font-family: var(--font-word);
+        font-size: 15px;
+        font-weight: 500;
         color: var(--text);
     }
 
     .vc-intonation-tip {
         font-size: 12px;
-        color: var(--text-secondary);
+        color: var(--muted);
         margin-top: 4px;
     }
 
     .vc-mistake-card {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 12px 14px;
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
         margin-bottom: 10px;
     }
 
     .vc-mistake-topic {
-        font-weight: 800;
+        font-weight: 600;
         font-size: 14px;
         color: var(--text);
         margin-bottom: 8px;
@@ -1361,39 +1688,41 @@
     .vc-mistake-wrong {
         background: var(--danger-container);
         color: var(--danger-on-container);
-        padding: 9px 11px;
+        border: 1px solid transparent;
+        padding: 9px 12px;
         border-radius: var(--radius-sm);
     }
 
     .vc-mistake-right {
         background: var(--success-container);
         color: var(--success-on-container);
-        padding: 9px 11px;
+        border: 1px solid transparent;
+        padding: 9px 12px;
         border-radius: var(--radius-sm);
     }
 
     .vc-mistake-label {
         font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
+        font-weight: 600;
     }
 
     .vc-mistake-val {
-        font-size: 14px;
-        font-weight: 800;
+        font-family: var(--font-word);
+        font-size: 15px;
+        font-weight: 500;
         margin-top: 3px;
     }
 
     .vc-mistake-exp {
-        font-size: 12.8px;
+        font-size: 13px;
         color: var(--text-secondary);
         line-height: 1.5;
     }
 
     .vc-reference-details {
         background: var(--surface-2);
-        border: 1px solid var(--border-strong);
-        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
         margin-bottom: 14px;
         overflow: hidden;
     }
@@ -1403,20 +1732,20 @@
         justify-content: space-between;
         align-items: center;
         gap: 10px;
-        padding: 12px 14px;
+        padding: 13px 16px;
         cursor: pointer;
         list-style: none;
     }
 
     .vc-ref-chevron {
         font-size: 12px;
-        font-weight: 800;
-        color: var(--accent);
+        font-weight: 600;
+        color: var(--lang);
         flex-shrink: 0;
     }
 
     .vc-reference-body {
-        padding: 12px 14px;
+        padding: 14px 16px;
         background: var(--surface-1);
         border-top: 1px solid var(--border-subtle);
     }
@@ -1428,8 +1757,8 @@
     .vc-ref-heading {
         margin: 0 0 4px 0;
         font-size: 14px;
-        font-weight: 800;
-        color: var(--accent);
+        font-weight: 600;
+        color: var(--lang);
     }
 
     .vc-ref-summary {
@@ -1441,7 +1770,7 @@
     .vc-ref-list {
         margin: 0 0 8px 18px;
         padding: 0;
-        font-size: 12.8px;
+        font-size: 13px;
         color: var(--text-secondary);
         line-height: 1.55;
     }
@@ -1449,13 +1778,13 @@
     .vc-kc-card {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        padding: 12px 14px;
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
         margin-bottom: 10px;
     }
 
     .vc-kc-question {
-        font-weight: 800;
+        font-weight: 600;
         font-size: 14px;
         color: var(--text);
         margin-bottom: 6px;
@@ -1463,29 +1792,32 @@
 
     .vc-kc-exp {
         margin-top: 8px;
-        padding: 9px 11px;
-        background: var(--surface-1);
-        border-left: 4px solid var(--success);
+        padding: 10px 12px;
+        background: var(--success-container);
+        color: var(--success-on-container);
         border-radius: var(--radius-sm);
         font-size: 13px;
     }
 
     /* ==========================================================================
-       RIGHT PANEL / iOS NATIVE SLIDE-UP SHEET GRAMMAR INSPECTOR
+       RIGHT CONTEXTUAL 7-CASE GRAMMAR INSPECTOR (DOCKABLE DESKTOP / MOBILE SHEET)
        ========================================================================== */
     .inspector {
-        width: 365px;
+        width: 350px;
         background: var(--surface-1);
-        border-radius: var(--radius-lg);
-        padding: 20px;
+        border-radius: var(--radius-xl);
+        padding: 18px;
         border: 1px solid var(--border-subtle);
         height: fit-content;
         position: sticky;
         top: 0;
-        max-height: calc(100dvh - 105px);
+        max-height: calc(100dvh - 56px);
         overflow-y: auto;
-        box-shadow: var(--shadow-card);
         flex-shrink: 0;
+    }
+
+    .inspector.desktop-collapsed {
+        display: none;
     }
 
     .sheet-drag-handle {
@@ -1497,10 +1829,7 @@
     }
 
     /* ==========================================================================
-       iPHONE 16 PRO MAX & MOBILE PORTRAIT/LANDSCAPE OPTIMIZATION (<= 960px)
-       ========================================================================== */
-    /* ==========================================================================
-       LANGO CONTENT STUDIO (CMS) RESPONSIVE SHELL & MOBILE SAFE AREAS
+       LANGO CONTENT STUDIO (CMS) SHELL
        ========================================================================== */
     #lango-cms-studio-root {
         flex: 1;
@@ -1578,78 +1907,134 @@
         display: none;
     }
 
+    /* ==========================================================================
+       VOCABBUILDER SETTINGS MODAL
+       ========================================================================== */
+    .vb-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 9500;
+        background: rgba(15, 23, 42, 0.56);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .vb-settings-dialog {
+        width: 100%;
+        max-width: 480px;
+        max-height: 90dvh;
+        overflow-y: auto;
+        background: var(--surface-1);
+        border: 1px solid var(--border-strong);
+        border-radius: 18px;
+        box-shadow: var(--shadow-popover);
+        padding: 20px;
+    }
+
+    .vb-settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .vb-settings-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .vb-seg-group {
+        display: inline-flex;
+        background: var(--surface-2);
+        padding: 3px;
+        border-radius: 9px;
+        border: 1px solid var(--border-subtle);
+        gap: 2px;
+    }
+
+    .vb-seg-btn {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 5px 11px;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: background var(--spring-fast), color var(--spring-fast);
+    }
+
+    .vb-seg-btn.active {
+        background: var(--surface-1);
+        color: var(--text);
+        font-weight: 600;
+        box-shadow: var(--shadow-card);
+    }
+
+    /* ==========================================================================
+       TABLET & MOBILE RESPONSIVE ADAPTATION (<= 960px)
+       Mobile Top Bar (48px) + Bottom Pill Tab Bar (52px) <= 12% Viewport Height
+       ========================================================================== */
     @media (max-width: 960px) {
-        .ios-top-bar {
-            padding: calc(env(safe-area-inset-top, 12px) + 6px) 8px 8px 8px;
-            gap: 4px;
-        }
-
-        .brand-cluster {
-            gap: 5px;
-            min-width: 0;
-            flex-shrink: 1;
-        }
-
-        .brand-badge {
-            width: 26px;
-            height: 26px;
-            border-radius: 7px;
-            font-size: 10.5px;
+        .mobile-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 48px;
+            padding: calc(env(safe-area-inset-top, 0px)) 12px 0 12px;
+            background: var(--surface-elevated);
+            backdrop-filter: saturate(180%) blur(12px);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
             flex-shrink: 0;
+            z-index: 80;
         }
 
-        .logo {
-            font-size: 12.5px;
-            letter-spacing: -0.4px;
+        .mobile-lang-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 9999px;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-1);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            max-width: 210px;
+        }
+
+        .mobile-lang-pill span:nth-child(2) {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .brand-subtitle {
-            display: none;
+        .mobile-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .top-telemetry {
-            gap: 4px;
-            flex-shrink: 0;
-            overflow-x: auto;
-            max-width: 100%;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .top-telemetry::-webkit-scrollbar {
-            display: none;
-        }
-
-        .stat-pill {
-            padding: 4px 5px;
-            font-size: 10.5px;
-            gap: 2px;
-            white-space: nowrap;
-        }
-
-        .icon-action-btn {
-            min-width: 30px;
-            min-height: 32px;
-            padding: 0 6px;
-            font-size: 11px;
-            gap: 3px;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        #voice-label-pill {
-            display: none;
-        }
-
-        #lango-top-track-label {
-            max-width: 64px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-            vertical-align: bottom;
+        .mobile-icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 9999px;
+            border: 1px solid var(--border-subtle);
+            background: var(--surface-1);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
         .cms-studio-shell {
@@ -1664,7 +2049,7 @@
         .cms-header-controls .btn {
             flex: 1 1 100%;
             width: 100% !important;
-            min-height: 44px !important;
+            min-height: 42px !important;
         }
 
         .cms-nav-bar {
@@ -1679,17 +2064,8 @@
             display: none;
         }
 
-        .cms-nav-bar .stage-pill {
-            min-height: 42px !important;
-            padding: 6px 13px !important;
-            flex: 0 0 auto;
-        }
-
         .cms-three-col-grid,
-        .cms-two-col-grid {
-            grid-template-columns: 1fr;
-        }
-
+        .cms-two-col-grid,
         .cms-quick-actions-grid {
             grid-template-columns: 1fr;
         }
@@ -1709,12 +2085,6 @@
             display: none !important;
         }
 
-        #lango-cms-studio-root .btn,
-        #lango-cms-studio-root .input-box,
-        #lango-cms-studio-root select {
-            min-height: 42px;
-        }
-
         .app-shell {
             flex-direction: column;
         }
@@ -1726,7 +2096,7 @@
             display: block;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 12px 14px 76px 14px;
+            padding: 16px 14px 74px 14px;
         }
 
         .content-area {
@@ -1734,20 +2104,14 @@
             padding-bottom: 12px;
         }
 
-        .anki-stage {
-            min-height: 270px;
-            padding: 16px 15px;
-            margin-bottom: 16px;
+        .card {
+            padding: 16px;
         }
 
-        .anki-action-sticky {
-            position: sticky;
-            bottom: 0;
-            background: var(--surface-1);
-            padding: 10px 0 2px 0;
-            margin-top: 10px;
-            border-top: 1px solid var(--border-subtle);
-            z-index: 20;
+        .anki-stage {
+            min-height: 270px;
+            padding: 18px 16px;
+            margin-bottom: 16px;
         }
 
         .sidebar {
@@ -1757,70 +2121,81 @@
             right: 0;
             width: 100%;
             height: auto;
-            flex-shrink: 0;
+            overflow-y: visible;
+            overflow-x: auto;
             flex-direction: row;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
-            padding: 5px 6px 6px 6px;
+            padding: 3px 4px calc(3px + env(safe-area-inset-bottom, 0px)) 4px;
             border-right: none;
             border-top: 1px solid var(--border-subtle);
             background: var(--surface-elevated);
-            backdrop-filter: saturate(180%) blur(24px);
-            -webkit-backdrop-filter: saturate(180%) blur(24px);
+            backdrop-filter: saturate(180%) blur(16px);
+            -webkit-backdrop-filter: saturate(180%) blur(16px);
             z-index: 100;
+            scrollbar-width: none;
         }
 
-        .sidebar .stats-box,
-        .sidebar > div:last-child {
+        .sidebar::-webkit-scrollbar {
             display: none;
         }
 
+        .vb-brand-row,
+        .vb-lang-btn,
+        .sidebar-footer {
+            display: none !important;
+        }
+
+        .vb-nav-list {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            width: 100%;
+            align-items: center;
+            gap: 1px;
+        }
+
         .nav-btn {
-            flex: 1;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            min-height: 42px;
+            min-height: 45px;
             min-width: 0;
             padding: 2px 1px;
-            font-size: 9.8px;
-            font-weight: 600;
-            gap: 1px;
-            border-radius: 10px;
-            white-space: nowrap;
+            font-size: 9.5px;
+            font-weight: 500;
+            gap: 2px;
+            border-radius: 8px;
+            background: transparent !important;
+            overflow: hidden;
         }
 
         .nav-btn .nav-icon {
-            font-size: 16px;
-            padding: 1px 6px;
-            line-height: 1.15;
-            border-radius: var(--radius-pill);
-            transition: background var(--spring-fast), transform var(--spring-fast);
+            width: 36px;
+            height: 24px;
+            border-radius: 9999px;
         }
 
         .nav-btn.active {
-            background: transparent;
-            color: var(--accent);
-            font-weight: 800;
+            color: var(--lang);
+            font-weight: 600;
         }
 
         .nav-btn.active .nav-icon {
-            background: var(--accent-container);
-            color: var(--accent-on-container);
-            transform: translateY(-1px);
+            background: var(--lang-soft);
+            color: var(--lang);
         }
 
         .sheet-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.48);
+            background: rgba(15, 23, 42, 0.52);
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
             z-index: 110;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 240ms ease;
+            transition: opacity 180ms ease;
             display: block;
         }
 
@@ -1829,7 +2204,9 @@
             pointer-events: auto;
         }
 
-        .inspector {
+        .inspector,
+        .inspector.desktop-collapsed {
+            display: block;
             position: fixed;
             left: 0;
             right: 0;
@@ -1837,7 +2214,7 @@
             top: auto;
             width: 100%;
             max-height: 82dvh;
-            border-radius: 28px 28px 0 0;
+            border-radius: 22px 22px 0 0;
             padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 20px)) 20px;
             box-shadow: var(--shadow-sheet);
             z-index: 120;
@@ -1859,30 +2236,71 @@
         }
 
         .sheet-pill-bar {
-            width: 40px;
-            height: 5px;
-            border-radius: var(--radius-pill);
+            width: 38px;
+            height: 4px;
+            border-radius: 999px;
             background: var(--border-strong);
         }
     }
 
+    @media (max-width: 640px) {
+        .course-hero-bar {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+
+        .course-hero-bar #toggle-course-syllabus-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
     /* ==========================================================================
-       IDENTIFY VISUAL VOCABULARY SCENE & HOTSPOT SYSTEM
+       IDENTIFY ("PICTURES") VISUAL VOCABULARY SCENE & PIN SYSTEM
        ========================================================================== */
-    .content-area:has(#tab-identify:not(.hidden)) {
-        max-width: 1120px;
-        min-width: 0;
-        flex: 1;
+    .identify-segmented-switch {
+        display: inline-flex;
+        background: var(--surface-2);
+        padding: 3px;
+        border-radius: 10px;
+        border: 1px solid var(--border-subtle);
+        gap: 2px;
+    }
+
+    .identify-seg-btn,
+    .identify-segmented-switch button {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: var(--font-sans);
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: 7px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition: background var(--spring-fast), color var(--spring-fast);
+    }
+
+    .identify-seg-btn.active,
+    .identify-segmented-switch button.active {
+        background: var(--surface-1);
+        color: var(--text);
+        font-weight: 600;
+        box-shadow: var(--shadow-card);
     }
 
     .identify-stage-split {
         display: grid;
-        grid-template-columns: minmax(0, 1.22fr) minmax(320px, 0.88fr);
+        grid-template-columns: minmax(0, 1.35fr) minmax(335px, 0.85fr);
         gap: 16px;
         align-items: start;
     }
 
-    @media (max-width: 1020px) {
+    @media (max-width: 1040px) {
         .identify-stage-split {
             grid-template-columns: 1fr;
         }
@@ -1891,11 +2309,11 @@
     .identify-scene-viewport {
         position: relative;
         width: 100%;
-        aspect-ratio: 4 / 3;
-        border-radius: var(--radius-md);
+        aspect-ratio: 16 / 10;
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        border: 1px solid var(--border-strong);
-        background: #0f172a;
+        border: 1px solid var(--border-subtle);
+        background: #0f131c;
         user-select: none;
         touch-action: manipulation;
     }
@@ -1918,9 +2336,9 @@
 
     .identify-hotspot {
         position: absolute;
-        border-radius: 10px;
-        border: 1.5px dashed rgba(255, 255, 255, 0.55);
-        background: rgba(15, 23, 42, 0.04);
+        border-radius: 8px;
+        border: 1.5px solid transparent;
+        background: transparent;
         cursor: pointer;
         padding: 3px;
         display: flex;
@@ -1931,96 +2349,76 @@
     }
 
     .identify-hotspot.show-bbox {
-        border: 2px dashed rgba(255, 255, 255, 0.95);
-        box-shadow: inset 0 0 0 1.5px rgba(15, 23, 42, 0.65);
+        border: 2px dashed rgba(255, 255, 255, 0.88);
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.65);
         background: rgba(15, 23, 42, 0.14);
     }
 
-    .identify-hotspot:hover,
-    .identify-hotspot:focus-visible {
-        border-style: solid;
-        border-color: #FFFFFF;
-        box-shadow: 0 0 0 2px var(--accent), inset 0 0 0 1.5px var(--accent);
-        background: rgba(29, 78, 216, 0.16);
-        z-index: 5;
-        outline: none;
+    @media (hover: hover) {
+        .identify-hotspot:hover {
+            border-color: rgba(255, 255, 255, 0.85);
+            background: rgba(15, 23, 42, 0.16);
+            z-index: 5;
+        }
     }
 
     .identify-hotspot.selected {
-        border: 2.5px solid #FFFFFF;
-        background: rgba(29, 78, 216, 0.18);
-        box-shadow: 0 0 0 3px var(--accent), 0 4px 14px rgba(15, 23, 42, 0.45);
+        border: 2px solid #ffffff;
+        background: rgba(225, 91, 61, 0.16);
+        box-shadow: 0 0 0 3px oklch(0.62 0.2 28 / 45%), 0 4px 14px rgba(15, 23, 42, 0.45);
         z-index: 6;
     }
 
     .identify-hotspot.correct {
-        border: 2px solid #22C55E;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
-        background: rgba(21, 128, 61, 0.15);
+        border-color: rgba(34, 197, 94, 0.85);
     }
 
     .identify-hotspot.revealed {
-        border: 2px solid #F59E0B;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
-        background: rgba(180, 83, 9, 0.15);
+        border-color: rgba(245, 158, 11, 0.85);
     }
 
     .identify-hotspot.incorrect {
-        border: 2px solid #EF4444;
-        box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.45);
-        background: rgba(185, 28, 28, 0.18);
+        border-color: rgba(239, 68, 68, 0.85);
     }
 
     .identify-hotspot-badge {
-        min-width: 28px;
-        height: 28px;
+        min-width: 26px;
+        height: 26px;
         border-radius: 999px;
-        background: var(--accent);
-        color: #FFFFFF;
-        font-size: 12px;
-        font-weight: 800;
+        background: rgba(17, 24, 39, 0.82);
+        color: #ffffff;
+        font-size: 11.5px;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0 7px;
-        border: 2px solid #FFFFFF;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+        padding: 0 6px;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.52);
+        transition: transform var(--spring-fast), background var(--spring-fast);
     }
 
-    @media (max-width: 768px) {
-        .identify-hotspot-badge {
-            min-width: 30px;
-            height: 30px;
-            font-size: 12.5px;
-        }
-    }
-
+    /* VocabBuilder Coral Focal Marker on Active Pin */
     .identify-hotspot.selected .identify-hotspot-badge {
-        transform: scale(1.12);
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.45), 0 4px 10px rgba(0, 0, 0, 0.6);
+        background: oklch(0.62 0.2 28);
+        transform: scale(1.14);
+        box-shadow: 0 0 0 4px oklch(0.62 0.2 28 / 35%), 0 4px 10px rgba(0, 0, 0, 0.55);
     }
 
-    .identify-hotspot.correct .identify-hotspot-badge {
-        background: var(--success);
-    }
-
-    .identify-hotspot.revealed .identify-hotspot-badge {
-        background: var(--warn);
-    }
-
-    .identify-hotspot.incorrect .identify-hotspot-badge {
-        background: var(--danger);
-    }
+    .identify-hotspot.correct .identify-hotspot-badge { background: var(--success); }
+    .identify-hotspot.revealed .identify-hotspot-badge { background: var(--warn); }
+    .identify-hotspot.incorrect .identify-hotspot-badge { background: var(--danger); }
 
     .identify-hotspot-word {
-        background: rgba(15, 23, 42, 0.90);
-        color: #FFFFFF;
-        font-size: 10.5px;
-        font-weight: 800;
+        font-family: var(--font-word);
+        background: rgba(15, 23, 42, 0.88);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 500;
         padding: 2px 6px;
-        border-radius: 6px;
+        border-radius: 5px;
         margin-top: 2px;
-        max-width: 120px;
+        max-width: 124px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -2028,17 +2426,17 @@
     }
 
     .identify-scene-pill {
-        gap: 6px;
+        gap: 7px;
         padding: 5px 12px 5px 6px;
     }
 
     .identify-scene-pill-thumb {
         width: 34px;
-        height: 25px;
-        border-radius: 6px;
+        height: 24px;
+        border-radius: 5px;
         object-fit: cover;
         flex-shrink: 0;
-        border: 1px solid rgba(255, 255, 255, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.28);
     }
 
     .identify-target-bar {
@@ -2049,20 +2447,21 @@
 
     .identify-target-chip {
         background: var(--surface-2);
-        color: var(--text);
-        border: 1px solid var(--border-strong);
-        border-radius: var(--radius-pill);
-        padding: 5px 10px;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-xs);
+        padding: 4px 10px;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 500;
         cursor: pointer;
         transition: all var(--spring-fast);
     }
 
     .identify-target-chip.selected {
-        border: 2px solid var(--accent);
-        background: var(--accent-container);
-        color: var(--accent-on-container);
+        border-color: var(--lang);
+        background: var(--lang-soft);
+        color: var(--lang);
+        font-weight: 600;
     }
 
     .identify-target-chip.correct-mc,
@@ -2086,20 +2485,15 @@
 
     .identify-answer-card {
         margin-top: 12px;
-        padding: 14px;
-        border-radius: var(--radius-md);
+        padding: 15px;
+        border-radius: var(--radius-lg);
         background: var(--surface-2);
-        border: 1px solid var(--border-strong);
-        border-left: 5px solid var(--success);
-    }
-
-    .identify-answer-card.revealed {
-        border-left-color: var(--warn);
+        border: 1px solid var(--border-subtle);
     }
 
     .identify-category-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
         gap: 10px;
         max-height: 410px;
         overflow-y: auto;
@@ -2111,23 +2505,23 @@
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
-        padding: 8px;
-        border-radius: var(--radius-md);
-        background: var(--surface-2);
+        padding: 9px;
+        border-radius: var(--radius-lg);
+        background: var(--surface-1);
         border: 1px solid var(--border-subtle);
         cursor: pointer;
         transition: all var(--spring-fast);
     }
 
     .identify-cat-card.active {
-        border: 2px solid var(--accent);
-        background: var(--accent-container);
+        border-color: var(--lang);
+        background: var(--lang-soft);
     }
 
     .identify-cat-thumb-wrap {
         position: relative;
         width: 100%;
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 16 / 10;
         border-radius: 8px;
         overflow: hidden;
         background: var(--surface-3);
@@ -2144,39 +2538,39 @@
         position: absolute;
         top: 6px;
         right: 6px;
-        background: rgba(15, 23, 42, 0.78);
-        color: #FFFFFF;
+        background: rgba(15, 23, 42, 0.8);
+        color: #ffffff;
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 600;
         padding: 2px 7px;
-        border-radius: 999px;
+        border-radius: 6px;
         backdrop-filter: blur(4px);
     }
 
     .identify-summary-metrics {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
         gap: 8px;
     }
 
     .identify-metric-box {
         background: var(--surface-2);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        padding: 10px;
+        border-radius: var(--radius-md);
+        padding: 12px 10px;
         text-align: center;
     }
 
     .identify-metric-val {
         font-size: 20px;
-        font-weight: 900;
+        font-weight: 600;
         color: var(--text);
     }
 
     .identify-metric-lbl {
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--text-secondary);
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--muted);
         margin-top: 2px;
     }
 
@@ -2189,33 +2583,20 @@
 </style>
 </head>
 <body>
-    <!-- iOS 18 / iPhone 16 Pro Max Dynamic Island-Safe Top Bar -->
-    <header class="ios-top-bar" role="banner">
-        <div class="brand-cluster">
-            <div class="brand-badge" aria-hidden="true">UA</div>
-            <div class="brand-titles">
-                <div class="logo">Learn Ukrainian - Lango</div>
-                <div class="brand-subtitle">Ukrainian FSRS & Grammar</div>
-            </div>
-        </div>
+    <!-- MOBILE-ONLY TOP BAR (<= 960px, VocabBuilder Shell Pattern) -->
+    <header class="mobile-top-bar" role="banner">
+        <button type="button" class="mobile-lang-pill" onclick="openLanguageSelectorModal()" aria-label="Choose Language & Course Track">
+            <span aria-hidden="true">🇺🇦</span>
+            <span id="lango-mobile-track-label">Ukrainian</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+        </button>
 
-        <div class="top-telemetry">
-            <div class="stat-pill" title="Total Experience Points">⭐ <b id="xp-top-display">0</b></div>
-            <div class="stat-pill" title="Active Words in Decks">🃏 <b id="deck-top-count">0</b></div>
-            <button class="icon-action-btn" id="lango-top-track-btn" data-testid="btn-top-language-selector" onclick="openLanguageSelectorModal()" aria-label="Choose Language & Course Track" title="Choose Language & Course Track">
-                🌍 <span id="lango-top-track-label">Ukrainian (EN → UK)</span>
+        <div class="mobile-top-actions">
+            <button type="button" class="mobile-icon-btn" onclick="toggleGrammarInspector()" aria-label="Toggle 7-Case Grammar Inspector" title="7-Case Inspector">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>
             </button>
-            <button class="icon-action-btn" onclick="openInspectorSheet()" aria-label="Open Deep Grammar Inspector" title="7-Case Grammar Inspector">
-                <span>🔍</span>
-            </button>
-            <button class="icon-action-btn" id="theme-toggle-btn" onclick="cycleColorTheme()" aria-label="Toggle Light or Dark Theme" title="Appearance">
-                <span id="theme-toggle-icon">🌗</span>
-            </button>
-            <button class="icon-action-btn" id="openai-voice-btn" onclick="openVoiceModal()" aria-label="Choose Voice" title="Choose Voice">
-                🎙️ <span id="voice-label-pill">Choose Voice</span>
-            </button>
-            <button class="icon-action-btn" id="lango-open-cms-studio-btn" data-testid="btn-open-cms-studio" onclick="openLangoContentStudio()" aria-label="Open Lango Content Studio (Developer CMS)" title="Lango Content Studio (Developer CMS)">
-                🎛️ <span>Studio</span>
+            <button type="button" class="mobile-icon-btn" onclick="openSettingsModal()" aria-label="Open Settings" title="Settings">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </button>
         </div>
     </header>
@@ -2223,71 +2604,156 @@
     <div id="lango-cms-studio-root" class="hidden"></div>
 
     <div class="app-shell">
-        <!-- Navigation Bar (Left Rail on Desktop, Thumb-Zone Bottom Tab Bar on iPhone 16 Pro Max) -->
+        <!-- VOCABBUILDER SIDEBAR SHELL (Sticky Left Rail on Desktop · Translucent Pill Tab Bar on Mobile) -->
         <nav class="sidebar" aria-label="Primary Navigation">
-            <div class="stats-box">
-                <div>⭐ Total XP: <b id="xp-display" style="color:var(--accent)">0</b></div>
-                <div>🃏 Active Words: <b id="deck-count" style="color:var(--warn)">0</b> / 6000</div>
-                <div>🔥 Reviews Done: <b id="drills-display" style="color:var(--success)">0</b></div>
-                <div>🏆 Course Mods: <b id="mods-display">0</b> / 29</div>
+            <button type="button" class="vb-brand-row" onclick="switchTab('course')" aria-label="Learn Ukrainian by Lango Home">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="34" height="34" style="border-radius:10px; flex-shrink:0;" aria-hidden="true">
+                    <rect width="512" height="512" rx="112.6" fill="#1b2333"/>
+                    <path d="M242.35 404.48 183.79 274.35Q178.94 263.12 176.64 256.36Q174.35 249.6 173.52 244.88Q172.69 240.16 171.8 235.69L156.87 236.58V211.96H240.05V232.12Q230.87 232.37 228 237.16Q225.13 241.94 226.4 249.66Q227.68 257.38 230.99 266.18L254.09 321.3Q257.15 328.31 260.15 335.78Q263.14 343.24 266.08 350.9H266.46Q269.14 343.62 271.88 336.1Q274.63 328.57 277.05 321.17L298.23 262.1Q301.55 252.66 304.61 246.53Q307.67 240.41 310.48 235.18L286.49 236.58V211.96H355.13V232.12Q346.46 233.14 339.95 240.54Q333.44 247.94 328.4 258.53Q323.36 269.12 319.03 279.96L269.65 404.48Z" fill="#f3f5f9"/>
+                    <path d="M245.85 196.65 230.54 183.25 262.18 130.31Q266.9 123.16 272.65 120.29Q278.39 117.42 284.26 117.81Q290.12 118.19 294.46 121.76Q299.06 125.72 300.2 131.71Q301.35 137.71 299.12 144.02Q296.89 150.34 291.02 156.08Z" fill="#e3ad4a"/>
+                </svg>
+                <span class="vb-brand-copy">
+                    <span class="vb-brand-title">Learn Ukrainian</span>
+                    <span class="vb-brand-sub">by Lango</span>
+                </span>
+            </button>
+
+            <button type="button" class="vb-lang-btn" id="lango-top-track-btn" data-testid="btn-top-language-selector" onclick="openLanguageSelectorModal()" aria-label="Choose Language & Course Track">
+                <span class="vb-lang-btn-left">
+                    <span aria-hidden="true">🇺🇦</span>
+                    <span id="lango-top-track-label">Ukrainian</span>
+                </span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+            </button>
+
+            <div class="vb-nav-list">
+                <button type="button" class="nav-btn active" aria-current="page" onclick="switchTab('course', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    </span>
+                    <span>Course</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('reader', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </span>
+                    <span>Reader</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('identify', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    </span>
+                    <span>Pictures</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('vocab', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                    </span>
+                    <span>Topics</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('srs', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="12" x="4" y="6" rx="2"/><path d="M8 2h8"/><path d="M12 18v4"/></svg>
+                    </span>
+                    <span>UK→EN</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('en2uk', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+                    </span>
+                    <span>EN→UK</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('correction', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    </span>
+                    <span>Sentences</span>
+                </button>
+                <button type="button" class="nav-btn" onclick="switchTab('phonetics', this)">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </span>
+                    <span>Sounds</span>
+                </button>
             </div>
-            <button class="nav-btn active" onclick="switchTab('course', this)">
-                <span class="nav-icon" aria-hidden="true">🎓</span>
-                <span>Course</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('en2uk', this)">
-                <span class="nav-icon" aria-hidden="true">🔄</span>
-                <span>EN→UK</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('srs', this)">
-                <span class="nav-icon" aria-hidden="true">🧠</span>
-                <span>UK→EN</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('vocab', this)">
-                <span class="nav-icon" aria-hidden="true">🗂️</span>
-                <span>Vocab</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('identify', this)">
-                <span class="nav-icon" aria-hidden="true">📷</span>
-                <span>Identify</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('correction', this)">
-                <span class="nav-icon" aria-hidden="true">🛠️</span>
-                <span>Sentence</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('phonetics', this)">
-                <span class="nav-icon" aria-hidden="true">✍️</span>
-                <span>Phonetics</span>
-            </button>
-            <button class="nav-btn" onclick="switchTab('reader', this)">
-                <span class="nav-icon" aria-hidden="true">📖</span>
-                <span>Reader</span>
-            </button>
-            <div style="margin-top:auto; font-size:11.5px; color:var(--muted); padding:8px;">
-                A0–C1 CEFR Ukrainian Curriculum<br>Dual-Accent UA/EN Voice Active
+
+            <div class="sidebar-footer">
+                <button type="button" class="sidebar-util-btn" id="top-inspector-toggle-btn" onclick="toggleGrammarInspector()" aria-label="Toggle 7-Case Grammar Inspector">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>
+                    <span>7-Case Inspector</span>
+                </button>
+                <button type="button" class="sidebar-util-btn" id="sidebar-settings-btn" onclick="openSettingsModal()" aria-label="Open Settings">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Settings</span>
+                </button>
+                <div class="sidebar-meta">
+                    <div><b id="xp-display">0</b> XP · <b id="deck-count">0</b> words · <b id="mods-display">0</b>/29<span class="sr-only" id="drills-display">0</span></div>
+                    <div style="margin-top:2px;">© 2026 Lango</div>
+                </div>
             </div>
         </nav>
 
         <main class="main" id="main-scroll-container">
             <div class="content-area">
-                <!-- TAB 1: UA -> EN RECOGNITION ANKI -->
-                <section id="tab-srs" class="hidden" aria-label="Ukrainian to English Flashcards">
-                    <div class="section-header">
-                        <div>
-                            <h1 class="section-title">Ukrainian → English Anki</h1>
-                            <p class="section-subtitle">Tap Ukrainian to hear native pronunciation; reveal English meaning & 7-case tables.</p>
+                <!-- TAB 5: STEP-BY-STEP UKRAINIAN COURSE (A0-C1, 29 MODULES) -->
+                <section id="tab-course" aria-label="Comprehensive Ukrainian Course">
+                    <div id="lango-course-track-banner"></div>
+
+                    <div class="course-hero-bar">
+                        <div style="min-width:0; flex:1;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); margin-bottom:4px;">
+                                <span id="active-mod-level" style="color:var(--lang); font-weight:600;">A0.1 · CEFR A0</span>
+                                <span aria-hidden="true">·</span>
+                                <span id="active-mod-ref">Pre-A1 Foundation · Alphabet &amp; Vowels</span>
+                            </div>
+                            <h1 id="active-mod-title" class="section-title">Reading the Ukrainian Alphabet &amp; Clear Vowels</h1>
                         </div>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <button class="btn btn-success" onclick="batchAddNextFrequencyWords(25)">+ Next 25 Words</button>
-                            <button class="btn btn-sec" onclick="batchAddNextFrequencyWords(100)">+ 100</button>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <button type="button" id="toggle-course-syllabus-btn" class="btn btn-sec" onclick="toggleCourseSyllabusDrawer()">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+                                <span id="toggle-course-syllabus-label">All 29 modules</span>
+                            </button>
                         </div>
                     </div>
 
+                    <div id="course-syllabus-drawer" class="course-syllabus-drawer hidden">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                            <div>
+                                <div style="font-size:15px; font-weight:600; color:var(--text);">Curriculum · A0 to C1</div>
+                                <div class="hint">Choose any of the 29 modules to jump to its lesson, drills, or mastery exam.</div>
+                            </div>
+                            <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="toggleCourseSyllabusDrawer(false)">Close</button>
+                        </div>
+                        <div class="stage-bar" id="course-level-filter-bar" style="margin-bottom:8px;"></div>
+                        <div class="module-grid" id="module-grid"></div>
+                    </div>
+
+                    <div class="card" id="module-workspace">
+                        <div class="stage-bar" id="stage-bar"></div>
+                        <div id="stage-content"></div>
+                    </div>
+                </section>
+
+                <!-- TAB 1: UA -> EN RECOGNITION ANKI ("Words") -->
+                <section id="tab-srs" class="hidden" aria-label="Ukrainian Words and Spaced Repetition">
+                    <header class="section-header">
+                        <div>
+                            <h1 class="section-title">Words</h1>
+                            <p class="section-subtitle">Ukrainian → English spaced repetition and the 6,000-word lexicon with 7-case paradigms.</p>
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <button type="button" class="btn btn-sec" onclick="batchAddNextFrequencyWords(25)">+ Add 25 words</button>
+                            <button type="button" class="btn btn-sec" onclick="batchAddNextFrequencyWords(100)">+ 100</button>
+                        </div>
+                    </header>
+
                     <div class="anki-stage" id="stage-srs">
                         <div class="anki-counts" role="status" aria-live="polite">
-                            <span style="color:var(--acc);">New: <b id="anki-new-count">0</b></span>
-                            <span style="color:var(--danger);">Learning: <b id="anki-learn-count">0</b></span>
-                            <span style="color:var(--success);">Due: <b id="anki-rev-count">0</b></span>
+                            <span>New <b id="anki-new-count" style="color:var(--lang);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Learning <b id="anki-learn-count" style="color:var(--warn);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Due <b id="anki-rev-count" style="color:var(--success);">0</b></span>
                         </div>
                         <div id="anki-card-body"></div>
                         <div id="anki-action-area" class="anki-action-sticky"></div>
@@ -2296,11 +2762,14 @@
                     <!-- 6,000-WORD MASTER CATALOG -->
                     <div class="card">
                         <div class="section-header" style="margin-bottom:14px;">
-                            <h2 style="margin:0; font-size:18px; font-weight:800;">📚 6,000-Word Ukrainian Lexicon & 7-Case Browser</h2>
-                            <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
-                                <input id="srs-cat-search" type="search" class="input-box" style="flex:1; min-width:160px;" placeholder="Search #1–#6000, Ukrainian or English..." oninput="srsCatPage=0; renderSrsCatalog6000()">
-                                <select id="srs-cat-level" class="input-box" style="min-width:140px;" aria-label="Filter by CEFR Level" onchange="srsCatPage=0; renderSrsCatalog6000()">
-                                    <option value="ALL">All 6,000</option>
+                            <div>
+                                <h2 style="margin:0; font-size:16.5px; font-weight:600;">6,000-word lexicon</h2>
+                                <p class="section-subtitle" style="margin-top:2px;">Search by frequency rank, Ukrainian headword, or English gloss to listen, inspect forms, or add to your deck.</p>
+                            </div>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%; margin-top:4px;">
+                                <input id="srs-cat-search" type="search" class="input-box" style="flex:1; min-width:180px;" placeholder="Search Ukrainian, English, or #rank…" oninput="srsCatPage=0; renderSrsCatalog6000()">
+                                <select id="srs-cat-level" class="input-box" style="min-width:150px;" aria-label="Filter by CEFR Level" onchange="srsCatPage=0; renderSrsCatalog6000()">
+                                    <option value="ALL">All 6,000 words</option>
                                     <option value="A1">A1 (#1–1000)</option>
                                     <option value="A2">A2 (#1001–2000)</option>
                                     <option value="B1">B1 (#2001–3500)</option>
@@ -2311,92 +2780,98 @@
                         </div>
                         <div id="srs-6000-catalog"></div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:8px;">
-                            <button class="btn btn-sec" onclick="changeSrsCatPage(-1)">← Prev 25</button>
-                            <span id="srs-cat-page-info" style="color:var(--muted); font-size:12.5px; font-weight:600; text-align:center;"></span>
-                            <button class="btn btn-sec" onclick="changeSrsCatPage(1)">Next 25 →</button>
+                            <button type="button" class="btn btn-sec" onclick="changeSrsCatPage(-1)">← Previous 25</button>
+                            <span id="srs-cat-page-info" class="hint" style="text-align:center;"></span>
+                            <button type="button" class="btn btn-sec" onclick="changeSrsCatPage(1)">Next 25 →</button>
                         </div>
                     </div>
                 </section>
 
-                <!-- TAB 2: ENGLISH -> UKRAINIAN ACTIVE RECALL ANKI -->
+                <!-- TAB 2: ENGLISH -> UKRAINIAN ACTIVE RECALL ("Recall") -->
                 <section id="tab-en2uk" class="hidden" aria-label="English to Ukrainian Active Recall">
-                    <div class="section-header">
+                    <header class="section-header">
                         <div>
-                            <h1 class="section-title">English → Ukrainian Recall</h1>
-                            <p class="section-subtitle">Produce the stressed Ukrainian word from English; verify 7-case inflection & audio.</p>
+                            <h1 class="section-title">Recall</h1>
+                            <p class="section-subtitle">Produce the Ukrainian word from its English prompt, optionally type it to check spelling, and review its paradigm.</p>
                         </div>
-                        <button class="btn btn-success" onclick="batchAddNextFrequencyWords(25)">+ Next 25 Words</button>
-                    </div>
+                        <button type="button" class="btn btn-sec" onclick="batchAddNextFrequencyWords(25)">+ Add 25 words</button>
+                    </header>
 
                     <div class="anki-stage" id="stage-en2uk">
                         <div class="anki-counts" role="status" aria-live="polite">
-                            <span style="color:var(--acc);">New: <b id="anki-new-count-en" style="display:none">0</b><b id="en2uk-new-count">0</b></span>
-                            <span style="color:var(--danger);">Learning: <b id="en2uk-learn-count">0</b></span>
-                            <span style="color:var(--success);">Due: <b id="en2uk-rev-count">0</b></span>
+                            <span>New <b id="anki-new-count-en" style="display:none">0</b><b id="en2uk-new-count" style="color:var(--lang);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Learning <b id="en2uk-learn-count" style="color:var(--warn);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Due <b id="en2uk-rev-count" style="color:var(--success);">0</b></span>
                         </div>
                         <div id="en2uk-card-body"></div>
                         <div id="en2uk-action-area" class="anki-action-sticky"></div>
                     </div>
                 </section>
 
-                <!-- TAB 3: SENTENCE CORRECTION FLASHCARDS (6,000 WORDS) -->
+                <!-- TAB 3: SENTENCE CORRECTION FLASHCARDS ("Sentences") -->
                 <section id="tab-correction" class="hidden" aria-label="Sentence Correction Flashcards">
-                    <div class="section-header">
+                    <header class="section-header">
                         <div>
-                            <h1 class="section-title">Ukrainian Sentence Correction</h1>
-                            <p class="section-subtitle">Spot and fix Ukrainian case mutations (к→ц, г→з, х→с), vocatives, and verb agreement.</p>
+                            <h1 class="section-title">Sentences</h1>
+                            <p class="section-subtitle">Spot and repair Ukrainian case endings, stem alternations (к→ц, г→з, х→с), vocative forms, and verb agreement.</p>
                         </div>
-                        <button class="btn btn-success" onclick="batchAddNextFrequencyWords(25)">+ Next 25 Cards</button>
-                    </div>
+                        <button type="button" class="btn btn-sec" onclick="batchAddNextFrequencyWords(25)">+ Add 25 cards</button>
+                    </header>
 
                     <div class="anki-stage" id="stage-corr">
                         <div class="anki-counts" role="status" aria-live="polite">
-                            <span style="color:var(--acc);">New: <b id="corr-new-count">0</b></span>
-                            <span style="color:var(--danger);">Learning: <b id="corr-learn-count">0</b></span>
-                            <span style="color:var(--success);">Due: <b id="corr-rev-count">0</b></span>
+                            <span>New <b id="corr-new-count" style="color:var(--lang);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Learning <b id="corr-learn-count" style="color:var(--warn);">0</b></span>
+                            <span aria-hidden="true">·</span>
+                            <span>Due <b id="corr-rev-count" style="color:var(--success);">0</b></span>
                         </div>
                         <div id="corr-card-body"></div>
                         <div id="corr-action-area" class="anki-action-sticky"></div>
                     </div>
                 </section>
 
-                <!-- TAB 4: 6,000-WORD PHONETICS, GRAMMAR & TOUCH CURSIVE -->
+                <!-- TAB 4: 6,000-WORD PHONETICS, GRAMMAR & TOUCH CURSIVE ("Sounds") -->
                 <section id="tab-phonetics" class="hidden" aria-label="Phonetics and Cursive Trainer">
-                    <div class="section-header">
+                    <header class="section-header">
                         <div>
-                            <h1 class="section-title">Ukrainian Phonetics & Cursive (Калігра́фія)</h1>
-                            <p class="section-subtitle">Master Ukrainian pronunciation: voiced г [ɦ] vs ґ [ɡ], bilabial в [w], vowel alternations (о/е → і) & clear final consonants.</p>
+                            <h1 class="section-title">Sounds &amp; Script</h1>
+                            <p class="section-subtitle">Practice voiced г [ɦ] vs ґ [ɡ], bilabial в [w], vowel alternations (о/е → і), and handwritten Ukrainian cursive.</p>
                         </div>
-                    </div>
+                    </header>
 
-                    <div class="card">
-                        <h2 style="margin-top:0; font-size:16px; color:var(--accent);">1. Ukrainian Pronunciation & Sound Analyzer</h2>
-                        <div id="phonetic-output" style="padding:14px; background:var(--surface-2); border-radius:var(--radius-md); font-size:14.5px; line-height:1.55;">
-                            Tap any Ukrainian word below to hear native audio, read a plain-English pronunciation guide alongside IPA, and inspect its 7-case declension or verb conjugation table!
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; margin-bottom:16px;">
+                        <div class="card" style="margin-bottom:0;">
+                            <h2 style="margin:0 0 10px 0; font-size:15px; font-weight:600; color:var(--text);">Pronunciation analyzer</h2>
+                            <div id="phonetic-output" style="padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); font-size:13.5px; line-height:1.55;">
+                                Select any Ukrainian word below to listen, read a plain-English sound guide alongside IPA, and inspect its 7-case declension table.
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                            <h2 style="margin:0; font-size:16px;">2. Ukrainian Cursive Pad</h2>
-                            <span>Target: <b id="cursive-target" style="font-family:'Snell Roundhand', 'Apple Chancery', cursive; font-size:28px; color:var(--accent); margin-left:6px;">кни́жка</b></span>
-                        </div>
-                        <canvas id="cursive-pad" width="600" height="150" style="width:100%; max-width:600px; background:var(--surface-2); border:1px solid var(--border-strong); border-radius:var(--radius-md); touch-action:none;"></canvas>
-                        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                            <button class="btn btn-sec" onclick="clearCanvas()">Clear Pad</button>
-                            <button class="btn" onclick="speakUkrainian(document.getElementById('cursive-target').innerText)">🔊 Hear Word</button>
-                            <button class="btn btn-warn" onclick="speakExplanation(currentInspectedRank)">🗣️ Audio Explanation</button>
-                            <button class="btn btn-sec" onclick="openInspectorSheet()">🔍 7-Case Table</button>
+                        <div class="card" style="margin-bottom:0;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                                <h2 style="margin:0; font-size:15px; font-weight:600;">Cursive practice pad</h2>
+                                <span class="hint">Target: <b id="cursive-target" style="font-family:var(--font-word); font-style:italic; font-size:24px; color:var(--lang); margin-left:4px;">кни́жка</b></span>
+                            </div>
+                            <canvas id="cursive-pad" width="600" height="140" style="width:100%; max-width:600px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); touch-action:none;"></canvas>
+                            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                                <button type="button" class="btn btn-sec" onclick="clearCanvas()">Clear</button>
+                                <button type="button" class="btn" onclick="speakUkrainian(document.getElementById('cursive-target').innerText)">Listen</button>
+                                <button type="button" class="btn btn-sec" onclick="speakExplanation(currentInspectedRank)">Explain</button>
+                                <button type="button" class="btn btn-sec" onclick="openInspectorSheet()">Forms</button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="section-header" style="margin-bottom:12px;">
-                            <h2 style="margin:0; font-size:17px;">3. 6,000-Word Ukrainian Phonetics Directory</h2>
-                            <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
-                                <input id="phon-search" type="search" class="input-box" style="flex:1; min-width:160px;" placeholder="Search #1–#6000..." oninput="phonPage=0; renderPhonetics6000()">
-                                <select id="phon-level" class="input-box" style="min-width:140px;" aria-label="Filter Phonetics by CEFR Level" onchange="phonPage=0; renderPhonetics6000()">
-                                    <option value="ALL">All Ranks</option>
+                            <h2 style="margin:0; font-size:16.5px; font-weight:600;">6,000-word phonetics directory</h2>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%; margin-top:4px;">
+                                <input id="phon-search" type="search" class="input-box" style="flex:1; min-width:180px;" placeholder="Search Ukrainian, English, or #rank…" oninput="phonPage=0; renderPhonetics6000()">
+                                <select id="phon-level" class="input-box" style="min-width:150px;" aria-label="Filter Phonetics by CEFR Level" onchange="phonPage=0; renderPhonetics6000()">
+                                    <option value="ALL">All ranks</option>
                                     <option value="A1">A1 (#1–1000)</option>
                                     <option value="A2">A2 (#1001–2000)</option>
                                     <option value="B1">B1 (#2001–3500)</option>
@@ -2407,108 +2882,282 @@
                         </div>
                         <div id="phon-6000-list"></div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:8px;">
-                            <button class="btn btn-sec" onclick="changePhonPage(-1)">← Prev 25</button>
-                            <span id="phon-page-info" style="color:var(--muted); font-size:12.5px; font-weight:600;"></span>
-                            <button class="btn btn-sec" onclick="changePhonPage(1)">Next 25 →</button>
+                            <button type="button" class="btn btn-sec" onclick="changePhonPage(-1)">← Previous 25</button>
+                            <span id="phon-page-info" class="hint"></span>
+                            <button type="button" class="btn btn-sec" onclick="changePhonPage(1)">Next 25 →</button>
                         </div>
                     </div>
                 </section>
 
-                <!-- TAB 5: STEP-BY-STEP UKRAINIAN COURSE (A0-C1, 29 MODULES) -->
-                <section id="tab-course" aria-label="Comprehensive Ukrainian Course">
-                    <div id="lango-course-track-banner"></div>
-                    <div class="section-header">
-                        <div>
-                            <h1 class="section-title">Step-by-Step Ukrainian Course (A0 → C1)</h1>
-                            <p class="section-subtitle">29 practical CEFR modules with clear goals, real-life dialogues, active recall, interactive drills, and mastery exams.</p>
-                        </div>
-                    </div>
-                    <div class="stage-bar" id="course-level-filter-bar" style="margin-bottom:10px;"></div>
-                    <div class="module-grid" id="module-grid"></div>
-                    <div class="card" id="module-workspace">
-                        <div style="margin-bottom:14px; display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-                            <span class="tag" id="active-mod-level" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">A0.1 • CEFR A0</span>
-                            <span class="tag" id="active-mod-ref" style="background:var(--secondary-container); color:var(--secondary-on-container); font-weight:800;">Pre-A1 Foundation • Alphabet &amp; Vowels</span>
-                            <h2 id="active-mod-title" style="margin:0; font-size:18.5px; font-weight:800; width:100%;">Reading the Ukrainian Alphabet &amp; Clear Vowels</h2>
-                        </div>
-                        <div class="stage-bar" id="stage-bar"></div>
-                        <div id="stage-content"></div>
-                    </div>
-                </section>
-
-                <!-- TAB 6: EVERYDAY VOCABULARY & MEMORY LAB (27 CATEGORIES, 8 INTERACTIVE MODES) -->
+                <!-- TAB 6: EVERYDAY VOCABULARY & MEMORY LAB ("Topics") -->
                 <section id="tab-vocab" class="hidden" aria-label="Everyday Vocabulary & Memory Lab">
-                    <div class="section-header">
+                    <header class="section-header">
                         <div>
-                            <h1 class="section-title">Everyday Vocabulary & Memory Lab</h1>
-                            <p class="section-subtitle">27 practical everyday categories with 8 interactive memory modes, audio, 7-case inspection, and FSRS integration.</p>
+                            <h1 class="section-title">Topics</h1>
+                            <p class="section-subtitle">Practice 27 everyday vocabulary categories across 8 recognition, recall, listening, and case-building modes.</p>
                         </div>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <button class="btn btn-success" onclick="addCategoryToFSRS()">+ Add Category to FSRS</button>
-                            <button class="btn btn-warn" onclick="speakCategoryGuide()">🗣️ Hear Category Guide</button>
+                            <button type="button" class="btn btn-sec" onclick="addCategoryToFSRS()">+ Add topic to deck</button>
+                            <button type="button" class="btn btn-sec" onclick="speakCategoryGuide()">Listen to guide</button>
                         </div>
-                    </div>
-
-                    <div class="card" style="margin-bottom:14px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-                            <span style="font-size:13px; font-weight:800; color:var(--text-secondary);">1. Choose an Everyday Category (27 Topics):</span>
-                            <input id="vocab-search-input" type="search" class="input-box" style="max-width:280px;" placeholder="Filter words in category..." oninput="renderEverydayVocabWorkspace()">
-                        </div>
-                        <div id="vocab-category-bar" class="stage-bar" style="display:flex; flex-wrap:wrap; gap:6px; overflow:visible;"></div>
-                    </div>
+                    </header>
 
                     <div class="card">
-                        <div style="margin-bottom:12px;">
-                            <span style="font-size:13px; font-weight:800; color:var(--text-secondary); display:block; margin-bottom:8px;">2. Select Practice & Memory Mode (8 Interactive Modes):</span>
-                            <div id="vocab-mode-bar" class="stage-bar" style="display:flex; flex-wrap:wrap; gap:6px; overflow:visible;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+                            <span class="hint" style="font-weight:500;">Topic (27 categories)</span>
+                            <input id="vocab-search-input" type="search" class="input-box" style="max-width:250px; min-height:36px; font-size:13px;" placeholder="Filter words in topic…" oninput="renderEverydayVocabWorkspace()">
                         </div>
+                        <div id="vocab-category-bar" class="stage-bar" style="margin-bottom:14px;"></div>
+
+                        <div style="padding-top:12px; border-top:1px solid var(--border-subtle); margin-bottom:14px;">
+                            <span class="hint" style="display:block; margin-bottom:8px; font-weight:500;">Exercise mode</span>
+                            <div id="vocab-mode-bar" class="stage-bar" style="margin-bottom:0;"></div>
+                        </div>
+
                         <div id="vocab-lab-workspace"></div>
                     </div>
                 </section>
 
-                <!-- TAB 6B: IDENTIFY VISUAL VOCABULARY LEARNING (20 CATEGORIES × 2 SCENES = 40 SCENES) -->
+                <!-- TAB 6B: IDENTIFY VISUAL VOCABULARY LEARNING ("Pictures", 67 APPROVED SCENES) -->
                 <section id="tab-identify" class="hidden" aria-label="Identify Visual Vocabulary">
-                    <div class="section-header">
-                        <div>
-                            <h1 class="section-title">Identify — Visual Vocabulary Scenes</h1>
-                            <p class="section-subtitle">Explore 40 verified everyday scenes across 20 categories. Tap any object to test recall in Multiple Choice or Fill in the Blank, or click Show Answer to study.</p>
-                        </div>
-                    </div>
                     <div id="identify-workspace-root"></div>
                 </section>
 
-                <!-- TAB 7: COMPREHENSIBLE INPUT READER -->
+                <!-- TAB 7: COMPREHENSIBLE INPUT READER ("Reader") -->
                 <section id="tab-reader" class="hidden" aria-label="Comprehensible Input Reader">
-                    <div class="section-header">
+                    <header class="section-header">
                         <div>
-                            <h1 class="section-title">Ukrainian Comprehensible Reader</h1>
-                            <p class="section-subtitle">Tap any Ukrainian word token to hear HD pronunciation and open its 7-case breakdown.</p>
+                            <h1 class="section-title">Reader</h1>
+                            <p class="section-subtitle">Graded Ukrainian stories from A0 to C1. Tap any dotted word for audio and its 7-case declension table.</p>
                         </div>
-                        <button class="btn" onclick="speakStory()">🔊 Listen to Full Passage</button>
-                    </div>
-                    <div class="card" id="story-container" style="padding:24px; line-height:2.1;"></div>
+                        <button type="button" class="btn" onclick="speakStory()">Listen to story</button>
+                    </header>
+                    <div class="card" id="story-container" style="padding:22px; line-height:1.95;"></div>
                 </section>
             </div>
 
             <!-- Mobile Bottom-Sheet Backdrop -->
             <div id="inspector-backdrop" class="sheet-backdrop" onclick="closeInspectorSheet()"></div>
 
-            <!-- RIGHT PANEL / iOS BOTTOM SHEET: DEEP 7-CASE GRAMMAR & AUDIO INSPECTOR -->
-            <aside id="grammar-inspector" class="inspector" aria-label="Deep Grammar Breakdown">
+            <!-- RIGHT DOCKABLE PANEL / MOBILE BOTTOM SHEET: DEEP 7-CASE GRAMMAR INSPECTOR -->
+            <aside id="grammar-inspector" class="inspector desktop-collapsed" aria-label="Deep Grammar Breakdown">
                 <div class="sheet-drag-handle" onclick="closeInspectorSheet()">
                     <div class="sheet-pill-bar"></div>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3 style="margin:0; font-size:16px; font-weight:800; color:var(--accent);">🔍 7-Case & Verb Breakdown</h3>
-                    <button class="btn btn-sec sheet-drag-handle" style="min-height:36px; padding:4px 14px; font-size:12px;" onclick="closeInspectorSheet()">Done</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+                    <h3 style="margin:0; font-size:14.5px; font-weight:600; color:var(--text);">Word &amp; paradigm</h3>
+                    <button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 9px; font-size:12px;" onclick="toggleGrammarInspector()" title="Hide Grammar Inspector">Close</button>
                 </div>
-                <div id="inspector-body" style="color:var(--text-secondary); font-size:13.5px; line-height:1.55;">
-                    Tap any of the <b>6,000 Ukrainian words</b> in the Anki Decks, Catalog, Course, or Phonetics Explorer to view its complete 7-Case Declension (including Vocative) or Verb Conjugation table and listen to a Dual-Accent spoken explanation.
+                <div id="inspector-body" class="hint" style="font-size:13.5px;">
+                    Tap any Ukrainian word across Course, Reader, Pictures, or Words to hear audio and view its complete 7-case declension or verb conjugation table.
                 </div>
             </aside>
         </main>
     </div>
 
+    <!-- VOCABBUILDER SETTINGS DIALOG -->
+    <div id="lango-settings-modal" class="vb-modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="vb-settings-title" onclick="if(event.target===this) closeSettingsModal()">
+        <div class="vb-settings-dialog">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding-bottom:12px; border-bottom:1px solid var(--border-subtle);">
+                <div>
+                    <h2 id="vb-settings-title" style="margin:0; font-size:18px; font-weight:600; color:var(--text);">Settings</h2>
+                    <div class="hint">Appearance, pronunciation, language track, authoring, and offline Docker export.</div>
+                </div>
+                <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="closeSettingsModal()">Done</button>
+            </div>
+
+            <div class="vb-settings-row">
+                <div>
+                    <div style="font-size:14px; font-weight:500; color:var(--text);">Appearance</div>
+                    <div class="hint">Match system theme or lock light/dark (<span id="theme-toggle-icon">Auto</span>)</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="vb-seg-group" role="group" aria-label="Theme">
+                        <button type="button" class="vb-seg-btn active" data-theme-opt="system" onclick="applyColorTheme('system')">Auto</button>
+                        <button type="button" class="vb-seg-btn" data-theme-opt="light" onclick="applyColorTheme('light')">Light</button>
+                        <button type="button" class="vb-seg-btn" data-theme-opt="dark" onclick="applyColorTheme('dark')">Dark</button>
+                    </div>
+                    <button type="button" id="theme-toggle-btn" class="sr-only" onclick="cycleColorTheme()">Cycle Theme</button>
+                </div>
+            </div>
+
+            <div class="vb-settings-row">
+                <div>
+                    <div style="font-size:14px; font-weight:500; color:var(--text);">Audio &amp; voice</div>
+                    <div class="hint">Browser pronunciation or optional dual-accent neural TTS</div>
+                </div>
+                <button type="button" class="btn btn-sec" id="openai-voice-btn" onclick="closeSettingsModal(); openVoiceModal();">
+                    <span id="voice-label-pill">Choose Voice</span>
+                </button>
+            </div>
+
+            <div class="vb-settings-row">
+                <div>
+                    <div style="font-size:14px; font-weight:500; color:var(--text);">Language &amp; course track</div>
+                    <div class="hint">Switch Ukrainian or 28 multilingual tracks</div>
+                </div>
+                <button type="button" class="btn btn-sec" onclick="closeSettingsModal(); openLanguageSelectorModal();">Switch</button>
+            </div>
+
+            <div class="vb-settings-row">
+                <div>
+                    <div style="font-size:14px; font-weight:500; color:var(--text);">Content Studio (CMS)</div>
+                    <div class="hint">Edit lessons, lexemes, and scene hotspots</div>
+                </div>
+                <button type="button" class="btn btn-sec" id="lango-open-cms-studio-btn" data-testid="btn-open-cms-studio" onclick="closeSettingsModal(); openLangoContentStudio();">Open Studio</button>
+            </div>
+
+            <div class="vb-settings-row">
+                <div>
+                    <div style="font-size:14px; font-weight:500; color:var(--text);">Local Docker project</div>
+                    <div class="hint">Download ready-to-run Windows container on port 4000</div>
+                </div>
+                <button type="button" class="btn btn-sec" id="lango-download-docker-zip-btn" data-testid="btn-download-docker-zip" onclick="closeSettingsModal(); openDockerZipModal(false);">
+                    <span id="lango-download-docker-zip-label">Docker .ZIP (Port 4000)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOWS DOCKER PORT 4000 DOWNLOAD & INSTRUCTIONS MODAL -->
+    <div id="lango-docker-zip-modal" data-testid="lango-docker-zip-modal" class="hidden" style="position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.62); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:16px;">
+        <div class="card" style="width:100%; max-width:660px; max-height:90dvh; overflow-y:auto; margin:0; padding:24px; border:1px solid var(--border-strong); box-shadow:var(--shadow-popover);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border-subtle);">
+                <div>
+                    <div class="hint" style="color:var(--lang); font-weight:600;">Local Container Export · Port 4000</div>
+                    <h2 style="margin:4px 0 0 0; font-size:18.5px; font-weight:600;">Export Learn Ukrainian (Lango) Docker Project</h2>
+                </div>
+                <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px;" onclick="closeDockerZipModal()">Close</button>
+            </div>
+
+            <div id="docker-zip-status-box" data-testid="docker-zip-status-box" style="padding:12px 14px; border-radius:var(--radius-md); background:var(--surface-2); border:1px solid var(--border-subtle); margin-bottom:14px;">
+                <div id="docker-zip-status-text" style="font-size:13px; font-weight:500; color:var(--text);">
+                    Ready to build and download <b>lango-ukrainian-docker-port-4000.zip</b>. Choose an archive option below:
+                </div>
+                <div style="width:100%; height:7px; background:var(--surface-3); border-radius:999px; overflow:hidden; margin-top:8px;">
+                    <div id="docker-zip-progress-bar" style="width:0%; height:100%; background:var(--lang); transition:width 180ms ease;"></div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:10px; margin-bottom:14px;">
+                <button type="button" data-testid="btn-start-full-docker-zip" class="btn" style="padding:11px 14px; font-size:13px;" onclick="downloadDockerProjectZip('full')">
+                    1. Download Full Docker .ZIP (All 67 Scenes)
+                </button>
+                <button type="button" data-testid="btn-start-light-docker-zip" class="btn btn-sec" style="padding:11px 14px; font-size:13px;" onclick="downloadDockerProjectZip('lightweight')">
+                    2. Download Lightweight Docker .ZIP
+                </button>
+            </div>
+
+            <div style="padding:12px 14px; border-radius:var(--radius-md); background:var(--surface-2); border:1px solid var(--border-subtle); font-size:12.5px; margin-bottom:16px;">
+                <b style="color:var(--text);">Direct Browser Tab Fallbacks (if iframe downloads are restricted):</b>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                    <a data-testid="link-direct-docker-zip-newtab" href="/downloads/lango-ukrainian-docker-port-4000.zip" target="_blank" rel="noopener noreferrer" download="lango-ukrainian-docker-port-4000.zip" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px; text-decoration:none;">
+                        Open Full .ZIP in New Tab
+                    </a>
+                    <a href="/downloads/lango-ukrainian-docker-port-4000-lightweight.zip" target="_blank" rel="noopener noreferrer" download="lango-ukrainian-docker-port-4000-lightweight.zip" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px; text-decoration:none;">
+                        Open Lightweight .ZIP in New Tab
+                    </a>
+                    <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="copyDirectDockerZipUrl()">
+                        Copy Direct URL
+                    </button>
+                </div>
+            </div>
+
+            <div style="font-size:13px; line-height:1.6; color:var(--text-secondary);">
+                <div style="font-weight:600; color:var(--text); margin-bottom:6px;">Run Locally on Windows (Port 4000):</div>
+                <ol style="margin:0; padding-left:18px;">
+                    <li>Start <b>Docker Desktop for Windows</b> until the engine status is running.</li>
+                    <li>Extract <code>lango-ukrainian-docker-port-4000.zip</code> into a local folder.</li>
+                    <li>Open <b>PowerShell</b> in that folder and run:
+                        <pre style="margin:6px 0; padding:10px 12px; border-radius:8px; background:#0f131c; color:#f3f5f9; font-family:var(--font-mono); font-size:12px; overflow-x:auto;">docker compose up --build -d</pre>
+                    </li>
+                    <li>Open <code style="font-family:var(--font-mono); color:var(--text);">http://localhost:4000</code> in your browser.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+<script>
+window.openDockerZipModal = function(autoStart) {
+    var modal = document.getElementById('lango-docker-zip-modal');
+    if (modal) modal.classList.remove('hidden');
+    if (autoStart) {
+        window.downloadDockerProjectZip('full');
+    }
+};
+window.closeDockerZipModal = function() {
+    var modal = document.getElementById('lango-docker-zip-modal');
+    if (modal) modal.classList.add('hidden');
+};
+window.copyDirectDockerZipUrl = function() {
+    var url = window.location.origin + '/downloads/lango-ukrainian-docker-port-4000.zip';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url);
+    }
+    var statusText = document.getElementById('docker-zip-status-text');
+    if (statusText) {
+        statusText.innerHTML = 'Copied direct URL. Paste into a new browser tab:<br><code style="font-size:11.5px; word-break:break-all;">' + url + '</code>';
+    }
+};
+window.downloadDockerProjectZip = async function(mode) {
+    var effectiveMode = mode === 'lightweight' ? 'lightweight' : 'full';
+    var statusText = document.getElementById('docker-zip-status-text');
+    var progressBar = document.getElementById('docker-zip-progress-bar');
+    var topLabel = document.getElementById('lango-download-docker-zip-label');
+    try {
+        if (statusText) statusText.textContent = 'Preparing Docker .ZIP archive on server (' + effectiveMode + ' mode)...';
+        if (progressBar) progressBar.style.width = '8%';
+        if (topLabel) topLabel.textContent = 'Building .ZIP...';
+
+        var manifestRes = await fetch('/api/docker-zip/manifest?mode=' + effectiveMode, { cache: 'no-store' });
+        if (!manifestRes.ok) {
+            throw new Error('Manifest HTTP ' + manifestRes.status);
+        }
+        var manifest = await manifestRes.json();
+        var totalChunks = manifest.totalChunks || 1;
+        var chunks = [];
+
+        for (var i = 0; i < totalChunks; i++) {
+            var pct = Math.round(((i + 0.2) / totalChunks) * 100);
+            if (statusText) {
+                statusText.textContent = 'Downloading chunk ' + (i + 1) + ' of ' + totalChunks + ' (' + manifest.totalMegabytes + ' MB total)...';
+            }
+            if (progressBar) progressBar.style.width = pct + '%';
+            if (topLabel) topLabel.textContent = 'Downloading ' + pct + '%';
+
+            var chunkRes = await fetch('/api/docker-zip/chunk?mode=' + effectiveMode + '&index=' + i, { cache: 'no-store' });
+            if (!chunkRes.ok) {
+                throw new Error('Chunk ' + i + ' HTTP ' + chunkRes.status);
+            }
+            var buf = await chunkRes.arrayBuffer();
+            chunks.push(buf);
+        }
+
+        if (progressBar) progressBar.style.width = '100%';
+        var blob = new Blob(chunks, { type: 'application/zip' });
+        var blobUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = manifest.filename || 'lango-ukrainian-docker-port-4000.zip';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+        }, 15000);
+
+        if (statusText) {
+            statusText.innerHTML = '<b>' + manifest.filename + '</b> (' + manifest.totalMegabytes + ' MB, ' + manifest.filesCount + ' files) assembled and download started. If blocked by sandbox, use <b>Open Full .ZIP in New Tab</b> below.';
+        }
+        if (topLabel) topLabel.textContent = 'Docker .ZIP (Port 4000)';
+    } catch (err) {
+        if (statusText) {
+            statusText.innerHTML = 'Automatic chunk download encountered an error (' + (err && err.message ? err.message : err) + '). Click <b>Open Full .ZIP in New Tab</b> below to download directly.';
+        }
+        if (topLabel) topLabel.textContent = 'Docker .ZIP (Port 4000)';
+    }
+};
+</script>
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

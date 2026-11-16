@@ -1,0 +1,13 @@
+services:
+  lango-ukrainian:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lango-ukrainian-port-4000
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    restart: unless-stopped

@@ -2377,5 +2377,667 @@ test('Phase 1 Batch 10 Final Curation, Final 1,200-Concept Curriculum Reconcilia
   assert.equal(finalSummary.foreignLandmarksCount, 0);
 });
 
+test('Visual Batches 1–5: Scenes 11–36 Real Image Assets, 468 Candidate Hotspots, and Learner-Safety Gating', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+
+  const expectedBatchScenes: Array<{
+    sceneNumber: number;
+    sceneCode: string;
+    assetPath: string;
+    batchExecutionNumber: number;
+  }> = [
+    {
+      sceneNumber: 11,
+      sceneCode: 'uk_scene_11_dining_festive_ukrainian_table',
+      assetPath: '/assets/identify/dining-room/uk_scene_11_dining_festive_ukrainian_table.jpg',
+      batchExecutionNumber: 1,
+    },
+    {
+      sceneNumber: 12,
+      sceneCode: 'uk_scene_12_dining_family_supper',
+      assetPath: '/assets/identify/dining-room/uk_scene_12_dining_family_supper.jpg',
+      batchExecutionNumber: 1,
+    },
+    {
+      sceneNumber: 13,
+      sceneCode: 'uk_scene_13_living_room_kyiv_apartment',
+      assetPath: '/assets/identify/living-room/uk_scene_13_living_room_kyiv_apartment.jpg',
+      batchExecutionNumber: 2,
+    },
+    {
+      sceneNumber: 14,
+      sceneCode: 'uk_scene_14_living_room_music_corner',
+      assetPath: '/assets/identify/living-room/uk_scene_14_living_room_music_corner.jpg',
+      batchExecutionNumber: 2,
+    },
+    {
+      sceneNumber: 15,
+      sceneCode: 'uk_scene_15_bedroom_master_suite',
+      assetPath: '/assets/identify/bedroom/uk_scene_15_bedroom_master_suite.jpg',
+      batchExecutionNumber: 3,
+    },
+    {
+      sceneNumber: 16,
+      sceneCode: 'uk_scene_16_bedroom_dressing_vanity',
+      assetPath: '/assets/identify/bedroom/uk_scene_16_bedroom_dressing_vanity.jpg',
+      batchExecutionNumber: 3,
+    },
+    {
+      sceneNumber: 17,
+      sceneCode: 'uk_scene_17_bedroom_child_nursery',
+      assetPath: '/assets/identify/bedroom/uk_scene_17_bedroom_child_nursery.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 18,
+      sceneCode: 'uk_scene_18_bathroom_modern_apartment',
+      assetPath: '/assets/identify/bathroom/uk_scene_18_bathroom_modern_apartment.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 19,
+      sceneCode: 'uk_scene_19_bathroom_vanity_hygiene',
+      assetPath: '/assets/identify/bathroom/uk_scene_19_bathroom_vanity_hygiene.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 20,
+      sceneCode: 'uk_scene_20_hallway_apartment_entry',
+      assetPath: '/assets/identify/hallway-entry/uk_scene_20_hallway_apartment_entry.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 21,
+      sceneCode: 'uk_scene_21_balcony_urban_garden',
+      assetPath: '/assets/identify/balcony-garden/uk_scene_21_balcony_urban_garden.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 22,
+      sceneCode: 'uk_scene_22_home_workshop_tools',
+      assetPath: '/assets/identify/home-workshop/uk_scene_22_home_workshop_tools.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 23,
+      sceneCode: 'uk_scene_23_supermarket_fresh_produce',
+      assetPath: '/assets/identify/supermarket/uk_scene_23_supermarket_fresh_produce.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 24,
+      sceneCode: 'uk_scene_24_supermarket_dairy_bakery',
+      assetPath: '/assets/identify/supermarket/uk_scene_24_supermarket_dairy_bakery.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 25,
+      sceneCode: 'uk_scene_25_supermarket_checkout_counter',
+      assetPath: '/assets/identify/supermarket/uk_scene_25_supermarket_checkout_counter.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 26,
+      sceneCode: 'uk_scene_26_farmers_market_bazaar',
+      assetPath: '/assets/identify/farmers-market/uk_scene_26_farmers_market_bazaar.jpg',
+      batchExecutionNumber: 4,
+    },
+    {
+      sceneNumber: 27,
+      sceneCode: 'uk_scene_27_farmers_market_vegetables_herbs',
+      assetPath: '/assets/identify/farmers-market/uk_scene_27_farmers_market_vegetables_herbs.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 28,
+      sceneCode: 'uk_scene_28_bakery_craft_pastry',
+      assetPath: '/assets/identify/bakery/uk_scene_28_bakery_craft_pastry.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 29,
+      sceneCode: 'uk_scene_29_cafe_lviv_coffeehouse',
+      assetPath: '/assets/identify/cafe/uk_scene_29_cafe_lviv_coffeehouse.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 30,
+      sceneCode: 'uk_scene_30_restaurant_ukrainian_bistro',
+      assetPath: '/assets/identify/restaurant/uk_scene_30_restaurant_ukrainian_bistro.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 31,
+      sceneCode: 'uk_scene_31_clothing_store_boutique',
+      assetPath: '/assets/identify/clothing-store/uk_scene_31_clothing_store_boutique.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 32,
+      sceneCode: 'uk_scene_32_clothing_winter_outerwear',
+      assetPath: '/assets/identify/clothing-store/uk_scene_32_clothing_winter_outerwear.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 33,
+      sceneCode: 'uk_scene_33_shoe_and_tailor_atelier',
+      assetPath: '/assets/identify/clothing-store/uk_scene_33_shoe_and_tailor_atelier.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 34,
+      sceneCode: 'uk_scene_34_city_street_kyiv_chestnuts',
+      assetPath: '/assets/identify/city-streets/uk_scene_34_city_street_kyiv_chestnuts.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 35,
+      sceneCode: 'uk_scene_35_city_square_lviv_rynok',
+      assetPath: '/assets/identify/city-streets/uk_scene_35_city_square_lviv_rynok.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 36,
+      sceneCode: 'uk_scene_36_city_rainy_sidewalk',
+      assetPath: '/assets/identify/city-streets/uk_scene_36_city_rainy_sidewalk.jpg',
+      batchExecutionNumber: 5,
+    },
+    {
+      sceneNumber: 37,
+      sceneCode: 'uk_scene_37_city_winter_snow_street',
+      assetPath: '/assets/identify/city-streets/uk_scene_37_city_winter_snow_street.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 38,
+      sceneCode: 'uk_scene_38_public_transport_tram_trolleybus',
+      assetPath: '/assets/identify/public-transportation/uk_scene_38_public_transport_tram_trolleybus.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 39,
+      sceneCode: 'uk_scene_39_public_transport_kyiv_metro',
+      assetPath: '/assets/identify/public-transportation/uk_scene_39_public_transport_kyiv_metro.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 40,
+      sceneCode: 'uk_scene_40_railway_station_ukrposhta_uz',
+      assetPath: '/assets/identify/airport-train-station/uk_scene_40_railway_station_ukrposhta_uz.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 41,
+      sceneCode: 'uk_scene_41_airport_terminal_check_in',
+      assetPath: '/assets/identify/airport-train-station/uk_scene_41_airport_terminal_check_in.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 42,
+      sceneCode: 'uk_scene_42_automotive_car_service',
+      assetPath: '/assets/identify/city-streets/uk_scene_42_automotive_car_service.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 43,
+      sceneCode: 'uk_scene_43_hospital_clinic_consultation',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_43_hospital_clinic_consultation.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 44,
+      sceneCode: 'uk_scene_44_hospital_first_aid_treatment',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_44_hospital_first_aid_treatment.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 45,
+      sceneCode: 'uk_scene_45_pharmacy_apotheca',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_45_pharmacy_apotheca.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 46,
+      sceneCode: 'uk_scene_46_dental_and_optics_clinic',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_46_dental_and_optics_clinic.jpg',
+      batchExecutionNumber: 6,
+    },
+    {
+      sceneNumber: 47,
+      sceneCode: 'uk_scene_47_portrait_human_face_features',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_47_portrait_human_face_features.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 48,
+      sceneCode: 'uk_scene_48_portrait_human_body_posture',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_48_portrait_human_body_posture.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 49,
+      sceneCode: 'uk_scene_49_school_classroom_lesson',
+      assetPath: '/assets/identify/classroom/uk_scene_49_school_classroom_lesson.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 50,
+      sceneCode: 'uk_scene_50_school_desk_stationery',
+      assetPath: '/assets/identify/classroom/uk_scene_50_school_desk_stationery.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 51,
+      sceneCode: 'uk_scene_51_school_science_laboratory',
+      assetPath: '/assets/identify/classroom/uk_scene_51_school_science_laboratory.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 52,
+      sceneCode: 'uk_scene_52_library_reading_hall',
+      assetPath: '/assets/identify/library/uk_scene_52_library_reading_hall.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 53,
+      sceneCode: 'uk_scene_53_office_it_coworking_kyiv',
+      assetPath: '/assets/identify/office/uk_scene_53_office_it_coworking_kyiv.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 54,
+      sceneCode: 'uk_scene_54_office_electronics_accessories',
+      assetPath: '/assets/identify/office/uk_scene_54_office_electronics_accessories.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 55,
+      sceneCode: 'uk_scene_55_post_office_ukrposhta',
+      assetPath: '/assets/identify/office/uk_scene_55_post_office_ukrposhta.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 56,
+      sceneCode: 'uk_scene_56_bank_and_administrative_center',
+      assetPath: '/assets/identify/office/uk_scene_56_bank_and_administrative_center.jpg',
+      batchExecutionNumber: 7,
+    },
+    {
+      sceneNumber: 57,
+      sceneCode: 'uk_scene_57_park_shevchenko_autumn',
+      assetPath: '/assets/identify/park-garden/uk_scene_57_park_shevchenko_autumn.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 58,
+      sceneCode: 'uk_scene_58_botanical_garden_flowers',
+      assetPath: '/assets/identify/park-garden/uk_scene_58_botanical_garden_flowers.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 59,
+      sceneCode: 'uk_scene_59_backyard_garden_tools',
+      assetPath: '/assets/identify/park-garden/uk_scene_59_backyard_garden_tools.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 60,
+      sceneCode: 'uk_scene_60_playground_family_courtyard',
+      assetPath: '/assets/identify/playground/uk_scene_60_playground_family_courtyard.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 61,
+      sceneCode: 'uk_scene_61_gym_fitness_studio',
+      assetPath: '/assets/identify/gym-fitness/uk_scene_61_gym_fitness_studio.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 62,
+      sceneCode: 'uk_scene_62_sports_stadium_court',
+      assetPath: '/assets/identify/gym-fitness/uk_scene_62_sports_stadium_court.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 63,
+      sceneCode: 'uk_scene_63_swimming_pool_and_winter_rink',
+      assetPath: '/assets/identify/gym-fitness/uk_scene_63_swimming_pool_and_winter_rink.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 64,
+      sceneCode: 'uk_scene_64_countryside_ukrainian_village_yard',
+      assetPath: '/assets/identify/countryside/uk_scene_64_countryside_ukrainian_village_yard.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 65,
+      sceneCode: 'uk_scene_65_countryside_farmyard_animals',
+      assetPath: '/assets/identify/countryside/uk_scene_65_countryside_farmyard_animals.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 66,
+      sceneCode: 'uk_scene_66_countryside_wheat_and_sunflower_fields',
+      assetPath: '/assets/identify/countryside/uk_scene_66_countryside_wheat_and_sunflower_fields.jpg',
+      batchExecutionNumber: 8,
+    },
+    {
+      sceneNumber: 67,
+      sceneCode: 'uk_scene_67_carpathian_forest_wildlife',
+      assetPath: '/assets/identify/countryside/uk_scene_67_carpathian_forest_wildlife.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 68,
+      sceneCode: 'uk_scene_68_carpathian_camping_bonfire',
+      assetPath: '/assets/identify/camping-nature/uk_scene_68_carpathian_camping_bonfire.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 69,
+      sceneCode: 'uk_scene_69_river_dnipro_boating_fishing',
+      assetPath: '/assets/identify/beach-nature/uk_scene_69_river_dnipro_boating_fishing.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 70,
+      sceneCode: 'uk_scene_70_nature_insects_and_garden_macro',
+      assetPath: '/assets/identify/park-garden/uk_scene_70_nature_insects_and_garden_macro.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 71,
+      sceneCode: 'uk_scene_71_pet_shop_and_vet_clinic',
+      assetPath: '/assets/identify/hospital-pharmacy/uk_scene_71_pet_shop_and_vet_clinic.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 72,
+      sceneCode: 'uk_scene_72_zoo_exotic_animals_kyiv',
+      assetPath: '/assets/identify/park-garden/uk_scene_72_zoo_exotic_animals_kyiv.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 73,
+      sceneCode: 'uk_scene_73_art_studio_and_museum',
+      assetPath: '/assets/identify/art-studio/uk_scene_73_art_studio_and_museum.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 74,
+      sceneCode: 'uk_scene_74_theater_and_concert_hall',
+      assetPath: '/assets/identify/art-studio/uk_scene_74_theater_and_concert_hall.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 75,
+      sceneCode: 'uk_scene_75_photo_and_media_studio',
+      assetPath: '/assets/identify/office/uk_scene_75_photo_and_media_studio.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 76,
+      sceneCode: 'uk_scene_76_hair_salon_barbershop',
+      assetPath: '/assets/identify/bathroom/uk_scene_76_hair_salon_barbershop.jpg',
+      batchExecutionNumber: 9,
+    },
+    {
+      sceneNumber: 77,
+      sceneCode: 'uk_scene_77_hotel_reception_and_room',
+      assetPath: '/assets/identify/hotel/uk_scene_77_hotel_reception_and_room.jpg',
+      batchExecutionNumber: 10,
+    },
+    {
+      sceneNumber: 78,
+      sceneCode: 'uk_scene_78_emergency_and_civic_services',
+      assetPath: '/assets/identify/city-streets/uk_scene_78_emergency_and_civic_services.jpg',
+      batchExecutionNumber: 10,
+    },
+    {
+      sceneNumber: 79,
+      sceneCode: 'uk_scene_79_architecture_church_and_castle',
+      assetPath: '/assets/identify/city-streets/uk_scene_79_architecture_church_and_castle.jpg',
+      batchExecutionNumber: 10,
+    },
+    {
+      sceneNumber: 80,
+      sceneCode: 'uk_scene_80_family_celebration_gift_exchange',
+      assetPath: '/assets/identify/living-room/uk_scene_80_family_celebration_gift_exchange.jpg',
+      batchExecutionNumber: 10,
+    },
+  ];
+
+  const batchScenes = expectedBatchScenes.map((exp) => {
+    const s = IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN[exp.sceneNumber - 1];
+    assert.equal(s.sceneNumber, exp.sceneNumber);
+    assert.equal(s.sceneCode, exp.sceneCode);
+    assert.equal(s.assetPath, exp.assetPath);
+    assert.equal(s.batchExecutionNumber, exp.batchExecutionNumber);
+    return s;
+  });
+
+  // Verify real files on disk and all 1260 candidate hotspots across Scenes 11–80
+  for (const s of batchScenes) {
+    assert.equal(s.assetExistsOnDisk, true);
+    assert.equal(s.imageGenerationStatus, 'generated_verified_on_disk');
+    assert.deepEqual(s.imageDimensions, {
+      width: 1376,
+      height: 768,
+      aspectRatio: '16:9',
+    });
+    assert.equal(s.candidateHotspotCount, 18);
+    assert.equal(s.learnerExposureAllowed, false);
+
+    const diskPath = path.resolve(process.cwd(), 'public' + s.assetPath!);
+    assert.equal(fs.existsSync(diskPath), true, `Expected saved image at ${diskPath}`);
+    const stat = fs.statSync(diskPath);
+    assert.ok(stat.size > 100000, `Expected non-empty real photograph at ${diskPath}`);
+
+    for (const t of s.targets) {
+      assert.ok(
+        t.candidateNormalizedBoundingBox,
+        `Scene ${s.sceneCode} target ${t.vocabularyId} must have a candidateNormalizedBoundingBox`
+      );
+      const box = t.candidateNormalizedBoundingBox!;
+      assert.ok(box.x >= 0 && box.x <= 1);
+      assert.ok(box.y >= 0 && box.y <= 1);
+      assert.ok(box.width >= 0.015 && box.width <= 1);
+      assert.ok(box.height >= 0.02 && box.height <= 1);
+      assert.ok(box.x + box.width <= 1.0001);
+      assert.ok(box.y + box.height <= 1.0001);
+      assert.equal(t.hotspotReviewStatus, 'needs_human_review');
+      assert.equal(t.hotspotVerified, false);
+      assert.equal(t.isTargetPlayableForLearner, false);
+      assert.equal(t.normalizedBoundingBox, null);
+    }
+  }
+
+  // Verify persistent checkpoint file src/identifyVisualBatchProgress.json and 1-to-1 hotspot-to-vocabulary identity
+  const progressPath = path.resolve(process.cwd(), 'src/identifyVisualBatchProgress.json');
+  assert.equal(fs.existsSync(progressPath), true);
+  const progressJson = JSON.parse(fs.readFileSync(progressPath, 'utf8'));
+  assert.equal(progressJson.lastBatchNumber, 10);
+  assert.equal(progressJson.cumulativeProgress.batchesCompleted, 10);
+  assert.equal(progressJson.cumulativeProgress.scenesWithVerifiedImagesTotal, 80);
+  assert.equal(progressJson.cumulativeProgress.batchGeneratedScenesWithImagesCount, 70);
+  assert.equal(progressJson.cumulativeProgress.scenesRemainingWithoutImagesCount, 0);
+  assert.equal(
+    progressJson.cumulativeProgress.batchCreatedCandidateHotspotsAwaitingHumanReviewCount,
+    1260
+  );
+
+  for (const s of batchScenes) {
+    const checkpointScene = progressJson.scenes[s.sceneCode];
+    assert.ok(checkpointScene, `Missing checkpoint entry for ${s.sceneCode}`);
+    assert.equal(checkpointScene.actualSavedImagePath, s.assetPath);
+    assert.equal(checkpointScene.imageGenerationStatus, 'image_verified');
+    assert.equal(checkpointScene.hotspotsCreated, 18);
+    assert.equal(checkpointScene.hotspotsVerified, 0);
+    assert.equal(checkpointScene.hotspotReviewStatus, 'needs_human_review');
+    assert.equal(checkpointScene.learnerExposureAllowed, false);
+    assert.equal(checkpointScene.vocabularyAssignments.length, 18);
+    assert.equal(checkpointScene.candidateHotspots.length, 18);
+
+    for (let i = 0; i < 18; i++) {
+      const target = s.targets[i];
+      const ch = checkpointScene.candidateHotspots[i];
+      assert.equal(checkpointScene.vocabularyAssignments[i], target.vocabularyId);
+      assert.equal(ch.slotNumber, i + 1);
+      assert.equal(ch.vocabularyId, target.vocabularyId);
+      assert.equal(ch.uk, target.uk);
+      assert.equal(ch.isPrimaryIntroduction, target.isPrimaryIntroduction);
+      assert.equal(ch.reviewStatus, 'needs_human_review');
+      assert.deepEqual(ch.normalizedBoundingBox, target.candidateNormalizedBoundingBox);
+    }
+  }
+});
+
+test('Batch 4–10 Semantic Integrity Audit & 1260-Hotspot Authoritative Identity Verification: verifies all 1260 pending candidate hotspots across Scenes 11–80, conflicted IDs, ext-v2-0001/ext-v2-0003 meanings, Scene 25 barcode scanner geometry, and displaced primary destinations', async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const masterById = new Map(IDENTIFY_MASTER_2000_NOUNS.map((m) => [m.vocabularyId, m]));
+  const extById = new Map(
+    IDENTIFY_MISSING_CONCEPT_EXTENSIONS_28.map((e) => [e.vocabularyId, e])
+  );
+  const finalById = new Map(
+    IDENTIFY_FINAL_1200_CURRICULUM_CONCEPTS.map((c) => [c.vocabularyId, c])
+  );
+
+  // 1. Verify ext-v2-0001 (дріт / electrical wire) and ext-v2-0003 (чай / tea) retain their authoritative identities
+  const ext0001 = extById.get('ext-v2-0001');
+  assert.ok(ext0001);
+  assert.equal(ext0001.conceptId, 'missing-concept-v2-0001');
+  assert.equal(ext0001.originalAuditProposedUk, 'дріт');
+  assert.equal(ext0001.en, 'electrical wire / cord');
+
+  const ext0003 = extById.get('ext-v2-0003');
+  assert.ok(ext0003);
+  assert.equal(ext0003.conceptId, 'missing-concept-v2-0003');
+  assert.equal(ext0003.originalAuditProposedUk, 'чай');
+  assert.equal(ext0003.en, 'tea (cup/pot of tea)');
+
+  // 2. Verify all 22 audited conflict/extension IDs match their authoritative Ukrainian headwords and English glosses
+  const authoritativeIdentityExpectations: ReadonlyArray<{
+    vocabularyId: string;
+    uk: string;
+    en: string;
+    sceneNumber: number;
+    slotNumber: number;
+  }> = [
+    { vocabularyId: 'id-v2-1508', uk: 'комбінезо́н', en: 'overalls / jumpsuit', sceneNumber: 17, slotNumber: 1 },
+    { vocabularyId: 'id-v2-1519', uk: 'пана́ма', en: 'bucket hat', sceneNumber: 17, slotNumber: 2 },
+    { vocabularyId: 'id-v2-1177', uk: 'пра́льний порошо́к', en: 'laundry detergent box', sceneNumber: 18, slotNumber: 1 },
+    { vocabularyId: 'id-v2-1901', uk: 'туш для вій', en: 'mascara wand tube', sceneNumber: 19, slotNumber: 8 },
+    { vocabularyId: 'id-v2-1903', uk: 'бігуді́', en: 'hair curler rollers', sceneNumber: 19, slotNumber: 11 },
+    { vocabularyId: 'id-v2-1768', uk: 'три́мач для рушникі́в', en: 'towel ring / bar', sceneNumber: 19, slotNumber: 13 },
+    { vocabularyId: 'id-v2-336', uk: 'коридо́р', en: 'hallway', sceneNumber: 20, slotNumber: 3 },
+    { vocabularyId: 'id-v2-339', uk: 'дверна́ ру́чка', en: 'door handle', sceneNumber: 20, slotNumber: 18 },
+    { vocabularyId: 'id-v2-1505', uk: 'дощови́к', en: 'hooded rain poncho', sceneNumber: 21, slotNumber: 1 },
+    { vocabularyId: 'ext-v2-0003', uk: 'чай', en: 'tea (cup/pot of tea)', sceneNumber: 21, slotNumber: 9 },
+    { vocabularyId: 'id-v2-365', uk: 'руле́тка будіве́льна', en: 'tape measure', sceneNumber: 22, slotNumber: 1 },
+    { vocabularyId: 'id-v2-1151', uk: 'сантиметро́ва стрі́чка', en: 'tailor measuring tape', sceneNumber: 22, slotNumber: 7 },
+    { vocabularyId: 'ext-v2-0001', uk: 'дріт', en: 'electrical wire / cord', sceneNumber: 22, slotNumber: 11 },
+    { vocabularyId: 'id-v2-1264', uk: 'айва́', en: 'quince', sceneNumber: 23, slotNumber: 8 },
+    { vocabularyId: 'id-v2-1266', uk: 'поме́ло', en: 'pomelo', sceneNumber: 23, slotNumber: 9 },
+    { vocabularyId: 'id-v2-1279', uk: 'пла́влений сир', en: 'processed cheese triangle', sceneNumber: 24, slotNumber: 1 },
+    { vocabularyId: 'id-v2-1280', uk: 'згуще́не молоко́', en: 'condensed milk tin', sceneNumber: 24, slotNumber: 3 },
+    { vocabularyId: 'id-v2-640', uk: 'ска́нер штрих-ко́дів', en: 'barcode scanner', sceneNumber: 25, slotNumber: 2 },
+    { vocabularyId: 'id-v2-1101', uk: 'паверба́нк', en: 'power bank', sceneNumber: 25, slotNumber: 9 },
+    { vocabularyId: 'id-v2-445', uk: 'капу́ста', en: 'cabbage head', sceneNumber: 26, slotNumber: 10 },
+    { vocabularyId: 'id-v2-417', uk: 'пе́рсик', en: 'peach', sceneNumber: 26, slotNumber: 14 },
+    { vocabularyId: 'id-v2-418', uk: 'абрико́с', en: 'apricot', sceneNumber: 26, slotNumber: 15 },
+  ];
+
+  for (const exp of authoritativeIdentityExpectations) {
+    const authSource = masterById.get(exp.vocabularyId) ?? extById.get(exp.vocabularyId);
+    assert.ok(authSource, `Expected ${exp.vocabularyId} in authoritative master or extension registry`);
+    const finalConcept = finalById.get(exp.vocabularyId);
+    assert.ok(finalConcept, `Expected ${exp.vocabularyId} in final 1,200 curriculum`);
+    assert.equal(finalConcept.conceptId, authSource.conceptId);
+    assert.equal(finalConcept.preferredLearnerHeadwordUk, exp.uk);
+    assert.equal(finalConcept.en, exp.en);
+
+    const scene = IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN[exp.sceneNumber - 1];
+    const target = scene.targets[exp.slotNumber - 1];
+    assert.equal(target.vocabularyId, exp.vocabularyId);
+    assert.equal(target.conceptId, authSource.conceptId);
+    assert.equal(target.uk, exp.uk);
+    assert.equal(target.en, exp.en);
+  }
+
+  // 3. Verify repaired Scene 25 barcode scanner geometry (distinct from POS payment terminal id-v2-646)
+  const scene25 = IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN[24];
+  const scannerTarget = scene25.targets.find((t) => t.vocabularyId === 'id-v2-640')!;
+  const terminalTarget = scene25.targets.find((t) => t.vocabularyId === 'id-v2-646')!;
+  assert.deepEqual(scannerTarget.candidateNormalizedBoundingBox, {
+    x: 0.51,
+    y: 0.64,
+    width: 0.11,
+    height: 0.18,
+  });
+  assert.notDeepEqual(
+    scannerTarget.candidateNormalizedBoundingBox,
+    terminalTarget.candidateNormalizedBoundingBox
+  );
+
+  // 4. Verify all 1260 pending candidate hotspots across Scenes 11–80 resolve to authoritative master/extension records
+  const progressPath = path.resolve(process.cwd(), 'src/identifyVisualBatchProgress.json');
+  const progressJson = JSON.parse(fs.readFileSync(progressPath, 'utf8'));
+  assert.equal(progressJson.batch4SemanticAudit.status, 'PASSED_AFTER_REPAIR');
+  assert.equal(progressJson.batch4SemanticAudit.totalPendingCandidateHotspotsVerifiedCount, 288);
+  assert.equal(progressJson.batch5PreBatchAudit.auditPassed, true);
+  assert.equal(progressJson.batch5PreBatchAudit.sourceIdentityErrorCount, 0);
+
+  let verifiedPendingCount = 0;
+  for (let idx = 10; idx < 80; idx++) {
+    const scene = IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN[idx];
+    const cpScene = progressJson.scenes[scene.sceneCode];
+    assert.ok(cpScene);
+    for (let slotIdx = 0; slotIdx < 18; slotIdx++) {
+      const t = scene.targets[slotIdx];
+      const ch = cpScene.candidateHotspots[slotIdx];
+      const fc = finalById.get(t.vocabularyId)!;
+      assert.ok(fc);
+      const authSource = masterById.get(t.vocabularyId) ?? extById.get(t.vocabularyId);
+      assert.ok(authSource, `Missing authoritative source for ${t.vocabularyId}`);
+      assert.equal(t.conceptId, fc.conceptId);
+      assert.equal(t.uk, fc.preferredLearnerHeadwordUk);
+      assert.equal(t.en, fc.en);
+      assert.equal(ch.vocabularyId, t.vocabularyId);
+      assert.equal(ch.conceptId, fc.conceptId);
+      assert.equal(ch.uk, fc.preferredLearnerHeadwordUk);
+      assert.equal(ch.en, fc.en);
+      assert.equal(t.hotspotReviewStatus, 'needs_human_review');
+      assert.equal(t.hotspotVerified, false);
+      assert.equal(t.isTargetPlayableForLearner, false);
+      verifiedPendingCount++;
+    }
+  }
+  assert.equal(verifiedPendingCount, 1260);
+
+  // 5. Verify displaced primary concepts from Batch 1–4 swaps landed in semantically appropriate scenes (Scenes 27–80)
+  const expectedDisplacedDestinations: ReadonlyArray<[string, number, string]> = [
+    ['id-v2-517', 28, 'uk_scene_28_bakery_craft_pastry'],
+    ['id-v2-571', 30, 'uk_scene_30_restaurant_ukrainian_bistro'],
+    ['ext-v2-0006', 30, 'uk_scene_30_restaurant_ukrainian_bistro'],
+    ['noun-bank-financial', 34, 'uk_scene_34_city_street_kyiv_chestnuts'],
+    ['id-v2-653', 34, 'uk_scene_34_city_street_kyiv_chestnuts'],
+    ['id-v2-607', 35, 'uk_scene_35_city_square_lviv_rynok'],
+    ['id-v2-726', 42, 'uk_scene_42_automotive_car_service'],
+    ['gm-machine', 61, 'uk_scene_61_gym_fitness_studio'],
+  ];
+  for (const [vocabId, expectedSceneNum, expectedSceneCode] of expectedDisplacedDestinations) {
+    const destScene = IDENTIFY_UKRAINIAN_80_SCENE_CURRICULUM_PLAN.find((s) =>
+      s.targets.some((t) => t.isPrimaryIntroduction && t.vocabularyId === vocabId)
+    );
+    assert.ok(destScene, `Expected primary introduction scene for ${vocabId}`);
+    assert.equal(destScene.sceneNumber, expectedSceneNum);
+    assert.equal(destScene.sceneCode, expectedSceneCode);
+  }
+});
+
+
 
 

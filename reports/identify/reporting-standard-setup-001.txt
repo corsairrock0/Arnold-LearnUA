@@ -1,0 +1,102 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution ID: reporting-standard-setup-001
+- Task: Establish a permanent reporting format and persistence rules for the entire Learn Ukrainian (Lango / Слово) project, including the Identify visual-generation workflow.
+- Created docs/LANGO_REPORTING_STANDARD.md defining the mandatory one-code-block plain-text reporting format, 7 required sections, persistence directory conventions, non-destructive archiving rules, and checkpoint linkage rules.
+- Created root-level AGENTS.md so future development sessions and instructions reference docs/LANGO_REPORTING_STANDARD.md, reports/identify/REPORT_INDEX.md, reports/identify/LATEST_REPORT.txt, and src/identifyVisualBatchProgress.json.
+- Created persistent report archive directory reports/identify/ containing historical audit/batch/recovery reports, the current execution report, LATEST_REPORT.txt, and REPORT_INDEX.md.
+- Linked src/identifyVisualBatchProgress.json to the reporting standard and latest persisted report without altering any existing checkpoint fields, scene statuses, or hotspot counts.
+- Preserved project state completely: zero new images were generated, zero curriculum concepts or hotspots were changed, and no new batch generation was started in this turn.
+
+2. CHANGES COMPLETED
+- Created docs/LANGO_REPORTING_STANDARD.md (version 1.0.0) documenting:
+  - Single fenced Markdown code block (```text ... ```) output requirement with zero text outside the block.
+  - Mandatory 7-section report template (STATUS, 1. EXECUTION SUMMARY, 2. CHANGES COMPLETED, 3. FILES CREATED OR MODIFIED, 4. VALIDATION RESULTS, 5. PERSISTENT CHECKPOINT, 6. REMAINING WORK, 7. NEXT EXECUTION).
+  - Persistent report archive conventions in reports/identify/ and reports/<domain>/.
+  - Rules prohibiting overwriting historical reports and requiring LATEST_REPORT.txt to update only after the current report is saved.
+  - Checkpoint authority rules linking reports to src/identifyVisualBatchProgress.json.
+- Created root-level AGENTS.md referencing docs/LANGO_REPORTING_STANDARD.md, reports/identify/REPORT_INDEX.md, reports/identify/LATEST_REPORT.txt, and src/identifyVisualBatchProgress.json.
+- Created and populated reports/identify/ with:
+  - reports/identify/batch-004-audit.txt (Batch 4 semantic integrity audit & remediation record)
+  - reports/identify/batch-005-audit.txt (Batch 5 pre-batch vocabulary & source-identity audit record)
+  - reports/identify/batch-005-report.txt (Batch 5 execution report, Scenes 27–36)
+  - reports/identify/batch-006-report.txt (Batch 6 execution report, Scenes 37–46)
+  - reports/identify/recovery-report.txt (Batch 6 read-only recovery inspection report)
+  - reports/identify/reporting-standard-setup-001.txt (this reporting-standard configuration execution report)
+  - reports/identify/LATEST_REPORT.txt (mirror of the latest saved report, updated after saving reporting-standard-setup-001.txt)
+  - reports/identify/REPORT_INDEX.md (master index of all persisted Identify reports)
+- Updated src/identifyVisualBatchProgress.json to include a non-breaking top-level "reportingStandard" metadata block referencing docs/LANGO_REPORTING_STANDARD.md, AGENTS.md, reports/identify/REPORT_INDEX.md, reports/identify/LATEST_REPORT.txt, and reports/identify/reporting-standard-setup-001.txt while preserving all existing checkpoint fields verbatim.
+
+3. FILES CREATED OR MODIFIED
+- Created:
+  - docs/LANGO_REPORTING_STANDARD.md
+  - AGENTS.md
+  - reports/identify/batch-004-audit.txt
+  - reports/identify/batch-005-audit.txt
+  - reports/identify/batch-005-report.txt
+  - reports/identify/batch-006-report.txt
+  - reports/identify/recovery-report.txt
+  - reports/identify/reporting-standard-setup-001.txt
+  - reports/identify/LATEST_REPORT.txt
+  - reports/identify/REPORT_INDEX.md
+- Modified:
+  - src/identifyVisualBatchProgress.json (added non-breaking "reportingStandard" linkage metadata; all existing batch, scene, and summary fields preserved intact)
+- Unchanged (verified untouched):
+  - src/identifyCurriculumFinal1200.ts
+  - src/__tests__/identifyCurationPhase1.test.ts
+  - public/assets/identify/* (all 36 batch PNGs + 10 legacy SVGs preserved)
+
+4. VALIDATION RESULTS
+- Persistent files verified on disk:
+  - docs/LANGO_REPORTING_STANDARD.md: present and readable
+  - AGENTS.md: present and readable
+  - reports/identify/REPORT_INDEX.md: present and readable
+  - reports/identify/LATEST_REPORT.txt: present and matches reporting-standard-setup-001.txt
+  - reports/identify/reporting-standard-setup-001.txt: present and readable
+  - reports/identify/recovery-report.txt: present and readable
+  - reports/identify/batch-006-report.txt: present and readable
+  - reports/identify/batch-005-report.txt: present and readable
+  - reports/identify/batch-005-audit.txt: present and readable
+  - reports/identify/batch-004-audit.txt: present and readable
+- Unit & Integrity Test Suite (npx tsx --test src/__tests__/identifyCurationPhase1.test.ts):
+  - 9 / 9 test suites PASS (0 failures)
+- Build & Lint Validation:
+  - compile_applet (tsc & vite build): PASS
+  - lint_applet (tsc --noEmit): PASS
+
+5. PERSISTENT CHECKPOINT
+- Authoritative checkpoint file: src/identifyVisualBatchProgress.json
+- Reporting standard metadata linked in checkpoint:
+  - version: "1.0.0"
+  - specificationPath: "docs/LANGO_REPORTING_STANDARD.md"
+  - agentInstructionsPath: "AGENTS.md"
+  - reportDirectory: "reports/identify"
+  - reportIndexPath: "reports/identify/REPORT_INDEX.md"
+  - latestReportPath: "reports/identify/LATEST_REPORT.txt"
+  - lastPersistedReportPath: "reports/identify/reporting-standard-setup-001.txt"
+- Actual saved project checkpoint state on disk (preserved unchanged from prior completed turns):
+  - lastBatchNumber: 6
+  - batchesCompleted: 6
+  - scenesWithVerifiedImagesTotal: 46 (Scenes 1–10 playable with 49 active hotspots + Scenes 11–46 in candidate_review with 36 PNG illustrations and 648 candidate hotspots)
+  - scenesRemainingWithoutImagesCount: 34 (Scenes 47–80)
+  - manuallyVerifiedActiveHotspotsCount: 49
+  - batchCreatedCandidateHotspotsAwaitingHumanReviewCount: 648
+  - remainingUnverifiedPlannedAssociationsCount: 1,391
+- Note on Batch 6 state: In the actual saved files on disk (src/identifyVisualBatchProgress.json, src/identifyCurriculumFinal1200.ts, and public/assets/identify/), Batch 6 (Scenes 37–46) was already saved prior to this reporting-configuration turn, as verified in reports/identify/recovery-report.txt. Zero new batch image generation was started during this reporting-standard setup turn.
+
+6. REMAINING WORK
+- 34 planned scenes (Scenes 47–80) remain without generated images (10 scenes per future batch across Batches 7–10).
+- 648 candidate hotspots across Scenes 11–46 remain gated in candidate_review awaiting human QA promotion.
+- 1,391 planned scene-concept associations remain in planned_only status across Scenes 47–80 (plus unplaced tertiary concepts in earlier scenes).
+
+7. NEXT EXECUTION
+- All future Lango tasks and Identify batches must follow docs/LANGO_REPORTING_STANDARD.md, archive plain-text execution reports in reports/identify/ (or domain-specific reports/<domain>/), update reports/identify/LATEST_REPORT.txt and reports/identify/REPORT_INDEX.md, and return the entire chat response inside one fenced ```text code block.
+- Next Identify visual batch when instructed by the user: Pre-Batch 7 vocabulary/source-identity audit and Batch 7 visual implementation for Scenes 47–56 (uk_scene_47_portrait_human_face_features through uk_scene_56_bank_and_administrative_center).
+
+REPORTING STANDARD: PERSISTENT IN PROJECT FILES
+COPYABLE REPORT FORMAT: ENABLED
+PREVIOUS PROJECT STATE: PRESERVED
+BATCH 6: NOT STARTED

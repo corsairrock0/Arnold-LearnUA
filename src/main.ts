@@ -212,14 +212,18 @@ export function applyColorTheme(mode: string): void {
   const iconEl = document.getElementById('theme-toggle-icon');
   if (mode === 'light') {
     root.setAttribute('data-theme', 'light');
-    if (iconEl) iconEl.innerText = '☀️';
+    if (iconEl) iconEl.innerText = 'Light';
   } else if (mode === 'dark') {
     root.setAttribute('data-theme', 'dark');
-    if (iconEl) iconEl.innerText = '🌙';
+    if (iconEl) iconEl.innerText = 'Dark';
   } else {
     root.removeAttribute('data-theme');
-    if (iconEl) iconEl.innerText = '🌗';
+    if (iconEl) iconEl.innerText = 'Auto';
   }
+  document.querySelectorAll('[data-theme-opt]').forEach((btn) => {
+    const val = btn.getAttribute('data-theme-opt');
+    btn.classList.toggle('active', val === mode);
+  });
 }
 
 export function cycleColorTheme(): void {
@@ -233,15 +237,50 @@ export function cycleColorTheme(): void {
   applyColorTheme(next);
 }
 
+export function openSettingsModal(): void {
+  triggerHaptic('light');
+  document.getElementById('lango-settings-modal')?.classList.remove('hidden');
+  applyColorTheme(currentThemeMode);
+}
+
+export function closeSettingsModal(): void {
+  document.getElementById('lango-settings-modal')?.classList.add('hidden');
+}
+
 export function openInspectorSheet(): void {
   triggerHaptic('light');
-  document.getElementById('grammar-inspector')?.classList.add('sheet-open');
+  const insp = document.getElementById('grammar-inspector');
+  insp?.classList.remove('desktop-collapsed');
+  insp?.classList.add('sheet-open');
   document.getElementById('inspector-backdrop')?.classList.add('open');
+  document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
 }
 
 export function closeInspectorSheet(): void {
   document.getElementById('grammar-inspector')?.classList.remove('sheet-open');
   document.getElementById('inspector-backdrop')?.classList.remove('open');
+}
+
+export function toggleGrammarInspector(forceOpen?: boolean): void {
+  triggerHaptic('light');
+  const insp = document.getElementById('grammar-inspector');
+  const btn = document.getElementById('top-inspector-toggle-btn');
+  if (!insp) return;
+  if (typeof window !== 'undefined' && window.innerWidth <= 960) {
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !insp.classList.contains('sheet-open');
+    if (shouldOpen) openInspectorSheet();
+    else closeInspectorSheet();
+    return;
+  }
+  const currentlyCollapsed = insp.classList.contains('desktop-collapsed');
+  const nextShow = typeof forceOpen === 'boolean' ? forceOpen : currentlyCollapsed;
+  if (nextShow) {
+    insp.classList.remove('desktop-collapsed');
+    btn?.classList.add('inspector-active');
+  } else {
+    insp.classList.add('desktop-collapsed');
+    btn?.classList.remove('inspector-active');
+  }
 }
 
 function ensureActionButtonsVisible(actionElId: string): void {
@@ -877,8 +916,8 @@ export function renderAnkiStage(): void {
   if (!bodyEl || !actionEl) return;
 
   if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 UA → EN Queue Complete!</h2><p style="color:var(--text-secondary); margin:0;">Add more verified words from the lexicon below or review another deck.</p></div>`;
-    actionEl.innerHTML = `<button class="btn btn-success" style="width:100%;" onclick="batchAddNextFrequencyWords(25)">+ Add Next 25 Words</button>`;
+    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Load the next frequent words from the lexicon below or practice another skill.</p></div>`;
+    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 words</button>`;
     return;
   }
 
@@ -889,45 +928,47 @@ export function renderAnkiStage(): void {
 
   if (!ankiFlipped) {
     bodyEl.innerHTML = `
-      <div style="margin:auto 0;">
-        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">Entry #${item.rank} / ${MAX_RANK} • ${item.level} • ${item.pos}</span>
-        <div class="anki-front-word" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
-        <div style="font-size:13.5px; color:var(--text-secondary); margin-bottom:10px;">Pronunciation guide: <b>${phon.plainGuide}</b> <span style="font-family:ui-monospace, SFMono-Regular, monospace; color:var(--accent);">${phon.ipa}</span></div>
-        <button class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">🔊 Hear Ukrainian Pronunciation</button>
+      <div style="margin:auto 0; padding:12px 0;">
+        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
+        <div class="anki-front-word word" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
+        <div class="hint" style="margin-bottom:14px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · <span style="font-family:var(--font-mono);">${phon.ipa}</span></div>
+        <button class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
       </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipAnkiCard()">Show English Meaning & Example</button>`;
+    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipAnkiCard()">Show answer <kbd class="vb-kbd" data-slot="kbd" style="margin-left:6px; background:rgba(255,255,255,0.16); color:inherit; border-color:transparent;">Space</kbd></button>`;
   } else {
     const iv = getNextIntervals(currentAnkiCard);
     bodyEl.innerHTML = `
       <div style="text-align:left;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <div>
-            <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">#${item.rank} • ${item.level}</span>
-            <b style="font-size:26px; color:var(--text); margin-left:6px;">${item.ru}</b>
-            <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:15px; margin-left:6px;">${phon.ipa}</span>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
+            <span class="word" style="font-size:30px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
+            <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
+            <span class="tag">#${item.rank} · ${item.level}</span>
           </div>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">🔊 Word</button>
-            <button class="btn btn-warn" onclick="speakExplanation(${item.rank})">🗣️ Explain</button>
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
           </div>
         </div>
-        <div style="font-size:21px; font-weight:800; color:var(--success); margin:6px 0 4px 0;">${item.en}</div>
-        <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:6px;"><b>Sounds like:</b> <span style="color:var(--text); font-weight:700;">${phon.plainGuide}</span> • <span style="color:var(--warn); font-weight:600;">${phon.notes}</span></div>
-        <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:8px;"><b>Grammar:</b> ${gram.summaryTag} — ${gram.usageNote}</div>
-        <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); font-size:13.5px; margin-bottom:10px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-          <b>🔊 Example in Context:</b> <span style="color:var(--accent); font-weight:700;">${gram.exampleRu}</span><br><span style="color:var(--text-secondary)">${gram.exampleEn}</span>
+        <div style="font-size:20px; font-weight:600; color:var(--text); margin:8px 0 6px 0;">${item.en}</div>
+        <div class="hint" style="margin-bottom:6px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${phon.notes}</div>
+        <div class="hint" style="margin-bottom:10px;"><b style="color:var(--text);">${gram.summaryTag}</b> — ${gram.usageNote}</div>
+        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
+          <div class="word" style="font-size:16.5px; color:var(--text);">${gram.exampleRu}</div>
+          <div class="hint" style="margin-top:3px;">${gram.exampleEn}</div>
         </div>
-        <details style="background:var(--surface-2); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-weight:700; font-size:13px; color:var(--accent);">📐 View Full Inflection Table (Optional)</summary>
+        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:8px;">
+          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
           <div style="margin-top:8px;">${gram.tableHtml}</div>
         </details>
       </div>`;
     actionEl.innerHTML = `
+      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
       <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeAnkiCard(1)"><small>&lt; 1m</small>Again</button>
-        <button class="anki-btn anki-hard" onclick="gradeAnkiCard(2)"><small>${iv.hard}d</small>Hard</button>
-        <button class="anki-btn anki-good" onclick="gradeAnkiCard(3)"><small>${iv.good}d</small>Good</button>
-        <button class="anki-btn anki-easy" onclick="gradeAnkiCard(4)"><small>${iv.easy}d</small>Easy</button>
+        <button class="anki-btn anki-again" onclick="gradeAnkiCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
+        <button class="anki-btn anki-hard" onclick="gradeAnkiCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
+        <button class="anki-btn anki-good" onclick="gradeAnkiCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
+        <button class="anki-btn anki-easy" onclick="gradeAnkiCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
       </div>`;
   }
 }
@@ -970,8 +1011,8 @@ export function renderEn2UkStage(): void {
   if (!bodyEl || !actionEl) return;
 
   if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 EN → UA Recall Queue Complete!</h2></div>`;
-    actionEl.innerHTML = `<button class="btn btn-success" style="width:100%;" onclick="batchAddNextFrequencyWords(25)">+ Add Next 25 Words</button>`;
+    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Add more frequent words to continue productive recall.</p></div>`;
+    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 words</button>`;
     return;
   }
 
@@ -982,13 +1023,13 @@ export function renderEn2UkStage(): void {
 
   if (!en2ukFlipped) {
     bodyEl.innerHTML = `
-      <div style="margin:auto 0;">
-        <span class="tag" style="background:var(--warn-container); color:var(--warn-on-container);">EN → UA Recall • #${item.rank} (${item.level})</span>
-        <div class="anki-front-word" style="color:var(--text); font-size:clamp(24px, 6.5vw, 36px);">"${item.en}"</div>
-        <div style="color:var(--text-secondary); font-size:13px; margin-bottom:12px;">Part of Speech: <b>${item.pos}</b> — Recall or type the Ukrainian word:</div>
-        <input id="en2uk-user-guess" class="input-box" style="max-width:340px; width:100%; text-align:center;" placeholder="Optional: Type Ukrainian word..." onkeydown="if(event.key==='Enter') flipEn2UkCard()">
+      <div style="margin:auto 0; max-width:460px; width:100%; align-self:center; padding:10px 0;">
+        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
+        <div style="font-size:clamp(24px, 5vw, 32px); font-weight:600; color:var(--text); letter-spacing:-0.015em; margin:16px 0 8px 0;">${item.en}</div>
+        <div class="hint" style="margin-bottom:14px;">Say or type it in Ukrainian</div>
+        <input id="en2uk-user-guess" class="answer-line" placeholder="Type in Ukrainian (optional)…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter') flipEn2UkCard()">
       </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipEn2UkCard()">Show Ukrainian Answer</button>`;
+    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipEn2UkCard()">Check / Show answer</button>`;
   } else {
     const iv = getNextIntervals(currentEn2UkCard);
     const cleanTarget = item.ru.replace(/\u0301/g, '').toLowerCase().trim();
@@ -998,36 +1039,41 @@ export function renderEn2UkStage(): void {
       .trim();
     const guessFeedbackHtml = cleanGuess
       ? cleanGuess === cleanTarget
-        ? `<div style="padding:6px 10px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700; margin-bottom:6px;">✅ Exact match! You typed «${lastEn2UkUserGuess}».</div>`
-        : `<div style="padding:6px 10px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700; margin-bottom:6px;">You typed «${lastEn2UkUserGuess}» → Target: «${item.ru}».</div>`
+        ? `<div style="padding:8px 12px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">Right · You typed «${lastEn2UkUserGuess}»</div>`
+        : `<div style="padding:8px 12px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">You typed «${lastEn2UkUserGuess}» · Answer: <span class="word">${item.ru}</span></div>`
       : '';
 
     bodyEl.innerHTML = `
       <div style="text-align:left;">
         ${guessFeedbackHtml}
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <div>
-            <span class="tag" style="background:var(--warn-container); color:var(--warn-on-container);">#${item.rank} • ${item.en}</span>
-            <b style="font-size:26px; color:var(--text); margin-left:6px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">🔊 ${item.ru}</b>
-            <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:15px; margin-left:6px;">${phon.ipa}</span>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
+            <span class="hint">Answer</span>
+            <span class="word" style="font-size:30px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
+            <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
           </div>
-          <button class="btn btn-warn" onclick="speakExplanation(${item.rank})">🗣️ Hear Explanation</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
+          </div>
         </div>
-        <div style="font-size:12.5px; color:var(--text-secondary); margin:6px 0;"><b>Sounds like:</b> <b>${phon.plainGuide}</b> • <b>Grammar:</b> ${gram.summaryTag} — ${gram.usageNote}</div>
-        <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); font-size:13.5px; margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-          <b>🔊 Context Sentence:</b> <span style="color:var(--accent); font-weight:700;">${gram.exampleRu}</span><br><span style="color:var(--text-secondary)">${gram.exampleEn}</span>
+        <div class="hint" style="margin:6px 0 10px 0;"><b style="color:var(--text);">${item.en}</b> · Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${gram.summaryTag}</div>
+        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
+          <div class="word" style="font-size:16.5px; color:var(--text);">${gram.exampleRu}</div>
+          <div class="hint" style="margin-top:3px;">${gram.exampleEn}</div>
         </div>
-        <details style="background:var(--surface-2); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-weight:700; font-size:13px; color:var(--accent);">📐 View Full Inflection Table (Optional)</summary>
+        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:8px;">
+          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
           <div style="margin-top:8px;">${gram.tableHtml}</div>
         </details>
       </div>`;
     actionEl.innerHTML = `
+      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
       <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeEn2UkCard(1)"><small>&lt; 1m</small>Again</button>
-        <button class="anki-btn anki-hard" onclick="gradeEn2UkCard(2)"><small>${iv.hard}d</small>Hard</button>
-        <button class="anki-btn anki-good" onclick="gradeEn2UkCard(3)"><small>${iv.good}d</small>Good</button>
-        <button class="anki-btn anki-easy" onclick="gradeEn2UkCard(4)"><small>${iv.easy}d</small>Easy</button>
+        <button class="anki-btn anki-again" onclick="gradeEn2UkCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
+        <button class="anki-btn anki-hard" onclick="gradeEn2UkCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
+        <button class="anki-btn anki-good" onclick="gradeEn2UkCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
+        <button class="anki-btn anki-easy" onclick="gradeEn2UkCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
       </div>`;
   }
 }
@@ -1077,8 +1123,8 @@ export function renderCorrectionStage(): void {
   if (!bodyEl || !actionEl) return;
 
   if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:24px 12px;"><h2 style="color:var(--success); margin:0 0 8px 0;">🎉 Sentence Correction Queue Complete!</h2></div>`;
-    actionEl.innerHTML = `<button class="btn btn-success" style="width:100%;" onclick="batchAddNextFrequencyWords(25)">+ Add Next 25 Sentence Cards</button>`;
+    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Add more sentence cards to practice Ukrainian case governance.</p></div>`;
+    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 cards</button>`;
     return;
   }
 
@@ -1090,16 +1136,16 @@ export function renderCorrectionStage(): void {
   if (!corrFlipped) {
     const highlightedWrong = corr.wrongRu.replace(
       /\*([^*]+)\*/,
-      `<span style="color:var(--danger); text-decoration:underline wavy var(--danger); font-weight:800;">$1</span>`
+      `<span style="color:var(--danger); text-decoration:underline wavy var(--danger); font-weight:600;">$1</span>`
     );
     bodyEl.innerHTML = `
-      <div style="margin:auto 0;">
-        <span class="tag" style="background:var(--danger-container); color:var(--danger-on-container);">🛠️ Fix the Grammar • #${item.rank} (${item.ru} = ${item.en})</span>
-        <div style="font-size:clamp(20px, 5.2vw, 26px); font-weight:700; color:var(--text); margin:14px 0 8px 0; line-height:1.4;">❌ ${highlightedWrong}</div>
-        <div style="color:var(--text-secondary); font-size:13px; margin-bottom:12px;">Intended meaning: <i>"${corr.enMeaning}"</i></div>
-        <input id="corr-user-input" class="input-box" style="max-width:340px; width:100%; text-align:center;" placeholder="Optional: Type corrected form (${corr.wrongWord} → ?)..." onkeydown="if(event.key==='Enter') flipCorrectionCard()">
+      <div style="margin:auto 0; max-width:520px; width:100%; align-self:center; padding:10px 0;">
+        <span class="tag">#${item.rank} · <span class="word">${item.ru}</span> (${item.en})</span>
+        <div class="word" style="font-size:clamp(21px, 4.5vw, 28px); color:var(--text); margin:16px 0 8px 0; line-height:1.38;">${highlightedWrong}</div>
+        <div class="hint" style="margin-bottom:14px;">“${corr.enMeaning}”</div>
+        <input id="corr-user-input" class="answer-line" placeholder="Repair «${corr.wrongWord}»…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter') flipCorrectionCard()">
       </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipCorrectionCard()">Show Corrected Ukrainian Sentence</button>`;
+    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipCorrectionCard()">Check / Show corrected sentence</button>`;
   } else {
     const iv = getNextIntervals(currentCorrCard);
     const cleanTarget = corr.rightWord
@@ -1112,38 +1158,39 @@ export function renderCorrectionStage(): void {
       .trim();
     const guessBanner = cleanGuess
       ? cleanGuess === cleanTarget
-        ? `<div style="padding:6px 10px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700; margin-bottom:6px;">✅ Spot on! You typed «${lastCorrUserGuess}».</div>`
-        : `<div style="padding:6px 10px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-xs); font-size:12.5px; font-weight:700; margin-bottom:6px;">You typed «${lastCorrUserGuess}» → Correct form: «${corr.rightWord}».</div>`
+        ? `<div style="padding:8px 12px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">Right · «${lastCorrUserGuess}»</div>`
+        : `<div style="padding:8px 12px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">You typed «${lastCorrUserGuess}» · Correct form: <span class="word">${corr.rightWord}</span></div>`
       : '';
 
     bodyEl.innerHTML = `
       <div style="text-align:left;">
         ${guessBanner}
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
-          <span class="tag" style="background:var(--success-container); color:var(--success-on-container);">✓ ${corr.ruleTitle}</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+          <span class="tag" style="background:var(--success-container); color:var(--success-on-container);">${corr.ruleTitle}</span>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">🔊 Sentence</button>
-            <button class="btn btn-warn" onclick="speakCorrectionExplanation(${item.rank})">🗣️ Explain</button>
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">Listen</button>
+            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakCorrectionExplanation(${item.rank})">Explain</button>
           </div>
         </div>
-        <div style="font-size:13.5px; color:var(--danger); text-decoration:line-through; opacity:0.85;">❌ ${corr.wrongRu.replace(/\*/g, '')}</div>
-        <div style="font-size:19.5px; font-weight:800; color:var(--success); margin:4px 0 8px 0; cursor:pointer; line-height:1.35;" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">
-          ✅ ${corr.rightRu.replace(corr.rightWord, `<u style="color:var(--accent)">${corr.rightWord}</u>`)}
+        <div class="hint" style="text-decoration:line-through;">${corr.wrongRu.replace(/\*/g, '')}</div>
+        <div class="word" style="font-size:22px; color:var(--text); margin:6px 0 10px 0; cursor:pointer; line-height:1.35;" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">
+          ${corr.rightRu.replace(corr.rightWord, `<mark class="mark">${corr.rightWord}</mark>`)}
         </div>
-        <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); border-left:4px solid var(--warn); font-size:12.5px; line-height:1.45; margin-bottom:8px;">
-          <b style="color:var(--warn);">Why (${corr.wrongWord} → ${corr.rightWord}):</b><br>${corr.explanation}
+        <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); font-size:13px; line-height:1.5; margin-bottom:8px;">
+          <b>${corr.wrongWord} → <span class="word">${corr.rightWord}</span>:</b> ${corr.explanation}
         </div>
-        <details style="background:var(--surface-2); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-weight:700; font-size:13px; color:var(--accent);">📐 View Full Inflection Table (Optional)</summary>
+        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
           <div style="margin-top:8px;">${gram.tableHtml}</div>
         </details>
       </div>`;
     actionEl.innerHTML = `
+      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
       <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeCorrectionCard(1)"><small>&lt; 1m</small>Again</button>
-        <button class="anki-btn anki-hard" onclick="gradeCorrectionCard(2)"><small>${iv.hard}d</small>Hard</button>
-        <button class="anki-btn anki-good" onclick="gradeCorrectionCard(3)"><small>${iv.good}d</small>Good</button>
-        <button class="anki-btn anki-easy" onclick="gradeCorrectionCard(4)"><small>${iv.easy}d</small>Easy</button>
+        <button class="anki-btn anki-again" onclick="gradeCorrectionCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
+        <button class="anki-btn anki-hard" onclick="gradeCorrectionCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
+        <button class="anki-btn anki-good" onclick="gradeCorrectionCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
+        <button class="anki-btn anki-easy" onclick="gradeCorrectionCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
       </div>`;
   }
 }
@@ -1273,16 +1320,20 @@ export function inspectWordDeep(
   if (inspectorBody) {
     inspectorBody.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">Entry #${item.rank} / ${MAX_RANK} • ${item.level}</span>
-        <button class="btn btn-warn" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="speakExplanation(${item.rank})">🗣️ Hear Explanation</button>
+        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+          <button class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" onclick="speakExplanation(${item.rank})">Explain</button>
+        </div>
       </div>
-      <div style="font-size:30px; font-weight:800; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">🔊 ${item.ru}</div>
-      <div style="font-size:13.5px; color:var(--text-secondary); margin-top:2px;">Sounds like: <b style="color:var(--text);">${phon.plainGuide}</b> <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:15px; margin-left:4px;">${phon.ipa}</span></div>
-      <div style="font-size:19px; font-weight:800; color:var(--success); margin:6px 0;">${item.en}</div>
-      <div style="font-size:12.5px; color:var(--warn); margin-bottom:8px; font-weight:600;">${phon.notes}</div>
-      <div style="font-size:13px; color:var(--text); margin-bottom:8px;"><b>${gram.summaryTag}</b><br><span style="color:var(--text-secondary)">${gram.usageNote}</span></div>
-      <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); font-size:13px; margin-bottom:10px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-        <b>🔊 Context:</b> <span style="color:var(--accent); font-weight:600;">${gram.exampleRu}</span><br><span style="color:var(--text-secondary)">${gram.exampleEn}</span>
+      <div class="word" style="font-size:32px; color:var(--text); margin-top:10px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
+      <div class="hint" style="margin-top:4px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · <span style="font-family:var(--font-mono);">${phon.ipa}</span></div>
+      <div style="font-size:18px; font-weight:600; color:var(--text); margin:8px 0 4px 0;">${item.en}</div>
+      <div class="hint" style="margin-bottom:8px;">${phon.notes}</div>
+      <div style="font-size:13px; color:var(--text); margin-bottom:10px;"><b>${gram.summaryTag}</b><div class="hint" style="margin-top:2px;">${gram.usageNote}</div></div>
+      <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
+        <div class="word" style="font-size:15.5px; color:var(--text);">${gram.exampleRu}</div>
+        <div class="hint" style="margin-top:2px;">${gram.exampleEn}</div>
       </div>
       ${gram.tableHtml}
     `;
@@ -1293,26 +1344,30 @@ export function inspectWordDeep(
   const pOut = document.getElementById('phonetic-output');
   if (pOut) {
     pOut.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div>
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">#${item.rank} • ${item.level}</span>
-          <b style="font-size:24px; color:var(--text); margin-left:6px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">🔊 ${item.ru}</b>
-          <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:16px; margin-left:8px;">${phon.ipa}</span>
-          <span style="color:var(--success); font-weight:700; margin-left:8px;">— ${item.en}</span>
+      <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
+          <span class="word" style="font-size:26px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
+          <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
+          <span style="font-weight:600; color:var(--text);">— ${item.en}</span>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-warn" onclick="speakExplanation(${item.rank})">🗣️ Hear Explanation</button>
-          <button class="btn" onclick="addSingleWordFrom6000(${item.rank})">+ Add to Anki</button>
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="addSingleWordFrom6000(${item.rank})">+ Add</button>
         </div>
       </div>
-      <div style="margin-top:6px; font-size:13.5px; color:var(--text);"><b>Plain-English Pronunciation Guide:</b> <span style="color:var(--accent); font-weight:700;">${phon.plainGuide}</span></div>
-      <div style="margin-top:4px; font-size:13px; color:var(--warn); font-weight:600;"><b>Pronunciation Tips:</b> ${phon.notes}</div>
-      <div style="margin-top:4px; font-size:13px; color:var(--text-secondary);"><b>Grammar:</b> ${gram.summaryTag} — ${gram.usageNote}</div>
+      <div class="hint" style="margin-top:6px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${phon.notes}</div>
+      <div class="hint" style="margin-top:3px;">${gram.summaryTag} — ${gram.usageNote}</div>
     `;
   }
 
-  if (openSheetOnMobile && window.innerWidth <= 960) {
-    openInspectorSheet();
+  if (openSheetOnMobile) {
+    if (window.innerWidth <= 960) {
+      openInspectorSheet();
+    } else {
+      document.getElementById('grammar-inspector')?.classList.remove('desktop-collapsed');
+      document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
+    }
   }
   if (playAudio) speakUkrainian(item.ru);
 }
@@ -1358,8 +1413,8 @@ export function renderSrsCatalog6000(): void {
   const pageInfo = document.getElementById('srs-cat-page-info');
   if (pageInfo) {
     pageInfo.innerText = filtered.length
-      ? `Entries ${srsCatPage * pageSize + 1}–${Math.min(filtered.length, (srsCatPage + 1) * pageSize)} of ${filtered.length} verified words`
-      : 'No matching entries';
+      ? `${srsCatPage * pageSize + 1}–${Math.min(filtered.length, (srsCatPage + 1) * pageSize)} of ${filtered.length.toLocaleString('en')} words`
+      : 'No matching words';
   }
 
   const catalogEl = document.getElementById('srs-6000-catalog');
@@ -1369,18 +1424,19 @@ export function renderSrsCatalog6000(): void {
       const saved = inDeck.has(w.rank);
       const p = generateUkrainianPhonetics(w.ru);
       return `<div class="freq-row">
-        <div onclick="inspectWordDeep(${w.rank}, true, true)" style="cursor:pointer; flex:1; min-width:190px;">
-          <span class="tag">#${w.rank} • ${w.level}</span>
-          <b style="font-size:17px; color:var(--text); margin-left:4px;">🔊 ${w.ru}</b>
-          <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:13.5px; margin-left:6px;">${p.ipa}</span>
-          <div style="color:var(--text-secondary); font-size:13.5px; margin-top:2px;"><b>${w.en}</b> <span style="opacity:0.8;">(${w.pos})</span></div>
-          ${w.exUk ? `<div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(w.exUk)}')" style="color:var(--text-secondary); font-size:12.5px; margin-top:3px; cursor:pointer;"><b>🔊 Example:</b> <span style="color:var(--accent); font-weight:600;">${w.exUk}</span>${w.exEn ? ` — <i>${w.exEn}</i>` : ''}</div>` : ''}
+        <div onclick="inspectWordDeep(${w.rank}, true, true)" style="cursor:pointer; flex:1; min-width:200px;">
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+            <span class="word" style="font-size:19px; color:var(--text);">${w.ru}</span>
+            <span style="font-family:var(--font-mono); font-size:12.5px; color:var(--muted);">${p.ipa}</span>
+            <span class="tag" style="margin:0;">#${w.rank} · ${w.level}</span>
+            ${saved ? `<span class="tag" style="margin:0; background:var(--success-container); color:var(--success-on-container);">Learning</span>` : ''}
+          </div>
+          <div class="hint" style="margin-top:3px;"><span style="color:var(--text); font-weight:500;">${w.en}</span> · ${w.pos}</div>
+          ${w.exUk ? `<div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(w.exUk)}')" class="hint" style="margin-top:4px; cursor:pointer;"><span class="word" style="font-size:14px; color:var(--text);">${w.exUk}</span>${w.exEn ? ` — ${w.exEn}` : ''}</div>` : ''}
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          ${w.exUk ? `<button class="btn btn-sec" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(w.exUk)}')">🔊 Example</button>` : ''}
-          <button class="btn btn-sec" onclick="inspectWordDeep(${w.rank}, true, true)">🔍 Grammar</button>
-          <button class="btn btn-warn" onclick="speakExplanation(${w.rank})">🗣️ Explain</button>
-          <button class="btn ${saved ? 'btn-sec' : ''}" onclick="addSingleWordFrom6000(${w.rank})" ${saved ? 'disabled' : ''}>${saved ? '✓ In Anki' : '+ Anki'}</button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="inspectWordDeep(${w.rank}, true, true)">Forms</button>
+          <button class="btn ${saved ? 'btn-sec' : ''}" style="min-height:32px; padding:4px 11px; font-size:12.5px;" onclick="addSingleWordFrom6000(${w.rank})" ${saved ? 'disabled' : ''}>${saved ? 'In deck' : '+ Add'}</button>
         </div>
       </div>`;
     })
@@ -1403,8 +1459,8 @@ export function renderPhonetics6000(): void {
   const pageInfo = document.getElementById('phon-page-info');
   if (pageInfo) {
     pageInfo.innerText = filtered.length
-      ? `Entries ${phonPage * pageSize + 1}–${Math.min(filtered.length, (phonPage + 1) * pageSize)} of ${filtered.length}`
-      : 'No matching entries';
+      ? `${phonPage * pageSize + 1}–${Math.min(filtered.length, (phonPage + 1) * pageSize)} of ${filtered.length.toLocaleString('en')}`
+      : 'No matching words';
   }
 
   const listEl = document.getElementById('phon-6000-list');
@@ -1414,14 +1470,16 @@ export function renderPhonetics6000(): void {
       const p = generateUkrainianPhonetics(w.ru);
       return `<div class="freq-row" onclick="inspectWordDeep(${w.rank}, true, false)" style="cursor:pointer;">
         <div style="flex:1; min-width:190px;">
-          <span class="tag">#${w.rank} • ${w.level}</span>
-          <b style="font-size:17px; color:var(--text); margin-left:4px;">🔊 ${w.ru}</b>
-          <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:13.5px; margin-left:6px;">${p.ipa}</span>
-          <div style="color:var(--text-secondary); font-size:13px; margin-top:2px;"><b>${w.en}</b> — Sounds like: <b>${p.plainGuide}</b></div>
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+            <span class="word" style="font-size:19px; color:var(--text);">${w.ru}</span>
+            <span style="font-family:var(--font-mono); font-size:12.5px; color:var(--muted);">${p.ipa}</span>
+            <span class="tag" style="margin:0;">#${w.rank} · ${w.level}</span>
+          </div>
+          <div class="hint" style="margin-top:3px;"><span style="color:var(--text); font-weight:500;">${w.en}</span> · Sounds like <b style="color:var(--text);">${p.plainGuide}</b></div>
         </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-warn" onclick="event.stopPropagation(); speakExplanation(${w.rank})">🗣️ Explain</button>
-          <button class="btn btn-sec" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">🔍 Grammar</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="event.stopPropagation(); speakExplanation(${w.rank})">Explain</button>
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Forms</button>
         </div>
       </div>`;
     })
@@ -1548,10 +1606,30 @@ export function filterCourseByLevel(level: string): void {
   renderActiveModule();
 }
 
+let isCourseSyllabusOpen = false;
+
+export function toggleCourseSyllabusDrawer(force?: boolean): void {
+  triggerHaptic('light');
+  const drawer = document.getElementById('course-syllabus-drawer');
+  const lbl = document.getElementById('toggle-course-syllabus-label');
+  if (!drawer) return;
+  isCourseSyllabusOpen = typeof force === 'boolean' ? force : !isCourseSyllabusOpen;
+  if (isCourseSyllabusOpen) {
+    drawer.classList.remove('hidden');
+    if (lbl) lbl.textContent = 'Hide 29 Modules';
+  } else {
+    drawer.classList.add('hidden');
+    if (lbl) lbl.textContent = 'Browse All 29 Modules';
+  }
+}
+
 export function selectCourseModule(modId: string): void {
   triggerHaptic('light');
   activeModId = modId;
   activeStage = 0;
+  if (isCourseSyllabusOpen) {
+    toggleCourseSyllabusDrawer(false);
+  }
   renderCourseSyllabus();
   renderActiveModule();
 }
@@ -1683,8 +1761,13 @@ export function inspectCourseWord(rawWord: string): void {
       ${gram.tableHtml}
     `;
   }
-  if (typeof window !== 'undefined' && window.innerWidth <= 960) {
-    openInspectorSheet();
+  if (typeof window !== 'undefined') {
+    if (window.innerWidth <= 960) {
+      openInspectorSheet();
+    } else {
+      document.getElementById('grammar-inspector')?.classList.remove('desktop-collapsed');
+      document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
+    }
   }
   speakUkrainian(rawWord);
 }
@@ -1888,11 +1971,11 @@ export function renderActiveModule(): void {
             <div class="vc-section-heading">
               <span>💡 B. The Big Idea: ${sl.bigIdea.headline}</span>
             </div>
-            <div style="background:var(--surface-2); border:1px solid var(--border-subtle); border-left:4px solid var(--accent); border-radius:var(--radius-md); padding:13px 15px;">
+            <div style="background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px 16px;">
               <p style="margin:0 0 8px 0; font-size:14px; color:var(--text);">${sl.bigIdea.plainEnglish}</p>
-              <p style="margin:0 0 8px 0; font-size:13.5px; color:var(--text-secondary);"><b>🇺🇸 How It Compares to English:</b> ${sl.bigIdea.englishComparison}</p>
-              <div style="background:var(--surface-1); padding:9px 12px; border-radius:var(--radius-sm); font-size:13px; color:var(--accent); font-weight:700;">
-                🔑 Study Strategy: ${sl.bigIdea.keyInsight}
+              <p style="margin:0 0 8px 0; font-size:13.5px; color:var(--text-secondary);"><b>How It Compares to English:</b> ${sl.bigIdea.englishComparison}</p>
+              <div style="background:var(--accent-container); border:1px solid rgba(29, 78, 216, 0.18); padding:9px 12px; border-radius:var(--radius-sm); font-size:13px; color:var(--accent-on-container); font-weight:600;">
+                Study Strategy: ${sl.bigIdea.keyInsight}
               </div>
             </div>
           </div>
@@ -2073,10 +2156,10 @@ export function renderActiveModule(): void {
           ${m.rules
             .map(
               (r, idx) =>
-                `<div style="padding:11px 13px; background:var(--surface-2); border-radius:var(--radius-sm); margin-bottom:8px; border-left:3px solid var(--accent); font-size:13.8px; cursor:pointer;" onclick="speakCourseRule('${m.id}', ${idx})">
+                `<div style="padding:12px 14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); margin-bottom:8px; font-size:13.8px; cursor:pointer;" onclick="speakCourseRule('${m.id}', ${idx})">
                   <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
                     <div style="flex:1;">${r}</div>
-                    <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); speakCourseRule('${m.id}', ${idx})">🔊 Listen</button>
+                    <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); speakCourseRule('${m.id}', ${idx})">Listen</button>
                   </div>
                 </div>`
             )
@@ -2496,7 +2579,7 @@ function renderStage2CheckView(m: CourseModule): string {
                     `;
                   })
                   .join('')}
-                <div id="cfu-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
+                <div id="cfu-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:13px;">
                   <div id="cfu-exp-body-${idx}">${feedbackHtml}</div>
                   <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
                     ${c.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">🔊 Hear Ukrainian</button>` : ''}
@@ -2638,7 +2721,7 @@ function renderStage3PracticeView(m: CourseModule): string {
                     `;
                   })
                   .join('')}
-                <div id="prac-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--accent);">
+                <div id="prac-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:13px;">
                   <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
                     <div style="font-weight:700; color:var(--accent); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 ${p.audioUk}</div>
                     <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(`${p.audioUk}. ${p.exp}`)}', 'uk')">🗣️ Hear Explanation</button>
@@ -2831,7 +2914,7 @@ function renderStage5ExamView(m: CourseModule): string {
                     `;
                   })
                   .join('')}
-                <div id="exam-exp-${idx}" class="${isSubmitted ? '' : 'hidden'}" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid ${isCorrect ? 'var(--success)' : 'var(--danger, #dc2626)'};">
+                <div id="exam-exp-${idx}" class="${isSubmitted ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid ${isCorrect ? 'var(--success)' : 'var(--danger, #dc2626)'}; border-radius:var(--radius-sm); font-size:13px;">
                   ${
                     !hasSaved && isSubmitted
                       ? `<div style="margin-bottom:5px; color:var(--danger, #dc2626); font-weight:700;">⚠️ Unanswered Question</div>`
@@ -3329,9 +3412,18 @@ let activeReaderLevelFilter: string = 'A0';
 let activePassageId = READER_PASSAGES[0].id;
 let showReaderTranslations = true;
 
+let showReaderStoryDrawer = false;
+
+export function toggleReaderStoryDrawer(force?: boolean): void {
+  triggerHaptic('light');
+  showReaderStoryDrawer = typeof force === 'boolean' ? force : !showReaderStoryDrawer;
+  initReader();
+}
+
 export function filterReaderByLevel(level: string): void {
   triggerHaptic('light');
   activeReaderLevelFilter = level;
+  showReaderStoryDrawer = true;
   const matching =
     level === 'ALL'
       ? READER_PASSAGES
@@ -3345,6 +3437,7 @@ export function filterReaderByLevel(level: string): void {
 export function selectReaderPassage(passageId: string): void {
   triggerHaptic('light');
   activePassageId = passageId;
+  showReaderStoryDrawer = false;
   const found = READER_PASSAGES.find((p) => p.id === passageId);
   if (
     found &&
@@ -3431,7 +3524,12 @@ export function inspectReaderWord(
         ${gram.tableHtml}
       `;
     }
-    if (window.innerWidth <= 960) openInspectorSheet();
+    if (window.innerWidth <= 960) {
+      openInspectorSheet();
+    } else {
+      document.getElementById('grammar-inspector')?.classList.remove('desktop-collapsed');
+      document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
+    }
   }
 
   speakUkrainian(rawWord);
@@ -3473,68 +3571,84 @@ export function initReader(): void {
       : READER_PASSAGES.filter((p) => p.level === activeReaderLevelFilter);
 
   const selectorHtml = `
-    <div style="margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border-subtle);">
-      <div class="stage-bar" id="reader-level-filter-bar" style="display:flex; flex-wrap:wrap; gap:6px; width:100%; margin-bottom:10px; overflow:visible;">
-        ${readerLevels
-          .map(
-            (lvl) => `
-          <button class="stage-pill ${activeReaderLevelFilter === lvl.id ? 'active' : ''}" onclick="filterReaderByLevel('${lvl.id}')">
-            ${lvl.label}
+    <div style="margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--border-subtle);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:700; margin:0;">CEFR ${passage.level} · ${passage.genre}</span>
+          <span style="font-size:12.5px; color:var(--text-secondary); font-weight:500;">${READER_PASSAGES.length} graded passages available</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="toggleReaderTranslations()">
+            ${showReaderTranslations ? 'Hide English Translations' : 'Show English Translations'}
           </button>
-        `
-          )
-          .join('')}
+          <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="toggleReaderStoryDrawer()">
+            ${showReaderStoryDrawer ? 'Close Story Library' : `Choose Another Story (${READER_PASSAGES.length})`}
+          </button>
+        </div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-        <span style="font-size:12px; font-weight:700; color:var(--text-secondary);">Select a story (${visiblePassages.length} shown):</span>
-        <button class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px; flex-shrink:0;" onclick="toggleReaderTranslations()">
-          ${showReaderTranslations ? '🙈 Hide English Translations' : '👀 Show English Translations'}
-        </button>
-      </div>
-      <div class="reader-passage-grid">
-        ${visiblePassages
-          .map((p) => {
-            const isAct = p.id === passage.id;
-            const genreStr = p.genre || '';
-            const shortTopic = genreStr.split('•')[1]?.trim() || genreStr;
-            return `
-            <button type="button" class="reader-passage-card ${isAct ? 'active' : ''}" onclick="selectReaderPassage('${p.id}')">
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:3px;">
-                <span class="tag" style="margin:0; font-size:10px; padding:2px 7px; background:${isAct ? 'var(--accent)' : 'var(--accent-container)'}; color:${isAct ? '#fff' : 'var(--accent-on-container)'}; font-weight:800;">${p.level}</span>
-                <span style="font-size:10.5px; color:var(--muted); font-weight:700; text-align:right;">${shortTopic}</span>
-              </div>
-              <div style="font-weight:800; font-size:13.5px; color:var(--text); line-height:1.3;">${p.titleUk}</div>
-              <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.25; margin-top:2px;">${p.titleEn}</div>
-            </button>
-          `;
-          })
-          .join('')}
-      </div>
+
+      ${
+        showReaderStoryDrawer
+          ? `
+        <div style="margin-top:14px; padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
+          <div class="stage-bar" id="reader-level-filter-bar" style="display:flex; flex-wrap:wrap; gap:6px; width:100%; margin-bottom:10px; overflow:visible;">
+            ${readerLevels
+              .map(
+                (lvl) => `
+              <button class="stage-pill ${activeReaderLevelFilter === lvl.id ? 'active' : ''}" onclick="filterReaderByLevel('${lvl.id}')">
+                ${lvl.label}
+              </button>
+            `
+              )
+              .join('')}
+          </div>
+          <div class="reader-passage-grid">
+            ${visiblePassages
+              .map((p) => {
+                const isAct = p.id === passage.id;
+                const genreStr = p.genre || '';
+                const shortTopic = genreStr.split('•')[1]?.trim() || genreStr;
+                return `
+                <button type="button" class="reader-passage-card ${isAct ? 'active' : ''}" onclick="selectReaderPassage('${p.id}')">
+                  <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:6px; margin-bottom:4px;">
+                    <span class="tag" style="margin:0; font-size:10.5px; padding:2px 6px; background:${isAct ? 'var(--accent)' : 'var(--accent-container)'}; color:${isAct ? '#fff' : 'var(--accent-on-container)'}; font-weight:700;">${p.level}</span>
+                    <span style="font-size:10.5px; color:var(--muted); font-weight:600; text-align:right;">${shortTopic}</span>
+                  </div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--text); line-height:1.3;">${p.titleUk}</div>
+                  <div style="font-size:12px; color:var(--text-secondary); line-height:1.3; margin-top:2px;">${p.titleEn}</div>
+                </button>
+              `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `
+          : ''
+      }
     </div>
   `;
 
   const headerHtml = `
-    <div style="margin-bottom:14px;">
-      <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">CEFR ${passage.level} • ${passage.genre}</span>
-      <h2 style="margin:6px 0 2px 0; font-size:21px; color:var(--text);">${passage.titleUk}</h2>
-      <div style="font-size:14px; font-weight:700; color:var(--text-secondary);">${passage.titleEn}</div>
-      <p style="font-size:13px; color:var(--muted); margin:4px 0 0 0; line-height:1.45;">${passage.summaryEn}</p>
+    <div style="margin-bottom:16px;">
+      <h2 style="margin:0 0 4px 0; font-size:22px; font-weight:800; color:var(--text); letter-spacing:-0.02em;">${passage.titleUk}</h2>
+      <div style="font-size:14.5px; font-weight:600; color:var(--text-secondary);">${passage.titleEn}</div>
+      <p style="font-size:13.5px; color:var(--muted); margin:6px 0 0 0; line-height:1.5;">${passage.summaryEn}</p>
     </div>
   `;
 
   const sentencesHtml = passage.sentences
     .map(
       (s) => `
-      <div style="padding:12px 14px; background:var(--surface-2); border-radius:var(--radius-md); margin-bottom:10px; border:1px solid var(--border-subtle);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-          <div style="font-size:18px; font-weight:700; line-height:1.75; color:var(--text); flex:1;">
+      <div style="padding:14px 16px; background:var(--surface-2); border-radius:var(--radius-md); margin-bottom:10px; border:1px solid var(--border-subtle);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+          <div style="font-size:18.5px; font-weight:600; line-height:1.8; color:var(--text); flex:1;">
             ${tokenizeSentenceHtml(s.uk, passage.id)}
           </div>
-          <button class="btn btn-sec" style="min-height:34px; padding:4px 10px; font-size:12px; flex-shrink:0;" onclick="speakUkrainian('${escapeSingleQuotes(s.uk)}')" title="Listen to sentence">🔊</button>
+          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px; flex-shrink:0;" onclick="speakUkrainian('${escapeSingleQuotes(s.uk)}')" title="Listen to sentence">Play</button>
         </div>
         ${
           showReaderTranslations
-            ? `<div style="font-size:13.5px; color:var(--text-secondary); margin-top:6px; line-height:1.45; border-top:1px solid var(--border-subtle); padding-top:6px;">${s.en}</div>`
+            ? `<div style="font-size:13.5px; color:var(--text-secondary); margin-top:8px; line-height:1.5; border-top:1px solid var(--border-subtle); padding-top:8px;">${s.en}</div>`
             : ''
         }
       </div>
@@ -3543,8 +3657,8 @@ export function initReader(): void {
     .join('');
 
   const questionsHtml = `
-    <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--border-subtle);">
-      <h3 style="font-size:16px; margin:0 0 10px 0; color:var(--text);">📋 Reading Comprehension Check</h3>
+    <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--border-subtle);">
+      <h3 style="font-size:16px; font-weight:800; margin:0 0 12px 0; color:var(--text);">Reading Comprehension Check</h3>
       ${passage.questions
         .map(
           (qItem, idx) => `
@@ -3557,8 +3671,8 @@ export function initReader(): void {
           `
             )
             .join('')}
-          <div id="reader-exp-${passage.id}-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-            <b>💡 Why:</b> ${qItem.exp}
+          <div id="reader-exp-${passage.id}-${idx}" class="hidden" style="margin-top:8px; padding:11px 13px; background:var(--success-container); color:var(--success-on-container); border:1px solid rgba(21, 128, 61, 0.22); border-radius:var(--radius-sm); font-size:13px;">
+            <b>Why:</b> ${qItem.exp}
           </div>
         </div>
       `
@@ -3660,9 +3774,9 @@ export function checkVocabActiveRecall(
   fbEl.classList.remove('hidden');
   if (result.isCorrect) {
     triggerHaptic('heavy');
-    fbEl.style.borderLeft = '4px solid var(--success)';
-    fbEl.innerHTML = `<div style="color:var(--success); font-weight:800;">${result.feedbackMessage}</div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(exampleUk)}')">🔊 Example: <b>${exampleUk}</b></div>`;
+    fbEl.style.border = '1px solid rgba(21, 128, 61, 0.25)';
+    fbEl.innerHTML = `<div style="color:var(--success); font-weight:700;">${result.feedbackMessage}</div>
+      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(exampleUk)}')">Example: <b>${exampleUk}</b></div>`;
     speakUkrainian(expectedUk);
     const quizKey = `vocab-recall:${expectedUk}`;
     if (!completedQuizKeys.has(quizKey)) {
@@ -3673,9 +3787,9 @@ export function checkVocabActiveRecall(
     }
   } else {
     triggerHaptic('light');
-    fbEl.style.borderLeft = '4px solid var(--danger)';
+    fbEl.style.border = '1px solid rgba(185, 28, 28, 0.25)';
     fbEl.innerHTML = `<div style="color:var(--danger); font-weight:700;">${result.feedbackMessage}</div>
-      <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; margin-top:6px;" onclick="speakUkrainian('${escapeSingleQuotes(expectedUk)}')">🔊 Hear Correct Form</button>`;
+      <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; margin-top:6px;" onclick="speakUkrainian('${escapeSingleQuotes(expectedUk)}')">Hear Correct Form</button>`;
   }
 }
 
@@ -3795,8 +3909,8 @@ export function renderEverydayVocabWorkspace(): void {
         <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="speakCategoryGuide()">🗣️ Audio Tip</button>
       </div>
       <p style="margin:6px 0; font-size:13.5px; color:var(--text-secondary);">${cat.description}</p>
-      <div style="font-size:13px; color:var(--text); padding:8px 10px; background:var(--surface-1); border-left:3px solid var(--accent); border-radius:var(--radius-xs);">
-        <b>💡 Ukrainian Grammar & Usage Note:</b> ${cat.grammarTip}
+      <div style="font-size:13px; color:var(--text); padding:9px 12px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-sm);">
+        <b>Ukrainian Grammar &amp; Usage Note:</b> ${cat.grammarTip}
       </div>
     </div>
   `;
@@ -3864,7 +3978,7 @@ export function renderEverydayVocabWorkspace(): void {
           `
             )
             .join('')}
-          <div id="uk2en-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
+          <div id="uk2en-exp-${idx}" class="hidden" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid rgba(21, 128, 61, 0.25); border-radius:var(--radius-sm); font-size:13px;">
             <b>✅ Meaning:</b> ${w.ru} = <b>${w.en}</b>.<br>
             <span style="cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Example: <b>${exUk}</b> (${w.exampleEn || w.exEn || ''})</span>
           </div>
@@ -4090,6 +4204,17 @@ export function renderEverydayVocabWorkspace(): void {
 // ============================================================================
 // 6. NAVIGATION & INITIALIZATION
 // ============================================================================
+const WORKSPACE_BREADCRUMBS: Record<string, string> = {
+  course: 'Structured Course · A0–C1',
+  reader: 'Comprehensible Reader · A0–C1',
+  identify: 'Visual Vocabulary · 67 Scenes',
+  vocab: 'Everyday Vocab Lab · 27 Topics',
+  srs: 'UK → EN Recognition · FSRS',
+  en2uk: 'EN → UK Active Recall · FSRS',
+  correction: 'Sentence & Case Repair · FSRS',
+  phonetics: 'Phonetics & Cursive Lab',
+};
+
 export function switchTab(tab: string, btn?: HTMLElement): void {
   triggerHaptic('light');
   ['srs', 'en2uk', 'correction', 'phonetics', 'course', 'vocab', 'identify', 'reader'].forEach(
@@ -4099,15 +4224,25 @@ export function switchTab(tab: string, btn?: HTMLElement): void {
     }
   );
   document.getElementById('tab-' + tab)?.classList.remove('hidden');
-  document
-    .querySelectorAll('.nav-btn')
-    .forEach((b) => b.classList.remove('active'));
-  if (btn) {
+  document.querySelectorAll('.nav-btn').forEach((b) => {
+    b.classList.remove('active');
+    b.removeAttribute('aria-current');
+  });
+  const matchingBtns = document.querySelectorAll(
+    `.nav-btn[onclick*="switchTab('${tab}'"]`
+  );
+  if (matchingBtns.length) {
+    matchingBtns.forEach((el) => {
+      el.classList.add('active');
+      el.setAttribute('aria-current', 'page');
+    });
+  } else if (btn) {
     btn.classList.add('active');
-  } else {
-    document
-      .querySelector(`.nav-btn[onclick*="switchTab('${tab}'"]`)
-      ?.classList.add('active');
+    btn.setAttribute('aria-current', 'page');
+  }
+  const bcEl = document.getElementById('active-workspace-breadcrumb');
+  if (bcEl) {
+    bcEl.textContent = WORKSPACE_BREADCRUMBS[tab] || 'Ukrainian Workspace';
   }
   if (tab === 'vocab') {
     renderEverydayVocabTab();
@@ -4162,8 +4297,13 @@ declare global {
     triggerHaptic: typeof triggerHaptic;
     applyColorTheme: typeof applyColorTheme;
     cycleColorTheme: typeof cycleColorTheme;
+    openSettingsModal: typeof openSettingsModal;
+    closeSettingsModal: typeof closeSettingsModal;
     openInspectorSheet: typeof openInspectorSheet;
     closeInspectorSheet: typeof closeInspectorSheet;
+    toggleGrammarInspector: typeof toggleGrammarInspector;
+    toggleCourseSyllabusDrawer: typeof toggleCourseSyllabusDrawer;
+    toggleReaderStoryDrawer: typeof toggleReaderStoryDrawer;
     openVoiceModal: typeof openVoiceModal;
     closeVoiceModal: typeof closeVoiceModal;
     saveVoiceModal: typeof saveVoiceModal;
@@ -4386,8 +4526,13 @@ if (typeof window !== 'undefined') {
   window.triggerHaptic = triggerHaptic;
   window.applyColorTheme = applyColorTheme;
   window.cycleColorTheme = cycleColorTheme;
+  window.openSettingsModal = openSettingsModal;
+  window.closeSettingsModal = closeSettingsModal;
   window.openInspectorSheet = openInspectorSheet;
   window.closeInspectorSheet = closeInspectorSheet;
+  window.toggleGrammarInspector = toggleGrammarInspector;
+  window.toggleCourseSyllabusDrawer = toggleCourseSyllabusDrawer;
+  window.toggleReaderStoryDrawer = toggleReaderStoryDrawer;
   window.openVoiceModal = openVoiceModal;
   window.closeVoiceModal = closeVoiceModal;
   window.saveVoiceModal = saveVoiceModal;
@@ -4650,4 +4795,73 @@ if (typeof window !== 'undefined') {
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;
   inspectWordDeep(initialBookWord, false, false);
   bootCmsStudioRouteIfRequested();
+
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null;
+    const tag = target?.tagName || '';
+    if (
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
+      target?.isContentEditable
+    ) {
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      closeSettingsModal();
+      closeVoiceModal();
+      closeLanguageSelectorModal();
+      closeInspectorSheet();
+      const dockerModal = document.getElementById('lango-docker-zip-modal');
+      if (dockerModal && !dockerModal.classList.contains('hidden')) {
+        dockerModal.classList.add('hidden');
+      }
+      return;
+    }
+
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const srsVisible = !document
+      .getElementById('tab-srs')
+      ?.classList.contains('hidden');
+    const en2ukVisible = !document
+      .getElementById('tab-en2uk')
+      ?.classList.contains('hidden');
+    const corrVisible = !document
+      .getElementById('tab-correction')
+      ?.classList.contains('hidden');
+    const identifyVisible = !document
+      .getElementById('tab-identify')
+      ?.classList.contains('hidden');
+
+    if (e.code === 'Space' && srsVisible && !ankiFlipped && currentAnkiCard) {
+      e.preventDefault();
+      flipAnkiCard();
+      return;
+    }
+
+    if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+      const g = Number(e.key) as 1 | 2 | 3 | 4;
+      if (srsVisible && ankiFlipped && currentAnkiCard) {
+        e.preventDefault();
+        gradeAnkiCard(g);
+      } else if (en2ukVisible && en2ukFlipped && currentEn2UkCard) {
+        e.preventDefault();
+        gradeEn2UkCard(g);
+      } else if (corrVisible && corrFlipped && currentCorrCard) {
+        e.preventDefault();
+        gradeCorrectionCard(g);
+      } else if (identifyVisible) {
+        const mcBtns = document.querySelectorAll<HTMLButtonElement>(
+          '#tab-identify .identify-options-grid .option-btn:not(:disabled)'
+        );
+        const btnToClick = mcBtns[g - 1];
+        if (btnToClick) {
+          e.preventDefault();
+          btnToClick.click();
+        }
+      }
+    }
+  });
 }

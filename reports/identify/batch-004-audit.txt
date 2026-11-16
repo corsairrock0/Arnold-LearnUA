@@ -1,0 +1,40 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+1. EXECUTION SUMMARY
+Execution ID: IDENTIFY-BATCH-004-SEMANTIC-AUDIT
+Audited At: 2026-11-05T04:30:00.000Z
+Scope: Semantic integrity audit of Batch 4 (Scenes 17–26, 180 candidate hotspots) and cross-check of Batches 1–3 (Scenes 11–16, 108 candidate hotspots; 288 total pending candidate hotspots).
+Outcome: PASSED_AFTER_REPAIR. Zero images required regeneration.
+
+2. CHANGES COMPLETED
+- Audited all 288 pending candidate hotspots across Scenes 11–26 against IDENTIFY_MASTER_2000_NOUNS and IDENTIFY_MISSING_CONCEPT_EXTENSIONS_28.
+- Confirmed 26 report-only gloss discrepancies where source code and candidate hotspots were already accurate.
+- Repaired 2 narrative metadata entries in src/identifyVisualBatchProgress.json (ext-v2-0003 чай / tea in Scene 21; ext-v2-0001 дріт / electrical wire in Scene 22).
+- Repaired 1 candidate hotspot bounding box in Scene 25 (uk_scene_25_supermarket_checkout_counter) for id-v2-640 ска́нер штрих-ко́дів (barcode scanner) to { x: 0.51, y: 0.64, width: 0.11, height: 0.18 }, separating it from id-v2-646 платі́жний терміна́л.
+- Repaired 8 displaced primary concept swap destinations across future ungenerated scenes (Scenes 27–80).
+
+3. FILES CREATED OR MODIFIED
+- src/identifyCurriculumFinal1200.ts (Modified: Scene 25 barcode scanner geometry and future-scene primary concept swap destinations)
+- src/identifyVisualBatchProgress.json (Modified: batch4SemanticAudit record, Scene 21/22 adjustment notes, Scene 25 id-v2-640 bounding box)
+- src/__tests__/identifyCurationPhase1.test.ts (Modified: regression test suite for 288-hotspot identity and geometry audit)
+
+4. VALIDATION RESULTS
+- Audited Batch 4 scenes: 10 (180 candidate hotspots)
+- Cross-checked Batches 1–3 scenes: 6 (108 candidate hotspots)
+- Total verified pending candidate hotspots: 288 / 288 match authoritative vocabularyId, conceptId, uk, and en
+- Images requiring regeneration: 0
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint file: src/identifyVisualBatchProgress.json
+- lastBatchNumber: 4
+- scenesWithVerifiedImagesTotal: 26 (10 legacy playable + 16 batch-generated)
+- batchCreatedCandidateHotspotsAwaitingHumanReviewCount: 288
+- learnerExposureAllowed on Scenes 11–26: false
+
+6. REMAINING WORK
+- 54 ungenerated scenes remaining (Scenes 27–80).
+- All 288 batch-created candidate hotspots await human verification before learner exposure.
+
+7. NEXT EXECUTION
+- Proceed to Batch 5 (Scenes 27–36: uk_scene_27_farmers_market_vegetables_herbs through uk_scene_36_city_rainy_sidewalk).

@@ -1,0 +1,66 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Evaluated all 70 preview-ready scenes (Scenes #11–#80, 1,260 hotspots) without requiring human hotspot review, deciding which scenes make sense and removing those that do not.
+- Approved all 57 semantically coherent scenes (Scenes #11–#50, #52, #53, #57–#69, #78, #80; 1,026 hotspots) where all 18 vocabulary objects belong to the scene's real-world Ukrainian setting.
+- Combined with the 10 original approved scenes (Scenes #1–#10; 49 hotspots), all 67 coherent scenes (1,075 approved hotspots) are now immediately playable by all learners in the Identify tab (Guided Multiple Choice, Fill in the Blank, Explore Mode, FSRS Flashcards, XP, and Scene Mastery) and Full-Screen Scene Viewer with no human review gate.
+- Removed the 13 incoherent scenes (Scenes #51, #54, #55, #56, #70–#77, #79; 234 hotspots) that contain 5 to 14 unrelated objects from foreign domains.
+
+2. CHANGES COMPLETED
+- Approved Coherent Preview-Ready Scenes (57 Scenes, 1,026 Hotspots):
+  - Scenes #11–#50 (40 scenes across Dining Room, Living Room, Bedroom, Bathroom, Supermarket, Clothing Store, Restaurant & Cafe, Kitchen, Hospital, and Classroom/School) — all 18 objects per scene belong to the scene setting -> APPROVED & PLAYABLE.
+  - Scene #52 (`uk_scene_52_university_lecture_and_library`, Classroom/School, 18/18 related objects) -> APPROVED & PLAYABLE.
+  - Scene #53 (`uk_scene_53_modern_office_workspace`, Office, 18/18 related objects) -> APPROVED & PLAYABLE.
+  - Scenes #57–#69 (13 scenes across City Streets, Train/Bus Station, Airport, Park & Garden, Beach & Nature, Farm & Countryside, and Construction/Workshop) — all 18 objects per scene belong to the scene setting -> APPROVED & PLAYABLE.
+  - Scene #78 (`uk_scene_78_emergency_and_civic_services`, City Streets, 18/18 related objects) -> APPROVED & PLAYABLE.
+  - Scene #80 (`uk_scene_80_family_celebration_gift_exchange`, Living Room, 18/18 related objects) -> APPROVED & PLAYABLE.
+- Removed Incoherent Scenes (13 Scenes, 234 Hotspots):
+  - Scene #51 (`uk_scene_51_school_science_laboratory` — 6 unrelated math/geometry shapes & symbols) -> REMOVED.
+  - Scene #54 (`uk_scene_54_office_electronics_accessories` — 5 unrelated kitchen & living-room items) -> REMOVED.
+  - Scene #55 (`uk_scene_55_post_office_ukrposhta` — 8 unrelated classroom & art supplies) -> REMOVED.
+  - Scene #56 (`uk_scene_56_bank_and_administrative_center` — 12 unrelated classroom & math items) -> REMOVED.
+  - Scene #70 (`uk_scene_70_nature_insects_and_garden_macro` — 10 unrelated large wild mammals, fish & birds) -> REMOVED.
+  - Scene #71 (`uk_scene_71_pet_shop_and_vet_clinic` — 12 unrelated wild forest/savanna animals & birds) -> REMOVED.
+  - Scene #72 (`uk_scene_72_zoo_exotic_animals_kyiv` — 14 unrelated farm animals, pets & marine life) -> REMOVED.
+  - Scene #73 (`uk_scene_73_art_studio_and_museum` — 13 unrelated musical instruments & stage gear) -> REMOVED.
+  - Scene #74 (`uk_scene_74_theater_and_concert_hall` — 11 unrelated photography, sewing & craft tools) -> REMOVED.
+  - Scene #75 (`uk_scene_75_photo_and_media_studio` — 14 unrelated sewing, knitting & salon items) -> REMOVED.
+  - Scene #76 (`uk_scene_76_hair_salon_barbershop` — 7 unrelated cosmetics & jewelry items) -> REMOVED.
+  - Scene #77 (`uk_scene_77_hotel_reception_and_room` — 12 unrelated dental, hospital & camping items) -> REMOVED.
+  - Scene #79 (`uk_scene_79_architecture_church_and_castle` — 13 unrelated pasta/breakfast foods, car seats & construction machinery) -> REMOVED.
+- Learner Practice & Scene Viewer Integration:
+  - Updated `buildIdentify80SceneBrowserEntry()` and `resolveSceneViewerHotspots()` in `src/identifyCurriculumPreview.ts` so all 67 coherent scenes report `availabilityState: 'approved_playable'`, `canStartLearnerPractice: true`, and expose all approved hotspots (`1,075` total) to learners without requiring human review.
+  - Added `buildApprovedCurriculumIdentifyScene()`, `getApprovedCurriculumIdentifyScene()`, and `getApprovedCurriculumScenesForCategory()` in `src/identifyCurriculumPreview.ts` and wired `getPlayableScenesForCategory()` into `src/identifyView.ts` so clicking `Practice` on any of the 67 approved scenes opens full learner practice in `#identify-learner-practice-stage`.
+
+3. FILES CREATED OR MODIFIED
+- Modified: `src/identifyCurriculumPreview.ts`
+- Modified: `src/identifyView.ts`
+- Modified: `src/__tests__/identifyUpgrade.test.ts`
+- Modified: `src/identifyVisualBatchProgress.json`
+- Created: `reports/identify/coherent-scene-approval-001.txt`
+- Modified: `reports/identify/LATEST_REPORT.txt`
+- Modified: `reports/identify/REPORT_INDEX.md`
+
+4. VALIDATION RESULTS
+- Unit & Regression Suites (`npx --yes tsx --test src/__tests__/identifyCurationPhase1.test.ts src/__tests__/identifyUpgrade.test.ts`): 49 / 49 tests PASS (0 failures).
+- Verified `TEST 35` and `TEST 36`:
+  - All 67 coherent scenes (`#1–#10` + 57 coherent curriculum scenes) have `availabilityState === 'approved_playable'`, `canStartLearnerPractice === true`, and `1,075` approved learner hotspots (`49 + 1,026 = 1,075`).
+  - Public learners (`setSimulatedPublicProductionModeForTesting(true)`) have full access to all 67 approved scenes and their hotspots in both Learner Practice and View Scene.
+  - All 13 incoherent scenes (`#51, #54, #55, #56, #70–#77, #79`) remain removed (`undefined` on lookup).
+- TypeScript & Build (`compile_applet` & `lint_applet`): PASS (0 errors).
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint File: `src/identifyVisualBatchProgress.json`
+- Active Coherent Scenes Approved & Playable: 67 (`10` original + `57` coherent curriculum scenes)
+- Active Approved Learner Hotspots: 1,075 (`49` original + `1,026` newly approved coherent scene hotspots)
+- Scenes Awaiting Human Review: 0 (human hotspot review requirement removed)
+- Incoherent Scenes Removed: 13 (`#51, #54, #55, #56, #70, #71, #72, #73, #74, #75, #76, #77, #79`; `234` hotspots)
+- Latest Persisted Report: `reports/identify/coherent-scene-approval-001.txt` (mirrored to `reports/identify/LATEST_REPORT.txt`)
+
+6. REMAINING WORK
+- None. All 67 coherent scenes are approved and playable for learners without requiring human hotspot review, and all 13 incoherent scenes with unrelated objects are removed.
+
+7. NEXT EXECUTION
+- No further batch or review actions required; all 67 coherent Identify scenes are live for learner practice.

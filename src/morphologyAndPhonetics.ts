@@ -1115,15 +1115,15 @@ export function generateGrammarBreakdown(item: VocabItem): GrammarBreakdownResul
       exampleEn,
       spokenSummary,
       tableHtml: `<div class="table-scroll-wrap"><table class="gram-grid">
-        <thead><tr><th>Case & Common Role</th><th>Singular</th><th>Plural</th></tr></thead>
+        <thead><tr><th>Case</th><th>Singular</th><th>Plural</th></tr></thead>
         <tbody>
-          <tr><td><b>Nominative</b> (Subject: <i>who/what?</i>)</td><td>${nf.sg.Nom}</td><td>${nf.pl.Nom}</td></tr>
-          <tr><td><b>Genitive</b> (<i>of / without / немає</i>)</td><td style="color:var(--gen); font-weight:700;">${nf.sg.Gen}</td><td style="color:var(--gen)">${nf.pl.Gen}</td></tr>
-          <tr><td><b>Dative</b> (Recipient: <i>to/for whom?</i>)</td><td style="color:var(--dat); font-weight:700;">${nf.sg.Dat}</td><td style="color:var(--dat)">${nf.pl.Dat}</td></tr>
-          <tr><td><b>Accusative</b> (Direct object)</td><td style="color:var(--acc); font-weight:700;">${nf.sg.Acc}</td><td style="color:var(--acc)">${nf.pl.Acc}</td></tr>
-          <tr><td><b>Instrumental</b> (<i>with / by means of</i>)</td><td style="color:var(--ins); font-weight:700;">${nf.sg.Ins}</td><td style="color:var(--ins)">${nf.pl.Ins}</td></tr>
-          <tr><td><b>Locative</b> (Location: <i>у/в, на</i>)</td><td style="color:var(--loc); font-weight:700;">у/на ${nf.sg.Loc}</td><td style="color:var(--loc)">у/на ${nf.pl.Loc}</td></tr>
-          <tr><td><b>Vocative</b> (Direct address)</td><td style="color:var(--voc); font-weight:800;">${nf.sg.Voc}!</td><td style="color:var(--voc)">${nf.pl.Voc}!</td></tr>
+          <tr><td><span class="case-head case-nom"><b>Nominative</b> <span class="hint">(who/what?)</span></span></td><td><span class="word">${nf.sg.Nom}</span></td><td><span class="word">${nf.pl.Nom}</span></td></tr>
+          <tr><td><span class="case-head case-gen"><b>Genitive</b> <span class="hint">(of / немає)</span></span></td><td><span class="word" style="font-weight:600;">${nf.sg.Gen}</span></td><td><span class="word">${nf.pl.Gen}</span></td></tr>
+          <tr><td><span class="case-head case-dat"><b>Dative</b> <span class="hint">(to / for)</span></span></td><td><span class="word" style="font-weight:600;">${nf.sg.Dat}</span></td><td><span class="word">${nf.pl.Dat}</span></td></tr>
+          <tr><td><span class="case-head case-acc"><b>Accusative</b> <span class="hint">(object)</span></span></td><td><span class="word" style="font-weight:600;">${nf.sg.Acc}</span></td><td><span class="word">${nf.pl.Acc}</span></td></tr>
+          <tr><td><span class="case-head case-ins"><b>Instrumental</b> <span class="hint">(with / by)</span></span></td><td><span class="word" style="font-weight:600;">${nf.sg.Ins}</span></td><td><span class="word">${nf.pl.Ins}</span></td></tr>
+          <tr><td><span class="case-head case-loc"><b>Locative</b> <span class="hint">(у/в, на)</span></span></td><td><span class="word" style="font-weight:600;">у/на ${nf.sg.Loc}</span></td><td><span class="word">у/на ${nf.pl.Loc}</span></td></tr>
+          <tr><td><span class="case-head case-voc"><b>Vocative</b> <span class="hint">(address)</span></span></td><td><span class="word" style="font-weight:600;">${nf.sg.Voc}!</span></td><td><span class="word">${nf.pl.Voc}!</span></td></tr>
         </tbody></table></div>`,
     };
   }
@@ -1150,13 +1150,13 @@ export function generateGrammarBreakdown(item: VocabItem): GrammarBreakdownResul
       exampleEn,
       spokenSummary,
       tableHtml: `<div class="table-scroll-wrap"><table class="gram-grid">
-        <thead><tr><th>Person / Subject</th><th>${isPf ? 'Completed Future Forms' : 'Present Tense Forms'}</th><th>Past Tense (By Gender)</th></tr></thead>
+        <thead><tr><th>Person</th><th>${isPf ? 'Completed Future' : 'Present'}</th><th>Past (By Gender)</th></tr></thead>
         <tbody>
-          <tr><td><b>Я</b> (I)</td><td style="color:var(--accent); font-weight:700;">я ${vf.pres.ya}</td><td><b>Він</b> (Masc.): ${vf.past.m}</td></tr>
-          <tr><td><b>Ти</b> (You — informal)</td><td>ти ${vf.pres.ty}</td><td><b>Вона́</b> (Fem.): ${vf.past.f}</td></tr>
-          <tr><td><b>Він / Вона́</b> (He / She)</td><td style="color:var(--gen); font-weight:700;">він/вона́ ${vf.pres.vin}</td><td><b>Воно́</b> (Neut.): ${vf.past.n}</td></tr>
-          <tr><td><b>Ми / Ви</b> (We / You)</td><td>ми ${vf.pres.my} / ви ${vf.pres.vy}</td><td><b>Вони́</b> (Plural): ${vf.past.pl}</td></tr>
-          <tr><td><b>Вони́</b> (They)</td><td style="color:var(--accent); font-weight:700;">вони́ ${vf.pres.vony}</td><td style="color:var(--voc); font-weight:700;">${vf.futureNote}</td></tr>
+          <tr><td><b>Я</b> <span class="hint">(I)</span></td><td><span class="word" style="font-weight:600;">я ${vf.pres.ya}</span></td><td><b>Він</b>: <span class="word">${vf.past.m}</span></td></tr>
+          <tr><td><b>Ти</b> <span class="hint">(you sg.)</span></td><td><span class="word">ти ${vf.pres.ty}</span></td><td><b>Вона́</b>: <span class="word">${vf.past.f}</span></td></tr>
+          <tr><td><b>Він / Вона́</b> <span class="hint">(he/she)</span></td><td><span class="word" style="font-weight:600;">він/вона́ ${vf.pres.vin}</span></td><td><b>Воно́</b>: <span class="word">${vf.past.n}</span></td></tr>
+          <tr><td><b>Ми / Ви</b> <span class="hint">(we/you)</span></td><td><span class="word">ми ${vf.pres.my} / ви ${vf.pres.vy}</span></td><td><b>Вони́</b>: <span class="word">${vf.past.pl}</span></td></tr>
+          <tr><td><b>Вони́</b> <span class="hint">(they)</span></td><td><span class="word" style="font-weight:600;">вони́ ${vf.pres.vony}</span></td><td><span class="hint">${vf.futureNote}</span></td></tr>
         </tbody></table></div>`,
     };
   }
@@ -1173,14 +1173,14 @@ export function generateGrammarBreakdown(item: VocabItem): GrammarBreakdownResul
       exampleEn,
       spokenSummary,
       tableHtml: `<div class="table-scroll-wrap"><table class="gram-grid">
-        <thead><tr><th>Case</th><th>Pronoun Form & Meaning</th></tr></thead>
+        <thead><tr><th>Case</th><th>Pronoun Form</th></tr></thead>
         <tbody>
-          <tr><td><b>Nominative</b> (Subject)</td><td><b>${pd.Nom}</b></td></tr>
-          <tr><td><b>Genitive</b> (of / without / у...)</td><td style="color:var(--gen); font-weight:700;">${pd.Gen}</td></tr>
-          <tr><td><b>Dative</b> (to / for)</td><td style="color:var(--dat); font-weight:700;">${pd.Dat}</td></tr>
-          <tr><td><b>Accusative</b> (Direct object)</td><td style="color:var(--acc); font-weight:700;">${pd.Acc}</td></tr>
-          <tr><td><b>Instrumental</b> (with)</td><td style="color:var(--ins); font-weight:700;">${pd.Ins}</td></tr>
-          <tr><td><b>Locative</b> (on / about)</td><td style="color:var(--loc); font-weight:700;">${pd.Loc}</td></tr>
+          <tr><td><span class="case-head case-nom"><b>Nominative</b></span></td><td><span class="word" style="font-weight:600;">${pd.Nom}</span></td></tr>
+          <tr><td><span class="case-head case-gen"><b>Genitive</b></span></td><td><span class="word" style="font-weight:600;">${pd.Gen}</span></td></tr>
+          <tr><td><span class="case-head case-dat"><b>Dative</b></span></td><td><span class="word" style="font-weight:600;">${pd.Dat}</span></td></tr>
+          <tr><td><span class="case-head case-acc"><b>Accusative</b></span></td><td><span class="word" style="font-weight:600;">${pd.Acc}</span></td></tr>
+          <tr><td><span class="case-head case-ins"><b>Instrumental</b></span></td><td><span class="word" style="font-weight:600;">${pd.Ins}</span></td></tr>
+          <tr><td><span class="case-head case-loc"><b>Locative</b></span></td><td><span class="word" style="font-weight:600;">${pd.Loc}</span></td></tr>
         </tbody></table></div>`,
     };
   }
@@ -1208,12 +1208,12 @@ export function generateGrammarBreakdown(item: VocabItem): GrammarBreakdownResul
       exampleEn,
       spokenSummary,
       tableHtml: `<div class="table-scroll-wrap"><table class="gram-grid">
-        <thead><tr><th>Gender / Number</th><th>Nominative (Subject)</th><th>Accusative (Object)</th><th>Genitive</th><th>Locative (у/на)</th></tr></thead>
+        <thead><tr><th>Gender</th><th>Nominative</th><th>Accusative</th><th>Genitive</th><th>Locative (у/на)</th></tr></thead>
         <tbody>
-          <tr><td><b>Masculine</b></td><td>${f.m}</td><td>${f.m} (anim.: ${f.gen})</td><td style="color:var(--gen);">${f.gen}</td><td style="color:var(--loc)">у ${f.loc}</td></tr>
-          <tr><td><b>Feminine</b></td><td>${f.fem}</td><td style="color:var(--acc); font-weight:700;">${f.femAcc}</td><td style="color:var(--gen)">${stem}${isSoft ? 'ьої' : 'ої'}</td><td style="color:var(--loc)">у ${stem}ій</td></tr>
-          <tr><td><b>Neuter</b></td><td>${f.n}</td><td>${f.n}</td><td style="color:var(--gen)">${f.gen}</td><td style="color:var(--loc)">у ${f.loc}</td></tr>
-          <tr><td><b>Plural (All)</b></td><td style="color:var(--accent); font-weight:700;">${f.pl}</td><td>${f.pl} (anim.: ${stem}их)</td><td style="color:var(--gen)">${stem}их</td><td style="color:var(--loc)">у ${stem}их</td></tr>
+          <tr><td><b>Masculine</b></td><td><span class="word">${f.m}</span></td><td><span class="word">${f.m}</span> <span class="hint">(anim.: ${f.gen})</span></td><td><span class="word">${f.gen}</span></td><td><span class="word">у ${f.loc}</span></td></tr>
+          <tr><td><b>Feminine</b></td><td><span class="word">${f.fem}</span></td><td><span class="word" style="font-weight:600;">${f.femAcc}</span></td><td><span class="word">${stem}${isSoft ? 'ьої' : 'ої'}</span></td><td><span class="word">у ${stem}ій</span></td></tr>
+          <tr><td><b>Neuter</b></td><td><span class="word">${f.n}</span></td><td><span class="word">${f.n}</span></td><td><span class="word">${f.gen}</span></td><td><span class="word">у ${f.loc}</span></td></tr>
+          <tr><td><b>Plural</b></td><td><span class="word" style="font-weight:600;">${f.pl}</span></td><td><span class="word">${f.pl}</span> <span class="hint">(anim.: ${stem}их)</span></td><td><span class="word">${stem}их</span></td><td><span class="word">у ${stem}их</span></td></tr>
         </tbody></table></div>`,
     };
   }

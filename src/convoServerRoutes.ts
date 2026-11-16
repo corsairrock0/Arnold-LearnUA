@@ -19,6 +19,7 @@ import type {
   GeminiVoiceName,
   ManualHelpActionId,
 } from './aiConversationData.ts';
+import { handleDockerZipHttpRequest } from './dockerZipExporter.ts';
 
 function getGenAIClient(): GoogleGenAI | null {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -33,6 +34,12 @@ function getGenAIClient(): GoogleGenAI | null {
 
 export function createConvoApiApp(): express.Express {
   const apiApp = express();
+  apiApp.use((req, res, next) => {
+    if (handleDockerZipHttpRequest(req, res)) {
+      return;
+    }
+    next();
+  });
   apiApp.use(express.json({ limit: '10mb' }));
 
   // 1. Server status endpoint (never exposes GEMINI_API_KEY)

@@ -1,0 +1,49 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Evaluated all saved work following the server restart that interrupted the full-application UI/UX redesign prompt, validated compilation, linting, automated tests, and live browser rendering, and completed all remaining UI/UX polish and checkpoint persistence.
+- Audit of saved state confirmed zero data corruption or asset loss: the container restart interrupted the earlier turn midway through updating `index.html` and `src/main.ts` before `src/identifyView.ts`, `src/multilingual/multilingualSelectorView.ts`, and persistent reporting were completed.
+- Completed and verified the end-to-end Lango UI/UX redesign across desktop (`1440x900`, Light & Dark themes) and mobile (`390x844`) while preserving 100% of existing learning functionality: all 8 core workspaces, 29 Ukrainian CEFR modules (`A0.1–C1.1`), 5,510 assessment questions, 67 approved coherent Identify scenes (`1,075` playable hotspots), 52 graded reader stories, 28 multilingual course tracks, Content Studio CMS, and the dynamic Port 4000 Docker `.ZIP` exporter.
+
+2. CHANGES COMPLETED
+- Design System, Typography & Color Hierarchy (`index.html`):
+  - Established a crisp 60-30-10 editorial workspace palette (`#F6F8FB` cool neutral canvas / `#FFFFFF` elevated surfaces / `#1D4ED8` Ukrainian Royal Azure primary accent in Light mode; `#0B0F19` / `#111827` in Dark mode) with `1px` hairline borders and subtle elevation shadows, removing legacy `border-left: 4px` callout stripes across HTML and TypeScript templates.
+  - Paired `Plus Jakarta Sans` (`--font-display`) with `IBM Plex Sans` (`--font-sans`, full Latin + Ukrainian Cyrillic and acute stress-mark support) and `JetBrains Mono` (`--font-mono` tabular numerals for XP, FSRS intervals, and morphological slots).
+- 3-Zone Top Bar & Grouped Learning Navigation (`index.html`, `src/main.ts`):
+  - Replaced the crowded 8-button top utility strip with a clean 3-zone header: Brand + live `#active-workspace-breadcrumb`, compact `XP / Deck` stat cluster, active course track pill, `7-Case Inspector` dock toggle, Theme toggle, and a unified `Tools` popover menu housing Voice settings, Course Track switcher, Content Studio CMS, and Windows Docker `.ZIP (Port 4000)` export.
+  - Reorganized sidebar navigation into 3 structured pillars (`1 · Structured Learning`: Course, Reader; `2 · Visual & Active Recall`: Identify, Vocab, UK→EN, EN→UK, Sentence; `3 · Sound & Script`: Phonetics) with custom SVG icons, desktop `.nav-hint` subtitles, and a compact `<= 58px` mobile bottom tab bar (`<= 960px`).
+- Above-the-Fold Active Workspaces & Progressive Disclosure (`index.html`, `src/main.ts`, `src/identifyView.ts`, `src/multilingual/multilingualSelectorView.ts`):
+  - Course (`#tab-course`): Placed the active module lesson immediately above the fold via `.course-hero-bar` and moved the 29-module syllabus browser into a collapsible `#course-syllabus-drawer` (`Browse All 29 Modules`) that auto-closes upon module selection and syncs cleanly across all 28 multilingual tracks.
+  - Identify (`#tab-identify`): Defaulted `Identify` directly to the interactive scene canvas + hotspot pins + quiz panel side-by-side above the fold (`show80SceneCurriculumBrowser = false`), added `.identify-mode-header` with a segmented `Interactive Scene | All 67 Scenes` switcher, inline Category/Scene `<select>` pickers, and auto-return to practice when selecting any scene card.
+  - Graded Reader (`#tab-reader`): Positioned the active Ukrainian passage immediately above the fold with dotted editorial `.word-token` underlines and a collapsible `#reader-story-drawer` (`Choose Another Story (52)`).
+  - Contextual `7-Case Inspector` (`#grammar-inspector`): Set collapsed by default on desktop boot (`desktop-collapsed`) so primary workspaces enjoy full reading width, automatically expanding whenever a learner clicks any Ukrainian word or toggles `7-Case Inspector` in the top bar (and opening as a bottom sheet on mobile).
+  - Vocab, FSRS Decks & Phonetics (`#tab-vocab`, `#tab-anki`, `#tab-en2uk`, `#tab-corr`, `#tab-phonetics`): Unified Vocab setup into a single 2-step card (`1 · Everyday Topic` + `2 · Practice Mode`), refined tactile flashcard surfaces, arranged Phonetics Sound Analyzer + Cursive Pad in a responsive 2-column grid, and fixed the `<= 640px` `.course-hero-bar #toggle-course-syllabus-btn` mobile full-width rule.
+
+3. FILES CREATED OR MODIFIED
+- Modified: `index.html`
+- Modified: `src/main.ts`
+- Modified: `src/identifyView.ts`
+- Modified: `src/multilingual/multilingualSelectorView.ts`
+- Created: `reports/identify/ui-ux-redesign-recovery-001.txt`
+- Modified: `reports/identify/REPORT_INDEX.md`
+- Modified: `reports/identify/LATEST_REPORT.txt`
+- Modified: `src/identifyVisualBatchProgress.json`
+
+4. VALIDATION RESULTS
+- Automated Test Suites (`npx --yes tsx --test src/__tests__/*.test.ts`): 100 / 100 tests PASS (0 failures across all 6 suites: `courseVocabExpansion.test.ts`, `identifyCurationPhase1.test.ts`, `identifyUpgrade.test.ts`, `langoPhase1Multilingual.test.ts`, `langoPhase3ACmsStudio.test.ts`, `slovo.test.ts`).
+- Production Build & Static Analysis (`compile_applet` & `lint_applet`): PASS (0 TypeScript or Vite bundling errors).
+- Headless Chromium UI & Console Verification (`playwright-cli` at `http://localhost:3000`):
+  - Verified desktop (`1440x900`, Light & Dark themes) and mobile (`390x844`) across Course, Syllabus Drawer, Identify Interactive Scene, Identify 67-Scene Browser, Reader + 7-Case Inspector, Vocab, FSRS Decks, Phonetics, Tools Popover, and Docker `.ZIP` modal with `0` console errors and `0` warnings.
+
+5. PERSISTENT CHECKPOINT
+- Checkpoint File: `src/identifyVisualBatchProgress.json`
+- Active Coherent Scenes Approved & Playable: 67 (`1,075` approved hotspots; 10 original + 57 coherent batch scenes; 13 incoherent scenes removed)
+- Latest Persisted Report: `reports/identify/ui-ux-redesign-recovery-001.txt` (mirrored to `reports/identify/LATEST_REPORT.txt` and indexed as Order `11` in `reports/identify/REPORT_INDEX.md`)
+
+6. REMAINING WORK
+- None. All interrupted UI/UX redesign work has been recovered, completed, verified with zero errors across build/lint/100 tests/headless Chromium, and archived to persistent storage.
+
+7. NEXT EXECUTION
+- Explore the redesigned Lango interface directly across all 8 learning workspaces on desktop or mobile, or open `Tools -> Docker .ZIP (Port 4000)` in the top header bar if you wish to export an updated standalone Windows Docker archive containing the new UI.
