@@ -40,6 +40,7 @@ import {
   SYNTHETIC_ENGLISH_TO_HINDI_TEST_FIXTURE_JSON,
 } from './universalCoursePlayer.ts';
 import { evaluateCmsAccessContext } from './cmsAuthAndStorage.ts';
+import { trapFocusInModal, releaseFocusTrap } from '../a11yHelpers';
 
 let pendingModalTargetLanguage: string | null = null;
 let lastImportPreviewReport: CourseImportPreviewReport | null = null;
@@ -372,14 +373,17 @@ export function openLanguageSelectorModal(
         : null;
 
   const modal = ensureLanguageSelectorModalElement();
+  modal.setAttribute('aria-labelledby', 'lang-selector-modal-title');
   renderLanguageSelectorModalContent(modal);
   modal.classList.remove('hidden');
+  trapFocusInModal('lango-language-selector-modal');
 }
 
 export function closeLanguageSelectorModal(): void {
   const modal = document.getElementById('lango-language-selector-modal');
-  if (modal) {
+  if (modal && !modal.classList.contains('hidden')) {
     modal.classList.add('hidden');
+    releaseFocusTrap('lango-language-selector-modal');
   }
 }
 
@@ -444,25 +448,32 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
       const isEnglishTarget = lang.code === 'en';
       const htmlAttrs = getLanguageHtmlAttributes(lang.code);
 
+      const badgeClass = isUkPublished
+        ? 'lang-modal-badge lang-modal-badge--published'
+        : isEnglishTarget
+          ? 'lang-modal-badge lang-modal-badge--english'
+          : 'lang-modal-badge';
+
       return `
         <button
           type="button"
           data-testid="target-lang-option-${escapeHtml(lang.code)}"
+          class="lang-modal-card ${isSelectedTarget ? 'is-selected' : ''}"
           onclick="selectTargetLanguageInModal('${escapeHtml(lang.code)}')"
-          style="display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; padding:11px 13px; border-radius:var(--radius-md); border:${isSelectedTarget ? '2px solid var(--accent)' : '1px solid var(--border-strong)'}; background:${isSelectedTarget ? 'var(--accent-container)' : 'var(--surface-2)'}; color:var(--text); cursor:pointer; text-align:left; min-height:76px; transition:all 0.15s ease;"
         >
-          <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:6px;">
-            <strong style="font-size:14.5px; color:var(--text);">${escapeHtml(lang.nameEn)}</strong>
-            <span class="tag" style="font-size:10.5px; font-weight:800; padding:2px 6px; background:${isUkPublished ? 'var(--success-container)' : isEnglishTarget ? 'var(--accent)' : 'var(--surface-1)'}; color:${isUkPublished ? 'var(--success-on-container)' : isEnglishTarget ? 'var(--accent-on)' : 'var(--text-secondary)'};">
+          <div class="lang-modal-card-top">
+            <strong class="lang-modal-name-en">${escapeHtml(lang.nameEn)}</strong>
+            <span class="${badgeClass}">
               ${isUkPublished ? '29 Modules' : isEnglishTarget ? '14 L1 Tracks' : 'Coming Soon'}
             </span>
           </div>
           <div
             lang="${escapeHtml(htmlAttrs.lang)}"
             dir="${escapeHtml(htmlAttrs.dir)}"
-            style="font-size:13.5px; font-weight:700; color:var(--accent); margin-top:4px; width:100%; font-family:${escapeHtml(htmlAttrs.styleFontFamily)};"
+            class="lang-modal-native"
+            style="font-family:${escapeHtml(htmlAttrs.styleFontFamily)};"
           >
-            ${escapeHtml(lang.nativeName)} <span style="font-size:11px; color:var(--text-secondary); direction:ltr;">(${escapeHtml(lang.code)})</span>
+            ${escapeHtml(lang.nativeName)} <span class="lang-modal-code">(${escapeHtml(lang.code)})</span>
           </div>
         </button>
       `;
@@ -471,21 +482,21 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
 
   const nativeChooserSectionHtml = isChoosingNativeForEnglish
     ? `
-      <div data-testid="native-language-chooser-section" style="margin-top:16px; padding:16px; background:var(--surface-2); border:2px solid var(--accent); border-radius:var(--radius-md);">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+      <div data-testid="native-language-chooser-section" class="card identify-drawer-card identify-target-section">
+        <div class="identify-drawer-top">
           <div>
-            <span class="tag" style="background:var(--accent); color:var(--accent-on); font-weight:800; font-size:11px;">
+            <span class="lang-modal-badge lang-modal-badge--english">
               DIRECTION B — LEARN ENGLISH (ESL / EFL)
             </span>
-            <h4 style="margin:6px 0 2px 0; font-size:17px; font-weight:800; color:var(--text);" data-testid="native-language-prompt-heading">
+            <h4 class="identify-right-title" data-testid="native-language-prompt-heading">
               WHAT IS YOUR NATIVE LANGUAGE?
             </h4>
-            <p style="margin:0; font-size:12.5px; color:var(--text-secondary);">
+            <p class="identify-drawer-sub">
               Each native language below loads its own independently designed English curriculum track (not a generic translated course).
             </p>
           </div>
         </div>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(175px, 1fr)); gap:8px;">
+        <div class="lang-modal-grid">
           ${nativeLanguagesForEn
             .map((nLang) => {
               const resolvedTrack = resolveCourseTrack('en', nLang.code);
@@ -497,21 +508,22 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
                 <button
                   type="button"
                   data-testid="native-lang-option-${escapeHtml(nLang.code)}"
+                  class="lang-modal-card ${isSelectedNative ? 'is-selected' : ''}"
                   onclick="selectNativeLanguageForEnglishInModal('${escapeHtml(nLang.code)}')"
-                  style="display:flex; flex-direction:column; align-items:flex-start; padding:10px 12px; border-radius:var(--radius-sm); border:${isSelectedNative ? '2px solid var(--accent)' : '1px solid var(--border-strong)'}; background:${isSelectedNative ? 'var(--accent-container)' : 'var(--surface-1)'}; color:var(--text); cursor:pointer; text-align:left;"
                 >
-                  <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <strong style="font-size:13.5px;">${escapeHtml(nLang.nameEn)}</strong>
-                    <span style="font-size:11px; color:var(--text-secondary); font-weight:700;">${escapeHtml(nLang.code)} → en</span>
+                  <div class="lang-modal-card-top">
+                    <strong class="lang-modal-name-en">${escapeHtml(nLang.nameEn)}</strong>
+                    <span class="lang-modal-code">${escapeHtml(nLang.code)} → en</span>
                   </div>
                   <div
                     lang="${escapeHtml(htmlAttrs.lang)}"
                     dir="${escapeHtml(htmlAttrs.dir)}"
-                    style="font-size:13px; color:var(--accent); font-weight:700; margin-top:2px; width:100%; font-family:${escapeHtml(htmlAttrs.styleFontFamily)};"
+                    class="lang-modal-native"
+                    style="font-family:${escapeHtml(htmlAttrs.styleFontFamily)};"
                   >
                     ${escapeHtml(nLang.nativeName)}
                   </div>
-                  <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">
+                  <div class="identify-cat-meta">
                     ${escapeHtml(resolvedTrack?.courseTitle || `English for ${nLang.nameEn} Speakers`)}
                   </div>
                 </button>
@@ -527,38 +539,37 @@ function renderLanguageSelectorModalContent(modal: HTMLElement): void {
 
   modal.innerHTML = `
     <div class="modal-dialog modal-dialog--xl">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px;">
+      <div class="modal-header">
         <div>
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
-            Lango Multilingual Platform • 28 Course Tracks • Interface: ${escapeHtml(interfaceLang.toUpperCase())}
-          </span>
-          <h3 style="margin:6px 0 2px 0; font-size:21px; font-weight:800; color:var(--text);" data-testid="target-language-prompt-heading">
+          <div class="modal-kicker">
+            Lango Multilingual Platform · 28 Course Tracks · Interface: ${escapeHtml(interfaceLang.toUpperCase())}
+          </div>
+          <h3 id="lang-selector-modal-title" class="modal-title" data-testid="target-language-prompt-heading">
             ${escapeHtml(getInterfaceText('selector.whatLanguageToLearn', interfaceLang).toUpperCase())}
           </h3>
-          <p style="margin:0; font-size:13px; color:var(--text-secondary);">
+          <p class="identify-drawer-sub">
             Choose one of 14 foreign languages (for English speakers) or select <b>English</b> to choose among 14 native-language-specific English curricula.
           </p>
         </div>
-        <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12.5px;" onclick="closeLanguageSelectorModal()">✕ Close</button>
+        <button type="button" class="btn btn-sec btn--sm" onclick="closeLanguageSelectorModal()">Close</button>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(175px, 1fr)); gap:8px;">
+      <div class="lang-modal-grid">
         ${targetGridHtml}
       </div>
 
       ${nativeChooserSectionHtml}
 
-      <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--text-secondary);">
+      <div class="lang-modal-footer">
         <div>
-          Current Active Track: <b style="color:var(--text);">${escapeHtml(activeTrack.courseTitle)} (${escapeHtml(activeTrack.trackId)})</b>
+          Current Active Track: <b class="text-strong-ink">${escapeHtml(activeTrack.courseTitle)} (${escapeHtml(activeTrack.trackId)})</b>
         </div>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <label for="lango-interface-lang-select" style="font-size:12px; font-weight:700;">Interface Language (UI):</label>
+        <div class="identify-header-actions">
+          <label for="lango-interface-lang-select" class="identify-select-label">Interface Language (UI):</label>
           <select
             id="lango-interface-lang-select"
             data-testid="interface-lang-select"
-            class="input-box"
-            style="min-height:32px; padding:2px 8px; font-size:12px;"
+            class="input-box identify-select-compact"
             onchange="changeInterfaceLanguageInModal(this.value)"
           >
             ${allUiLanguages
@@ -691,12 +702,14 @@ export function openDevCourseImporterModal(defaultTrackId?: string): void {
   `;
 
   modal.classList.remove('hidden');
+  trapFocusInModal('lango-dev-importer-modal');
 }
 
 export function closeDevCourseImporterModal(): void {
   const modal = document.getElementById('lango-dev-importer-modal');
-  if (modal) {
+  if (modal && !modal.classList.contains('hidden')) {
     modal.classList.add('hidden');
+    releaseFocusTrap('lango-dev-importer-modal');
   }
 }
 

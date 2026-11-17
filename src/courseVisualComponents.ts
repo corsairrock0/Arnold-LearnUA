@@ -592,16 +592,15 @@ export function renderLessonReference(props: LessonReferenceProps): string {
     .join('');
 
   return `
-    <details class="vc-reference-details">
-      <summary class="vc-reference-summary">
+    <details class="lesson-expandable vc-reference-details" id="details-sec-reference">
+      <summary>
         <div>
-          <span class="vc-context-tag">Complete Linguistic Reference</span>
-          <div style="font-size:15px; font-weight:800; color:var(--text); margin-top:4px;">📚 ${props.title}</div>
-          <div style="font-size:12.5px; color:var(--text-secondary); font-weight:500;">${props.subtitle} (Tap to expand full reference — optional deep dive)</div>
+          <div class="lesson-expandable-title"><span class="lesson-section-kicker">K</span>Complete reference · ${props.title}</div>
+          <div class="lesson-expandable-sub">${props.subtitle} · Optional deep-dive tables and rules (${props.sections.length} ${props.sections.length === 1 ? 'section' : 'sections'})</div>
         </div>
-        <span class="vc-ref-chevron">▼ Expand</span>
+        <span class="lesson-expandable-toggle">reference</span>
       </summary>
-      <div class="vc-reference-body">
+      <div class="lesson-expandable-body">
         ${sectionsHtml}
       </div>
     </details>

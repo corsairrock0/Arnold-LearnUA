@@ -1,0 +1,69 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution Identifier: ux-restructure-phase-006 (Phase 6 of 6 — Final WCAG AA Accessibility, Modal/Sheet Focus Trapping, Dark-Mode Contrast Audit, Zero Static Inline Styles & 360px/768px/1280px+ Responsive Sweep)
+- Completed Phase 6 of 6 — finalizing the end-to-end "Editorial Notebook" UI/UX restructure of "Learn Ukrainian by Lango" from A0 to C1 while keeping 100% of curriculum data, 6,000-word frequency vocabulary, 5,510 assessment items, 67 approved Identify visual scenes (1,075 hotspots), FSRS scheduling engines, and all learner localStorage keys/data shapes intact.
+- Implemented full WCAG AA accessibility across Light, Dark, and photo surfaces: added a keyboard-first `<a href="#main-scroll-container" class="skip-link">Skip to main content</a>` link paired with `tabindex="-1"` on `#main-scroll-container`; built a zero-dependency modal/sheet focus-trap and focus-restoration controller (`src/a11yHelpers.ts`) wired into all 7 modals and bottom sheets (`#lango-settings-modal`, `#reader-word-sheet`, mobile `#grammar-inspector`, `#voice-settings-modal`, `#lango-docker-zip-modal`, `#lango-language-selector-modal`, and `#lango-dev-importer-modal`); added `aria-pressed` synchronization across theme, daily-goal, auto-audio, and full-focus toggles alongside `aria-current="page"` and `aria-selected`; added high-visibility `:focus-visible` halos on dark Identify scene hotspots; and guaranteed `>= 44px` mobile touch targets across all navigation, segmented, filter, zoom, and action controls.
+- Completed a mathematical OKLab/OKLCH -> linear sRGB -> WCAG 2.1 contrast audit (`auditThemeContrastPairs` in `src/a11yHelpers.ts`), tuning `--muted` to `oklch(0.46 0.015 260)` in Light mode and `oklch(0.745 0.012 260)` in Dark mode so all 36 Light & Dark semantic token pairs pass `>= 4.5:1` WCAG AA contrast even on elevated `--surface-3` cards, with synchronous reflow (`void root.offsetHeight;`) inside `applyColorTheme()` eliminating theme-switch transition flashes.
+- Eliminated 100% of inline `style="..."` attributes across `index.html` (`0`), `src/main.ts` (`0`, replacing 89 template inline styles and using an SVG `<rect>` progress bar for flashcard progress), `src/morphologyAndPhonetics.ts` (`0`, replacing 17 inline styles with `.word--strong`), and `src/aiConversationView.ts` (`0`), and replaced static learner-facing inline styles in `src/identifyView.ts` and `src/multilingual/multilingualSelectorView.ts` with reusable semantic CSS classes while preserving dynamic normalized hotspot coordinates (`left`/`top`/`width`/`height`) and zoom transforms.
+
+2. CHANGES COMPLETED
+- Accessibility & WCAG AA Contrast Engine (`src/a11yHelpers.ts` & `src/__tests__/a11yAndThemeHelpers.test.ts`):
+  - Implemented `trapFocusInModal()`, `releaseFocusTrap()`, `getFocusableElements()`, `handleFocusTrapKeydown()`, `getActiveTrappedContainerId()`, and `clearAllFocusTrapsForTesting()` supporting stacked dialogs, `Tab` / `Shift+Tab` wraparound, and exact trigger focus restoration on close.
+  - Implemented `oklchToSrgb()`, `computeWcagContrastRatio()`, `LANGO_THEME_TOKENS`, and `auditThemeContrastPairs()` verifying all 36 Light & Dark surface/text token pairings (`--text`, `--text-secondary`, `--muted`, `--lang`, `--gold-text`, and 7 semantic case colors across `--bg`, `--surface-1`, `--surface-2`, and `--surface-3`) meet `>= 4.5:1` WCAG AA contrast.
+  - Added 4 automated test suites in `src/__tests__/a11yAndThemeHelpers.test.ts` locking in WCAG AA contrast ratios, modal focus-trap cycling & focus restoration, `0` inline `style="` attributes in core HTML/TS views, and skip-link / `main` landmark wiring.
+- Zero Static Inline `style="..."` Refactor (`index.html`, `src/main.ts`, `src/morphologyAndPhonetics.ts`, `src/identifyView.ts`, `src/multilingual/multilingualSelectorView.ts`):
+  - Replaced all 89 inline `style="..."` occurrences in `src/main.ts` with reusable token-driven classes (`.inspector-*`, `.phonetic-*`, `.freq-row-*`, `.topic-drill-*`, `.review-progress-svg` / `.review-progress-svg-rect`).
+  - Replaced all 17 `<span class="word" style="font-weight:600;">` occurrences in `src/morphologyAndPhonetics.ts` with `<span class="word word--strong">`.
+  - Replaced static learner-facing `style="..."` attributes in `src/identifyView.ts` and `src/multilingual/multilingualSelectorView.ts` with `.identify-*` and `.lang-modal-*` classes, and removed the unused `validateIdentifySceneQuality` import/variable in `src/identifyView.ts`.
+- Dark Mode, Touch Targets & Responsive Polish (`index.html`, `src/main.ts`):
+  - Strengthened `html.theme-switching, html.theme-switching *` (`transition: none !important; animation: none !important;`) paired with `void root.offsetHeight;` in `applyColorTheme()`, and added dark-mode `<select>` chevron icons.
+  - Instantaneously switched `#reader-word-sheet.is-open` `visibility` (`0ms` on open, `200ms` delayed hide on close) so keyboard focus traps immediately when tapping any `.word-token` in Stories.
+  - Enforced late-cascade `min-height: 44px` touch targets on `<= 960px` across `.identify-zoom-btn` (`min-width: 44px`), `.subnav-btn`, `.identify-seg-btn`, `.identify-target-chip`, `.review-util-btn`, `.review-topic-pill`, and `.vc-mini-word-btn`, and tuned `<= 480px` `.subnav-btn` horizontal padding so all 4 Explore tabs (`Stories`, `Pictures`, `Topics`, `6,000-word lexicon`) fit cleanly at `360px` width without clipping.
+
+3. FILES CREATED OR MODIFIED
+- Created: `src/a11yHelpers.ts`
+- Created: `src/__tests__/a11yAndThemeHelpers.test.ts`
+- Modified: `index.html` (`0` inline `style="..."` attributes; tuned Light/Dark `--muted` tokens for WCAG AA, `.skip-link`, `#main-scroll-container` `tabindex="-1"`, `.identify-hotspot:focus-visible` halo, dark `<select>` chevrons, instant `.reader-word-sheet.is-open` visibility, `44px` mobile touch targets, `360px` subnav fit, and reusable `.inspector-*` / `.phonetic-*` / `.freq-row-*` / `.topic-drill-*` / `.identify-*` / `.lang-modal-*` classes)
+- Modified: `src/main.ts` (`0` inline `style="..."` attributes; wired `trapFocusInModal` / `releaseFocusTrap` across Settings, Reader word sheet, mobile Word forms sheet, Voice modal, and Docker modal; `aria-pressed` sync; synchronous reflow in `applyColorTheme()`)
+- Modified: `src/morphologyAndPhonetics.ts` (`0` inline `style="..."` attributes; `.word--strong` class)
+- Modified: `src/identifyView.ts` (removed unused `validateIdentifySceneQuality`; replaced static learner-facing inline styles with `.identify-*` classes while preserving dynamic hotspot coordinates and zoom transforms)
+- Modified: `src/multilingual/multilingualSelectorView.ts` (wired `trapFocusInModal` / `releaseFocusTrap` into Language Selector & Dev Course Importer modals; replaced static modal card inline styles with `.lang-modal-*` classes)
+- Created: `reports/identify/ux-restructure-phase-006.txt`
+- Modified: `reports/identify/REPORT_INDEX.md`
+- Modified: `src/identifyVisualBatchProgress.json` (`reportingStandard.latestSourceReportFile` updated to `"reports/identify/ux-restructure-phase-006.txt"`; all batch/scene data untouched)
+- Modified: `reports/identify/LATEST_REPORT.txt`
+
+4. VALIDATION RESULTS
+- Unit & Integration Tests (`npx --yes tsx --test src/__tests__/*.test.ts`): `119 / 119 PASS` (`0` failures across all suites, including 4 new `a11yAndThemeHelpers` suites, 6 `exploreReaderHelpers` suites, 5 `reviewSessionHelpers` suites, 4 `courseFlowHelpers` suites, 11 core Slovo suites, and 89 multilingual/CMS regression suites).
+- WCAG AA Contrast Audit (`auditThemeContrastPairs()`): `36 / 36 PASS` (`>= 4.5:1` across all 18 Light and 18 Dark semantic token pairs, including `--muted` on `--surface-3`).
+- TypeScript Check (`npm run lint` / `tsc --noEmit`): `PASS` (`0` errors).
+- Production Applet Build (`compile_applet` / `npm run build`): `SUCCEEDED`.
+- Static Inline `style="..."` Audit (`grep -c 'style="'`):
+  - `index.html`: `0`
+  - `src/main.ts`: `0`
+  - `src/morphologyAndPhonetics.ts`: `0`
+  - `src/aiConversationView.ts`: `0`
+- Multi-Viewport & Dual-Theme Browser Verification (Playwright Headless Chromium across `1440x900`, `1280x800`, `768x1024`, and `360x800` in Light & Dark Modes):
+  - Horizontal Overflow Sweep (10 routes `#/today`, `#/learn/A0.1`, `#/learn/map`, `#/review`, `#/explore/reader`, `#/explore/identify`, `#/explore/vocab`, `#/explore/lexicon`, `#/speak`, `#/speak/sounds` x 3 viewports x 2 themes = 60 checks): `0` overflow violations (`0px` overflow everywhere).
+  - Keyboard Accessibility & Focus Trapping: `Tab` -> `.skip-link` -> `Enter` focuses `#main-scroll-container`; `#lango-settings-modal`, `#lango-language-selector-modal`, `#reader-word-sheet`, and mobile `#grammar-inspector` trap `Tab`/`Shift+Tab` inside the dialog, dismiss on `Escape`, and restore focus to the exact trigger button/word token (`readerSheetOpenAndTrapped: true`, `readerFocusRestoredToWord: true`, `focusRestoredAfterSettings: true`).
+  - Mobile `360x800` Touch Targets & Sticky Budget: `.sidebar .nav-btn` = `48px`, `.mobile-icon-btn` = `44px`, `.mobile-lang-pill` = `44px`, `.subnav-btn` = `44px`, `.identify-zoom-btn` = `44px`, `.identify-seg-btn` = `44px`; Explore subnav fits unclipped (`scrollWidth: 303px === clientWidth: 303px`); fixed bottom navigation height = `57px` (`7.1%` of `800px` viewport, well within the `15%` sticky cap); `0` console errors and `0` page errors.
+- Errors Encountered During Execution:
+  - Round 1 Playwright telemetry caught `.identify-zoom-btn` rendering at `30px` on `360x800` due to CSS declaration order and `6,000-word lexicon` clipping slightly at `360px` width, plus `#reader-word-sheet` `visibility` transition delaying immediate focus on open. Fixed all three in `index.html` and verified `100%` pass in Round 2.
+
+5. PERSISTENT CHECKPOINT
+- Authoritative Checkpoint File: `src/identifyVisualBatchProgress.json`
+- `lastBatchNumber`: `10` (unchanged)
+- `cumulativeProgress.batchesCompleted`: `10` (unchanged)
+- Approved & Playable Identify Scenes: `67` scenes / `1,075` verified hotspots (unchanged)
+- Preserved Learner Storage Keys: `slovo_ua_6000_anki_v1`, `slovo_ua_en2uk_anki_v1`, `slovo_ua_corr_anki_v1`, `slovo_ua_course_done_v1`, `slovo_ua_course_assessments_v1`, `slovo_ua_everyday_vocab_v1`, `slovo_ua_identify_v1`, `slovo_ua_theme_mode`, `slovo_ua_onboarding_v1`, `slovo_ua_daily_activity_v1`, `slovo_ua_last_course_pos_v1`, `slovo_ua_review_prefs_v1`
+- Latest Persisted Source Report: `reports/identify/ux-restructure-phase-006.txt`
+- Latest Report Mirror: `reports/identify/LATEST_REPORT.txt`
+
+6. REMAINING WORK
+- None. All 6 phases (`ux-restructure-phase-001` through `ux-restructure-phase-006`) of the "Learn Ukrainian by Lango" UI/UX restructure are complete, verified across unit tests, TypeScript lint, production build, and multi-viewport Light/Dark headless Chromium QA, and archived in `reports/identify/`.
+
+7. NEXT EXECUTION
+- No further UX restructure phases remain. Ready for learner use, production deployment (`npm run build`), or future curriculum/feature requests.

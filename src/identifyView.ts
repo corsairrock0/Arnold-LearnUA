@@ -51,7 +51,6 @@ import {
   getEffectiveIdentifyScene,
   getActivePilotVariantForScene,
   setActivePilotVariantForScene,
-  validateIdentifySceneQuality,
 } from './identifySceneIntelligence';
 import {
   canToggleIdentifyAdminPreviewInUi,
@@ -689,8 +688,8 @@ export function handleIdentifyMCOption(hotspotId: string, chosenUk: string): voi
 
   const isCorrect = normalizeIdentifyUk(chosenUk) === normalizeIdentifyUk(target.uk);
   const feedback = isCorrect
-    ? `✅ Правильно! "${target.uk}" — ${target.en}.`
-    : `❌ "${chosenUk}" is not right for this object. Try another option or click "👁️ Show Answer".`;
+    ? `Right — «${target.uk}» means ${target.en}.`
+    : `Not quite — «${chosenUk}» isn’t this object. Try another choice or tap “Show answer”.`;
 
   hooks?.triggerHaptic(isCorrect ? 'heavy' : 'light');
   recordIdentifyAttempt(
@@ -726,7 +725,12 @@ export function submitIdentifyTypedAnswer(hotspotId: string): void {
     hooks?.triggerHaptic('light');
     const fbEl = document.getElementById('identify-live-feedback');
     if (fbEl) {
-      fbEl.innerHTML = `<div style="padding:10px 12px; border-radius:var(--radius-sm); background:var(--warn-container); color:var(--warn-on-container); font-size:13px; font-weight:700;">${escapeHtml(validation.feedback)}</div>`;
+      fbEl.innerHTML = `
+        <div class="identify-feedback-banner identify-feedback-banner--revealed" role="status">
+          <span class="identify-feedback-icon" aria-hidden="true">!</span>
+          <span>${escapeHtml(validation.feedback)}</span>
+        </div>
+      `;
     }
     return;
   }
@@ -832,6 +836,13 @@ export function filterIdentifyCategories(query: string): void {
   renderIdentifyTab();
 }
 
+export function clearIdentifyCategorySearch(): void {
+  hooks?.triggerHaptic('light');
+  categorySearchQuery = '';
+  activeTopicGroupFilter = 'all';
+  renderIdentifyTab();
+}
+
 export function filterIdentifyByTopicGroup(groupId: string): void {
   hooks?.triggerHaptic('light');
   activeTopicGroupFilter = groupId;
@@ -892,7 +903,7 @@ export function addIdentifyWordToFSRS(uk: string, en: string): void {
   const added = hooks?.addWordByUkToFSRS(uk, en);
   const btn = document.getElementById('identify-add-fsrs-btn');
   if (btn) {
-    btn.innerText = added ? '✓ Added to Flashcards!' : '✓ Already in Flashcards';
+    btn.innerText = added ? '✓ Added to reviews' : '✓ In your reviews';
   }
 }
 
@@ -909,7 +920,7 @@ export function addIdentifySceneWordsToFSRS(): void {
   }
   const btn = document.getElementById('identify-add-scene-fsrs-btn');
   if (btn) {
-    btn.innerText = count > 0 ? `✓ Added ${count} Verified Words to FSRS` : '✓ All Verified Scene Words in FSRS';
+    btn.innerText = count > 0 ? `✓ Added ${count} words to reviews` : '✓ Scene words in reviews';
   }
 }
 
@@ -2024,46 +2035,60 @@ export function renderIdentifyTab(): void {
 
   const categoryBrowserHtml = showCategoryBrowser
     ? `
-      <div class="card" style="margin-bottom:14px; border:1px solid var(--border-strong);">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+      <div class="card identify-drawer-card">
+        <div class="identify-drawer-top">
           <div>
-            <h2 style="margin:0; font-size:16.5px; font-weight:700;">All ${IDENTIFY_CATEGORIES.length} Visual Categories (${totalLibraryScenes} Scenes · 2,000 Unique Nouns)</h2>
-            <p style="margin:2px 0 0 0; font-size:12.5px; color:var(--text-secondary);">Organized across 9 Topic Groups with concrete visual objects per scene.</p>
+            <h2 class="identify-drawer-title">All ${IDENTIFY_CATEGORIES.length} visual topics (${totalLibraryScenes} scenes · 2,000 everyday nouns)</h2>
+            <p class="identify-drawer-sub">Pick a room, market, or street topic to practice concrete objects in context.</p>
           </div>
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <input type="search" class="input-box" style="min-height:36px; font-size:13px; max-width:220px;" placeholder="Search categories or nouns..." value="${escapeHtml(categorySearchQuery)}" oninput="filterIdentifyCategories(this.value)">
-            <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px;" onclick="toggleIdentifyCategoryDrawer(false)">Close</button>
+          <div class="identify-header-actions">
+            <input type="search" class="input-box identify-drawer-search" placeholder="Search topics or nouns…" aria-label="Search visual topics or nouns" value="${escapeHtml(categorySearchQuery)}" oninput="filterIdentifyCategories(this.value)">
+            <button type="button" class="btn btn-sec btn--sm" onclick="toggleIdentifyCategoryDrawer(false)">Close</button>
           </div>
         </div>
-        <div class="stage-bar" style="margin-bottom:10px;">
+        <div class="stage-bar">
           ${topicGroupFilterPillsHtml}
         </div>
-        <div class="identify-category-grid">
-          ${filteredCats
-            .map((c) => {
-              const catPlayable = getPlayableScenesForCategory(c);
-              let completedScenes = 0;
-              for (const s of catPlayable) {
-                if (computeIdentifySceneSummary(identifyProgress, s).isSceneComplete) {
-                  completedScenes++;
-                }
-              }
-              const isCurrent = c.id === cat.id;
-              const thumbSrc = (catPlayable[0] || c.scenes[0]).assetPath;
-              return `
-                <button type="button" class="identify-cat-card ${isCurrent ? 'active' : ''}" onclick="selectIdentifyCategory('${c.id}')">
-                  <div class="identify-cat-thumb-wrap">
-                    <img src="${thumbSrc}" alt="${escapeHtml(c.titleEn)}" loading="lazy" decoding="async" class="identify-cat-thumb" />
-                    <span class="identify-cat-thumb-badge">${c.icon} ${completedScenes}/${catPlayable.length || c.scenes.length}</span>
-                  </div>
-                  <div style="font-weight:800; font-size:14px; color:var(--text); margin-top:6px;">${c.number}. ${escapeHtml(c.titleEn)}</div>
-                  <div style="font-size:12.5px; color:var(--accent); font-weight:700;">${escapeHtml(c.titleUk)}</div>
-                  <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">${c.coreVocab.length} unique nouns • ${catPlayable.length || c.scenes.length} approved scenes</div>
-                </button>
-              `;
-            })
-            .join('')}
-        </div>
+        ${
+          filteredCats.length === 0
+            ? `
+              <div class="empty-state-box">
+                <h3 class="empty-state-title">No visual topics match “${escapeHtml(categorySearchQuery)}”</h3>
+                <p class="empty-state-desc">Try searching in English or Ukrainian (for example, “kitchen” or “кухня”), or show all topic groups.</p>
+                <div class="empty-state-actions">
+                  <button type="button" class="btn btn-sec" onclick="clearIdentifyCategorySearch()">Show all topics</button>
+                </div>
+              </div>
+            `
+            : `
+              <div class="identify-category-grid">
+                ${filteredCats
+                  .map((c) => {
+                    const catPlayable = getPlayableScenesForCategory(c);
+                    let completedScenes = 0;
+                    for (const s of catPlayable) {
+                      if (computeIdentifySceneSummary(identifyProgress, s).isSceneComplete) {
+                        completedScenes++;
+                      }
+                    }
+                    const isCurrent = c.id === cat.id;
+                    const thumbSrc = (catPlayable[0] || c.scenes[0]).assetPath;
+                    return `
+                      <button type="button" class="identify-cat-card ${isCurrent ? 'active' : ''}" onclick="selectIdentifyCategory('${c.id}')">
+                        <div class="identify-cat-thumb-wrap">
+                          <img src="${thumbSrc}" alt="${escapeHtml(c.titleEn)}" loading="lazy" decoding="async" class="identify-cat-thumb" />
+                          <span class="identify-cat-thumb-badge">${c.icon} ${completedScenes}/${catPlayable.length || c.scenes.length}</span>
+                        </div>
+                        <div class="identify-cat-title-en">${c.number}. ${escapeHtml(c.titleEn)}</div>
+                        <div class="identify-cat-title-uk">${escapeHtml(c.titleUk)}</div>
+                        <div class="identify-cat-meta">${c.coreVocab.length} nouns · ${catPlayable.length || c.scenes.length} scenes</div>
+                      </button>
+                    `;
+                  })
+                  .join('')}
+              </div>
+            `
+        }
       </div>
     `
     : '';
@@ -2074,7 +2099,6 @@ export function renderIdentifyTab(): void {
 
   const activeBaseSceneId = identifyProgress.activeSceneId;
   const activePilotVariant = getActivePilotVariantForScene(activeBaseSceneId);
-  const validationReport = validateIdentifySceneQuality(scene);
   const hasVerifiedCategoryOverride =
     activeBaseSceneId.startsWith('beach-nature-scene-') ||
     activeBaseSceneId.startsWith('kitchen-scene-') ||
@@ -2084,52 +2108,52 @@ export function renderIdentifyTab(): void {
   const pilotVariantBarHtml =
     activeBaseSceneId === 'beach-nature-scene-3'
       ? `
-        <details data-testid="identify-pilot-variant-switcher" style="margin-bottom:10px; padding:7px 12px; border-radius:var(--radius-sm); background:var(--surface-1); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-size:12px; font-weight:600; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-            <span>Scene Verification Variants (Scene 3 — Beach &amp; Nature · ${scene.targets.length} verified objects)</span>
-            <span style="color:var(--accent); font-weight:700;">Options</span>
+        <details data-testid="identify-pilot-variant-switcher" class="identify-variant-details">
+          <summary class="identify-variant-summary">
+            <span>Scene photo options · ${scene.targets.length} objects</span>
+            <span class="text-accent-strong">Choose photo</span>
           </summary>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <div class="identify-variant-pills">
             <button type="button" class="stage-pill ${
               activePilotVariant === 'beach-nature-scene-3-pilot-a' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('beach-nature-scene-3', 'beach-nature-scene-3-pilot-a')">
-              Pilot Scene A: Sunny Sea Beach (8)
+              Sunny sea beach (8)
             </button>
             <button type="button" class="stage-pill ${
               activePilotVariant === 'beach-nature-scene-3-pilot-b' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('beach-nature-scene-3', 'beach-nature-scene-3-pilot-b')">
-              Pilot Scene B: Alpine Lake (5)
+              Alpine lake (5)
             </button>
             <button type="button" class="stage-pill ${
               activePilotVariant === 'beach-nature-scene-3-verified-photo' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('beach-nature-scene-3', 'beach-nature-scene-3-verified-photo')">
-              Verified Photo Only (4)
+              Compact view (4)
             </button>
             <button type="button" class="stage-pill ${
               activePilotVariant === 'baseline' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('beach-nature-scene-3', 'baseline')">
-              Original Baseline (9)
+              Original scene (9)
             </button>
           </div>
         </details>
       `
       : hasVerifiedCategoryOverride
       ? `
-        <details data-testid="identify-pilot-variant-switcher" style="margin-bottom:10px; padding:7px 12px; border-radius:var(--radius-sm); background:var(--surface-1); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-size:12px; font-weight:600; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
-            <span>Object Verification Diagnostics (${validationReport.canPublish ? `Verified · ${scene.targets.length} objects` : `${validationReport.findings.length} findings`})</span>
-            <span style="color:var(--accent); font-weight:700;">Inspect</span>
+        <details data-testid="identify-pilot-variant-switcher" class="identify-variant-details">
+          <summary class="identify-variant-summary">
+            <span>Scene layout · ${scene.targets.length} objects in view</span>
+            <span class="text-accent-strong">Switch view</span>
           </summary>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <div class="identify-variant-pills">
             <button type="button" class="stage-pill ${
               activePilotVariant !== 'baseline' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('${activeBaseSceneId}', '${activeBaseSceneId}-verified')">
-              Verified Object Locations (${scene.targets.length} Objects)
+              Updated markers (${scene.targets.length})
             </button>
             <button type="button" class="stage-pill ${
               activePilotVariant === 'baseline' ? 'active' : ''
             }" onclick="switchIdentifyPilotVariant('${activeBaseSceneId}', 'baseline')">
-              Original Baseline
+              Original markers
             </button>
           </div>
         </details>
@@ -2185,8 +2209,8 @@ export function renderIdentifyTab(): void {
         ? `<span class="identify-hotspot-word">${escapeHtml(t.uk)}</span>`
         : '';
 
-      const dimStyle =
-        !inCurrentRound && !isSelected && !isResolved ? 'opacity:0.55;' : '';
+      const dimClass =
+        !inCurrentRound && !isSelected && !isResolved ? 'identify-hotspot--dim' : '';
 
       return `
         <button
@@ -2201,17 +2225,17 @@ export function renderIdentifyTab(): void {
           data-norm-h="${t.height}"
           data-norm-cx="${pinCenterX.toFixed(4)}"
           data-norm-cy="${pinCenterY.toFixed(4)}"
-          class="identify-hotspot ${stateClass} ${isSelected ? 'selected' : ''} ${
+          class="identify-hotspot ${stateClass} ${isSelected ? 'selected' : ''} ${dimClass} ${
             showBoundingBoxOutlines ? 'show-bbox' : ''
           }"
-          style="left:${leftPct}%; top:${topPct}%; width:${widthPct}%; height:${heightPct}%; ${dimStyle}"
+          style="left:${leftPct}%; top:${topPct}%; width:${widthPct}%; height:${heightPct}%;"
           onclick="selectIdentifyHotspot('${t.id}')"
           aria-label="${escapeHtml(ariaLabel)}"
           title="${escapeHtml(ariaLabel)}"
         >
           <span
             class="identify-hotspot-pin-anchor"
-            style="position:absolute; left:${relPinX.toFixed(1)}%; top:${relPinY.toFixed(1)}%; transform:translate(-50%, -50%); display:flex; flex-direction:column; align-items:center; pointer-events:none;"
+            style="left:${relPinX.toFixed(1)}%; top:${relPinY.toFixed(1)}%;"
           >
             <span class="identify-hotspot-badge">${badgeSymbol}</span>
             ${resolvedChip}
@@ -2268,8 +2292,8 @@ export function renderIdentifyTab(): void {
 
   const shortenedRoundNoticeHtml = roundSummary.shortenedExplanationEn
     ? `
-      <div data-testid="identify-shortened-round-notice" style="margin-bottom:10px; padding:8px 12px; border-radius:var(--radius-sm); background:var(--warn-container); color:var(--warn-on-container); font-size:12px; font-weight:700;">
-        ℹ️ ${escapeHtml(roundSummary.shortenedExplanationEn)}
+      <div data-testid="identify-shortened-round-notice" style="margin-bottom:10px; padding:7px 11px; border-radius:var(--radius-sm); background:var(--surface-2); border:1px solid var(--border-subtle); color:var(--text-secondary); font-size:12px;">
+        ${escapeHtml(roundSummary.shortenedExplanationEn)}
       </div>
     `
     : '';
@@ -2319,22 +2343,22 @@ export function renderIdentifyTab(): void {
   const exploreModeCardHtml =
     activeTarget && identifyProgress.explorationMode === 'explore'
       ? `
-        <div id="identify-explore-card" data-testid="identify-explore-card" class="identify-answer-card correct" style="margin-top:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
+        <div id="identify-explore-card" data-testid="identify-explore-card" class="identify-answer-card correct">
+          <div>
             <div>
-              <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:600;">
-                Explore · Visual inspection
-              </span>
-              <div class="word" style="font-size:30px; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">
+              <div class="identify-scene-kicker">
+                Explore · Tap any marker to hear Ukrainian
+              </div>
+              <div class="word identify-card-word-uk" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">
                 ${escapeHtml(activeTarget.uk)}
               </div>
-              <div class="hint" style="margin-top:4px;">
-                Sounds like <b style="color:var(--text);">${escapeHtml(pronunciationGuide)}</b>
+              <div class="hint inspector-phonetic-line">
+                Sounds like <b class="text-strong-ink">${escapeHtml(pronunciationGuide)}</b>
               </div>
-              <div style="font-size:17px; font-weight:600; color:var(--text); margin-top:4px;">
+              <div class="identify-card-meaning-en">
                 ${escapeHtml(activeTarget.en)}
               </div>
-              <div class="hint" style="margin-top:2px;">
+              <div class="hint inspector-gram-note">
                 ${formatGenderBadge(activeTarget.gender)} ${
                   activeTarget.verifiedLexicalSense
                     ? `· ${escapeHtml(activeTarget.verifiedLexicalSense)}`
@@ -2345,16 +2369,16 @@ export function renderIdentifyTab(): void {
             </div>
           </div>
 
-          <div class="example-chip" style="margin-top:12px;" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.exampleUk)}')">
-            <div class="word" style="font-size:16px; color:var(--text);">${escapeHtml(activeTarget.exampleUk)}</div>
-            <div class="hint" style="margin-top:3px;">${escapeHtml(activeTarget.exampleEn)}</div>
+          <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.exampleUk)}')">
+            <div class="word inspector-example-uk">${escapeHtml(activeTarget.exampleUk)}</div>
+            <div class="hint inspector-gram-note">${escapeHtml(activeTarget.exampleEn)}</div>
           </div>
 
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">Hear word</button>
-            <button type="button" class="btn btn-sec" onclick="inspectCourseWord('${escapeSingleQuotes(activeTarget.uk)}')">7-Case table</button>
-            <button type="button" id="identify-add-fsrs-btn" class="btn btn-sec" onclick="addIdentifyWordToFSRS('${escapeSingleQuotes(activeTarget.uk)}', '${escapeSingleQuotes(activeTarget.en)}')">+ Add to deck</button>
-            <button type="button" class="btn" style="margin-left:auto;" onclick="setIdentifyExplorationMode('guided')">Start round →</button>
+          <div class="identify-card-actions">
+            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">Listen</button>
+            <button type="button" class="btn btn-sec" onclick="inspectCourseWord('${escapeSingleQuotes(activeTarget.uk)}')">Word forms</button>
+            <button type="button" id="identify-add-fsrs-btn" class="btn btn-sec" onclick="addIdentifyWordToFSRS('${escapeSingleQuotes(activeTarget.uk)}', '${escapeSingleQuotes(activeTarget.en)}')">+ Add to reviews</button>
+            <button type="button" class="btn identify-btn-push-right" onclick="setIdentifyExplorationMode('guided')">Start round →</button>
           </div>
         </div>
       `
@@ -2364,31 +2388,31 @@ export function renderIdentifyTab(): void {
     activeTarget && identifyProgress.explorationMode !== 'explore' && isTargetResolved
       ? `
         <div class="identify-answer-card ${targetStatus === 'revealed' ? 'revealed' : 'correct'}">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; flex-wrap:wrap;">
+          <div>
             <div>
-              <span class="tag" style="background:${targetStatus === 'revealed' ? 'var(--warn-container)' : 'var(--success-container)'}; color:${targetStatus === 'revealed' ? 'var(--warn-on-container)' : 'var(--success-on-container)'}; font-weight:600;">
-                ${targetStatus === 'revealed' ? 'Here it is · Needs practice' : 'Right'}
-              </span>
-              <div class="word" style="font-size:30px; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">
+              <div class="identify-scene-kicker">
+                ${targetStatus === 'revealed' ? 'Revealed · Needs practice' : '✓ Right'}
+              </div>
+              <div class="word identify-card-word-uk" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">
                 ${escapeHtml(activeTarget.uk)}
               </div>
-              <div class="hint" style="margin-top:3px;">Sounds like <b style="color:var(--text);">${escapeHtml(pronunciationGuide)}</b></div>
-              <div style="font-size:17px; font-weight:600; color:var(--text); margin-top:3px;">${escapeHtml(activeTarget.en)}</div>
-              <div class="hint" style="margin-top:2px;">${formatGenderBadge(activeTarget.gender)}</div>
+              <div class="hint inspector-phonetic-line">Sounds like <b class="text-strong-ink">${escapeHtml(pronunciationGuide)}</b></div>
+              <div class="identify-card-meaning-en">${escapeHtml(activeTarget.en)}</div>
+              <div class="hint inspector-gram-note">${formatGenderBadge(activeTarget.gender)}</div>
               ${synonymsLine}
             </div>
           </div>
 
-          <div class="example-chip" style="margin-top:12px;" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.exampleUk)}')">
-            <div class="word" style="font-size:16px; color:var(--text);">${escapeHtml(activeTarget.exampleUk)}</div>
-            <div class="hint" style="margin-top:3px;">${escapeHtml(activeTarget.exampleEn)}</div>
+          <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.exampleUk)}')">
+            <div class="word inspector-example-uk">${escapeHtml(activeTarget.exampleUk)}</div>
+            <div class="hint inspector-gram-note">${escapeHtml(activeTarget.exampleEn)}</div>
           </div>
 
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">Hear word</button>
-            <button type="button" class="btn btn-sec" onclick="inspectCourseWord('${escapeSingleQuotes(activeTarget.uk)}')">7-Case table</button>
-            <button type="button" id="identify-add-fsrs-btn" class="btn btn-sec" onclick="addIdentifyWordToFSRS('${escapeSingleQuotes(activeTarget.uk)}', '${escapeSingleQuotes(activeTarget.en)}')">+ Add to deck</button>
-            <button type="button" class="btn" style="margin-left:auto;" onclick="advanceIdentifyNextTarget()">Continue →</button>
+          <div class="identify-card-actions">
+            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(activeTarget.uk)}')">Listen</button>
+            <button type="button" class="btn btn-sec" onclick="inspectCourseWord('${escapeSingleQuotes(activeTarget.uk)}')">Word forms</button>
+            <button type="button" id="identify-add-fsrs-btn" class="btn btn-sec" onclick="addIdentifyWordToFSRS('${escapeSingleQuotes(activeTarget.uk)}', '${escapeSingleQuotes(activeTarget.en)}')">+ Add to reviews</button>
+            <button type="button" class="btn identify-btn-push-right" onclick="advanceIdentifyNextTarget()">Next object →</button>
           </div>
         </div>
       `
@@ -2398,9 +2422,9 @@ export function renderIdentifyTab(): void {
     activeTarget && identifyProgress.explorationMode !== 'explore' && !isTargetResolved
       ? identifyProgress.quizMode === 'mc'
         ? `
-          <div style="margin-top:12px;">
-            <div style="font-size:15px; font-weight:600; color:var(--text); margin-bottom:10px; letter-spacing:-0.01em;">
-              What is marked at #${activeTarget.targetNumber} <span style="color:var(--muted); font-weight:400;">(${escapeHtml(activeTarget.en)})</span>?
+          <div class="identify-target-section">
+            <div class="identify-quiz-prompt">
+              What is marked at #${activeTarget.targetNumber} <span class="identify-quiz-prompt-en">(${escapeHtml(activeTarget.en)})</span>?
             </div>
             <div class="identify-options-grid" role="group" aria-label="Choose its Ukrainian name">
               ${mcOptions
@@ -2415,13 +2439,13 @@ export function renderIdentifyTab(): void {
                       onclick="handleIdentifyMCOption('${activeTarget.id}', '${escapeSingleQuotes(opt)}')"
                     >
                       <kbd class="vb-kbd" data-slot="kbd" aria-hidden="true">${idx + 1}</kbd>
-                      <span class="word" style="font-size:1.18rem; flex:1;">${escapeHtml(opt)}</span>
+                      <span class="word identify-mc-word">${escapeHtml(opt)}</span>
                     </button>
                   `;
                 })
                 .join('')}
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:14px; flex-wrap:wrap;">
+            <div class="cluster--between identify-target-section">
               <button
                 type="button"
                 class="btn btn-sec"
@@ -2435,9 +2459,9 @@ export function renderIdentifyTab(): void {
           </div>
         `
         : `
-          <div style="margin-top:12px;">
-            <label for="identify-fill-input" style="display:block; font-size:15px; font-weight:600; color:var(--text); margin-bottom:10px;">
-              Name what is marked at #${activeTarget.targetNumber} <span style="color:var(--muted); font-weight:400;">(${escapeHtml(activeTarget.en)})</span>
+          <div class="identify-target-section">
+            <label for="identify-fill-input" class="identify-quiz-prompt">
+              Name what is marked at #${activeTarget.targetNumber} <span class="identify-quiz-prompt-en">(${escapeHtml(activeTarget.en)})</span>
             </label>
             <input
               id="identify-fill-input"
@@ -2449,15 +2473,15 @@ export function renderIdentifyTab(): void {
               spellcheck="false"
               onkeydown="if(event.key==='Enter'){event.preventDefault(); submitIdentifyTypedAnswer('${activeTarget.id}');}"
             >
-            <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin:10px 0 12px 0;">
+            <div class="identify-char-bar">
               ${['ґ', 'є', 'і', 'ї', '’', 'щ', 'ю', 'я']
                 .map(
                   (ch) =>
-                    `<button type="button" class="btn btn-sec" style="min-height:32px; padding:3px 10px; font-family:var(--font-word); font-size:15px;" onclick="insertIdentifyChar('${ch}')">${ch}</button>`
+                    `<button type="button" class="btn btn-sec identify-char-btn" onclick="insertIdentifyChar('${ch}')">${ch}</button>`
                 )
                 .join('')}
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div class="cluster--between">
               <button
                 type="button"
                 class="btn btn-sec"
@@ -2468,35 +2492,38 @@ export function renderIdentifyTab(): void {
               </button>
               <button type="button" class="btn" onclick="submitIdentifyTypedAnswer('${activeTarget.id}')">Check</button>
             </div>
-            <div class="hint" style="margin-top:8px;">
+            <div class="hint topic-drill-feedback">
               Stress marks and capitalisation are optional; Ukrainian letters (г/ґ, і/ї, и/і, е/є) are checked accurately.
             </div>
           </div>
         `
       : '';
 
+  const feedbackStateModifier =
+    targetStatus === 'correct-mc' || targetStatus === 'correct-fill'
+      ? 'identify-feedback-banner--right'
+      : targetStatus === 'revealed'
+      ? 'identify-feedback-banner--revealed'
+      : 'identify-feedback-banner--wrong';
+
+  const feedbackStateGlyph =
+    targetStatus === 'correct-mc' || targetStatus === 'correct-fill'
+      ? '✓'
+      : targetStatus === 'revealed'
+      ? '!'
+      : '✗';
+
   const feedbackBannerHtml =
     activeTarget && identifyProgress.explorationMode !== 'explore' && targetProg?.lastFeedback
       ? `
-        <div id="identify-live-feedback" style="margin-top:10px;">
-          <div style="padding:10px 12px; border-radius:var(--radius-sm); font-size:13px; font-weight:700; background:${
-            targetStatus === 'correct-mc' || targetStatus === 'correct-fill'
-              ? 'var(--success-container)'
-              : targetStatus === 'revealed'
-              ? 'var(--warn-container)'
-              : 'var(--danger-container)'
-          }; color:${
-            targetStatus === 'correct-mc' || targetStatus === 'correct-fill'
-              ? 'var(--success-on-container)'
-              : targetStatus === 'revealed'
-              ? 'var(--warn-on-container)'
-              : 'var(--danger-on-container)'
-          };">
-            ${escapeHtml(targetProg.lastFeedback)}
+        <div id="identify-live-feedback" class="identify-target-section">
+          <div class="identify-feedback-banner ${feedbackStateModifier}" role="status">
+            <span class="identify-feedback-icon" aria-hidden="true">${feedbackStateGlyph}</span>
+            <span>${escapeHtml(targetProg.lastFeedback)}</span>
           </div>
         </div>
       `
-      : '<div id="identify-live-feedback" style="margin-top:8px;"></div>';
+      : '<div id="identify-live-feedback" class="topic-drill-feedback"></div>';
 
   // End-of-Round Results Panel (Section 21)
   const showSummary =
@@ -2606,16 +2633,16 @@ export function renderIdentifyTab(): void {
     ${fullScreenViewerHtml}
     ${adminPreviewWorkspaceHtml}
 
-    <header class="section-header" id="identify-learner-practice-stage" style="align-items:flex-end; margin-bottom:16px;">
+    <header class="section-header identify-page-header" id="identify-learner-practice-stage">
       <div>
         <h1 class="section-title">Pictures</h1>
         <p class="section-subtitle">
-          Name what the marker points to in everyday Ukrainian scenes · ${all80Count} scenes · ${totalObjectsMastered} mastered
+          Spot everyday Ukrainian nouns inside real scenes · ${all80Count} scenes · ${totalObjectsMastered} ${totalObjectsMastered === 1 ? 'word' : 'words'} mastered
         </p>
       </div>
 
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <div class="identify-segmented-switch" role="tablist" aria-label="Identify View Mode">
+      <div class="identify-header-actions">
+        <div class="identify-segmented-switch" role="tablist" aria-label="Pictures view mode">
           <button
             type="button"
             class="identify-seg-btn ${!show80SceneCurriculumBrowser ? 'active' : ''}"
@@ -2636,10 +2663,10 @@ export function renderIdentifyTab(): void {
           Topics (${IDENTIFY_CATEGORIES.length})
         </button>
         <button type="button" id="identify-add-scene-fsrs-btn" class="btn btn-sec" onclick="addIdentifySceneWordsToFSRS()">
-          + Add scene
+          + Add scene to reviews
         </button>
         <button type="button" class="btn btn-sec" onclick="toggleIdentifySummaryView()">
-          Summary (${roundSummary.scenePracticedObjectsCount}/${roundSummary.sceneTotalObjects})
+          Round summary (${roundSummary.scenePracticedObjectsCount}/${roundSummary.sceneTotalObjects})
         </button>
       </div>
     </header>
@@ -2647,19 +2674,19 @@ export function renderIdentifyTab(): void {
     ${curriculum80BrowserHtml}
     ${categoryBrowserHtml}
 
-    <div class="card" style="margin-bottom:12px; padding:10px 14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1; min-width:260px;">
-          <label for="identify-quick-cat-select" style="font-size:11.5px; font-weight:700; color:var(--text-secondary);">Category:</label>
-          <select id="identify-quick-cat-select" class="input-box" style="min-height:34px; padding:4px 10px; font-size:13px; max-width:240px;" onchange="selectIdentifyCategory(this.value)">
+    <div class="card identify-control-strip">
+      <div class="identify-control-row-top">
+        <div class="identify-select-cluster">
+          <label for="identify-quick-cat-select" class="identify-select-label">Topic</label>
+          <select id="identify-quick-cat-select" class="input-box identify-select-compact" onchange="selectIdentifyCategory(this.value)">
             ${IDENTIFY_CATEGORIES.map(
               (c) =>
                 `<option value="${escapeHtml(c.id)}" ${c.id === cat.id ? 'selected' : ''}>${c.number}. ${escapeHtml(c.titleEn)} (${escapeHtml(c.titleUk)})</option>`
             ).join('')}
           </select>
 
-          <label for="identify-quick-scene-select" style="font-size:11.5px; font-weight:700; color:var(--text-secondary); margin-left:4px;">Scene:</label>
-          <select id="identify-quick-scene-select" class="input-box" style="min-height:34px; padding:4px 10px; font-size:13px; flex:1; min-width:210px; max-width:380px;" onchange="selectIdentifyScene(this.value)">
+          <label for="identify-quick-scene-select" class="identify-select-label">Scene</label>
+          <select id="identify-quick-scene-select" class="input-box identify-select-scene" onchange="selectIdentifyScene(this.value)">
             ${visibleCategoryScenes
               .map((s) => {
                 const effectiveS = getEffectiveIdentifyScene(s.id, { includeUnpublishedDraft: true }) || s;
@@ -2670,36 +2697,38 @@ export function renderIdentifyTab(): void {
           </select>
         </div>
 
-        <div data-testid="identify-progress-strip" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
-          <span data-testid="identify-round-progress-badge" class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:700;">
+        <div data-testid="identify-progress-strip" class="identify-progress-meta">
+          <span data-testid="identify-round-progress-badge" class="identify-progress-primary">
             Round ${roundSummary.roundNumber}: ${roundSummary.questionsCompletedInRound}/${roundSummary.totalQuestionsInRound}
           </span>
-          <span data-testid="identify-scene-coverage-badge" class="tag" style="background:var(--secondary-container); color:var(--secondary-on-container); font-weight:700;">
-            Coverage: ${roundSummary.scenePracticedObjectsCount}/${roundSummary.sceneTotalObjects} (${roundSummary.sceneCoveragePercent}%)
+          <span aria-hidden="true">·</span>
+          <span data-testid="identify-scene-coverage-badge">
+            Practiced ${roundSummary.scenePracticedObjectsCount}/${roundSummary.sceneTotalObjects} (${roundSummary.sceneCoveragePercent}%)
           </span>
-          <span data-testid="identify-scene-mastery-badge" class="tag" style="background:${roundSummary.isSceneMastered ? 'var(--success-container)' : 'var(--surface-2)'}; color:${roundSummary.isSceneMastered ? 'var(--success-on-container)' : 'var(--text-secondary)'}; font-weight:700;">
-            ${roundSummary.isSceneMastered ? `Mastered (${roundSummary.sceneMasteredObjectsCount}/${roundSummary.sceneTotalObjects})` : `Mastery: ${roundSummary.sceneMasteredObjectsCount}/${roundSummary.sceneTotalObjects}`}
+          <span aria-hidden="true">·</span>
+          <span data-testid="identify-scene-mastery-badge" class="${roundSummary.isSceneMastered ? 'identify-progress-mastered' : ''}">
+            ${roundSummary.isSceneMastered ? `Mastered (${roundSummary.sceneMasteredObjectsCount}/${roundSummary.sceneTotalObjects})` : `Mastered ${roundSummary.sceneMasteredObjectsCount}/${roundSummary.sceneTotalObjects}`}
           </span>
         </div>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:8px; border-top:1px solid var(--border-subtle);">
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-          <span style="font-size:11.5px; font-weight:700; color:var(--text-secondary);">Mode:</span>
+      <div class="identify-control-row-modes">
+        <div class="identify-mode-cluster">
+          <span class="identify-select-label">Mode</span>
           <button type="button" data-testid="identify-mode-explore" class="stage-pill ${identifyProgress.explorationMode === 'explore' ? 'active' : ''}" onclick="setIdentifyExplorationMode('explore')">Explore (${scene.targets.length})</button>
-          <button type="button" data-testid="identify-mode-free" class="stage-pill ${identifyProgress.explorationMode === 'free' ? 'active' : ''}" onclick="setIdentifyExplorationMode('free')">Free Practice</button>
-          <button type="button" data-testid="identify-mode-guided" class="stage-pill ${identifyProgress.explorationMode === 'guided' ? 'active' : ''}" onclick="setIdentifyExplorationMode('guided')">Guided Round</button>
+          <button type="button" data-testid="identify-mode-free" class="stage-pill ${identifyProgress.explorationMode === 'free' ? 'active' : ''}" onclick="setIdentifyExplorationMode('free')">Free practice</button>
+          <button type="button" data-testid="identify-mode-guided" class="stage-pill ${identifyProgress.explorationMode === 'guided' ? 'active' : ''}" onclick="setIdentifyExplorationMode('guided')">Guided round</button>
         </div>
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-          <span style="font-size:11.5px; font-weight:700; color:var(--text-secondary);">Round:</span>
-          <button type="button" data-testid="identify-round-len-5" class="stage-pill ${identifyProgress.roundLength === 5 ? 'active' : ''}" onclick="setIdentifyRoundLength(5)">Quick (5)</button>
-          <button type="button" data-testid="identify-round-len-8" class="stage-pill ${(identifyProgress.roundLength || 8) === 8 ? 'active' : ''}" onclick="setIdentifyRoundLength(8)">Standard (8)</button>
-          <button type="button" data-testid="identify-round-len-10" class="stage-pill ${identifyProgress.roundLength === 10 ? 'active' : ''}" onclick="setIdentifyRoundLength(10)">Extended (10)</button>
+        <div class="identify-mode-cluster">
+          <span class="identify-select-label">Questions</span>
+          <button type="button" data-testid="identify-round-len-5" class="stage-pill ${identifyProgress.roundLength === 5 ? 'active' : ''}" onclick="setIdentifyRoundLength(5)">5</button>
+          <button type="button" data-testid="identify-round-len-8" class="stage-pill ${(identifyProgress.roundLength || 8) === 8 ? 'active' : ''}" onclick="setIdentifyRoundLength(8)">8</button>
+          <button type="button" data-testid="identify-round-len-10" class="stage-pill ${identifyProgress.roundLength === 10 ? 'active' : ''}" onclick="setIdentifyRoundLength(10)">10</button>
         </div>
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-          <span style="font-size:11.5px; font-weight:700; color:var(--text-secondary);">Quiz:</span>
-          <button type="button" class="stage-pill ${identifyProgress.quizMode === 'mc' ? 'active' : ''}" onclick="setIdentifyQuizMode('mc')">Multiple Choice</button>
-          <button type="button" class="stage-pill ${identifyProgress.quizMode === 'fill' ? 'active' : ''}" onclick="setIdentifyQuizMode('fill')">Fill in Blank</button>
+        <div class="identify-mode-cluster">
+          <span class="identify-select-label">Answer with</span>
+          <button type="button" class="stage-pill ${identifyProgress.quizMode === 'mc' ? 'active' : ''}" onclick="setIdentifyQuizMode('mc')">Multiple choice</button>
+          <button type="button" class="stage-pill ${identifyProgress.quizMode === 'fill' ? 'active' : ''}" onclick="setIdentifyQuizMode('fill')">Type Ukrainian</button>
         </div>
       </div>
     </div>
@@ -2708,31 +2737,31 @@ export function renderIdentifyTab(): void {
 
     <div class="identify-stage-split">
       <!-- LEFT / TOP: Interactive Scene Canvas + Zoom/Pan Controls + Accessible Target Bar -->
-      <div class="card" style="margin-bottom:0; padding:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+      <div class="card identify-stage-card-left">
+        <div class="identify-canvas-head">
           <div>
-            <span class="tag" style="background:var(--secondary-container); color:var(--secondary-on-container); font-weight:800;">
-              ${cat.icon} Scene ${scene.sceneNumber} of ${cat.scenes.length} • ${scene.targets.length} Total Objects
-            </span>
-            <h2 style="margin:4px 0 0 0; font-size:16.5px; font-weight:800;">
-              ${escapeHtml(scene.titleEn)} <span style="color:var(--accent); font-weight:700;">(${escapeHtml(scene.titleUk)})</span>
+            <div class="identify-scene-kicker">
+              ${escapeHtml(cat.titleEn)} · Scene ${scene.sceneNumber} of ${cat.scenes.length} · ${scene.targets.length} objects
+            </div>
+            <h2 class="identify-scene-title">
+              ${escapeHtml(scene.titleEn)} <span class="identify-scene-title-uk">(${escapeHtml(scene.titleUk)})</span>
             </h2>
           </div>
           <!-- Zoom & Pan Controls (Section 22) -->
-          <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-            <button type="button" data-testid="identify-zoom-out-btn" class="stage-pill" style="font-size:11.5px; padding:4px 8px;" onclick="zoomIdentifySceneOut()" title="Zoom Out">➖ Zoom Out</button>
-            <span id="identify-zoom-pct-badge" style="font-size:11.5px; font-weight:800; min-width:42px; text-align:center;">${Math.round(zoomPanState.scale * 100)}%</span>
-            <button type="button" data-testid="identify-zoom-in-btn" class="stage-pill" style="font-size:11.5px; padding:4px 8px;" onclick="zoomIdentifySceneIn()" title="Zoom In">➕ Zoom In</button>
-            <button type="button" data-testid="identify-zoom-fit-btn" class="stage-pill" style="font-size:11.5px; padding:4px 8px;" onclick="fitIdentifySceneView()" title="Fit Image">📐 Fit Image</button>
-            <button type="button" data-testid="identify-zoom-reset-btn" class="stage-pill" style="font-size:11.5px; padding:4px 8px;" onclick="resetIdentifySceneZoom()" title="Reset Zoom">🔄 Reset</button>
-            <button type="button" class="stage-pill ${showBoundingBoxOutlines ? 'active' : ''}" style="font-size:11px; padding:4px 8px;" onclick="toggleIdentifyBoundingBoxes()">
-              📦 Boxes
+          <div class="identify-zoom-bar" role="toolbar" aria-label="Scene zoom controls">
+            <button type="button" data-testid="identify-zoom-out-btn" class="identify-zoom-btn" onclick="zoomIdentifySceneOut()" aria-label="Zoom out" title="Zoom out">−</button>
+            <span id="identify-zoom-pct-badge" class="identify-zoom-readout">${Math.round(zoomPanState.scale * 100)}%</span>
+            <button type="button" data-testid="identify-zoom-in-btn" class="identify-zoom-btn" onclick="zoomIdentifySceneIn()" aria-label="Zoom in" title="Zoom in">+</button>
+            <button type="button" data-testid="identify-zoom-fit-btn" class="identify-zoom-btn" onclick="fitIdentifySceneView()" title="Fit scene">Fit</button>
+            <button type="button" data-testid="identify-zoom-reset-btn" class="identify-zoom-btn" onclick="resetIdentifySceneZoom()" title="Reset zoom">Reset</button>
+            <button type="button" class="identify-zoom-btn ${showBoundingBoxOutlines ? 'active' : ''}" onclick="toggleIdentifyBoundingBoxes()" title="Toggle object outlines">
+              Outlines
             </button>
           </div>
         </div>
 
-        <div id="identify-scene-viewport-el" class="identify-scene-viewport" data-fit-mode="${sceneFitMode}" style="overflow:hidden;">
-          <div id="identify-zoom-stage-el" style="position:relative; width:100%; height:100%; transform-origin:center center; transition:transform 0.08s ease-out;">
+        <div id="identify-scene-viewport-el" class="identify-scene-viewport" data-fit-mode="${sceneFitMode}">
+          <div id="identify-zoom-stage-el" class="identify-zoom-stage">
             <img
               id="identify-scene-img-el"
               src="${sceneImgSrc}"
@@ -2740,7 +2769,6 @@ export function renderIdentifyTab(): void {
               data-intrinsic-height="${scene.intrinsicHeight || 900}"
               alt="${escapeHtml(scene.titleEn)} — ${escapeHtml(scene.settingDescriptionEn)}"
               class="identify-scene-img"
-              style="object-fit:${sceneFitMode};"
               draggable="false"
             />
             <div id="identify-hotspot-layer-el" class="identify-hotspot-layer">
@@ -2749,12 +2777,12 @@ export function renderIdentifyTab(): void {
           </div>
         </div>
 
-        <div style="margin-top:10px;">
-          <div style="font-size:11.5px; font-weight:800; color:var(--text-secondary); margin-bottom:6px;">
-            🎯 ${
+        <div class="identify-target-section">
+          <div class="identify-scene-kicker topic-drill-hint">
+            ${
               identifyProgress.explorationMode === 'explore'
-                ? `Explore All ${approvedTargets.length} Verified Scene Objects (Click any object to inspect):`
-                : `Active Round Targets (${roundSummary.totalQuestionsInRound} of ${approvedTargets.length} verified scene objects in Round ${roundSummary.roundNumber}):`
+                ? `All ${approvedTargets.length} objects in this scene (tap any marker or chip to inspect)`
+                : `Round ${roundSummary.roundNumber} objects (${roundSummary.totalQuestionsInRound} of ${approvedTargets.length} in this scene)`
             }
           </div>
           <div class="identify-target-bar" role="list" aria-label="Scene Vocabulary Targets">
@@ -2764,22 +2792,22 @@ export function renderIdentifyTab(): void {
       </div>
 
       <!-- RIGHT / BOTTOM: Active Object Quiz or Explore Inspection Card -->
-      <div class="card" style="margin-bottom:0; padding:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+      <div class="card identify-stage-card-right">
+        <div class="identify-right-head">
           <div>
-            <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
-              ${activeTarget ? `Target #${activeTarget.targetNumber} of ${approvedTargets.length} Verified` : '⏳ 0 Verified Objects'}
-            </span>
-            <h3 style="margin:6px 0 0 0; font-size:18px; font-weight:800;">
-              Object: <span style="color:var(--accent);">${activeTarget ? escapeHtml(activeTarget.en) : 'Unavailable (Awaiting Verification)'}</span>
+            <div class="identify-scene-kicker">
+              ${activeTarget ? `Marker #${activeTarget.targetNumber} of ${approvedTargets.length}` : '0 active markers'}
+            </div>
+            <h3 class="identify-right-title">
+              ${activeTarget ? escapeHtml(activeTarget.en) : 'Scene awaiting marker verification'}
             </h3>
           </div>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <button type="button" class="btn btn-sec" style="min-height:36px; padding:4px 10px; font-size:12px;" onclick="practiceMoreIdentifyWords()" title="Rotate to a new adaptive set of words">
-              🔄 New Round
+          <div class="freq-row-actions">
+            <button type="button" class="btn btn-sec btn--sm" onclick="practiceMoreIdentifyWords()" title="Rotate to a fresh set of objects">
+              New round
             </button>
-            <button type="button" class="btn btn-sec" style="min-height:36px; padding:4px 10px; font-size:12px;" onclick="advanceIdentifyNextTarget()">
-              Skip / Next →
+            <button type="button" class="btn btn-sec btn--sm" onclick="advanceIdentifyNextTarget()">
+              Next →
             </button>
           </div>
         </div>
@@ -2821,6 +2849,7 @@ if (typeof window !== 'undefined') {
     toggleIdentifyCategoryDrawer,
     toggleIdentifySummaryView,
     filterIdentifyCategories,
+    clearIdentifyCategorySearch,
     filterIdentifyByTopicGroup,
     retryIdentifyMistakes,
     resetIdentifyScene,

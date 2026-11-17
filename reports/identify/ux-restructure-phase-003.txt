@@ -1,0 +1,67 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution ID: ux-restructure-phase-003
+- Phase Completed: Phase 3 of 6 — Learn (Course) UX Restructure: CEFR-Grouped Module Map, 5-Step Module Progress Header with Check Marks, Sticky Step Action Bar, Readable Lesson Flow with Sticky Scrollspy Mini-TOC & Expandable Deep Dives, Plain-Language Words Step, and End-of-Module Celebration Screen
+- Scope Discipline: Executed strictly Phase 3 only, stopping before Phase 4 (Unified Review Session UX) per the 6-phase execution plan.
+- Core Outcomes:
+  1) Restructured the 29-module Course path (#course-syllabus-drawer, deep-linked at #/learn/map) into 6 plain-language CEFR level groups ("Level A0 · First steps" through "Level C1 · Advanced" with subtle CEFR code labels), overall and per-level completion counters, level filter tabs, zero hard locks (0 disabled cards), and clear "Studying now", "Recommended next", "Completed", and "Available" states.
+  2) Replaced flat stage pills inside #stage-bar with a 5-step progress header (Lesson -> Check -> Practice -> Words -> Exam) displaying step numbers 1–5 that automatically convert into SVG check marks as steps are completed, persisted additively in slovo_ua_course_flow_v1.
+  3) Added a contextual step navigation action bar (#course-sticky-bar / .course-sticky-actions) across all 5 steps with plain-language Back actions ("← Module map", "← Back: Lesson", etc.) and primary forward CTAs ("Next: Check your understanding →", "Next: Practice drills →", "Next: Module words →", "Next: Module exam →", "Finish & grade exam →", and "Start next module: <id> →").
+  4) Rebuilt Lesson Stage 1 into a calm ~65ch editorial reading column paired with a desktop sticky "On this page" mini-TOC (A–L) with live scrollspy + Today resume bookmarking, a mobile collapsible "Lesson contents (A–L)" drawer, a live top reading-progress bar ("X% read"), and collapsed-by-default expandable <details> blocks for Section G (Exceptions) and Section K (Complete reference) that auto-open when selected from the TOC.
+  5) Replaced jargon on Stage 4 (Words) with plain-language review actions ("Add these N words to my reviews" / "Add remaining N words to my reviews" / "✓ All N words in your reviews") and Ukrainian headwords set in Lora serif, and added an End-of-Module Celebration Screen on passing Stage 5 (Exam >= 80%) with exam score, automatic queueing of module words into Review, course completion count (X / 29), "Start next module" & "Review now" CTAs, and collapsible graded exam review.
+
+2. CHANGES COMPLETED
+- Pure Course Flow & Map State Engine (src/courseFlowHelpers.ts, src/__tests__/courseFlowHelpers.test.ts):
+  - Implemented pure, deterministic helpers for plain-language CEFR level titles, topic subtitle cleanup, 6-group module map aggregation with recommended-next-step detection, 5-step completion state computation, sticky bottom bar action/label resolution, plain-language module vocabulary review deck matching, and the 12-section Lesson TOC definition.
+  - Added 4 dedicated unit tests verifying 29-module grouping without hard-locking, 5-step check-mark transitions, sticky bar labels across all stages/exam states, and plain-language Words button copy.
+- Editorial Course Styles & Semantic Containers (index.html):
+  - Added Phase 3 CSS classes (.course-hero-card, .course-level-group, .course-level-grid, .module-card--done/--current/--recommended, .course-steps-bar, .course-step-btn, .lesson-progress-strip, .lesson-editorial-grid, .lesson-flow-col, .lesson-toc-aside, .lesson-mobile-toc, .lesson-expandable, .course-words-panel, .module-celebration-card, .course-sticky-actions) with full Light and Dark theme token support and prefers-reduced-motion compliance.
+  - Maintained 0 inline style= attributes in index.html; on mobile (<= 960px), .course-sticky-actions flows statically at the bottom of each step and .lesson-toc-aside switches to #lesson-mobile-toc so persistent mobile chrome stays at 6.8% of viewport height (<= 15% cap).
+- Lesson Expandable Reference & Course Workspace Integration (src/courseVisualComponents.ts, src/main.ts):
+  - Updated renderLessonReference() in src/courseVisualComponents.ts to render Section K inside <details class="lesson-expandable vc-reference-details" id="details-sec-reference"> (collapsed by default, preserving all linguistic tables and test hooks).
+  - Updated src/main.ts to wire #/learn/map and #/learn/<modId> hash routes, syncCourseDrawerAndWorkspaceDOM() across language tracks, live scrollspy + reading progress on #main-scroll-container, auto-expanding TOC jumps for Sections G & K, plain-language Stage 4 Words view, and Stage 5 passing celebration + auto-add to db.cards.
+
+3. FILES CREATED OR MODIFIED
+- Created: src/courseFlowHelpers.ts
+- Created: src/__tests__/courseFlowHelpers.test.ts
+- Modified: index.html (Phase 3 Course map, 5-step header, editorial lesson TOC/scrollspy, expandable deep dives, celebration card, and sticky step bar CSS & containers; 0 inline style= attributes)
+- Modified: src/courseVisualComponents.ts (rendered Section K Complete Reference as collapsed-by-default <details class="lesson-expandable vc-reference-details" id="details-sec-reference">)
+- Modified: src/main.ts (integrated CEFR module map, 5-step header with check marks, sticky bottom navigation bar, Lesson scrollspy + reading progress, plain-language Words step, end-of-module celebration screen, slovo_ua_course_flow_v1 persistence, and #/learn/map routing)
+- Created: reports/identify/ux-restructure-phase-003.txt
+- Modified: reports/identify/REPORT_INDEX.md
+- Modified: reports/identify/LATEST_REPORT.txt
+- Modified: src/identifyVisualBatchProgress.json
+
+4. VALIDATION RESULTS
+- Production Build (compile_applet / vite build): PASS (0 errors)
+- TypeScript Check (lint_applet / tsc --noEmit): PASS (0 errors)
+- Automated Test Suites (npx tsx --test src/__tests__/*.test.ts): PASS (104 / 104 tests passing, 0 failures across all 7 suites including new courseFlowHelpers.test.ts and slovo.test.ts)
+- Static & Data Integrity Checks:
+  - Inline style= attributes in index.html: 0
+  - Forbidden textbook citations (Pugh, Press, Routledge, §): 0
+  - Curriculum, vocabulary, Identify, and FSRS engine/data files: Untouched (29 modules, 5,510 assessment items, 6,000-word lexicon, 67 approved Identify scenes / 1,075 hotspots)
+  - Existing localStorage keys (slovo_ua_6000_anki_v1, slovo_ua_theme_mode, slovo_openai_hd_cfg, slovo_ua_onboarding_v1, slovo_ua_daily_goal_v1): Preserved unchanged
+- Real-Browser Playwright QA (1440x900 Desktop & 390x844 Mobile, Light & Dark Themes):
+  - #/learn opens Module A0.1 with plain-language "Level A0 · First steps", 5-step header (Lesson, Check, Practice, Words, Exam), sticky "On this page" TOC (12 sections A–L), reading progress bar, and Sections G & K collapsed by default; jumping to G via TOC auto-opens #details-sec-exceptions and bookmarks sec-exceptions.
+  - Scrolling #main-scroll-container updates #lesson-reading-pct ("71% read") and highlights active TOC section ("I. Quick check").
+  - #/learn/map renders all 6 CEFR groups and all 29 module cards with 0 hard-locked/disabled cards; selecting A1.2 routes to #/learn/A1.2 and clicking sticky primary CTA advances to Check while marking Lesson with a check mark.
+  - Stage 4 Words displays "Add these 67 words to my reviews" and updates to "✓ All 67 words in your reviews" with confirmation feedback on click.
+  - Passing Stage 5 Exam on A1.2 (92/100) renders .module-celebration-card in both Light and Dark themes ("Віта́ємо! You completed Everyday Verbs in the Present & Past Tense.", 92% score, +67 words in Review, 1 / 29 completed, "Start next module: A1.3..." and "Review now"), marks all 5 steps done, and collapses the 100 graded items cleanly below.
+  - Mobile 390x844 verified: 0px horizontal overflow, #lesson-mobile-toc visible, .lesson-toc-aside hidden, .course-sticky-actions static, persistent bottom nav height 57px (6.8% of viewport height), and 0 console/page errors.
+
+5. PERSISTENT CHECKPOINT
+- Persisted Archive Report: reports/identify/ux-restructure-phase-003.txt (Order 15 in reports/identify/REPORT_INDEX.md)
+- Latest Report Pointer: reports/identify/LATEST_REPORT.txt -> reports/identify/ux-restructure-phase-003.txt
+- Checkpoint Metadata Updated: src/identifyVisualBatchProgress.json (reportingStandard.latestSourceReportFile = "reports/identify/ux-restructure-phase-003.txt"; Identify batch/scene counts untouched at 10 batches, 67 approved scenes, 1,075 hotspots)
+- New Additive Learner Key Introduced: slovo_ua_course_flow_v1
+
+6. REMAINING WORK
+- Phase 4 of 6 (ux-restructure-phase-004): Unified Review session UX — distraction-free full-height card session (dimming/collapsing chrome during active review), unified Review mode picker (Mixed recommended, UK->EN, EN->UK, Sentences, and Topic exercises), Lora Ukrainian display card with tap/Space reveal, 4 plain-language grading buttons (1–4) showing next intervals ("Again · 1m", "Good · 2d"), end-of-session summary, and daily-goal-driven new card pacing with bulk +25/+100 moved into an "Advanced" menu.
+- Phase 5 of 6 (ux-restructure-phase-005): Explore & Contextual Word Sheet — Reader ~65ch comfortable reading column, tap-any-word bottom sheet/side panel with translation, audio, case forms, and "Add to reviews", grade level badges on story cards, Pictures (Identify) control & right/wrong feedback polish, Sounds & Script polish, and app-wide plain-language microcopy & empty states.
+- Phase 6 of 6 (ux-restructure-phase-006): Final accessibility, keyboard navigation, dark-mode contrast audit, responsive QA pass, and cleanup of remaining inline style= attributes inside TypeScript template strings.
+
+7. NEXT EXECUTION
+- Proceed to Phase 4 of 6 (ux-restructure-phase-004): Redesign and unify the Review experience (#tab-srs, #tab-en2uk, #tab-correction, and Topic review modes) into one calm, distraction-free spaced-repetition session with keyboard shortcuts (Space, 1–4), interval previews, daily-goal card pacing, Advanced deck controls, and end-of-session summary.

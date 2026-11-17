@@ -650,7 +650,7 @@ export function renderAIConversationTab(): void {
         <!-- 4. CEFR LEVEL, FORMALITY, SCENARIO, VOICE & SPEED CONTROLS (PARTS 5, 6, 7) -->
         <div class="convo-settings-bar">
           <div class="convo-setting-group">
-            <label class="convo-field-label" for="convo-cefr-select">CEFR Level</label>
+            <label class="convo-field-label" for="convo-cefr-select">Your level</label>
             <select
               id="convo-cefr-select"
               class="convo-select"
@@ -1427,14 +1427,14 @@ function renderGrammarCorrectionCardPanel(
                             type="button"
                             class="convo-mini-btn"
                             onclick="convoInspectWord('${escapeHtml(v.uk)}')"
-                          >7 Cases</button>
+                          >Word forms</button>
                           <button
                             type="button"
                             class="convo-mini-btn"
                             onclick="convoAddWordToFlashcards('${escapeHtml(
                               v.uk
                             )}', this)"
-                          >+ Add to Flashcards</button>
+                          >+ Add to reviews</button>
                         </div>
                       </div>
                     `
@@ -1676,31 +1676,43 @@ function renderScenarioBrowserPanel(
       </div>
 
       <div class="convo-scenario-cards-list">
-        ${scenarios
-          .map(
-            (sc) => `
-              <button
-                type="button"
-                class="convo-scenario-item ${
-                  sc.id === activeScenario.id ? 'active' : ''
-                }"
-                onclick="convoSelectScenario('${sc.id}')"
-              >
-                <div class="convo-sc-item-top">
-                  <strong>${
-                    sc.number === 0 ? '★ ' : `${sc.number}. `
-                  }${escapeHtml(sc.titleEn)}</strong>
-                  <span class="convo-cefr-pill">${escapeHtml(
-                    sc.suggestedLevel
-                  )}</span>
+        ${
+          scenarios.length === 0
+            ? `
+              <div class="empty-state-box">
+                <h4 class="empty-state-title">No conversation scenarios match “${escapeHtml(scenarioSearchQuery)}”</h4>
+                <p class="empty-state-desc">Try searching by topic (such as “café”, “train”, or “doctor”) or clear the search filter.</p>
+                <div class="empty-state-actions">
+                  <button type="button" class="convo-btn-secondary" onclick="convoFilterScenarioSearch('')">Show all scenarios</button>
                 </div>
-                <div class="convo-sc-item-uk">${escapeHtml(sc.titleUk)} · Role: ${escapeHtml(
-                  sc.aiRoleEn
-                )}</div>
-              </button>
+              </div>
             `
-          )
-          .join('')}
+            : scenarios
+                .map(
+                  (sc) => `
+                    <button
+                      type="button"
+                      class="convo-scenario-item ${
+                        sc.id === activeScenario.id ? 'active' : ''
+                      }"
+                      onclick="convoSelectScenario('${sc.id}')"
+                    >
+                      <div class="convo-sc-item-top">
+                        <strong>${
+                          sc.number === 0 ? '★ ' : `${sc.number}. `
+                        }${escapeHtml(sc.titleEn)}</strong>
+                        <span class="convo-cefr-pill">Level ${escapeHtml(
+                          sc.suggestedLevel
+                        )}</span>
+                      </div>
+                      <div class="convo-sc-item-uk">${escapeHtml(sc.titleUk)} · Partner: ${escapeHtml(
+                        sc.aiRoleEn
+                      )}</div>
+                    </button>
+                  `
+                )
+                .join('')
+        }
       </div>
     </div>
   `;
@@ -1714,7 +1726,7 @@ function renderHowToSayModal(): string {
           <h3>🗣️ How Do I Say This in Ukrainian?</h3>
           <button type="button" class="convo-mini-btn" onclick="convoCloseHowToSayModal()">✕</button>
         </div>
-        <p>Type an English sentence or idea below, and Learn Ukrainian - Lango will show you how to say it naturally in Ukrainian at your current CEFR level (${escapeHtml(
+        <p>Type an English sentence or idea below, and Lango will show you how to say it naturally in Ukrainian at your current level (Level ${escapeHtml(
           convoState.cefrLevel
         )}):</p>
         <div class="convo-modal-input-row">
@@ -1744,7 +1756,7 @@ function renderSessionReviewModal(): string {
         <div class="convo-modal-head">
           <div>
             <span class="convo-section-kicker">Post-Conversation Summary</span>
-            <h3>📊 End-of-Session Ukrainian Review</h3>
+            <h3>End-of-session Ukrainian review</h3>
           </div>
           <button type="button" class="convo-mini-btn" onclick="convoCloseSessionReviewModal()">✕ Close</button>
         </div>
@@ -1762,8 +1774,8 @@ function renderSessionReviewModal(): string {
             )}</strong>
           </div>
           <div class="convo-stat-box">
-            <span class="stat-label">Scenario & CEFR</span>
-            <strong>${escapeHtml(review.scenarioTitleEn)} (${escapeHtml(
+            <span class="stat-label">Scenario &amp; level</span>
+            <strong>${escapeHtml(review.scenarioTitleEn)} (Level ${escapeHtml(
               review.cefrLevel
             )})</strong>
           </div>
@@ -1844,9 +1856,9 @@ function renderSessionReviewModal(): string {
           </div>
         </div>
 
-        <!-- 4. Vocabulary to Add to Flashcards -->
+        <!-- 4. Vocabulary to Add to Reviews -->
         <div class="convo-review-section">
-          <h4>🗂️ Session Vocabulary (Save to FSRS Flashcards)</h4>
+          <h4>Session words (save to your reviews)</h4>
           <div class="convo-card-vocab-list">
             ${review.vocabularyToReview
               .map(
@@ -1860,10 +1872,10 @@ function renderSessionReviewModal(): string {
                     <div class="convo-vocab-btns">
                       <button type="button" class="convo-mini-btn" onclick="convoInspectWord('${escapeHtml(
                         v.uk
-                      )}')">7 Cases</button>
+                      )}')">Word forms</button>
                       <button type="button" class="convo-mini-btn" onclick="convoAddWordToFlashcards('${escapeHtml(
                         v.uk
-                      )}', this)">+ Add to Flashcards</button>
+                      )}', this)">+ Add to reviews</button>
                     </div>
                   </div>
                 `

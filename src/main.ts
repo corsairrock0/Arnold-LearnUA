@@ -1,4 +1,5 @@
 import { FREQ_6000_DB, VocabItem } from './vocabData';
+import { trapFocusInModal, releaseFocusTrap } from './a11yHelpers';
 import {
   generateUkrainianPhonetics,
   generateGrammarBreakdown,
@@ -40,6 +41,38 @@ import {
   type EnrichedInlineCheck,
   type StageAttemptState,
 } from './courseAssessmentEngine';
+import {
+  computeCourseMapGroups,
+  computeModuleStepStates,
+  computeStickyStepActions,
+  computeModuleVocabReviewStatus,
+  extractCleanTopicSubtitle,
+  formatPlainLevelTitle,
+  LESSON_TOC_SECTIONS,
+} from './courseFlowHelpers';
+import {
+  formatGradeButtonSpecs,
+  getDailyNewCardCap,
+  getRemainingDailyNewAllowance,
+  selectDeckActionableQueue,
+  buildMixedActionableQueue,
+  createFreshSessionTracker,
+  recordSessionGrade,
+  computeSessionSummaryMetrics,
+  TOPIC_DRILL_SUBMODES,
+  type ReviewModeId,
+  type TopicDrillSubMode,
+  type ReviewPrefsV1,
+  type MixedQueueEntry,
+  type ReviewSessionTracker,
+} from './reviewSessionHelpers';
+import {
+  estimateStoryReadingMeta,
+  formatCleanSummaryTag,
+  formatPlainLevelBadge,
+  normalizeUkLookupKey,
+  resolveReaderWordLookup,
+} from './exploreReaderHelpers';
 import {
   registerIdentifyHooks,
   renderIdentifyTab,
@@ -235,6 +268,7 @@ export function applyColorTheme(mode: string): void {
   currentThemeMode = mode;
   localStorage.setItem('slovo_ua_theme_mode', mode);
   const root = document.documentElement;
+  root.classList.add('theme-switching');
   const iconEl = document.getElementById('theme-toggle-icon');
   if (mode === 'light') {
     root.setAttribute('data-theme', 'light');
@@ -248,8 +282,21 @@ export function applyColorTheme(mode: string): void {
   }
   document.querySelectorAll('[data-theme-opt]').forEach((btn) => {
     const val = btn.getAttribute('data-theme-opt');
-    btn.classList.toggle('active', val === mode);
+    const isAct = val === mode;
+    btn.classList.toggle('active', isAct);
+    btn.setAttribute('aria-pressed', isAct ? 'true' : 'false');
   });
+  // Force synchronous style recalculation while transitions are suppressed so buttons never flash
+  void root.offsetHeight;
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        root.classList.remove('theme-switching');
+      });
+    });
+  } else {
+    root.classList.remove('theme-switching');
+  }
 }
 
 export function cycleColorTheme(): void {
@@ -265,13 +312,22 @@ export function cycleColorTheme(): void {
 
 export function openSettingsModal(): void {
   triggerHaptic('light');
-  document.getElementById('lango-settings-modal')?.classList.remove('hidden');
+  const modal = document.getElementById('lango-settings-modal');
+  modal?.classList.remove('hidden');
   applyColorTheme(currentThemeMode);
   syncDailyGoalButtonsUI();
+  syncReviewControlsUI();
+  if (modal) {
+    trapFocusInModal('lango-settings-modal');
+  }
 }
 
 export function closeSettingsModal(): void {
-  document.getElementById('lango-settings-modal')?.classList.add('hidden');
+  const modal = document.getElementById('lango-settings-modal');
+  if (modal && !modal.classList.contains('hidden')) {
+    modal.classList.add('hidden');
+    releaseFocusTrap('lango-settings-modal');
+  }
 }
 
 export function openInspectorSheet(): void {
@@ -281,11 +337,19 @@ export function openInspectorSheet(): void {
   insp?.classList.add('sheet-open');
   document.getElementById('inspector-backdrop')?.classList.add('open');
   document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
+  if (typeof window !== 'undefined' && window.innerWidth <= 960 && insp) {
+    trapFocusInModal('grammar-inspector');
+  }
 }
 
 export function closeInspectorSheet(): void {
-  document.getElementById('grammar-inspector')?.classList.remove('sheet-open');
+  const insp = document.getElementById('grammar-inspector');
+  const wasSheetOpen = Boolean(insp?.classList.contains('sheet-open'));
+  insp?.classList.remove('sheet-open');
   document.getElementById('inspector-backdrop')?.classList.remove('open');
+  if (wasSheetOpen) {
+    releaseFocusTrap('grammar-inspector');
+  }
 }
 
 export function toggleGrammarInspector(forceOpen?: boolean): void {
@@ -443,11 +507,19 @@ export function openVoiceModal(): void {
   if (modelSelect) modelSelect.value = voiceConfig.openaiModel || 'gpt-4o-mini-tts';
   if (voiceSelect) voiceSelect.value = voiceConfig.openaiVoice || 'nova';
   if (speedSelect) speedSelect.value = String(voiceConfig.speed || 0.92);
-  document.getElementById('voice-settings-modal')?.classList.remove('hidden');
+  const modal = document.getElementById('voice-settings-modal');
+  modal?.classList.remove('hidden');
+  if (modal) {
+    trapFocusInModal('voice-settings-modal');
+  }
 }
 
 export function closeVoiceModal(): void {
-  document.getElementById('voice-settings-modal')?.classList.add('hidden');
+  const modal = document.getElementById('voice-settings-modal');
+  if (modal && !modal.classList.contains('hidden')) {
+    modal.classList.add('hidden');
+    releaseFocusTrap('voice-settings-modal');
+  }
 }
 
 export function saveVoiceModal(): void {
@@ -538,6 +610,13 @@ function playWithBrowserSpeechFallback(
 ): void {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
+    if (
+      typeof navigator !== 'undefined' &&
+      navigator.webdriver &&
+      window.speechSynthesis.getVoices().length === 0
+    ) {
+      return;
+    }
     window.speechSynthesis.cancel();
     const segments = splitBilingualSegments(text, defaultLang);
     for (const seg of segments) {
@@ -878,6 +957,205 @@ let currentInspectedRank = 1;
 
 let lastObservedDbXp: number = db.xp;
 
+const LANGO_REVIEW_PREFS_STORAGE_KEY = 'slovo_ua_review_prefs_v1';
+
+function getTodayDateKeyForReview(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function loadReviewPrefs(): ReviewPrefsV1 {
+  const todayKey = getTodayDateKeyForReview();
+  const raw = localStorage.getItem(LANGO_REVIEW_PREFS_STORAGE_KEY);
+  let parsed: Partial<ReviewPrefsV1> = {};
+  if (raw) {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {};
+    }
+  }
+  const validMode: ReviewModeId =
+    parsed.preferredMode === 'srs' ||
+    parsed.preferredMode === 'en2uk' ||
+    parsed.preferredMode === 'correction' ||
+    parsed.preferredMode === 'topics'
+      ? parsed.preferredMode
+      : 'mixed';
+  const validSubMode: TopicDrillSubMode =
+    parsed.topicSubMode === 'fillblank' ||
+    parsed.topicSubMode === 'context' ||
+    parsed.topicSubMode === 'grammar' ||
+    parsed.topicSubMode === 'sentence' ||
+    parsed.topicSubMode === 'listening'
+      ? parsed.topicSubMode
+      : 'all';
+  const sameDay = parsed.dateKey === todayKey;
+
+  return {
+    version: 1,
+    preferredMode: validMode,
+    topicSubMode: validSubMode,
+    topicCategoryId:
+      typeof parsed.topicCategoryId === 'string' && parsed.topicCategoryId
+        ? parsed.topicCategoryId
+        : 'ALL',
+    autoPlayAudio:
+      typeof parsed.autoPlayAudio === 'boolean' ? parsed.autoPlayAudio : true,
+    focusDimChrome: Boolean(parsed.focusDimChrome),
+    dateKey: todayKey,
+    newCardsIntroducedToday:
+      sameDay && typeof parsed.newCardsIntroducedToday === 'number'
+        ? Math.max(0, parsed.newCardsIntroducedToday)
+        : 0,
+    bonusNewAllowanceToday:
+      sameDay && typeof parsed.bonusNewAllowanceToday === 'number'
+        ? Math.max(0, parsed.bonusNewAllowanceToday)
+        : 0,
+  };
+}
+
+const reviewPrefs: ReviewPrefsV1 = loadReviewPrefs();
+
+function ensureFreshReviewPrefsDay(): void {
+  const todayKey = getTodayDateKeyForReview();
+  if (reviewPrefs.dateKey !== todayKey) {
+    reviewPrefs.dateKey = todayKey;
+    reviewPrefs.newCardsIntroducedToday = 0;
+    reviewPrefs.bonusNewAllowanceToday = 0;
+    saveReviewPrefs();
+  }
+}
+
+function saveReviewPrefs(): void {
+  localStorage.setItem(
+    LANGO_REVIEW_PREFS_STORAGE_KEY,
+    JSON.stringify(reviewPrefs)
+  );
+}
+
+function getSafeDailyGoalMinutesForReview(): number {
+  try {
+    return dailyGoalTracker?.dailyGoalMinutes || 20;
+  } catch {
+    return 20;
+  }
+}
+
+function getActiveRemainingNewAllowance(): number {
+  ensureFreshReviewPrefsDay();
+  return getRemainingDailyNewAllowance(
+    reviewPrefs,
+    getSafeDailyGoalMinutesForReview()
+  );
+}
+
+let activeReviewMode: ReviewModeId = reviewPrefs.preferredMode;
+let activeReviewSession: ReviewSessionTracker = createFreshSessionTracker(0);
+let isReviewBootReady = false;
+let lastAutoSpokenCardKey = '';
+
+let currentMixedEntry: MixedQueueEntry<FSRSCard> | null = null;
+let mixedFlipped = false;
+let lastMixedUserGuess = '';
+
+interface TopicReviewDrillItem {
+  id: string;
+  kind: 'fillblank' | 'context' | 'grammar' | 'listening' | 'sentence';
+  categoryTitle: string;
+  promptLabel: string;
+  promptUk?: string;
+  promptEn: string;
+  audioUk: string;
+  options?: string[];
+  correctOptionIdx?: number;
+  scrambledWords?: string[];
+  targetUk: string;
+  explanation: string;
+  vocabRank?: number;
+}
+
+let topicDrillCursor = 0;
+let topicDrillRevealed = false;
+let topicDrillChosenOptionIdx: number | null = null;
+let topicDrillBuiltTiles: string[] = [];
+let currentTopicDrillItem: TopicReviewDrillItem | null = null;
+
+function isUserCurrentlyViewingReview(): boolean {
+  if (!isReviewBootReady || typeof document === 'undefined') return false;
+  if (lexiconExploreMode) return false;
+  const srsOpen = !document
+    .getElementById('tab-srs')
+    ?.classList.contains('hidden');
+  const en2ukOpen = !document
+    .getElementById('tab-en2uk')
+    ?.classList.contains('hidden');
+  const corrOpen = !document
+    .getElementById('tab-correction')
+    ?.classList.contains('hidden');
+  return Boolean(srsOpen || en2ukOpen || corrOpen);
+}
+
+function maybeAutoPlayReviewUk(cardKey: string, ukText: string): void {
+  if (!reviewPrefs.autoPlayAudio) return;
+  if (!isUserCurrentlyViewingReview()) return;
+  if (!ukText || lastAutoSpokenCardKey === cardKey) return;
+  lastAutoSpokenCardKey = cardKey;
+  void speakUkrainian(ukText);
+}
+
+function ensureDailyGoalNewCardsSeeded(): void {
+  const allowance = getActiveRemainingNewAllowance();
+  if (allowance <= 0) return;
+  const currentNewInSrs = db.cards.filter((c) => c.state === 'new').length;
+  if (currentNewInSrs >= allowance) return;
+
+  const needed = allowance - currentNewInSrs;
+  let added = 0;
+  const existingSrs = new Set(db.cards.map((c) => c.rank));
+  const existingEn = new Set(db.en2ukCards.map((c) => c.rank));
+  const existingCorr = new Set(db.corrCards.map((c) => c.rank));
+
+  for (let r = 1; r <= MAX_RANK && added < needed; r++) {
+    if (!existingSrs.has(r)) {
+      db.cards.push({
+        rank: r,
+        state: 'new',
+        interval: 0,
+        ease: 2.5,
+        due: Date.now(),
+      });
+      if (!existingEn.has(r)) {
+        db.en2ukCards.push({
+          rank: r,
+          state: 'new',
+          interval: 0,
+          ease: 2.5,
+          due: Date.now(),
+        });
+      }
+      if (!existingCorr.has(r)) {
+        db.corrCards.push({
+          rank: r,
+          state: 'new',
+          interval: 0,
+          ease: 2.5,
+          due: Date.now(),
+        });
+      }
+      added += 1;
+    }
+  }
+
+  if (added > 0) {
+    saveDB();
+    renderSrsCatalog6000();
+  }
+}
+
 function saveDB(): void {
   localStorage.setItem('slovo_ua_6000_anki_v1', JSON.stringify(db));
   if (db.xp > lastObservedDbXp) {
@@ -893,6 +1171,7 @@ function saveDB(): void {
 function applyFSRSGrade(card: FSRSCard | null, grade: 1 | 2 | 3 | 4): void {
   if (!card) return;
   triggerHaptic('heavy');
+  const wasNew = card.state === 'new';
   const now = Date.now();
   const DAY_MS = 86400000;
   if (grade === 1) {
@@ -922,9 +1201,19 @@ function applyFSRSGrade(card: FSRSCard | null, grade: 1 | 2 | 3 | 4): void {
     card.ease += 0.15;
     card.due = now + card.interval * DAY_MS;
   }
+
+  ensureFreshReviewPrefsDay();
+  if (wasNew) {
+    reviewPrefs.newCardsIntroducedToday += 1;
+    saveReviewPrefs();
+  }
+  recordSessionGrade(activeReviewSession, grade, wasNew, 15);
+  lastAutoSpokenCardKey = '';
+
   db.xp += 15;
   db.drills += 1;
   saveDB();
+  syncReviewControlsUI();
 }
 
 function getNextIntervals(card: FSRSCard): {
@@ -950,88 +1239,998 @@ function escapeSingleQuotes(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+function escapeAttrHtml(raw: string): string {
+  return String(raw || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeHtml(raw: string): string {
+  return escapeAttrHtml(raw);
+}
+
+function renderCardTopProgressHtml(
+  modeBadge: string,
+  metaDetail: string,
+  remainingQueueCount: number
+): string {
+  const done = activeReviewSession.cardsReviewed;
+  const total = Math.max(1, done + remainingQueueCount);
+  const currentNum = Math.min(total, done + 1);
+  const pct = Math.min(100, Math.max(4, Math.round((done / total) * 100)));
+  const remNew = getActiveRemainingNewAllowance();
+
+  return `
+    <div class="review-card-topbar">
+      <div class="review-card-meta-row">
+        <div class="review-card-kicker">
+          <span class="review-card-kicker-mode">${escapeAttrHtml(modeBadge)}</span>
+          <span aria-hidden="true">·</span>
+          <span>${metaDetail}</span>
+        </div>
+        <span>Card ${currentNum} of ${total} · ${remNew} new left today</span>
+      </div>
+      <div class="review-progress-thin" aria-hidden="true">
+        <svg class="review-progress-svg" viewBox="0 0 100 4" preserveAspectRatio="none">
+          <rect class="review-progress-svg-rect" width="${pct}" height="4" rx="2" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+function renderPlainGradeButtonsHtml(
+  intervals: { hard: number; good: number; easy: number },
+  handlerName: string
+): string {
+  const specs = formatGradeButtonSpecs(intervals);
+  return `
+    <div class="review-grade-prompt">
+      <span>How well did you remember?</span>
+      <span>Keys 1–4 · R to replay audio</span>
+    </div>
+    <div class="anki-grade-bar">
+      ${specs
+        .map(
+          (sp) => `
+            <button type="button" class="anki-btn ${sp.toneClass}" onclick="${handlerName}(${sp.grade})">
+              <span class="review-grade-btn-main">${escapeAttrHtml(sp.label)}</span>
+              <small class="review-grade-btn-sub"><span>${escapeAttrHtml(sp.hint)}</span><kbd data-slot="kbd">${sp.shortcut}</kbd></small>
+            </button>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderReviewSessionSummaryHtml(): string {
+  const summary = computeSessionSummaryMetrics(activeReviewSession);
+  const dailyCap = getDailyNewCardCap(getSafeDailyGoalMinutesForReview());
+  const introducedToday = reviewPrefs.newCardsIntroducedToday;
+  const otherModeTarget = activeReviewMode === 'topics' ? 'mixed' : 'topics';
+  const otherModeLabel =
+    activeReviewMode === 'topics'
+      ? 'Practice Mixed cards'
+      : 'Practice Topic drills';
+
+  return `
+    <section class="review-summary-card" aria-label="Review Session Summary">
+      <div>
+        <div class="review-summary-kicker">
+          <span>Session summary</span>
+          <span aria-hidden="true">·</span>
+          <span>Paced by your ${getSafeDailyGoalMinutesForReview()}-min daily goal</span>
+        </div>
+        <h2 class="review-summary-title">${escapeAttrHtml(summary.headline)}</h2>
+        <p class="review-summary-desc">${escapeAttrHtml(summary.subheadline)}</p>
+      </div>
+
+      <div class="review-summary-stats">
+        <div>
+          <div class="review-summary-stat-val">${summary.totalReviewed}</div>
+          <div class="review-summary-stat-lbl">Cards reviewed</div>
+        </div>
+        <div>
+          <div class="review-summary-stat-val">${summary.retentionPct}%</div>
+          <div class="review-summary-stat-lbl">Remembered cleanly</div>
+        </div>
+        <div>
+          <div class="review-summary-stat-val">${introducedToday}/${dailyCap}</div>
+          <div class="review-summary-stat-lbl">New words today</div>
+        </div>
+        <div>
+          <div class="review-summary-stat-val">+${summary.xpEarned} XP</div>
+          <div class="review-summary-stat-lbl">${summary.minutesAdded > 0 ? `~${summary.minutesAdded} min added` : 'Up to date'}</div>
+        </div>
+      </div>
+
+      ${
+        summary.totalReviewed > 0
+          ? `
+            <div class="review-summary-breakdown">
+              <span>Breakdown:</span>
+              <span>Again ${activeReviewSession.againCount}</span>
+              <span aria-hidden="true">·</span>
+              <span>Hard ${activeReviewSession.hardCount}</span>
+              <span aria-hidden="true">·</span>
+              <span>Good ${activeReviewSession.goodCount}</span>
+              <span aria-hidden="true">·</span>
+              <span>Easy ${activeReviewSession.easyCount}</span>
+            </div>
+          `
+          : ''
+      }
+
+      <div class="cluster">
+        <button type="button" class="btn" onclick="continueCurrentCourseModule()">Continue course →</button>
+        <button type="button" class="btn btn-sec" onclick="unlockBonusNewCards(5)">+ Study 5 bonus new words</button>
+        <button type="button" class="btn btn-sec" onclick="selectReviewMode('${otherModeTarget}')">${otherModeLabel}</button>
+        <button type="button" class="btn btn--ghost" onclick="switchTab('today')">Back to Today</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderUk2EnCardFaces(
+  card: FSRSCard,
+  isFlipped: boolean,
+  modeLabel: string,
+  remainingQueueCount: number,
+  flipFnName: string,
+  gradeFnName: string
+): { bodyHtml: string; actionHtml: string } {
+  const item = FREQ_6000_DB[card.rank - 1] || FREQ_6000_DB[0];
+  const phon = generateUkrainianPhonetics(item.ru);
+  const gram = generateGrammarBreakdown(item);
+  const metaDetail = `#${item.rank} · Level ${escapeAttrHtml(item.level)} · ${escapeAttrHtml(item.pos)}`;
+  const topBar = renderCardTopProgressHtml(
+    modeLabel,
+    metaDetail,
+    remainingQueueCount
+  );
+
+  if (!isFlipped) {
+    if (activeReviewMode === 'srs' || activeReviewMode === 'mixed') {
+      maybeAutoPlayReviewUk(`front-srs-${card.rank}-${activeReviewSession.cardsReviewed}`, item.ru);
+    }
+    return {
+      bodyHtml: `
+        ${topBar}
+        <div class="review-front-surface review-front-surface--tappable" onclick="${flipFnName}()" role="button" tabindex="0" aria-label="Tap or press Space to reveal meaning">
+          <div class="review-uk-hero word">${item.ru}</div>
+          <div class="review-phonetic-line">
+            Sounds like <b>${escapeAttrHtml(phon.plainGuide)}</b>
+            <span aria-hidden="true"> · </span>
+            <span class="review-ipa">${escapeAttrHtml(phon.ipa)}</span>
+          </div>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); inspectWordDeep(${item.rank}, false, true)">Word forms</button>
+          </div>
+          <div class="review-tap-hint">Tap card or press Space to reveal</div>
+        </div>
+      `,
+      actionHtml: `
+        <button type="button" class="btn anki-reveal-btn" onclick="${flipFnName}()">
+          Show answer <kbd class="vb-kbd review-kbd-on-primary" data-slot="kbd">Space</kbd>
+        </button>
+      `,
+    };
+  }
+
+  const iv = getNextIntervals(card);
+  return {
+    bodyHtml: `
+      ${topBar}
+      <div class="review-back-surface">
+        <div class="review-back-header">
+          <div>
+            <div class="review-back-uk word" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
+            <div class="review-back-en">${escapeAttrHtml(item.en)}</div>
+            <div class="review-phonetic-line">
+              Sounds like <b>${escapeAttrHtml(phon.plainGuide)}</b>
+              <span aria-hidden="true"> · </span>
+              <span class="review-ipa">${escapeAttrHtml(phon.ipa)}</span>
+            </div>
+          </div>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakExplanation(${item.rank})">Explain</button>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="inspectWordDeep(${item.rank}, false, true)">Word forms</button>
+          </div>
+        </div>
+
+        <div class="hint"><b>${escapeAttrHtml(gram.summaryTag)}</b> — ${escapeAttrHtml(gram.usageNote)}</div>
+
+        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
+          <div class="word">${gram.exampleRu}</div>
+          <div class="hint">${escapeAttrHtml(gram.exampleEn)}</div>
+        </div>
+
+        <details class="review-forms-details">
+          <summary class="review-forms-summary">Word forms &amp; cases</summary>
+          <div class="review-forms-body">${gram.tableHtml}</div>
+        </details>
+      </div>
+    `,
+    actionHtml: renderPlainGradeButtonsHtml(iv, gradeFnName),
+  };
+}
+
+function renderEn2UkCardFaces(
+  card: FSRSCard,
+  isFlipped: boolean,
+  userGuess: string,
+  inputId: string,
+  modeLabel: string,
+  remainingQueueCount: number,
+  flipFnName: string,
+  gradeFnName: string
+): { bodyHtml: string; actionHtml: string } {
+  const item = FREQ_6000_DB[card.rank - 1] || FREQ_6000_DB[0];
+  const phon = generateUkrainianPhonetics(item.ru);
+  const gram = generateGrammarBreakdown(item);
+  const metaDetail = `#${item.rank} · Level ${escapeAttrHtml(item.level)} · ${escapeAttrHtml(item.pos)}`;
+  const topBar = renderCardTopProgressHtml(
+    modeLabel,
+    metaDetail,
+    remainingQueueCount
+  );
+
+  if (!isFlipped) {
+    return {
+      bodyHtml: `
+        ${topBar}
+        <div class="review-front-surface review-front-surface--tappable" onclick="if(event.target.tagName!=='INPUT') ${flipFnName}()">
+          <div class="review-en-hero">${escapeAttrHtml(item.en)}</div>
+          <div class="hint">Say it aloud in Ukrainian, or type below to check spelling</div>
+          <div class="review-input-wrap" onclick="event.stopPropagation()">
+            <input id="${inputId}" class="answer-line" placeholder="Type in Ukrainian (optional)…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault(); ${flipFnName}();}">
+          </div>
+          <div class="review-tap-hint">Tap card or press Space to reveal · Enter checks spelling</div>
+        </div>
+      `,
+      actionHtml: `
+        <button type="button" class="btn anki-reveal-btn" onclick="${flipFnName}()">
+          Show Ukrainian answer <kbd class="vb-kbd review-kbd-on-primary" data-slot="kbd">Space</kbd>
+        </button>
+      `,
+    };
+  }
+
+  const iv = getNextIntervals(card);
+  const cleanGuestTrim = userGuess.trim();
+  const validation = cleanGuestTrim
+    ? validateUkrainianAnswer(cleanGuestTrim, item.ru)
+    : null;
+  const guessBannerHtml = validation
+    ? validation.isCorrect
+      ? `<div class="review-guess-banner review-guess-banner--right">Right — you wrote «${escapeAttrHtml(cleanGuestTrim)}»</div>`
+      : `<div class="review-guess-banner review-guess-banner--check">You wrote «${escapeAttrHtml(cleanGuestTrim)}» · Expected <span class="word">${item.ru}</span></div>`
+    : '';
+
+  return {
+    bodyHtml: `
+      ${topBar}
+      <div class="review-back-surface">
+        ${guessBannerHtml}
+        <div class="review-back-header">
+          <div>
+            <div class="review-back-uk word" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
+            <div class="review-back-en">${escapeAttrHtml(item.en)}</div>
+            <div class="review-phonetic-line">
+              Sounds like <b>${escapeAttrHtml(phon.plainGuide)}</b>
+              <span aria-hidden="true"> · </span>
+              <span class="review-ipa">${escapeAttrHtml(phon.ipa)}</span>
+            </div>
+          </div>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakExplanation(${item.rank})">Explain</button>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="inspectWordDeep(${item.rank}, false, true)">Word forms</button>
+          </div>
+        </div>
+
+        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
+          <div class="word">${gram.exampleRu}</div>
+          <div class="hint">${escapeAttrHtml(gram.exampleEn)}</div>
+        </div>
+
+        <details class="review-forms-details">
+          <summary class="review-forms-summary">Word forms &amp; cases</summary>
+          <div class="review-forms-body">${gram.tableHtml}</div>
+        </details>
+      </div>
+    `,
+    actionHtml: renderPlainGradeButtonsHtml(iv, gradeFnName),
+  };
+}
+
+function renderCorrectionCardFaces(
+  card: FSRSCard,
+  isFlipped: boolean,
+  userGuess: string,
+  inputId: string,
+  modeLabel: string,
+  remainingQueueCount: number,
+  flipFnName: string,
+  gradeFnName: string
+): { bodyHtml: string; actionHtml: string; rightSentenceUk: string } {
+  const item = FREQ_6000_DB[card.rank - 1] || FREQ_6000_DB[0];
+  const corr = generateSentenceCorrection(item);
+  const gram = generateGrammarBreakdown(item);
+  const metaDetail = `#${item.rank} · <span class="word">${item.ru}</span> (${escapeAttrHtml(item.en)})`;
+  const topBar = renderCardTopProgressHtml(
+    modeLabel,
+    metaDetail,
+    remainingQueueCount
+  );
+
+  if (!isFlipped) {
+    const highlightedWrong = corr.wrongRu.replace(
+      /\*([^*]+)\*/,
+      `<span class="review-wrong-token">$1</span>`
+    );
+    return {
+      rightSentenceUk: corr.rightRu,
+      bodyHtml: `
+        ${topBar}
+        <div class="review-front-surface review-front-surface--tappable" onclick="if(event.target.tagName!=='INPUT') ${flipFnName}()">
+          <div class="review-sentence-hero word">${highlightedWrong}</div>
+          <div class="hint">“${escapeAttrHtml(corr.enMeaning)}”</div>
+          <div class="review-input-wrap" onclick="event.stopPropagation()">
+            <input id="${inputId}" class="answer-line" placeholder="Repair «${escapeAttrHtml(corr.wrongWord)}» (optional)…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault(); ${flipFnName}();}">
+          </div>
+          <div class="review-tap-hint">Tap card or press Space to reveal corrected sentence</div>
+        </div>
+      `,
+      actionHtml: `
+        <button type="button" class="btn anki-reveal-btn" onclick="${flipFnName}()">
+          Show corrected sentence <kbd class="vb-kbd review-kbd-on-primary" data-slot="kbd">Space</kbd>
+        </button>
+      `,
+    };
+  }
+
+  const iv = getNextIntervals(card);
+  const cleanGuessTrim = userGuess.trim();
+  const validation = cleanGuessTrim
+    ? validateUkrainianAnswer(cleanGuessTrim, corr.rightWord)
+    : null;
+  const guessBannerHtml = validation
+    ? validation.isCorrect
+      ? `<div class="review-guess-banner review-guess-banner--right">Right — «${escapeAttrHtml(cleanGuessTrim)}»</div>`
+      : `<div class="review-guess-banner review-guess-banner--check">You wrote «${escapeAttrHtml(cleanGuessTrim)}» · Correct form: <span class="word">${corr.rightWord}</span></div>`
+    : '';
+
+  return {
+    rightSentenceUk: corr.rightRu,
+    bodyHtml: `
+      ${topBar}
+      <div class="review-back-surface">
+        ${guessBannerHtml}
+        <div class="review-back-header">
+          <div>
+            <div class="hint">${escapeAttrHtml(corr.ruleTitle)}</div>
+            <div class="review-sentence-hero word" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">
+              ${corr.rightRu.replace(corr.rightWord, `<mark class="mark">${corr.rightWord}</mark>`)}
+            </div>
+            <div class="hint">“${escapeAttrHtml(corr.enMeaning)}”</div>
+          </div>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">Listen</button>
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakCorrectionExplanation(${item.rank})">Explain</button>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="inspectWordDeep(${item.rank}, false, true)">Word forms</button>
+          </div>
+        </div>
+
+        <div class="review-rule-note">
+          <b>${escapeAttrHtml(corr.wrongWord)} → <span class="word">${corr.rightWord}</span>:</b> ${escapeAttrHtml(corr.explanation)}
+        </div>
+
+        <details class="review-forms-details">
+          <summary class="review-forms-summary">Word forms &amp; cases</summary>
+          <div class="review-forms-body">${gram.tableHtml}</div>
+        </details>
+      </div>
+    `,
+    actionHtml: renderPlainGradeButtonsHtml(iv, gradeFnName),
+  };
+}
+
+// UNIFIED MIXED MODE & TOPIC DRILLS WORKSPACE
+function buildTopicReviewDrillPool(): TopicReviewDrillItem[] {
+  const catFilter = reviewPrefs.topicCategoryId;
+  const subMode = reviewPrefs.topicSubMode;
+  const catLookup = new Map(EVERYDAY_CATEGORIES.map((c) => [c.id, c.title]));
+
+  const fbItems: TopicReviewDrillItem[] = FILL_BLANK_EXERCISES.filter(
+    (x) => catFilter === 'ALL' || x.categoryId === catFilter
+  ).map((fb, idx) => {
+    const opts = [fb.answerUk, ...fb.distractors];
+    const rot = idx % opts.length;
+    const rotated = opts.map((_, i) => opts[(i + rot) % opts.length]);
+    const fullSentence = fb.sentenceWithBlank.replace('___', fb.answerUk);
+    return {
+      id: `fb-${fb.id}`,
+      kind: 'fillblank',
+      categoryTitle: catLookup.get(fb.categoryId) || 'Everyday Ukrainian',
+      promptLabel: 'Fill in the blank',
+      promptUk: fb.sentenceWithBlank,
+      promptEn: fb.englishTranslation,
+      audioUk: fullSentence,
+      options: rotated,
+      correctOptionIdx: rotated.indexOf(fb.answerUk),
+      targetUk: fullSentence,
+      explanation: fb.grammarHint,
+    };
+  });
+
+  const ctxItems: TopicReviewDrillItem[] = CONTEXTUAL_CHOICE_EXERCISES.filter(
+    (x) => catFilter === 'ALL' || x.categoryId === catFilter
+  ).map((cx) => ({
+    id: `ctx-${cx.id}`,
+    kind: 'context',
+    categoryTitle: catLookup.get(cx.categoryId) || 'Everyday Ukrainian',
+    promptLabel: 'Natural response in context',
+    promptUk: cx.sentenceUk,
+    promptEn: cx.situationEn,
+    audioUk: cx.options[cx.correctIndex] || cx.sentenceUk,
+    options: cx.options,
+    correctOptionIdx: cx.correctIndex,
+    targetUk: cx.sentenceUk.includes('___')
+      ? cx.sentenceUk.replace('___', cx.options[cx.correctIndex] || '')
+      : `${cx.sentenceUk} — ${cx.options[cx.correctIndex] || ''}`,
+    explanation: cx.explanation,
+  }));
+
+  const gramItems: TopicReviewDrillItem[] = GRAMMAR_AWARE_EXERCISES.filter(
+    (x) => catFilter === 'ALL' || x.categoryId === catFilter
+  ).map((gr) => ({
+    id: `gr-${gr.id}`,
+    kind: 'grammar',
+    categoryTitle: catLookup.get(gr.categoryId) || 'Everyday Ukrainian',
+    promptLabel: `${gr.baseWordUk} (${gr.baseWordEn}) · ${gr.targetGrammarForm}`,
+    promptUk: gr.promptUk,
+    promptEn: gr.promptEn,
+    audioUk: gr.promptUk.replace('___', gr.answerUk),
+    options: gr.options,
+    correctOptionIdx: Math.max(0, gr.options.indexOf(gr.answerUk)),
+    targetUk: gr.promptUk.replace('___', gr.answerUk),
+    explanation: gr.explanation,
+  }));
+
+  const sentItems: TopicReviewDrillItem[] =
+    SENTENCE_CONSTRUCTION_EXERCISES.filter(
+      (x) => catFilter === 'ALL' || x.categoryId === catFilter
+    ).map((sc) => ({
+      id: `sc-${sc.id}`,
+      kind: 'sentence',
+      categoryTitle: catLookup.get(sc.categoryId) || 'Everyday Ukrainian',
+      promptLabel: 'Build the Ukrainian sentence',
+      promptEn: sc.promptEn,
+      audioUk: sc.targetUk,
+      scrambledWords: sc.scrambledWords,
+      targetUk: sc.targetUk,
+      explanation: sc.grammarExplanation,
+    }));
+
+  const listenCatIds =
+    catFilter === 'ALL'
+      ? EVERYDAY_CATEGORIES.slice(0, 6).map((c) => c.id)
+      : [catFilter];
+  const listenItems: TopicReviewDrillItem[] = [];
+  listenCatIds.forEach((cid) => {
+    const words = getCategoryVocabItems(cid).slice(0, 4);
+    words.forEach((w, idx) => {
+      const distractors = FREQ_6000_DB.filter(
+        (d) => d.rank !== w.rank && d.pos === w.pos
+      )
+        .slice(idx * 3, idx * 3 + 3)
+        .map((d) => d.en);
+      const rawOpts = [
+        w.en,
+        ...(distractors.length >= 3
+          ? distractors
+          : ['morning', 'water', 'street']),
+      ].slice(0, 4);
+      const rot = idx % rawOpts.length;
+      const rotated = rawOpts.map((_, i) => rawOpts[(i + rot) % rawOpts.length]);
+      const exUk = w.exampleUk || w.exUk || w.ru;
+      const exEn = w.exampleEn || w.exEn || w.en;
+      listenItems.push({
+        id: `lis-${cid}-${w.rank}`,
+        kind: 'listening',
+        categoryTitle: catLookup.get(cid) || 'Everyday Ukrainian',
+        promptLabel: 'Listen & choose meaning',
+        promptEn: 'Listen to the Ukrainian word and choose its English meaning',
+        audioUk: w.ru,
+        options: rotated,
+        correctOptionIdx: rotated.indexOf(w.en),
+        targetUk: `${w.ru} — ${w.en}`,
+        explanation: `Example: ${exUk} (${exEn})`,
+        vocabRank: w.rank,
+      });
+    });
+  });
+
+  if (subMode === 'fillblank') return fbItems.length ? fbItems : FILL_BLANK_EXERCISES.slice(0, 12).map((fb) => ({
+    id: `fb-${fb.id}`,
+    kind: 'fillblank',
+    categoryTitle: catLookup.get(fb.categoryId) || 'Everyday Ukrainian',
+    promptLabel: 'Fill in the blank',
+    promptUk: fb.sentenceWithBlank,
+    promptEn: fb.englishTranslation,
+    audioUk: fb.sentenceWithBlank.replace('___', fb.answerUk),
+    options: [fb.answerUk, ...fb.distractors],
+    correctOptionIdx: 0,
+    targetUk: fb.sentenceWithBlank.replace('___', fb.answerUk),
+    explanation: fb.grammarHint,
+  }));
+  if (subMode === 'context') return ctxItems;
+  if (subMode === 'grammar') return gramItems;
+  if (subMode === 'sentence') return sentItems;
+  if (subMode === 'listening') return listenItems;
+
+  const combined: TopicReviewDrillItem[] = [];
+  const maxLen = Math.max(
+    fbItems.length,
+    ctxItems.length,
+    gramItems.length,
+    listenItems.length,
+    sentItems.length
+  );
+  for (let i = 0; i < maxLen && combined.length < 36; i++) {
+    if (i < fbItems.length) combined.push(fbItems[i]);
+    if (i < ctxItems.length) combined.push(ctxItems[i]);
+    if (i < gramItems.length) combined.push(gramItems[i]);
+    if (i < listenItems.length) combined.push(listenItems[i]);
+    if (i < sentItems.length) combined.push(sentItems[i]);
+  }
+  return combined;
+}
+
+function renderTopicReviewStage(): void {
+  const mount = document.getElementById('review-unified-mount');
+  const stageSrs = document.getElementById('stage-srs');
+  if (!mount || !stageSrs) return;
+
+  stageSrs.classList.add('hidden');
+  mount.classList.remove('hidden');
+
+  if (activeReviewSession.completed) {
+    mount.innerHTML = renderReviewSessionSummaryHtml();
+    return;
+  }
+
+  const pool = buildTopicReviewDrillPool();
+  const sessionTarget = Math.min(12, Math.max(1, pool.length));
+  if (!pool.length || activeReviewSession.cardsReviewed >= sessionTarget) {
+    activeReviewSession.completed = true;
+    syncReviewControlsUI();
+    mount.innerHTML = renderReviewSessionSummaryHtml();
+    return;
+  }
+
+  const item = pool[topicDrillCursor % pool.length];
+  currentTopicDrillItem = item;
+  const remaining = Math.max(1, sessionTarget - activeReviewSession.cardsReviewed);
+  const topBar = renderCardTopProgressHtml(
+    `Topic drill · ${item.promptLabel}`,
+    item.categoryTitle,
+    remaining
+  );
+
+  const toolbarHtml = `
+    <div class="review-topic-toolbar">
+      <div class="review-topic-pills" role="group" aria-label="Topic Drill Type">
+        ${TOPIC_DRILL_SUBMODES.map(
+          (sm) => `
+            <button type="button" class="review-topic-pill ${reviewPrefs.topicSubMode === sm.id ? 'active' : ''}" onclick="selectReviewTopicSubMode('${sm.id}')">${escapeAttrHtml(sm.label)}</button>
+          `
+        ).join('')}
+      </div>
+      <div class="cluster">
+        <select class="input-box input-filter" aria-label="Filter Topic Category" onchange="selectReviewTopicCategory(this.value)">
+          <option value="ALL" ${reviewPrefs.topicCategoryId === 'ALL' ? 'selected' : ''}>All 27 topics</option>
+          ${EVERYDAY_CATEGORIES.map(
+            (cat) => `
+              <option value="${cat.id}" ${reviewPrefs.topicCategoryId === cat.id ? 'selected' : ''}>${escapeAttrHtml(cat.title)}</option>
+            `
+          ).join('')}
+        </select>
+        <button type="button" class="btn btn--ghost btn--sm" onclick="switchTab('vocab')">Browse catalog →</button>
+      </div>
+    </div>
+  `;
+
+  if (!topicDrillRevealed) {
+    if (item.kind === 'listening') {
+      maybeAutoPlayReviewUk(`topic-listen-${item.id}-${topicDrillCursor}`, item.audioUk);
+    }
+
+    const mcHtml = item.options
+      ? `
+        <div class="review-mc-list">
+          ${item.options
+            .map(
+              (opt, idx) => `
+                <button type="button" class="option-btn" onclick="answerReviewTopicMc(${idx})">
+                  <span>${idx + 1}. ${escapeAttrHtml(opt)}</span>
+                </button>
+              `
+            )
+            .join('')}
+        </div>
+      `
+      : '';
+
+    const tilesHtml =
+      item.kind === 'sentence' && item.scrambledWords
+        ? `
+          <div class="review-tile-well">
+            ${
+              topicDrillBuiltTiles.length > 0
+                ? escapeAttrHtml(topicDrillBuiltTiles.join(' '))
+                : '<span class="hint">Tap Ukrainian words below in order…</span>'
+            }
+          </div>
+          <div class="review-tile-bank">
+            ${item.scrambledWords
+              .map(
+                (w) => `
+                  <button type="button" class="btn btn-sec btn--sm" onclick="addReviewTopicTile('${escapeSingleQuotes(w)}')">${escapeAttrHtml(w)}</button>
+                `
+              )
+              .join('')}
+          </div>
+          ${
+            topicDrillBuiltTiles.length > 0
+              ? `<button type="button" class="btn btn--ghost btn--sm" onclick="resetReviewTopicTiles()">Reset words</button>`
+              : ''
+          }
+        `
+        : '';
+
+    mount.innerHTML = `
+      ${toolbarHtml}
+      <div class="anki-stage review-stage-card">
+        ${topBar}
+        <div class="review-front-surface">
+          ${
+            item.kind === 'listening'
+              ? `
+                <button type="button" class="btn" onclick="speakUkrainian('${escapeSingleQuotes(item.audioUk)}')">Listen to Ukrainian audio</button>
+                <div class="hint">${escapeAttrHtml(item.promptEn)}</div>
+              `
+              : item.promptUk
+                ? `
+                  <div class="review-sentence-hero word">${escapeAttrHtml(item.promptUk)}</div>
+                  <div class="hint">“${escapeAttrHtml(item.promptEn)}”</div>
+                `
+                : `<div class="review-en-hero">${escapeAttrHtml(item.promptEn)}</div>`
+          }
+          ${mcHtml}
+          ${tilesHtml}
+        </div>
+        <div class="anki-action-sticky">
+          <button type="button" class="btn anki-reveal-btn" onclick="revealReviewTopicCard()">
+            ${item.kind === 'sentence' ? 'Check sentence' : 'Show answer'}
+            <kbd class="vb-kbd review-kbd-on-primary" data-slot="kbd">Space</kbd>
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Revealed state for Topic drill
+  let outcomeBanner = '';
+  if (
+    typeof topicDrillChosenOptionIdx === 'number' &&
+    typeof item.correctOptionIdx === 'number' &&
+    item.options
+  ) {
+    const pickedText = item.options[topicDrillChosenOptionIdx] || '';
+    const rightText = item.options[item.correctOptionIdx] || '';
+    outcomeBanner =
+      topicDrillChosenOptionIdx === item.correctOptionIdx
+        ? `<div class="review-guess-banner review-guess-banner--right">Right — «${escapeAttrHtml(pickedText)}»</div>`
+        : `<div class="review-guess-banner review-guess-banner--check">You chose «${escapeAttrHtml(pickedText)}» · Answer: <b>${escapeAttrHtml(rightText)}</b></div>`;
+  } else if (item.kind === 'sentence' && topicDrillBuiltTiles.length > 0) {
+    const builtStr = topicDrillBuiltTiles.join(' ');
+    const check = validateUkrainianAnswer(builtStr, item.targetUk);
+    outcomeBanner = check.isCorrect
+      ? `<div class="review-guess-banner review-guess-banner--right">Right — «${escapeAttrHtml(builtStr)}»</div>`
+      : `<div class="review-guess-banner review-guess-banner--check">You built «${escapeAttrHtml(builtStr)}»</div>`;
+  }
+
+  mount.innerHTML = `
+    ${toolbarHtml}
+    <div class="anki-stage review-stage-card">
+      ${topBar}
+      <div class="review-back-surface">
+        ${outcomeBanner}
+        <div class="review-back-header">
+          <div>
+            <div class="hint">${escapeAttrHtml(item.categoryTitle)} · ${escapeAttrHtml(item.promptLabel)}</div>
+            <div class="review-sentence-hero word" onclick="speakUkrainian('${escapeSingleQuotes(item.audioUk)}')">${escapeAttrHtml(item.targetUk)}</div>
+          </div>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(item.audioUk)}')">Listen</button>
+            ${
+              item.vocabRank
+                ? `<button type="button" class="btn btn--ghost btn--sm" onclick="inspectWordDeep(${item.vocabRank}, false, true)">Word forms</button>`
+                : ''
+            }
+          </div>
+        </div>
+        <div class="review-rule-note">${escapeAttrHtml(item.explanation)}</div>
+      </div>
+      <div class="anki-action-sticky">
+        ${renderPlainGradeButtonsHtml({ hard: 1, good: 3, easy: 5 }, 'gradeReviewTopicCard')}
+      </div>
+    </div>
+  `;
+}
+
+export function renderMixedReviewStage(): void {
+  const mount = document.getElementById('review-unified-mount');
+  const stageSrs = document.getElementById('stage-srs');
+  if (!mount || !stageSrs) return;
+
+  stageSrs.classList.add('hidden');
+  mount.classList.remove('hidden');
+
+  if (activeReviewSession.completed) {
+    currentMixedEntry = null;
+    mount.innerHTML = renderReviewSessionSummaryHtml();
+    return;
+  }
+
+  const now = Date.now();
+  const mixedSel = buildMixedActionableQueue(
+    {
+      srs: db.cards,
+      en2uk: db.en2ukCards,
+      correction: db.corrCards,
+    },
+    now,
+    getActiveRemainingNewAllowance()
+  );
+
+  if (!mixedSel.items.length) {
+    currentMixedEntry = null;
+    mount.innerHTML = renderReviewSessionSummaryHtml();
+    return;
+  }
+
+  currentMixedEntry = mixedSel.items[0];
+  const remCount = mixedSel.items.length;
+
+  let faces: { bodyHtml: string; actionHtml: string };
+  if (currentMixedEntry.deck === 'srs') {
+    faces = renderUk2EnCardFaces(
+      currentMixedEntry.card,
+      mixedFlipped,
+      'Mixed · UK→EN',
+      remCount,
+      'flipMixedCard',
+      'gradeMixedCard'
+    );
+  } else if (currentMixedEntry.deck === 'en2uk') {
+    faces = renderEn2UkCardFaces(
+      currentMixedEntry.card,
+      mixedFlipped,
+      lastMixedUserGuess,
+      'mixed-en2uk-guess',
+      'Mixed · EN→UK',
+      remCount,
+      'flipMixedCard',
+      'gradeMixedCard'
+    );
+  } else {
+    faces = renderCorrectionCardFaces(
+      currentMixedEntry.card,
+      mixedFlipped,
+      lastMixedUserGuess,
+      'mixed-corr-guess',
+      'Mixed · Sentences',
+      remCount,
+      'flipMixedCard',
+      'gradeMixedCard'
+    );
+  }
+
+  mount.innerHTML = `
+    <div class="anki-stage review-stage-card">
+      <div>${faces.bodyHtml}</div>
+      <div id="mixed-action-area" class="anki-action-sticky">${faces.actionHtml}</div>
+    </div>
+  `;
+}
+
+export function flipMixedCard(): void {
+  if (!currentMixedEntry || mixedFlipped) return;
+  triggerHaptic('light');
+  if (currentMixedEntry.deck === 'en2uk') {
+    const inp = document.getElementById(
+      'mixed-en2uk-guess'
+    ) as HTMLInputElement | null;
+    lastMixedUserGuess = inp ? inp.value.trim() : '';
+  } else if (currentMixedEntry.deck === 'correction') {
+    const inp = document.getElementById(
+      'mixed-corr-guess'
+    ) as HTMLInputElement | null;
+    lastMixedUserGuess = inp ? inp.value.trim() : '';
+  }
+
+  mixedFlipped = true;
+  renderMixedReviewStage();
+
+  const item = FREQ_6000_DB[currentMixedEntry.card.rank - 1];
+  inspectWordDeep(currentMixedEntry.card.rank, false, false);
+  if (item && reviewPrefs.autoPlayAudio) {
+    if (currentMixedEntry.deck === 'en2uk') {
+      void speakUkrainian(item.ru);
+    } else if (currentMixedEntry.deck === 'correction') {
+      const corr = generateSentenceCorrection(item);
+      void speakUkrainian(corr.rightRu);
+    }
+  }
+  ensureActionButtonsVisible('mixed-action-area');
+}
+
+export function gradeMixedCard(g: 1 | 2 | 3 | 4): void {
+  if (!currentMixedEntry) return;
+  applyFSRSGrade(currentMixedEntry.card, g);
+  mixedFlipped = false;
+  lastMixedUserGuess = '';
+  renderAnkiStage();
+  renderEn2UkStage();
+  renderCorrectionStage();
+  renderMixedReviewStage();
+}
+
+export function selectReviewTopicSubMode(subMode: TopicDrillSubMode): void {
+  triggerHaptic('light');
+  reviewPrefs.topicSubMode = subMode;
+  saveReviewPrefs();
+  topicDrillCursor = 0;
+  topicDrillRevealed = false;
+  topicDrillChosenOptionIdx = null;
+  topicDrillBuiltTiles = [];
+  activeReviewSession.completed = false;
+  renderTopicReviewStage();
+}
+
+export function selectReviewTopicCategory(catId: string): void {
+  triggerHaptic('light');
+  reviewPrefs.topicCategoryId = catId || 'ALL';
+  saveReviewPrefs();
+  topicDrillCursor = 0;
+  topicDrillRevealed = false;
+  topicDrillChosenOptionIdx = null;
+  topicDrillBuiltTiles = [];
+  activeReviewSession.completed = false;
+  renderTopicReviewStage();
+}
+
+export function answerReviewTopicMc(optIdx: number): void {
+  triggerHaptic('light');
+  topicDrillChosenOptionIdx = optIdx;
+  revealReviewTopicCard();
+}
+
+export function addReviewTopicTile(word: string): void {
+  triggerHaptic('light');
+  topicDrillBuiltTiles.push(word);
+  renderTopicReviewStage();
+}
+
+export function resetReviewTopicTiles(): void {
+  triggerHaptic('light');
+  topicDrillBuiltTiles = [];
+  renderTopicReviewStage();
+}
+
+export function revealReviewTopicCard(): void {
+  if (topicDrillRevealed) return;
+  triggerHaptic('light');
+  topicDrillRevealed = true;
+  renderTopicReviewStage();
+  if (currentTopicDrillItem && reviewPrefs.autoPlayAudio) {
+    void speakUkrainian(currentTopicDrillItem.audioUk);
+  }
+}
+
+export function gradeReviewTopicCard(g: 1 | 2 | 3 | 4): void {
+  triggerHaptic('heavy');
+  recordSessionGrade(activeReviewSession, g, false, 15);
+  db.xp += 15;
+  db.drills += 1;
+  saveDB();
+
+  topicDrillCursor += 1;
+  topicDrillRevealed = false;
+  topicDrillChosenOptionIdx = null;
+  topicDrillBuiltTiles = [];
+  lastAutoSpokenCardKey = '';
+  syncReviewControlsUI();
+  renderTopicReviewStage();
+}
+
 // DECK 1: UK -> EN
 export function renderAnkiStage(): void {
   const now = Date.now();
-  const newC = db.cards.filter((c) => c.state === 'new');
-  const learnC = db.cards.filter((c) => c.state === 'learning' && c.due <= now);
-  const revC = db.cards.filter((c) => c.state === 'review' && c.due <= now);
+  const sel = selectDeckActionableQueue(
+    db.cards,
+    now,
+    getActiveRemainingNewAllowance()
+  );
 
   const newEl = document.getElementById('anki-new-count');
   const learnEl = document.getElementById('anki-learn-count');
   const revEl = document.getElementById('anki-rev-count');
-  if (newEl) newEl.innerText = String(newC.length);
-  if (learnEl) learnEl.innerText = String(learnC.length);
-  if (revEl) revEl.innerText = String(revC.length);
+  if (newEl) newEl.innerText = String(sel.pacedNewCount);
+  if (learnEl) learnEl.innerText = String(sel.learningCount);
+  if (revEl) revEl.innerText = String(sel.reviewCount);
 
-  const queue = [...learnC, ...revC, ...newC];
+  const mount = document.getElementById('review-unified-mount');
+  const stageSrs = document.getElementById('stage-srs');
   const bodyEl = document.getElementById('anki-card-body');
   const actionEl = document.getElementById('anki-action-area');
   if (!bodyEl || !actionEl) return;
 
-  if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Load the next frequent words from the lexicon below or practice another skill.</p></div>`;
-    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 words</button>`;
+  if (
+    !lexiconExploreMode &&
+    activeReviewMode === 'srs' &&
+    mount &&
+    stageSrs
+  ) {
+    if (activeReviewSession.completed || !sel.queue.length) {
+      currentAnkiCard = null;
+      stageSrs.classList.add('hidden');
+      mount.classList.remove('hidden');
+      mount.innerHTML = renderReviewSessionSummaryHtml();
+      return;
+    }
+    mount.classList.add('hidden');
+    stageSrs.classList.remove('hidden');
+  }
+
+  if (!sel.queue.length) {
+    currentAnkiCard = null;
+    bodyEl.innerHTML = `<div class="review-front-surface"><h2 class="card-heading">All caught up for today</h2><p class="hint">Your daily UK→EN reviews are complete.</p></div>`;
+    actionEl.innerHTML = `<button type="button" class="btn anki-reveal-btn" onclick="unlockBonusNewCards(5)">+ Study 5 bonus new words</button>`;
     return;
   }
 
-  currentAnkiCard = queue[0];
-  const item = FREQ_6000_DB[currentAnkiCard.rank - 1] || FREQ_6000_DB[0];
-  const phon = generateUkrainianPhonetics(item.ru);
-  const gram = generateGrammarBreakdown(item);
-
-  if (!ankiFlipped) {
-    bodyEl.innerHTML = `
-      <div style="margin:auto 0; padding:12px 0;">
-        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
-        <div class="anki-front-word word" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
-        <div class="hint" style="margin-bottom:14px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · <span style="font-family:var(--font-mono);">${phon.ipa}</span></div>
-        <button class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
-      </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipAnkiCard()">Show answer <kbd class="vb-kbd" data-slot="kbd" style="margin-left:6px; background:rgba(255,255,255,0.16); color:inherit; border-color:transparent;">Space</kbd></button>`;
-  } else {
-    const iv = getNextIntervals(currentAnkiCard);
-    bodyEl.innerHTML = `
-      <div style="text-align:left;">
-        <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
-          <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
-            <span class="word" style="font-size:30px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
-            <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
-            <span class="tag">#${item.rank} · ${item.level}</span>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
-          </div>
-        </div>
-        <div style="font-size:20px; font-weight:600; color:var(--text); margin:8px 0 6px 0;">${item.en}</div>
-        <div class="hint" style="margin-bottom:6px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${phon.notes}</div>
-        <div class="hint" style="margin-bottom:10px;"><b style="color:var(--text);">${gram.summaryTag}</b> — ${gram.usageNote}</div>
-        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-          <div class="word" style="font-size:16.5px; color:var(--text);">${gram.exampleRu}</div>
-          <div class="hint" style="margin-top:3px;">${gram.exampleEn}</div>
-        </div>
-        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:8px;">
-          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
-          <div style="margin-top:8px;">${gram.tableHtml}</div>
-        </details>
-      </div>`;
-    actionEl.innerHTML = `
-      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
-      <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeAnkiCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
-        <button class="anki-btn anki-hard" onclick="gradeAnkiCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
-        <button class="anki-btn anki-good" onclick="gradeAnkiCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
-        <button class="anki-btn anki-easy" onclick="gradeAnkiCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
-      </div>`;
-  }
+  currentAnkiCard = sel.queue[0];
+  const faces = renderUk2EnCardFaces(
+    currentAnkiCard,
+    ankiFlipped,
+    'UK→EN · Recognition',
+    sel.queue.length,
+    'flipAnkiCard',
+    'gradeAnkiCard'
+  );
+  bodyEl.innerHTML = faces.bodyHtml;
+  actionEl.innerHTML = faces.actionHtml;
 }
 
 export function flipAnkiCard(): void {
+  if (!currentAnkiCard || ankiFlipped) return;
   triggerHaptic('light');
   ankiFlipped = true;
   renderAnkiStage();
-  if (currentAnkiCard) inspectWordDeep(currentAnkiCard.rank, true, false);
+  if (currentAnkiCard) {
+    inspectWordDeep(currentAnkiCard.rank, reviewPrefs.autoPlayAudio, false);
+  }
   ensureActionButtonsVisible('anki-action-area');
 }
 
@@ -1044,95 +2243,59 @@ export function gradeAnkiCard(g: 1 | 2 | 3 | 4): void {
 // DECK 2: EN -> UK
 export function renderEn2UkStage(): void {
   const now = Date.now();
-  const newC = db.en2ukCards.filter((c) => c.state === 'new');
-  const learnC = db.en2ukCards.filter(
-    (c) => c.state === 'learning' && c.due <= now
-  );
-  const revC = db.en2ukCards.filter(
-    (c) => c.state === 'review' && c.due <= now
+  const sel = selectDeckActionableQueue(
+    db.en2ukCards,
+    now,
+    getActiveRemainingNewAllowance()
   );
 
   const newEl = document.getElementById('en2uk-new-count');
   const learnEl = document.getElementById('en2uk-learn-count');
   const revEl = document.getElementById('en2uk-rev-count');
-  if (newEl) newEl.innerText = String(newC.length);
-  if (learnEl) learnEl.innerText = String(learnC.length);
-  if (revEl) revEl.innerText = String(revC.length);
+  if (newEl) newEl.innerText = String(sel.pacedNewCount);
+  if (learnEl) learnEl.innerText = String(sel.learningCount);
+  if (revEl) revEl.innerText = String(sel.reviewCount);
 
-  const queue = [...learnC, ...revC, ...newC];
+  const sumMount = document.getElementById('en2uk-summary-mount');
+  const stageEl = document.getElementById('stage-en2uk');
   const bodyEl = document.getElementById('en2uk-card-body');
   const actionEl = document.getElementById('en2uk-action-area');
   if (!bodyEl || !actionEl) return;
 
-  if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Add more frequent words to continue productive recall.</p></div>`;
-    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 words</button>`;
+  if (sumMount && stageEl) {
+    if (activeReviewSession.completed || !sel.queue.length) {
+      currentEn2UkCard = null;
+      stageEl.classList.add('hidden');
+      sumMount.classList.remove('hidden');
+      sumMount.innerHTML = renderReviewSessionSummaryHtml();
+      return;
+    }
+    sumMount.classList.add('hidden');
+    stageEl.classList.remove('hidden');
+  }
+
+  if (!sel.queue.length) {
+    currentEn2UkCard = null;
     return;
   }
 
-  currentEn2UkCard = queue[0];
-  const item = FREQ_6000_DB[currentEn2UkCard.rank - 1] || FREQ_6000_DB[0];
-  const phon = generateUkrainianPhonetics(item.ru);
-  const gram = generateGrammarBreakdown(item);
-
-  if (!en2ukFlipped) {
-    bodyEl.innerHTML = `
-      <div style="margin:auto 0; max-width:460px; width:100%; align-self:center; padding:10px 0;">
-        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
-        <div style="font-size:clamp(24px, 5vw, 32px); font-weight:600; color:var(--text); letter-spacing:-0.015em; margin:16px 0 8px 0;">${item.en}</div>
-        <div class="hint" style="margin-bottom:14px;">Say or type it in Ukrainian</div>
-        <input id="en2uk-user-guess" class="answer-line" placeholder="Type in Ukrainian (optional)…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter') flipEn2UkCard()">
-      </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipEn2UkCard()">Check / Show answer</button>`;
-  } else {
-    const iv = getNextIntervals(currentEn2UkCard);
-    const cleanTarget = item.ru.replace(/\u0301/g, '').toLowerCase().trim();
-    const cleanGuess = lastEn2UkUserGuess
-      .replace(/\u0301/g, '')
-      .toLowerCase()
-      .trim();
-    const guessFeedbackHtml = cleanGuess
-      ? cleanGuess === cleanTarget
-        ? `<div style="padding:8px 12px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">Right · You typed «${lastEn2UkUserGuess}»</div>`
-        : `<div style="padding:8px 12px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">You typed «${lastEn2UkUserGuess}» · Answer: <span class="word">${item.ru}</span></div>`
-      : '';
-
-    bodyEl.innerHTML = `
-      <div style="text-align:left;">
-        ${guessFeedbackHtml}
-        <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
-          <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
-            <span class="hint">Answer</span>
-            <span class="word" style="font-size:30px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
-            <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
-          </div>
-        </div>
-        <div class="hint" style="margin:6px 0 10px 0;"><b style="color:var(--text);">${item.en}</b> · Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${gram.summaryTag}</div>
-        <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-          <div class="word" style="font-size:16.5px; color:var(--text);">${gram.exampleRu}</div>
-          <div class="hint" style="margin-top:3px;">${gram.exampleEn}</div>
-        </div>
-        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:8px;">
-          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
-          <div style="margin-top:8px;">${gram.tableHtml}</div>
-        </details>
-      </div>`;
-    actionEl.innerHTML = `
-      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
-      <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeEn2UkCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
-        <button class="anki-btn anki-hard" onclick="gradeEn2UkCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
-        <button class="anki-btn anki-good" onclick="gradeEn2UkCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
-        <button class="anki-btn anki-easy" onclick="gradeEn2UkCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
-      </div>`;
-  }
+  currentEn2UkCard = sel.queue[0];
+  const faces = renderEn2UkCardFaces(
+    currentEn2UkCard,
+    en2ukFlipped,
+    lastEn2UkUserGuess,
+    'en2uk-user-guess',
+    'EN→UK · Active recall',
+    sel.queue.length,
+    'flipEn2UkCard',
+    'gradeEn2UkCard'
+  );
+  bodyEl.innerHTML = faces.bodyHtml;
+  actionEl.innerHTML = faces.actionHtml;
 }
 
 export function flipEn2UkCard(): void {
+  if (!currentEn2UkCard || en2ukFlipped) return;
   triggerHaptic('light');
   const guessInput = document.getElementById(
     'en2uk-user-guess'
@@ -1143,7 +2306,9 @@ export function flipEn2UkCard(): void {
   if (currentEn2UkCard) {
     inspectWordDeep(currentEn2UkCard.rank, false, false);
     const item = FREQ_6000_DB[currentEn2UkCard.rank - 1];
-    if (item) speakUkrainian(item.ru);
+    if (item && reviewPrefs.autoPlayAudio) {
+      void speakUkrainian(item.ru);
+    }
   }
   ensureActionButtonsVisible('en2uk-action-area');
 }
@@ -1158,98 +2323,59 @@ export function gradeEn2UkCard(g: 1 | 2 | 3 | 4): void {
 // DECK 3: SENTENCE CORRECTION
 export function renderCorrectionStage(): void {
   const now = Date.now();
-  const newC = db.corrCards.filter((c) => c.state === 'new');
-  const learnC = db.corrCards.filter(
-    (c) => c.state === 'learning' && c.due <= now
+  const sel = selectDeckActionableQueue(
+    db.corrCards,
+    now,
+    getActiveRemainingNewAllowance()
   );
-  const revC = db.corrCards.filter((c) => c.state === 'review' && c.due <= now);
 
   const newEl = document.getElementById('corr-new-count');
   const learnEl = document.getElementById('corr-learn-count');
   const revEl = document.getElementById('corr-rev-count');
-  if (newEl) newEl.innerText = String(newC.length);
-  if (learnEl) learnEl.innerText = String(learnC.length);
-  if (revEl) revEl.innerText = String(revC.length);
+  if (newEl) newEl.innerText = String(sel.pacedNewCount);
+  if (learnEl) learnEl.innerText = String(sel.learningCount);
+  if (revEl) revEl.innerText = String(sel.reviewCount);
 
-  const queue = [...learnC, ...revC, ...newC];
+  const sumMount = document.getElementById('corr-summary-mount');
+  const stageEl = document.getElementById('stage-corr');
   const bodyEl = document.getElementById('corr-card-body');
   const actionEl = document.getElementById('corr-action-area');
   if (!bodyEl || !actionEl) return;
 
-  if (!queue.length) {
-    bodyEl.innerHTML = `<div style="padding:28px 12px;"><h2 style="font-size:20px; font-weight:600; color:var(--text); margin:0 0 6px 0;">Nothing due right now</h2><p class="hint" style="margin:0;">Add more sentence cards to practice Ukrainian case governance.</p></div>`;
-    actionEl.innerHTML = `<button class="btn" style="width:100%; min-height:46px;" onclick="batchAddNextFrequencyWords(25)">+ Add next 25 cards</button>`;
+  if (sumMount && stageEl) {
+    if (activeReviewSession.completed || !sel.queue.length) {
+      currentCorrCard = null;
+      stageEl.classList.add('hidden');
+      sumMount.classList.remove('hidden');
+      sumMount.innerHTML = renderReviewSessionSummaryHtml();
+      return;
+    }
+    sumMount.classList.add('hidden');
+    stageEl.classList.remove('hidden');
+  }
+
+  if (!sel.queue.length) {
+    currentCorrCard = null;
     return;
   }
 
-  currentCorrCard = queue[0];
-  const item = FREQ_6000_DB[currentCorrCard.rank - 1] || FREQ_6000_DB[0];
-  const corr = generateSentenceCorrection(item);
-  const gram = generateGrammarBreakdown(item);
-
-  if (!corrFlipped) {
-    const highlightedWrong = corr.wrongRu.replace(
-      /\*([^*]+)\*/,
-      `<span style="color:var(--danger); text-decoration:underline wavy var(--danger); font-weight:600;">$1</span>`
-    );
-    bodyEl.innerHTML = `
-      <div style="margin:auto 0; max-width:520px; width:100%; align-self:center; padding:10px 0;">
-        <span class="tag">#${item.rank} · <span class="word">${item.ru}</span> (${item.en})</span>
-        <div class="word" style="font-size:clamp(21px, 4.5vw, 28px); color:var(--text); margin:16px 0 8px 0; line-height:1.38;">${highlightedWrong}</div>
-        <div class="hint" style="margin-bottom:14px;">“${corr.enMeaning}”</div>
-        <input id="corr-user-input" class="answer-line" placeholder="Repair «${corr.wrongWord}»…" autocomplete="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter') flipCorrectionCard()">
-      </div>`;
-    actionEl.innerHTML = `<button class="btn anki-reveal-btn" onclick="flipCorrectionCard()">Check / Show corrected sentence</button>`;
-  } else {
-    const iv = getNextIntervals(currentCorrCard);
-    const cleanTarget = corr.rightWord
-      .replace(/\u0301/g, '')
-      .toLowerCase()
-      .trim();
-    const cleanGuess = lastCorrUserGuess
-      .replace(/\u0301/g, '')
-      .toLowerCase()
-      .trim();
-    const guessBanner = cleanGuess
-      ? cleanGuess === cleanTarget
-        ? `<div style="padding:8px 12px; background:var(--success-container); color:var(--success-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">Right · «${lastCorrUserGuess}»</div>`
-        : `<div style="padding:8px 12px; background:var(--warn-container); color:var(--warn-on-container); border-radius:var(--radius-sm); font-size:13px; font-weight:600; margin-bottom:10px;">You typed «${lastCorrUserGuess}» · Correct form: <span class="word">${corr.rightWord}</span></div>`
-      : '';
-
-    bodyEl.innerHTML = `
-      <div style="text-align:left;">
-        ${guessBanner}
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-          <span class="tag" style="background:var(--success-container); color:var(--success-on-container);">${corr.ruleTitle}</span>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">Listen</button>
-            <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakCorrectionExplanation(${item.rank})">Explain</button>
-          </div>
-        </div>
-        <div class="hint" style="text-decoration:line-through;">${corr.wrongRu.replace(/\*/g, '')}</div>
-        <div class="word" style="font-size:22px; color:var(--text); margin:6px 0 10px 0; cursor:pointer; line-height:1.35;" onclick="speakUkrainian('${escapeSingleQuotes(corr.rightRu)}')">
-          ${corr.rightRu.replace(corr.rightWord, `<mark class="mark">${corr.rightWord}</mark>`)}
-        </div>
-        <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); font-size:13px; line-height:1.5; margin-bottom:8px;">
-          <b>${corr.wrongWord} → <span class="word">${corr.rightWord}</span>:</b> ${corr.explanation}
-        </div>
-        <details style="background:var(--surface-2); padding:9px 12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
-          <summary style="cursor:pointer; font-weight:600; font-size:13px; color:var(--text);">Forms &amp; declension table</summary>
-          <div style="margin-top:8px;">${gram.tableHtml}</div>
-        </details>
-      </div>`;
-    actionEl.innerHTML = `
-      <div class="hint" style="margin-bottom:8px; text-align:left;">How well did you remember?</div>
-      <div class="anki-grade-bar">
-        <button class="anki-btn anki-again" onclick="gradeCorrectionCard(1)"><span>Again</span><small>&lt; 1m · <kbd data-slot="kbd">1</kbd></small></button>
-        <button class="anki-btn anki-hard" onclick="gradeCorrectionCard(2)"><span>Hard</span><small>${iv.hard}d · <kbd data-slot="kbd">2</kbd></small></button>
-        <button class="anki-btn anki-good" onclick="gradeCorrectionCard(3)"><span>Good</span><small>${iv.good}d · <kbd data-slot="kbd">3</kbd></small></button>
-        <button class="anki-btn anki-easy" onclick="gradeCorrectionCard(4)"><span>Easy</span><small>${iv.easy}d · <kbd data-slot="kbd">4</kbd></small></button>
-      </div>`;
-  }
+  currentCorrCard = sel.queue[0];
+  const faces = renderCorrectionCardFaces(
+    currentCorrCard,
+    corrFlipped,
+    lastCorrUserGuess,
+    'corr-user-input',
+    'Sentences · Case repair',
+    sel.queue.length,
+    'flipCorrectionCard',
+    'gradeCorrectionCard'
+  );
+  bodyEl.innerHTML = faces.bodyHtml;
+  actionEl.innerHTML = faces.actionHtml;
 }
 
 export function flipCorrectionCard(): void {
+  if (!currentCorrCard || corrFlipped) return;
   triggerHaptic('light');
   const guessInput = document.getElementById(
     'corr-user-input'
@@ -1260,9 +2386,9 @@ export function flipCorrectionCard(): void {
   if (currentCorrCard) {
     inspectWordDeep(currentCorrCard.rank, false, false);
     const item = FREQ_6000_DB[currentCorrCard.rank - 1];
-    if (item) {
+    if (item && reviewPrefs.autoPlayAudio) {
       const corr = generateSentenceCorrection(item);
-      speakUkrainian(corr.rightRu);
+      void speakUkrainian(corr.rightRu);
     }
   }
   ensureActionButtonsVisible('corr-action-area');
@@ -1344,12 +2470,145 @@ export function batchAddNextFrequencyWords(count: number): void {
       added++;
     }
   }
+  ensureFreshReviewPrefsDay();
+  reviewPrefs.bonusNewAllowanceToday += Math.max(count, added);
+  saveReviewPrefs();
+  activeReviewSession.completed = false;
   db.xp += added * 5;
   saveDB();
+  renderActiveReviewWorkspace();
+  renderSrsCatalog6000();
+}
+
+export function unlockBonusNewCards(bonusCount = 5): void {
+  triggerHaptic('light');
+  ensureFreshReviewPrefsDay();
+  reviewPrefs.bonusNewAllowanceToday += Math.max(1, bonusCount);
+  saveReviewPrefs();
+  activeReviewSession = createFreshSessionTracker(0);
+  ensureDailyGoalNewCardsSeeded();
+  syncReviewControlsUI();
+  renderActiveReviewWorkspace();
+}
+
+export function closeReviewAdvancedMenu(): void {
+  const detailsEl = document.getElementById(
+    'review-advanced-menu'
+  ) as HTMLDetailsElement | null;
+  if (detailsEl) detailsEl.open = false;
+}
+
+export function setReviewAutoPlayAudio(enabled: boolean): void {
+  triggerHaptic('light');
+  reviewPrefs.autoPlayAudio = Boolean(enabled);
+  saveReviewPrefs();
+  syncReviewControlsUI();
+}
+
+export function toggleReviewAutoAudio(): void {
+  setReviewAutoPlayAudio(!reviewPrefs.autoPlayAudio);
+}
+
+export function toggleReviewFocusMode(): void {
+  triggerHaptic('light');
+  reviewPrefs.focusDimChrome = !reviewPrefs.focusDimChrome;
+  saveReviewPrefs();
+  syncReviewControlsUI();
+}
+
+export function finishActiveReviewSession(): void {
+  triggerHaptic('light');
+  activeReviewSession.completed = true;
+  syncReviewControlsUI();
+  renderActiveReviewWorkspace();
+}
+
+function syncReviewSrsVsLexiconDOM(): void {
+  const tabSrs = document.getElementById('tab-srs');
+  const srsWorkspace = document.getElementById('review-srs-workspace');
+  const lexCard = document.getElementById('lexicon-6000-card');
+  tabSrs?.classList.toggle('is-lexicon-mode', lexiconExploreMode);
+  if (lexiconExploreMode) {
+    srsWorkspace?.classList.add('hidden');
+    lexCard?.classList.remove('hidden');
+  } else {
+    srsWorkspace?.classList.remove('hidden');
+    lexCard?.classList.add('hidden');
+  }
+}
+
+function syncReviewControlsUI(): void {
+  if (typeof document === 'undefined') return;
+  const audioBtn = document.getElementById('review-auto-audio-btn');
+  const audioLbl = document.getElementById('review-auto-audio-label');
+  if (audioBtn) {
+    audioBtn.classList.toggle('is-active', reviewPrefs.autoPlayAudio);
+    audioBtn.setAttribute('aria-pressed', reviewPrefs.autoPlayAudio ? 'true' : 'false');
+  }
+  if (audioLbl) {
+    audioLbl.textContent = reviewPrefs.autoPlayAudio
+      ? 'Auto-audio: On'
+      : 'Auto-audio: Off';
+  }
+
+  document.querySelectorAll('[data-review-audio-opt]').forEach((btn) => {
+    const opt = btn.getAttribute('data-review-audio-opt');
+    const isAct =
+      (opt === 'on' && reviewPrefs.autoPlayAudio) ||
+      (opt === 'off' && !reviewPrefs.autoPlayAudio);
+    btn.classList.toggle('active', isAct);
+    btn.setAttribute('aria-pressed', isAct ? 'true' : 'false');
+  });
+
+  const focusBtn = document.getElementById('review-focus-btn');
+  const focusLbl = document.getElementById('review-focus-label');
+  if (focusBtn) {
+    focusBtn.classList.toggle('is-active', reviewPrefs.focusDimChrome);
+    focusBtn.setAttribute('aria-pressed', reviewPrefs.focusDimChrome ? 'true' : 'false');
+  }
+  if (focusLbl) {
+    focusLbl.textContent = reviewPrefs.focusDimChrome
+      ? 'Exit focus'
+      : 'Full focus';
+  }
+
+  const finishBtn = document.getElementById('review-finish-btn');
+  if (finishBtn) {
+    const showFinish =
+      activeReviewSession.cardsReviewed >= 1 && !activeReviewSession.completed;
+    finishBtn.classList.toggle('hidden', !showFinish);
+  }
+
+  const appShell = document.querySelector('.app-shell');
+  const inReview = isUserCurrentlyViewingReview();
+  const activelyStudying = inReview && !activeReviewSession.completed;
+  if (appShell) {
+    appShell.classList.toggle(
+      'review-chrome-dimmed',
+      activelyStudying && !reviewPrefs.focusDimChrome
+    );
+    appShell.classList.toggle(
+      'review-chrome-hidden',
+      activelyStudying && reviewPrefs.focusDimChrome
+    );
+  }
+  document.body.classList.toggle(
+    'review-mobile-focus',
+    activelyStudying && reviewPrefs.focusDimChrome
+  );
+}
+
+function renderActiveReviewWorkspace(): void {
+  syncReviewSrsVsLexiconDOM();
   renderAnkiStage();
   renderEn2UkStage();
   renderCorrectionStage();
-  renderSrsCatalog6000();
+  if (!lexiconExploreMode && activeReviewMode === 'mixed') {
+    renderMixedReviewStage();
+  } else if (!lexiconExploreMode && activeReviewMode === 'topics') {
+    renderTopicReviewStage();
+  }
+  syncReviewControlsUI();
 }
 
 // ============================================================================
@@ -1369,25 +2628,27 @@ export function inspectWordDeep(
   if (!item) return;
   const phon = generateUkrainianPhonetics(item.ru);
   const gram = generateGrammarBreakdown(item);
+  const lvlInfo = formatPlainLevelBadge(item.level);
+  const inReviews = db.cards.some((c) => c.rank === item.rank);
 
   const inspectorBody = document.getElementById('inspector-body');
   if (inspectorBody) {
     inspectorBody.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <span class="tag">#${item.rank} · ${item.level} · ${item.pos}</span>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
-          <button class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:12px;" onclick="speakExplanation(${item.rank})">Explain</button>
+      <div class="inspector-top-row">
+        <span class="hint">${lvlInfo.label} · #${item.rank} · ${item.pos}</span>
+        <div class="inspector-actions-row">
+          <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+          <button type="button" class="btn ${inReviews ? 'btn-sec' : ''} btn--sm" onclick="addSingleWordFrom6000(${item.rank})" ${inReviews ? 'disabled' : ''}>${inReviews ? '✓ In reviews' : '+ Add to reviews'}</button>
         </div>
       </div>
-      <div class="word" style="font-size:32px; color:var(--text); margin-top:10px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
-      <div class="hint" style="margin-top:4px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · <span style="font-family:var(--font-mono);">${phon.ipa}</span></div>
-      <div style="font-size:18px; font-weight:600; color:var(--text); margin:8px 0 4px 0;">${item.en}</div>
-      <div class="hint" style="margin-bottom:8px;">${phon.notes}</div>
-      <div style="font-size:13px; color:var(--text); margin-bottom:10px;"><b>${gram.summaryTag}</b><div class="hint" style="margin-top:2px;">${gram.usageNote}</div></div>
+      <div class="word inspector-headword" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</div>
+      <div class="hint inspector-phonetic-line">Sounds like <b class="text-strong-ink">${phon.plainGuide}</b> · <span class="inspector-ipa">${phon.ipa}</span></div>
+      <div class="inspector-meaning">${item.en}</div>
+      <div class="hint inspector-notes">${phon.notes}</div>
+      <div class="inspector-gram-summary"><b>${gram.summaryTag}</b><div class="hint inspector-gram-note">${gram.usageNote}</div></div>
       <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(gram.exampleRu)}')">
-        <div class="word" style="font-size:15.5px; color:var(--text);">${gram.exampleRu}</div>
-        <div class="hint" style="margin-top:2px;">${gram.exampleEn}</div>
+        <div class="word inspector-example-uk">${gram.exampleRu}</div>
+        <div class="hint inspector-gram-note">${gram.exampleEn}</div>
       </div>
       ${gram.tableHtml}
     `;
@@ -1398,20 +2659,20 @@ export function inspectWordDeep(
   const pOut = document.getElementById('phonetic-output');
   if (pOut) {
     pOut.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
-          <span class="word" style="font-size:26px; color:var(--text); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
-          <span style="font-family:var(--font-mono); font-size:14px; color:var(--muted);">${phon.ipa}</span>
-          <span style="font-weight:600; color:var(--text);">— ${item.en}</span>
+      <div class="phonetic-top-row">
+        <div class="phonetic-head-group">
+          <span class="word phonetic-headword" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">${item.ru}</span>
+          <span class="inspector-ipa--muted">${phon.ipa}</span>
+          <span class="phonetic-gloss">— ${item.en}</span>
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="speakExplanation(${item.rank})">Explain</button>
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="addSingleWordFrom6000(${item.rank})">+ Add</button>
+        <div class="inspector-actions-row">
+          <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(item.ru)}')">Listen</button>
+          <button type="button" class="btn btn-sec btn--sm" onclick="speakExplanation(${item.rank})">Explain</button>
+          <button type="button" class="btn ${inReviews ? 'btn-sec' : ''} btn--sm" onclick="addSingleWordFrom6000(${item.rank})" ${inReviews ? 'disabled' : ''}>${inReviews ? '✓ In reviews' : '+ Add to reviews'}</button>
         </div>
       </div>
-      <div class="hint" style="margin-top:6px;">Sounds like <b style="color:var(--text);">${phon.plainGuide}</b> · ${phon.notes}</div>
-      <div class="hint" style="margin-top:3px;">${gram.summaryTag} — ${gram.usageNote}</div>
+      <div class="hint phonetic-guide-line">Sounds like <b class="text-strong-ink">${phon.plainGuide}</b> · ${phon.notes}</div>
+      <div class="hint phonetic-meta-line">${lvlInfo.label} · ${gram.summaryTag} — ${gram.usageNote}</div>
     `;
   }
 
@@ -1439,7 +2700,8 @@ function getFilteredVocabulary(
   const q = (searchInput?.value || '')
     .trim()
     .toLowerCase()
-    .replace(/\u0301/g, '');
+    .replace(/\u0301/g, '')
+    .replace(/^#/, '');
   const lvl = levelSelect?.value || 'ALL';
 
   return FREQ_6000_DB.filter((w) => {
@@ -1451,6 +2713,32 @@ function getFilteredVocabulary(
       String(w.rank) === q
     );
   });
+}
+
+export function clearLexiconSearch(): void {
+  const searchInput = document.getElementById(
+    'srs-cat-search'
+  ) as HTMLInputElement | null;
+  const levelSelect = document.getElementById(
+    'srs-cat-level'
+  ) as HTMLSelectElement | null;
+  if (searchInput) searchInput.value = '';
+  if (levelSelect) levelSelect.value = 'ALL';
+  srsCatPage = 0;
+  renderSrsCatalog6000();
+}
+
+export function clearPhoneticsSearch(): void {
+  const searchInput = document.getElementById(
+    'phon-search'
+  ) as HTMLInputElement | null;
+  const levelSelect = document.getElementById(
+    'phon-level'
+  ) as HTMLSelectElement | null;
+  if (searchInput) searchInput.value = '';
+  if (levelSelect) levelSelect.value = 'ALL';
+  phonPage = 0;
+  renderPhonetics6000();
 }
 
 export function renderSrsCatalog6000(): void {
@@ -1468,29 +2756,43 @@ export function renderSrsCatalog6000(): void {
   if (pageInfo) {
     pageInfo.innerText = filtered.length
       ? `${srsCatPage * pageSize + 1}–${Math.min(filtered.length, (srsCatPage + 1) * pageSize)} of ${filtered.length.toLocaleString('en')} words`
-      : 'No matching words';
+      : '0 matching words';
   }
 
   const catalogEl = document.getElementById('srs-6000-catalog');
   if (!catalogEl) return;
+
+  if (slice.length === 0) {
+    catalogEl.innerHTML = `
+      <div class="empty-state-box">
+        <h3 class="empty-state-title">No words match your search</h3>
+        <p class="empty-state-desc">Try searching in Ukrainian, English, or by frequency rank (1–6000), or reset your filters to browse all 6,000 words.</p>
+        <div class="empty-state-actions">
+          <button type="button" class="btn btn-sec btn--sm" onclick="clearLexiconSearch()">Reset filters</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   catalogEl.innerHTML = slice
     .map((w) => {
       const saved = inDeck.has(w.rank);
       const p = generateUkrainianPhonetics(w.ru);
+      const lvlInfo = formatPlainLevelBadge(w.level);
       return `<div class="freq-row">
-        <div onclick="inspectWordDeep(${w.rank}, true, true)" style="cursor:pointer; flex:1; min-width:200px;">
-          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
-            <span class="word" style="font-size:19px; color:var(--text);">${w.ru}</span>
-            <span style="font-family:var(--font-mono); font-size:12.5px; color:var(--muted);">${p.ipa}</span>
-            <span class="tag" style="margin:0;">#${w.rank} · ${w.level}</span>
-            ${saved ? `<span class="tag" style="margin:0; background:var(--success-container); color:var(--success-on-container);">Learning</span>` : ''}
+        <div class="freq-row-main--clickable" onclick="inspectWordDeep(${w.rank}, true, true)">
+          <div class="freq-row-head">
+            <span class="word freq-row-uk">${w.ru}</span>
+            <span class="freq-row-ipa">${p.ipa}</span>
+            <span class="hint">#${w.rank} · ${lvlInfo.label}${saved ? ' · In reviews' : ''}</span>
           </div>
-          <div class="hint" style="margin-top:3px;"><span style="color:var(--text); font-weight:500;">${w.en}</span> · ${w.pos}</div>
-          ${w.exUk ? `<div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(w.exUk)}')" class="hint" style="margin-top:4px; cursor:pointer;"><span class="word" style="font-size:14px; color:var(--text);">${w.exUk}</span>${w.exEn ? ` — ${w.exEn}` : ''}</div>` : ''}
+          <div class="hint freq-row-sub"><span class="freq-row-en">${w.en}</span> · ${w.pos}</div>
+          ${w.exUk ? `<div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(w.exUk)}')" class="hint freq-row-ex"><span class="word freq-row-ex-uk">${w.exUk}</span>${w.exEn ? ` — ${w.exEn}` : ''}</div>` : ''}
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="inspectWordDeep(${w.rank}, true, true)">Forms</button>
-          <button class="btn ${saved ? 'btn-sec' : ''}" style="min-height:32px; padding:4px 11px; font-size:12.5px;" onclick="addSingleWordFrom6000(${w.rank})" ${saved ? 'disabled' : ''}>${saved ? 'In deck' : '+ Add'}</button>
+        <div class="freq-row-actions">
+          <button type="button" class="btn btn-sec btn--sm" onclick="inspectWordDeep(${w.rank}, true, true)">Word forms</button>
+          <button type="button" class="btn ${saved ? 'btn-sec' : ''} btn--sm" onclick="addSingleWordFrom6000(${w.rank})" ${saved ? 'disabled' : ''}>${saved ? '✓ In reviews' : '+ Add to reviews'}</button>
         </div>
       </div>`;
     })
@@ -1509,31 +2811,49 @@ export function renderPhonetics6000(): void {
   const maxPage = Math.max(0, Math.ceil(filtered.length / pageSize) - 1);
   if (phonPage > maxPage) phonPage = maxPage;
   const slice = filtered.slice(phonPage * pageSize, (phonPage + 1) * pageSize);
+  const inDeck = new Set(db.cards.map((c) => c.rank));
 
   const pageInfo = document.getElementById('phon-page-info');
   if (pageInfo) {
     pageInfo.innerText = filtered.length
-      ? `${phonPage * pageSize + 1}–${Math.min(filtered.length, (phonPage + 1) * pageSize)} of ${filtered.length.toLocaleString('en')}`
-      : 'No matching words';
+      ? `${phonPage * pageSize + 1}–${Math.min(filtered.length, (phonPage + 1) * pageSize)} of ${filtered.length.toLocaleString('en')} words`
+      : '0 matching words';
   }
 
   const listEl = document.getElementById('phon-6000-list');
   if (!listEl) return;
+
+  if (slice.length === 0) {
+    listEl.innerHTML = `
+      <div class="empty-state-box">
+        <h3 class="empty-state-title">No words match your search</h3>
+        <p class="empty-state-desc">Try searching by Ukrainian word, English translation, or #rank, or clear the level filter to see all 6,000 entries.</p>
+        <div class="empty-state-actions">
+          <button type="button" class="btn btn-sec btn--sm" onclick="clearPhoneticsSearch()">Reset filters</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   listEl.innerHTML = slice
     .map((w) => {
+      const saved = inDeck.has(w.rank);
       const p = generateUkrainianPhonetics(w.ru);
-      return `<div class="freq-row" onclick="inspectWordDeep(${w.rank}, true, false)" style="cursor:pointer;">
-        <div style="flex:1; min-width:190px;">
-          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
-            <span class="word" style="font-size:19px; color:var(--text);">${w.ru}</span>
-            <span style="font-family:var(--font-mono); font-size:12.5px; color:var(--muted);">${p.ipa}</span>
-            <span class="tag" style="margin:0;">#${w.rank} · ${w.level}</span>
+      const lvlInfo = formatPlainLevelBadge(w.level);
+      return `<div class="freq-row freq-row--interactive" onclick="inspectWordDeep(${w.rank}, true, false)">
+        <div class="freq-row-main">
+          <div class="freq-row-head">
+            <span class="word freq-row-uk">${w.ru}</span>
+            <span class="freq-row-ipa">${p.ipa}</span>
+            <span class="hint">#${w.rank} · ${lvlInfo.label}</span>
           </div>
-          <div class="hint" style="margin-top:3px;"><span style="color:var(--text); font-weight:500;">${w.en}</span> · Sounds like <b style="color:var(--text);">${p.plainGuide}</b></div>
+          <div class="hint freq-row-sub"><span class="freq-row-en">${w.en}</span> · Sounds like <b class="text-strong-ink">${p.plainGuide}</b></div>
         </div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="event.stopPropagation(); speakExplanation(${w.rank})">Explain</button>
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12.5px;" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Forms</button>
+        <div class="freq-row-actions">
+          <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); speakExplanation(${w.rank})">Explain</button>
+          <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Word forms</button>
+          <button type="button" class="btn ${saved ? 'btn-sec' : ''} btn--sm" onclick="event.stopPropagation(); addSingleWordFrom6000(${w.rank})" ${saved ? 'disabled' : ''}>${saved ? '✓ In reviews' : '+ Add to reviews'}</button>
         </div>
       </div>`;
     })
@@ -1632,11 +2952,64 @@ export function clearCanvas(): void {
 }
 
 // ============================================================================
-// 4. CEFR UKRAINIAN COURSE (A0–C1, 16 STANDARDIZED MODULES)
+// 4. UKRAINIAN COURSE WORKSPACE (A0–C1, 29 MODULES — PHASE 3 FLOW)
 // ============================================================================
 let activeModId = COURSE_MODULES[0].id;
 let activeStage = 0;
 let activeCourseLevelFilter = 'ALL';
+let activeLessonTocSectionId = 'sec-learn';
+let lessonScrollRafPending = false;
+
+const LANGO_COURSE_FLOW_STORAGE_KEY = 'slovo_ua_course_flow_v1';
+
+interface ModFlowProgressRecord {
+  lessonCompleted?: boolean;
+  wordsVisited?: boolean;
+  celebrationAddedCount?: number;
+  lastWordsFeedback?: string;
+}
+
+function loadCourseFlowMap(): Record<string, ModFlowProgressRecord> {
+  if (typeof localStorage === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(LANGO_COURSE_FLOW_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+let courseFlowMap: Record<string, ModFlowProgressRecord> = loadCourseFlowMap();
+
+function saveCourseFlowMap(): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(
+      LANGO_COURSE_FLOW_STORAGE_KEY,
+      JSON.stringify(courseFlowMap)
+    );
+  } catch {
+    // Ignore storage quota errors in restricted environments
+  }
+}
+
+function getModFlowRecord(modId: string): ModFlowProgressRecord {
+  if (!courseFlowMap[modId]) {
+    courseFlowMap[modId] = {};
+  }
+  return courseFlowMap[modId];
+}
+
+function syncCourseMeterWidths(scopeEl?: ParentNode | null): void {
+  const root = scopeEl || (typeof document !== 'undefined' ? document : null);
+  if (!root) return;
+  root.querySelectorAll<HTMLElement>('[data-meter-pct]').forEach((el) => {
+    const pct = Math.max(0, Math.min(100, Number(el.dataset.meterPct || 0)));
+    el.style.width = `${pct}%`;
+  });
+}
 
 // Track answered questions so users cannot farm duplicate XP by clicking the same correct option repeatedly
 const completedQuizKeys = new Set<string>();
@@ -1645,52 +3018,86 @@ const moduleExamAnswers = new Map<string, Map<number, boolean>>();
 export function filterCourseByLevel(level: string): void {
   triggerHaptic('light');
   activeCourseLevelFilter = level;
-  const visible = COURSE_MODULES.filter((m) =>
-    level === 'ALL'
-      ? true
-      : level === 'B2-C1'
-        ? m.level === 'B2' || m.level === 'C1'
-        : m.level === level
-  );
-  if (visible.length && !visible.some((m) => m.id === activeModId)) {
-    activeModId = visible[0].id;
-    activeStage = 0;
-  }
   renderCourseSyllabus();
-  renderActiveModule();
 }
 
 let isCourseSyllabusOpen = false;
 
-export function toggleCourseSyllabusDrawer(force?: boolean): void {
-  triggerHaptic('light');
+function syncCourseDrawerAndWorkspaceDOM(): void {
+  if (typeof document === 'undefined') return;
   const drawer = document.getElementById('course-syllabus-drawer');
+  const workspace = document.getElementById('module-workspace');
   const lbl = document.getElementById('toggle-course-syllabus-label');
-  if (!drawer) return;
-  isCourseSyllabusOpen = typeof force === 'boolean' ? force : !isCourseSyllabusOpen;
-  if (isCourseSyllabusOpen) {
-    drawer.classList.remove('hidden');
-    if (lbl) lbl.textContent = 'Hide 29 Modules';
-  } else {
-    drawer.classList.add('hidden');
-    if (lbl) lbl.textContent = 'Browse All 29 Modules';
+  const isUkrainianTrack =
+    getActiveCourseTrack().trackId === PUBLISHED_UKRAINIAN_TRACK_ID;
+
+  if (drawer) {
+    drawer.classList.toggle('hidden', !isCourseSyllabusOpen || !isUkrainianTrack);
+  }
+  if (workspace && isUkrainianTrack) {
+    workspace.classList.toggle('hidden', isCourseSyllabusOpen);
+  }
+  if (lbl) {
+    lbl.textContent = isCourseSyllabusOpen
+      ? 'Back to module'
+      : `Module map (${COURSE_MODULES.length})`;
   }
 }
 
-export function selectCourseModule(modId: string): void {
+export function toggleCourseSyllabusDrawer(
+  force?: boolean,
+  options?: { skipHashUpdate?: boolean }
+): void {
+  triggerHaptic('light');
+  isCourseSyllabusOpen =
+    typeof force === 'boolean' ? force : !isCourseSyllabusOpen;
+  if (isCourseSyllabusOpen) {
+    renderCourseSyllabus();
+  }
+  syncCourseDrawerAndWorkspaceDOM();
+
+  const mainScroll = document.getElementById('main-scroll-container');
+  if (mainScroll) {
+    mainScroll.scrollTop = 0;
+  }
+
+  if (
+    !options?.skipHashUpdate &&
+    typeof document !== 'undefined' &&
+    !document.getElementById('tab-course')?.classList.contains('hidden')
+  ) {
+    syncHashForCurrentView('course');
+  }
+
+  if (!isCourseSyllabusOpen) {
+    scheduleLessonScrollspySync();
+  }
+}
+
+export function selectCourseModule(
+  modId: string,
+  options?: { skipHashUpdate?: boolean }
+): void {
   triggerHaptic('light');
   const matched = COURSE_MODULES.find(
     (m) => m.id.toLowerCase() === String(modId || '').toLowerCase()
   );
   activeModId = matched ? matched.id : modId;
   activeStage = 0;
+  activeLessonTocSectionId = 'sec-learn';
   saveCourseResumeBookmark(activeModId, activeStage, 'sec-learn');
-  if (isCourseSyllabusOpen) {
-    toggleCourseSyllabusDrawer(false);
-  }
+  isCourseSyllabusOpen = false;
+  syncCourseDrawerAndWorkspaceDOM();
   renderCourseSyllabus();
   renderActiveModule();
+
+  const mainScroll = document.getElementById('main-scroll-container');
+  if (mainScroll) {
+    mainScroll.scrollTop = 0;
+  }
+
   if (
+    !options?.skipHashUpdate &&
     typeof document !== 'undefined' &&
     !document.getElementById('tab-course')?.classList.contains('hidden')
   ) {
@@ -1701,15 +3108,64 @@ export function selectCourseModule(modId: string): void {
 
 export function selectCourseStage(stageIdx: number): void {
   triggerHaptic('light');
-  activeStage = stageIdx;
+  if (activeStage === 0 && stageIdx > 0) {
+    const rec = getModFlowRecord(activeModId);
+    if (!rec.lessonCompleted) {
+      rec.lessonCompleted = true;
+      saveCourseFlowMap();
+    }
+  }
+  activeStage = Math.max(0, Math.min(4, stageIdx));
   saveCourseResumeBookmark(activeModId, activeStage);
+  isCourseSyllabusOpen = false;
+  syncCourseDrawerAndWorkspaceDOM();
   renderActiveModule();
+
+  const mainScroll = document.getElementById('main-scroll-container');
+  if (mainScroll) {
+    mainScroll.scrollTop = 0;
+  }
   refreshTodayIfVisible();
 }
 
 export function renderCourseSyllabus(): void {
   const gridEl = document.getElementById('module-grid');
   if (!gridEl) return;
+
+  const overview = computeCourseMapGroups({
+    modules: COURSE_MODULES.map((m) => ({
+      id: m.id,
+      level: m.level,
+      title: m.title,
+      topicTag: m.topicTag,
+      vocabCount: m.vocab.length,
+    })),
+    passedModIds: db.passedMods,
+    activeModId,
+    onboardingRecommendedModId: onboardingState.recommendedModId,
+    levelFilter: activeCourseLevelFilter,
+  });
+
+  const summaryEl = document.getElementById('course-map-summary');
+  if (summaryEl) {
+    const recMod =
+      COURSE_MODULES.find((x) => x.id === overview.recommendedNextModId) ||
+      COURSE_MODULES[0];
+    summaryEl.innerHTML = `
+      <div class="course-map-progress-box">
+        <div class="course-map-progress-row">
+          <div>
+            <span class="course-map-progress-counts">${overview.completedModules} of ${overview.totalModules} modules completed · ${overview.percentCompleted}%</span>
+            <span class="hint"> · Recommended next: <b>${escapeHtmlSafe(recMod.id)} · ${escapeHtmlSafe(recMod.title)}</b></span>
+          </div>
+          <button type="button" class="btn btn--sm" onclick="selectCourseModule('${escapeSingleQuotes(recMod.id)}')">Continue ${escapeHtmlSafe(recMod.id)} →</button>
+        </div>
+        <div class="course-meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${overview.percentCompleted}" aria-label="Overall course progress">
+          <div class="course-meter-fill ${overview.completedModules === overview.totalModules ? 'course-meter-fill--success' : ''}" data-meter-pct="${overview.percentCompleted}"></div>
+        </div>
+      </div>
+    `;
+  }
 
   const filterBarEl = document.getElementById('course-level-filter-bar');
   if (filterBarEl) {
@@ -1722,47 +3178,68 @@ export function renderCourseSyllabus(): void {
     ).length;
 
     const levels = [
-      { id: 'ALL', label: `All ${COURSE_MODULES.length} Modules` },
-      { id: 'A0', label: `A0 Foundations (${countA0})` },
-      { id: 'A1', label: `A1 Beginner (${countA1})` },
-      { id: 'A2', label: `A2 Elementary (${countA2})` },
-      { id: 'B1', label: `B1 Intermediate (${countB1})` },
-      { id: 'B2-C1', label: `B2–C1 Advanced (${countB2C1})` },
+      { id: 'ALL', label: `All ${COURSE_MODULES.length}` },
+      { id: 'A0', label: `Level A0 (${countA0})` },
+      { id: 'A1', label: `Level A1 (${countA1})` },
+      { id: 'A2', label: `Level A2 (${countA2})` },
+      { id: 'B1', label: `Level B1 (${countB1})` },
+      { id: 'B2-C1', label: `Level B2–C1 (${countB2C1})` },
     ];
     filterBarEl.innerHTML = levels
       .map(
         (lvl) =>
-          `<button class="stage-pill ${activeCourseLevelFilter === lvl.id ? 'active' : ''}" onclick="filterCourseByLevel('${lvl.id}')">${lvl.label}</button>`
+          `<button type="button" role="tab" aria-selected="${activeCourseLevelFilter === lvl.id ? 'true' : 'false'}" class="stage-pill ${activeCourseLevelFilter === lvl.id ? 'active' : ''}" onclick="filterCourseByLevel('${lvl.id}')">${lvl.label}</button>`
       )
       .join('');
   }
 
-  const visibleModules = COURSE_MODULES.filter((m) =>
-    activeCourseLevelFilter === 'ALL'
-      ? true
-      : activeCourseLevelFilter === 'B2-C1'
-        ? m.level === 'B2' || m.level === 'C1'
-        : m.level === activeCourseLevelFilter
-  );
-
-  gridEl.innerHTML = visibleModules
-    .map((m) => {
-      const passed = db.passedMods.includes(m.id);
-      return `
-      <div class="module-card ${m.id === activeModId ? 'active' : ''}" onclick="selectCourseModule('${m.id}')">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; flex-wrap:wrap;">
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">${m.id} • ${m.level}</span>
-          ${
-            passed
-              ? `<span class="tag" style="background:var(--success-container); color:var(--success-on-container);">✓ Mastered</span>`
-              : `<span style="font-size:11px; color:var(--muted); font-weight:700;">${m.topicTag.split('•')[1]?.trim() || m.level}</span>`
-          }
+  gridEl.innerHTML = overview.groups
+    .map(
+      (group) => `
+      <section class="course-level-group" aria-label="${escapeHtmlSafe(group.plainTitle)}">
+        <div class="course-level-group-header">
+          <h2 class="course-level-group-title">
+            <span>${escapeHtmlSafe(group.plainTitle)}</span>
+            <span class="course-cefr-code">${escapeHtmlSafe(group.cefrBadge)}</span>
+          </h2>
+          <span class="course-level-group-count">${group.completedCount} of ${group.totalCount} completed</span>
         </div>
-        <div style="font-weight:700; font-size:13.5px; margin-top:6px; line-height:1.3;">${m.title}</div>
-      </div>
-    `;
-    })
+        <p class="course-level-group-desc">${escapeHtmlSafe(group.description)}</p>
+        <div class="course-level-grid">
+          ${group.modules
+            .map((item) => {
+              const statusModClass =
+                item.status === 'done'
+                  ? 'module-card--done'
+                  : item.status === 'current'
+                    ? 'module-card--current'
+                    : item.status === 'recommended'
+                      ? 'module-card--recommended'
+                      : '';
+              const statusPrefix = item.status === 'done' ? '✓ ' : '';
+              return `
+                <button
+                  type="button"
+                  class="module-card ${statusModClass} ${item.id === activeModId ? 'active' : ''}"
+                  onclick="selectCourseModule('${escapeSingleQuotes(item.id)}')"
+                >
+                  <div class="module-card-meta">
+                    <span class="module-card-id">${escapeHtmlSafe(item.id)}</span>
+                    <span class="module-card-status">${statusPrefix}${escapeHtmlSafe(item.statusLabel)}</span>
+                  </div>
+                  <div class="module-card-title">${escapeHtmlSafe(item.title)}</div>
+                  <div class="module-card-sub">${escapeHtmlSafe(item.cleanTopic)} · ${item.vocabCount} words</div>
+                </button>
+              `;
+            })
+            .join('')}
+        </div>
+      </section>
+    `
+    )
     .join('');
+
+  syncCourseMeterWidths(document.getElementById('course-syllabus-drawer'));
 }
 
 export function inspectCourseWord(rawWord: string): void {
@@ -1806,7 +3283,7 @@ export function inspectCourseWord(rawWord: string): void {
     rank: 1,
     ru: modVocabTuple ? modVocabTuple[0] : firstToken,
     pos: modVocabTuple ? modVocabTuple[1] : 'NOUN',
-    en: modVocabTuple ? modVocabTuple[2] : 'Course Vocabulary Item',
+    en: modVocabTuple ? modVocabTuple[2] : 'Course vocabulary word',
     level: m.level === 'A0' ? 'A1' : m.level,
     exampleUk: modVocabTuple?.[3] || firstToken,
     exampleEn: modVocabTuple?.[4] || '',
@@ -1819,12 +3296,10 @@ export function inspectCourseWord(rawWord: string): void {
   const inspectorBody = document.getElementById('inspector-body');
   if (inspectorBody) {
     inspectorBody.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">Course Inspector • ${m.id}</span>
-      </div>
-      <div style="font-size:28px; font-weight:800; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(synthItem.ru)}')">🔊 ${synthItem.ru}</div>
-      <div style="font-size:13.5px; color:var(--text-secondary);">Sounds like: <b>${phon.plainGuide}</b> <span style="color:var(--accent); font-family:ui-monospace, monospace;">${phon.ipa}</span></div>
-      <div style="font-size:18px; font-weight:800; color:var(--success); margin:6px 0;">${synthItem.en}</div>
+      <div class="hint">Module ${escapeHtmlSafe(m.id)} · Word forms</div>
+      <div class="course-word-headword" onclick="speakUkrainian('${escapeSingleQuotes(synthItem.ru)}')">🔊 ${escapeHtmlSafe(synthItem.ru)}</div>
+      <div class="hint">Sounds like <b>${escapeHtmlSafe(phon.plainGuide)}</b> · <span class="course-word-ipa">${escapeHtmlSafe(phon.ipa)}</span></div>
+      <div class="course-word-gloss">${escapeHtmlSafe(synthItem.en)}</div>
       ${gram.tableHtml}
     `;
   }
@@ -1841,7 +3316,30 @@ export function inspectCourseWord(rawWord: string): void {
 
 export function jumpToLessonSection(sectionId: string): void {
   triggerHaptic('light');
+  activeLessonTocSectionId = sectionId;
   saveCourseResumeBookmark(activeModId, activeStage, sectionId);
+
+  if (sectionId === 'sec-exceptions') {
+    const det = document.getElementById(
+      'details-sec-exceptions'
+    ) as HTMLDetailsElement | null;
+    if (det) det.open = true;
+  } else if (sectionId === 'sec-reference') {
+    const det = document.getElementById(
+      'details-sec-reference'
+    ) as HTMLDetailsElement | null;
+    if (det) det.open = true;
+  }
+
+  const mobileToc = document.getElementById(
+    'lesson-mobile-toc'
+  ) as HTMLDetailsElement | null;
+  if (mobileToc && mobileToc.open) {
+    mobileToc.open = false;
+  }
+
+  syncActiveTocHighlightDOM(sectionId);
+
   const el = document.getElementById(sectionId);
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1858,42 +3356,54 @@ function createCardRecord(rank: number) {
   };
 }
 
-export function addModuleVocabToFSRS(modId: string): void {
-  triggerHaptic('heavy');
+function addMissingModuleRanksToDeck(modId: string): {
+  addedCount: number;
+  totalInDeck: number;
+} {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
-  let added = 0;
-  for (const [uk] of m.vocab) {
-    const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase().trim();
-    const lemmaTarget = cleanTarget
-      .replace(/\s*\(.*?\)/g, '')
-      .split(/\s*[\/,]\s*/)[0]
-      .trim();
-    const matched =
-      FREQ_6000_DB.find(
-        (w) => w.ru.replace(/\u0301/g, '').toLowerCase().trim() === cleanTarget
-      ) ||
-      FREQ_6000_DB.find((w) => {
-        const wClean = w.ru.replace(/\u0301/g, '').toLowerCase().trim();
-        const wLemma = wClean
-          .replace(/\s*\(.*?\)/g, '')
-          .split(/\s*[\/,]\s*/)[0]
-          .trim();
-        return wClean === lemmaTarget || wLemma === lemmaTarget;
-      });
-    if (matched && !db.cards.some((c) => c.rank === matched.rank)) {
-      db.cards.push(createCardRecord(matched.rank));
-      added++;
+  const existingRanks = new Set(db.cards.map((c) => c.rank));
+  const status = computeModuleVocabReviewStatus(
+    m.vocab.map(([uk]) => uk),
+    FREQ_6000_DB,
+    existingRanks
+  );
+  let addedCount = 0;
+  for (const rank of status.missingRanks) {
+    if (!existingRanks.has(rank)) {
+      db.cards.push(createCardRecord(rank));
+      existingRanks.add(rank);
+      addedCount += 1;
     }
   }
-  if (added > 0) {
-    db.xp += added * 2;
+  return {
+    addedCount,
+    totalInDeck: status.inDeckRanks.length + addedCount,
+  };
+}
+
+export function addModuleVocabToFSRS(modId: string): void {
+  triggerHaptic('heavy');
+  const { addedCount, totalInDeck } = addMissingModuleRanksToDeck(modId);
+  const rec = getModFlowRecord(modId);
+  rec.wordsVisited = true;
+  rec.lastWordsFeedback =
+    addedCount > 0
+      ? `Added ${addedCount} ${addedCount === 1 ? 'word' : 'words'} to your daily reviews (${totalInDeck} ready).`
+      : `All ${totalInDeck} matched words from ${modId} are already in your reviews.`;
+  saveCourseFlowMap();
+
+  if (addedCount > 0) {
+    db.xp += addedCount * 2;
+    recordDailyStudyActivity(1);
     saveDB();
     renderAnkiStage();
     renderEn2UkStage();
     renderCorrectionStage();
     renderSrsCatalog6000();
   }
+  syncSubnavAndBadgesUI();
   renderActiveModule();
+  refreshTodayIfVisible();
 }
 
 export function speakCourseOverview(modId: string): void {
@@ -1924,6 +3434,268 @@ export function speakCourseDialogue(modId: string): void {
   speakUkrainian(text);
 }
 
+function getCurrentStickyStepConfig() {
+  const modIndex = COURSE_MODULES.findIndex((x) => x.id === activeModId);
+  const m: CourseModule =
+    modIndex >= 0 ? COURSE_MODULES[modIndex] : COURSE_MODULES[0];
+  const nextMod =
+    modIndex >= 0 && modIndex < COURSE_MODULES.length - 1
+      ? COURSE_MODULES[modIndex + 1]
+      : null;
+
+  const cfuStats = computeStageStats(m.cfu, getStageAttempt(m.id, 'cfu'));
+  const pracStats = computeStageStats(
+    m.practice,
+    getStageAttempt(m.id, 'practice')
+  );
+  const examAttempt = getStageAttempt(m.id, 'exam');
+  const examStats = computeStageStats(m.exam, examAttempt);
+  const examScore = calculateExamScore(m.exam, examAttempt.selectedOptions);
+  const existingRanks = new Set(db.cards.map((c) => c.rank));
+  const vocabStatus = computeModuleVocabReviewStatus(
+    m.vocab.map(([uk]) => uk),
+    FREQ_6000_DB,
+    existingRanks
+  );
+
+  return {
+    mod: m,
+    nextMod,
+    sticky: computeStickyStepActions({
+      activeStage,
+      modId: m.id,
+      cfuAnswered: cfuStats.answered,
+      cfuTotal: cfuStats.total,
+      practiceAnswered: pracStats.answered,
+      practiceTotal: pracStats.total,
+      vocabTotal: m.vocab.length,
+      vocabInReviewsCount: vocabStatus.inDeckRanks.length,
+      examAnswered: examStats.answered,
+      examTotal: examStats.total,
+      examSubmitted: Boolean(examAttempt.submitted),
+      examPassed: Boolean(examAttempt.submitted && examScore.passed),
+      examScorePct: examScore.percentage,
+      nextModId: nextMod ? nextMod.id : null,
+    }),
+  };
+}
+
+export function handleCourseStickyBack(): void {
+  const { sticky } = getCurrentStickyStepConfig();
+  if (sticky.backAction === 'open-map') {
+    toggleCourseSyllabusDrawer(true);
+    return;
+  }
+  if (activeStage > 0) {
+    selectCourseStage(activeStage - 1);
+  }
+}
+
+export function handleCourseStickyPrimary(): void {
+  const { mod, nextMod, sticky } = getCurrentStickyStepConfig();
+  if (sticky.primaryAction === 'next-stage') {
+    if (activeStage === 0) {
+      const rec = getModFlowRecord(mod.id);
+      rec.lessonCompleted = true;
+      saveCourseFlowMap();
+      recordDailyStudyActivity(2);
+    }
+    selectCourseStage(Math.min(4, activeStage + 1));
+    return;
+  }
+  if (sticky.primaryAction === 'submit-exam') {
+    submitModuleExam(mod.id, false);
+    return;
+  }
+  if (sticky.primaryAction === 'retake-exam') {
+    confirmResetAssessmentStage(mod.id, 'exam');
+    return;
+  }
+  if (sticky.primaryAction === 'next-module' && nextMod) {
+    selectCourseModule(nextMod.id);
+    return;
+  }
+  switchTab('today');
+}
+
+function syncActiveTocHighlightDOM(sectionId: string): void {
+  if (typeof document === 'undefined') return;
+  document.querySelectorAll<HTMLElement>('[data-toc-sec]').forEach((btn) => {
+    const isMatch = btn.dataset.tocSec === sectionId;
+    btn.classList.toggle('active', isMatch);
+    if (isMatch) {
+      btn.setAttribute('aria-current', 'location');
+    } else {
+      btn.removeAttribute('aria-current');
+    }
+  });
+  const secMeta = LESSON_TOC_SECTIONS.find((s) => s.id === sectionId);
+  const lblEl = document.getElementById('lesson-reading-section-label');
+  if (lblEl && secMeta) {
+    lblEl.textContent = `${secMeta.letter}. ${secMeta.shortLabel}`;
+  }
+}
+
+function updateLessonReadingAndScrollspy(): void {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  const tabCourse = document.getElementById('tab-course');
+  if (
+    !tabCourse ||
+    tabCourse.classList.contains('hidden') ||
+    isCourseSyllabusOpen ||
+    activeStage !== 0
+  ) {
+    return;
+  }
+
+  const scrollEl = document.getElementById('main-scroll-container');
+  const flowEl = document.getElementById('lesson-flow-article');
+  if (!scrollEl || !flowEl) return;
+
+  const scrollRect = scrollEl.getBoundingClientRect();
+  const flowRect = flowEl.getBoundingClientRect();
+  const viewportHeight = scrollRect.height || window.innerHeight || 800;
+
+  const totalScrollable = Math.max(1, flowRect.height - viewportHeight * 0.55);
+  const scrolledAmount = Math.max(0, scrollRect.top - flowRect.top + 80);
+  const pct = Math.max(
+    0,
+    Math.min(100, Math.round((scrolledAmount / totalScrollable) * 100))
+  );
+
+  const fillEl = document.getElementById('lesson-reading-fill');
+  if (fillEl) {
+    fillEl.style.width = `${pct}%`;
+  }
+  const pctEl = document.getElementById('lesson-reading-pct');
+  if (pctEl) {
+    pctEl.textContent = `${pct}% read`;
+  }
+
+  if (pct >= 90) {
+    const rec = getModFlowRecord(activeModId);
+    if (!rec.lessonCompleted) {
+      rec.lessonCompleted = true;
+      saveCourseFlowMap();
+    }
+  }
+
+  let currentSecId = LESSON_TOC_SECTIONS[0].id;
+  const activationThreshold = scrollRect.top + 150;
+  for (const sec of LESSON_TOC_SECTIONS) {
+    const secEl = document.getElementById(sec.id);
+    if (!secEl) continue;
+    const rect = secEl.getBoundingClientRect();
+    if (rect.top <= activationThreshold) {
+      currentSecId = sec.id;
+    }
+  }
+
+  if (currentSecId !== activeLessonTocSectionId) {
+    activeLessonTocSectionId = currentSecId;
+    syncActiveTocHighlightDOM(currentSecId);
+    saveCourseResumeBookmark(activeModId, 0, currentSecId);
+  }
+}
+
+function scheduleLessonScrollspySync(): void {
+  if (typeof window === 'undefined') return;
+  if (lessonScrollRafPending) return;
+  lessonScrollRafPending = true;
+  window.requestAnimationFrame(() => {
+    lessonScrollRafPending = false;
+    updateLessonReadingAndScrollspy();
+  });
+}
+
+function initCourseScrollspyListener(): void {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  const scrollEl = document.getElementById('main-scroll-container');
+  if (scrollEl) {
+    scrollEl.addEventListener('scroll', scheduleLessonScrollspySync, {
+      passive: true,
+    });
+  }
+  window.addEventListener('scroll', scheduleLessonScrollspySync, {
+    passive: true,
+  });
+}
+
+function renderStepHeaderHtml(m: CourseModule): string {
+  const modFlow = getModFlowRecord(m.id);
+  const inlineChecks = (m.structuredLesson?.embeddedChecks ||
+    []) as EnrichedInlineCheck[];
+  const inlineStats = computeStageStats(
+    inlineChecks,
+    getStageAttempt(m.id, 'inlineChecks')
+  );
+  const cfuStats = computeStageStats(m.cfu, getStageAttempt(m.id, 'cfu'));
+  const pracStats = computeStageStats(
+    m.practice,
+    getStageAttempt(m.id, 'practice')
+  );
+  const examAttempt = getStageAttempt(m.id, 'exam');
+  const examStats = computeStageStats(m.exam, examAttempt);
+  const examScore = calculateExamScore(m.exam, examAttempt.selectedOptions);
+  const existingRanks = new Set(db.cards.map((c) => c.rank));
+  const vocabStatus = computeModuleVocabReviewStatus(
+    m.vocab.map(([uk]) => uk),
+    FREQ_6000_DB,
+    existingRanks
+  );
+
+  const steps = computeModuleStepStates({
+    activeStage,
+    modulePassed: db.passedMods.includes(m.id),
+    lessonCompleted: Boolean(modFlow.lessonCompleted),
+    inlineAnswered: inlineStats.answered,
+    cfuAnswered: cfuStats.answered,
+    cfuTotal: cfuStats.total,
+    practiceAnswered: pracStats.answered,
+    practiceTotal: pracStats.total,
+    vocabTotal: m.vocab.length,
+    vocabInReviewsCount: vocabStatus.inDeckRanks.length,
+    vocabMatchedTotal: vocabStatus.matchedRanks.length,
+    wordsStepVisited: Boolean(modFlow.wordsVisited),
+    examAnswered: examStats.answered,
+    examTotal: examStats.total,
+    examSubmitted: Boolean(examAttempt.submitted),
+    examScorePct: examScore.percentage,
+  });
+
+  const checkSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+  return steps
+    .map(
+      (step) => `
+      <button
+        type="button"
+        class="course-step-btn ${step.active ? 'active' : ''} ${step.done ? 'is-done' : ''}"
+        ${step.active ? 'aria-current="step"' : ''}
+        onclick="selectCourseStage(${step.index})"
+      >
+        <span class="course-step-indicator" aria-hidden="true">${step.done ? checkSvg : step.index + 1}</span>
+        <span class="course-step-copy">
+          <span class="course-step-name">${escapeHtmlSafe(step.shortTitle)}</span>
+          <span class="course-step-meta">${escapeHtmlSafe(step.metaLabel)}</span>
+        </span>
+      </button>
+    `
+    )
+    .join('');
+}
+
+function renderStickyStepBarHtml(): string {
+  const { sticky } = getCurrentStickyStepConfig();
+  return `
+    <div class="course-sticky-actions" role="region" aria-label="Step navigation">
+      <button type="button" class="btn btn-sec" onclick="handleCourseStickyBack()">${escapeHtmlSafe(sticky.backLabel)}</button>
+      <span class="course-sticky-status" id="course-sticky-status-text">${escapeHtmlSafe(sticky.statusText)}</span>
+      <button type="button" class="btn" id="course-sticky-primary-btn" onclick="handleCourseStickyPrimary()">${escapeHtmlSafe(sticky.primaryLabel)}</button>
+    </div>
+  `;
+}
+
 export function renderActiveModule(): void {
   const modIndex = COURSE_MODULES.findIndex((x) => x.id === activeModId);
   const m: CourseModule =
@@ -1934,45 +3706,42 @@ export function renderActiveModule(): void {
       ? COURSE_MODULES[modIndex + 1]
       : null;
 
+  if (activeStage === 3) {
+    const rec = getModFlowRecord(m.id);
+    if (!rec.wordsVisited) {
+      rec.wordsVisited = true;
+      saveCourseFlowMap();
+    }
+  }
+
   const levelEl = document.getElementById('active-mod-level');
   const refEl = document.getElementById('active-mod-ref');
   const titleEl = document.getElementById('active-mod-title');
-  if (levelEl) levelEl.innerText = `${m.id} • CEFR ${m.level}`;
-  if (refEl) refEl.innerText = m.topicTag;
-  if (titleEl) titleEl.innerText = m.title;
+  if (levelEl) levelEl.textContent = formatPlainLevelTitle(m.level);
+  if (refEl) {
+    refEl.textContent = `Module ${m.id} · ${extractCleanTopicSubtitle(m.topicTag, m.level)}`;
+  }
+  if (titleEl) titleEl.textContent = m.title;
 
-  const stages = [
-    '1. Lesson & Dialogue',
-    `2. Check (${m.cfu.length})`,
-    `3. Practice (${m.practice.length})`,
-    `4. Vocab (${m.vocab.length})`,
-    `5. Mastery Exam (${m.exam.length})`,
-  ];
   const stageBar = document.getElementById('stage-bar');
   if (stageBar) {
-    stageBar.innerHTML = stages
-      .map(
-        (s, i) => `
-      <div class="stage-pill ${i === activeStage ? 'active' : ''}" onclick="selectCourseStage(${i})">${s}</div>
-    `
-      )
-      .join('');
+    stageBar.innerHTML = renderStepHeaderHtml(m);
   }
 
   const box = document.getElementById('stage-content');
   if (!box) return;
 
-  const modNavFooter = `
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-subtle);">
+  const modSwitcherHtml = `
+    <div class="course-mod-switcher">
       ${
         prevMod
-          ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="selectCourseModule('${prevMod.id}')">← Prev: ${prevMod.id} (${prevMod.title})</button>`
-          : `<span style="font-size:12px; color:var(--muted); font-weight:700;">Start of Course (Module 1 of ${COURSE_MODULES.length})</span>`
+          ? `<button type="button" class="btn btn--ghost btn--sm" onclick="selectCourseModule('${escapeSingleQuotes(prevMod.id)}')">← Previous module: ${escapeHtmlSafe(prevMod.id)}</button>`
+          : `<span>Module 1 of ${COURSE_MODULES.length}</span>`
       }
       ${
         nextMod
-          ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="selectCourseModule('${nextMod.id}')">Next Module: ${nextMod.id} (${nextMod.title}) →</button>`
-          : `<span style="font-size:12px; color:var(--muted); font-weight:700;">Final Module (${COURSE_MODULES.length} of ${COURSE_MODULES.length})</span>`
+          ? `<button type="button" class="btn btn--ghost btn--sm" onclick="selectCourseModule('${escapeSingleQuotes(nextMod.id)}')">Skip to ${escapeHtmlSafe(nextMod.id)}: ${escapeHtmlSafe(nextMod.title)} →</button>`
+          : `<span>Final module (${COURSE_MODULES.length} of ${COURSE_MODULES.length})</span>`
       }
     </div>
   `;
@@ -1980,374 +3749,377 @@ export function renderActiveModule(): void {
   if (activeStage === 0) {
     if (m.structuredLesson) {
       const sl = m.structuredLesson as StructuredCourseLesson;
-      const jumpSections = [
-        { id: 'sec-learn', label: "A. What You'll Learn" },
-        { id: 'sec-big-idea', label: 'B. The Big Idea' },
-        { id: 'sec-action', label: 'C. See It in Action' },
-        { id: 'sec-pattern', label: 'D. Visual Patterns & Tables' },
-        { id: 'sec-steps', label: 'E. Step-by-Step Rules' },
-        { id: 'sec-more-ex', label: 'F. More Examples' },
-        { id: 'sec-exceptions', label: 'G. Exceptions' },
-        { id: 'sec-mistakes', label: 'H. Common Mistakes' },
-        { id: 'sec-inline-check', label: 'I. Practice It' },
-        { id: 'sec-dialogue', label: 'J. In Real Life' },
-        { id: 'sec-reference', label: 'K. Complete Reference' },
-        { id: 'sec-remember', label: 'L. What to Remember' },
-      ];
+      const tocLinksHtml = LESSON_TOC_SECTIONS.map(
+        (sec) => `
+          <button
+            type="button"
+            class="lesson-toc-link ${activeLessonTocSectionId === sec.id ? 'active' : ''}"
+            data-toc-sec="${sec.id}"
+            onclick="jumpToLessonSection('${sec.id}')"
+          >
+            <span class="lesson-toc-letter">${sec.letter}</span>
+            <span>${escapeHtmlSafe(sec.shortLabel)}</span>
+            ${sec.isExpandable ? '<span class="lesson-toc-Sub">optional</span>' : ''}
+          </button>
+        `
+      ).join('');
+
+      const prereqAndRelatedItems = [
+        ...sl.prerequisites.map((pr) => pr.label),
+        ...sl.relatedTopics,
+      ].filter(Boolean);
 
       box.innerHTML = `
-        <div style="line-height:1.65; font-size:14.5px;">
-          <div class="vc-jump-bar" aria-label="Lesson Section Outline">
-            <span style="font-size:11.5px; font-weight:800; color:var(--text); align-self:center; margin-right:4px;">📑 Jump to Section:</span>
-            ${jumpSections
-              .map(
-                (sec) =>
-                  `<button type="button" class="vc-jump-btn" onclick="jumpToLessonSection('${sec.id}')">${sec.label}</button>`
-              )
-              .join('')}
+        <div class="lesson-progress-strip">
+          <div class="lesson-progress-meta">
+            <span id="lesson-reading-section-label">A. What you'll learn</span>
+            <span id="lesson-reading-pct">0% read</span>
           </div>
+          <div class="course-meter course-meter--thin" aria-hidden="true">
+            <div class="course-meter-fill" id="lesson-reading-fill"></div>
+          </div>
+        </div>
 
-          <!-- A. WHAT YOU'LL LEARN -->
-          <div id="sec-learn" class="vc-section-block" style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-              <b style="color:var(--accent); font-size:15.5px;">🎯 A. What You’ll Learn in ${m.id}</b>
-              <button type="button" class="btn btn-warn" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseOverview('${m.id}')">🗣️ Listen to Overview</button>
-            </div>
-            <div style="font-size:12.5px; color:var(--text-secondary); font-weight:700; margin-bottom:6px;">By the end of this lesson, you will be able to:</div>
-            <ul style="margin:0 0 10px 18px; padding:0; color:var(--text); font-size:13.8px;">
-              ${m.objectives.map((obj) => `<li style="margin-bottom:5px;">${obj}</li>`).join('')}
-            </ul>
-            <p style="margin:0 0 10px 0; color:var(--text-secondary); font-size:13.8px;">${m.summary}</p>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; padding-top:8px; border-top:1px solid var(--border-subtle); font-size:12px;">
-              ${sl.prerequisites
+        <details class="lesson-mobile-toc" id="lesson-mobile-toc">
+          <summary>
+            <span>Lesson contents (A–L)</span>
+            <span class="hint">Jump to section</span>
+          </summary>
+          <div class="lesson-mobile-toc-grid">
+            ${tocLinksHtml}
+          </div>
+        </details>
+
+        <div class="lesson-editorial-grid">
+          <article class="lesson-flow-col" id="lesson-flow-article">
+            <!-- A. WHAT YOU'LL LEARN -->
+            <section id="sec-learn" class="lesson-section lesson-section--first">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">A</span>What you’ll learn</h2>
+                <button type="button" class="btn btn-sec btn--sm" onclick="speakCourseOverview('${escapeSingleQuotes(m.id)}')">Listen to overview</button>
+              </div>
+              <p class="lesson-muted-prose">${escapeHtmlSafe(m.summary)}</p>
+              <ul class="lesson-objectives-list">
+                ${m.objectives.map((obj) => `<li>${obj}</li>`).join('')}
+              </ul>
+              ${
+                prereqAndRelatedItems.length > 0
+                  ? `<div class="lesson-meta-line">${prereqAndRelatedItems
+                      .map((item) => `<span>${escapeHtmlSafe(item)}</span>`)
+                      .join('<span aria-hidden="true">·</span>')}</div>`
+                  : ''
+              }
+            </section>
+
+            <!-- B. THE BIG IDEA -->
+            <section id="sec-big-idea" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">B</span>The big idea · ${sl.bigIdea.headline}</h2>
+              </div>
+              <p class="lesson-lead-prose">${sl.bigIdea.plainEnglish}</p>
+              <p class="lesson-muted-prose"><b>Compared with English:</b> ${sl.bigIdea.englishComparison}</p>
+              <div class="lesson-study-tip">
+                <b>How to approach this:</b> ${sl.bigIdea.keyInsight}
+              </div>
+            </section>
+
+            <!-- C. SEE IT IN ACTION -->
+            <section id="sec-action" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">C</span>See it in action</h2>
+                <span class="hint">Tap any Ukrainian phrase to hear audio or inspect forms</span>
+              </div>
+              ${sl.seeItInAction.map((ex) => renderExampleBreakdown(ex)).join('')}
+            </section>
+
+            <!-- D. VISUAL PATTERNS & TABLES -->
+            <section id="sec-pattern" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">D</span>Visual patterns &amp; tables</h2>
+              </div>
+              ${sl.patternTables.map((tb) => renderGrammarTable(tb)).join('')}
+              ${(sl.declensions || []).map((dc) => renderDeclensionExplorer(dc)).join('')}
+              ${(sl.conjugations || []).map((cj) => renderConjugationExplorer(cj)).join('')}
+              ${(sl.aspectTimelines || []).map((at) => renderAspectTimeline(at)).join('')}
+              ${(sl.diagrams || []).map((dg) => renderGrammarDiagram(dg)).join('')}
+            </section>
+
+            <!-- E. STEP-BY-STEP RULES -->
+            <section id="sec-steps" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">E</span>Step-by-step rules</h2>
+                <button type="button" class="btn btn-sec btn--sm" onclick="speakAllCourseRules('${escapeSingleQuotes(m.id)}')">Listen to all rules</button>
+              </div>
+              ${sl.stepByStep.map((step) => renderRuleAndException(step)).join('')}
+            </section>
+
+            <!-- F. MORE EXAMPLES -->
+            <section id="sec-more-ex" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">F</span>More examples in context</h2>
+              </div>
+              ${sl.moreExamples
                 .map(
-                  (pr) =>
-                    `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary);">🧭 ${pr.label}</span>`
+                  (grp) => `
+                  <div class="lesson-group-block">
+                    <div class="lesson-group-title">${grp.groupTitle}</div>
+                    <div class="lesson-group-note">${grp.groupNote}</div>
+                    ${grp.items.map((item) => renderExampleBreakdown(item)).join('')}
+                  </div>
+                `
                 )
                 .join('')}
-              ${sl.relatedTopics
-                .map(
-                  (rt) =>
-                    `<span class="tag" style="background:var(--surface-1); color:var(--accent);">${rt}</span>`
-                )
-                .join('')}
-            </div>
-          </div>
+            </section>
 
-          <!-- B. THE BIG IDEA -->
-          <div id="sec-big-idea" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>💡 B. The Big Idea: ${sl.bigIdea.headline}</span>
-            </div>
-            <div style="background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px 16px;">
-              <p style="margin:0 0 8px 0; font-size:14px; color:var(--text);">${sl.bigIdea.plainEnglish}</p>
-              <p style="margin:0 0 8px 0; font-size:13.5px; color:var(--text-secondary);"><b>How It Compares to English:</b> ${sl.bigIdea.englishComparison}</p>
-              <div style="background:var(--accent-container); border:1px solid rgba(29, 78, 216, 0.18); padding:9px 12px; border-radius:var(--radius-sm); font-size:13px; color:var(--accent-on-container); font-weight:600;">
-                Study Strategy: ${sl.bigIdea.keyInsight}
-              </div>
-            </div>
-          </div>
-
-          <!-- C. SEE IT IN ACTION -->
-          <div id="sec-action" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>👀 C. See It in Action (Tap Any Sentence or Word to Hear & Inspect)</span>
-            </div>
-            ${sl.seeItInAction.map((ex) => renderExampleBreakdown(ex)).join('')}
-          </div>
-
-          <!-- D. UNDERSTAND THE PATTERN (TABLES & DIAGRAMS) -->
-          <div id="sec-pattern" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>📊 D. Understand the Pattern (Visual Tables & Sound Maps)</span>
-            </div>
-            ${sl.patternTables.map((tb) => renderGrammarTable(tb)).join('')}
-            ${(sl.declensions || []).map((dc) => renderDeclensionExplorer(dc)).join('')}
-            ${(sl.conjugations || []).map((cj) => renderConjugationExplorer(cj)).join('')}
-            ${(sl.aspectTimelines || []).map((at) => renderAspectTimeline(at)).join('')}
-            ${(sl.diagrams || []).map((dg) => renderGrammarDiagram(dg)).join('')}
-          </div>
-
-          <!-- E. STEP-BY-STEP EXPLANATION -->
-          <div id="sec-steps" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>🪜 E. Step-by-Step Explanation</span>
-              <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="speakAllCourseRules('${m.id}')">🔊 Listen to All Steps</button>
-            </div>
-            ${sl.stepByStep.map((step) => renderRuleAndException(step)).join('')}
-          </div>
-
-          <!-- F. MORE EXAMPLES -->
-          <div id="sec-more-ex" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>🔍 F. More Examples by Pattern</span>
-            </div>
-            ${sl.moreExamples
-              .map(
-                (grp) => `
-              <div style="margin-bottom:12px;">
-                <div style="font-weight:800; font-size:14px; color:var(--text); margin-bottom:2px;">${grp.groupTitle}</div>
-                <div style="font-size:12.5px; color:var(--text-secondary); margin-bottom:8px;">${grp.groupNote}</div>
-                ${grp.items.map((item) => renderExampleBreakdown(item)).join('')}
-              </div>
-            `
-              )
-              .join('')}
-          </div>
-
-          <!-- G. IMPORTANT EXCEPTIONS -->
-          <div id="sec-exceptions" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>⚡ G. Important Exceptions & Natural Speech Details</span>
-            </div>
-            ${sl.importantExceptions
-              .map(
-                (exc) => `
-              <div class="vc-exception-box" style="margin-bottom:10px;">
-                <div class="vc-exception-header">
-                  <span class="vc-exception-badge">${exc.badge}</span>
-                  <b>${exc.title}</b>
-                </div>
-                <div class="vc-exception-body">${exc.rule}</div>
-                <div class="vc-exception-ex-list">
-                  ${exc.examples
+            <!-- G. EXCEPTIONS (COLLAPSED BY DEFAULT) -->
+            <section id="sec-exceptions" class="lesson-section">
+              <details class="lesson-expandable" id="details-sec-exceptions">
+                <summary>
+                  <div>
+                    <div class="lesson-expandable-title"><span class="lesson-section-kicker">G</span>Exceptions &amp; natural speech details</div>
+                    <div class="lesson-expandable-sub">${sl.importantExceptions.length} ${sl.importantExceptions.length === 1 ? 'note' : 'notes'} on special cases and everyday speech — expand anytime</div>
+                  </div>
+                  <span class="lesson-expandable-toggle">exceptions</span>
+                </summary>
+                <div class="lesson-expandable-body">
+                  ${sl.importantExceptions
                     .map(
-                      (e) =>
-                        `<button type="button" class="vc-mini-word-btn" onclick="inspectCourseWord('${escapeSingleQuotes(e.uk)}')">🔊 <b>${e.uk}</b> — ${e.en}${e.note ? ` <i>(${e.note})</i>` : ''}</button>`
+                      (exc) => `
+                      <div class="vc-exception-box">
+                        <div class="vc-exception-header">
+                          <span class="vc-exception-badge">${exc.badge}</span>
+                          <b>${exc.title}</b>
+                        </div>
+                        <div class="vc-exception-body">${exc.rule}</div>
+                        <div class="vc-exception-ex-list">
+                          ${exc.examples
+                            .map(
+                              (e) =>
+                                `<button type="button" class="vc-mini-word-btn" onclick="inspectCourseWord('${escapeSingleQuotes(e.uk)}')">🔊 <b>${e.uk}</b> — ${e.en}${e.note ? ` <i>(${e.note})</i>` : ''}</button>`
+                            )
+                            .join('')}
+                        </div>
+                      </div>
+                    `
                     )
                     .join('')}
                 </div>
+              </details>
+            </section>
+
+            <!-- H. COMMON MISTAKES -->
+            <section id="sec-mistakes" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">H</span>Common English-speaker mistakes</h2>
               </div>
-            `
-              )
-              .join('')}
-          </div>
+              ${sl.commonMistakes.map((cm) => renderCommonMistake(cm)).join('')}
+            </section>
 
-          <!-- H. COMMON ENGLISH-SPEAKER MISTAKES -->
-          <div id="sec-mistakes" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>🛠️ H. Common English-Speaker Mistakes (And How to Avoid Them)</span>
-            </div>
-            ${sl.commonMistakes.map((cm) => renderCommonMistake(cm)).join('')}
-          </div>
+            <!-- I. QUICK CHECK -->
+            <section id="sec-inline-check" class="lesson-section">
+              ${renderInlineKnowledgeCheckSection(m, sl)}
+            </section>
 
-          <!-- I. PRACTICE IT (INLINE KNOWLEDGE CHECKS) -->
-          <div id="sec-inline-check" class="vc-section-block">
-            ${renderInlineKnowledgeCheckSection(m, sl)}
-          </div>
+            <!-- J. IN REAL LIFE (DIALOGUE) -->
+            <section id="sec-dialogue" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">J</span>In real life · ${escapeHtmlSafe(m.dialogue.title)}</h2>
+                <button type="button" class="btn btn-sec btn--sm" onclick="speakCourseDialogue('${escapeSingleQuotes(m.id)}')">Listen to full dialogue</button>
+              </div>
+              <p class="lesson-muted-prose">${sl.dialogueContextNote}</p>
+              <div class="lesson-dialogue-list">
+                ${m.dialogue.lines
+                  .map(
+                    (line) => `
+                    <div class="lesson-dialogue-line" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
+                      <div class="lesson-dialogue-top">
+                        <span class="lesson-dialogue-speaker">${escapeHtmlSafe(line.speaker)}</span>
+                        <button type="button" class="vc-audio-mini" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(line.uk)}')">Listen</button>
+                      </div>
+                      <div class="lesson-dialogue-uk">${escapeHtmlSafe(line.uk)}</div>
+                      <div class="lesson-dialogue-en">${escapeHtmlSafe(line.en)}</div>
+                    </div>
+                  `
+                  )
+                  .join('')}
+              </div>
+            </section>
 
-          <!-- J. IN REAL LIFE (DIALOGUE) -->
-          <div id="sec-dialogue" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>💬 J. In Real Life: ${m.dialogue.title}</span>
-              <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="speakCourseDialogue('${m.id}')">🔊 Listen to Full Dialogue</button>
-            </div>
-            <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">${sl.dialogueContextNote}</div>
-            <div style="background:var(--surface-2); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
-              ${m.dialogue.lines
-                .map(
-                  (line) => `
-                <div style="padding:9px 11px; border-radius:var(--radius-sm); background:var(--surface-1); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:12px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.03em;">${line.speaker}</span>
-                    <button type="button" class="vc-audio-mini" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(line.uk)}')">🔊 Hear Line</button>
-                  </div>
-                  <div style="font-weight:800; font-size:15.5px; color:var(--text); margin-top:3px;">${line.uk}</div>
-                  <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">${line.en}</div>
-                </div>
-              `
-                )
-                .join('')}
-            </div>
-          </div>
+            <!-- K. COMPLETE REFERENCE (COLLAPSED BY DEFAULT) -->
+            <section id="sec-reference" class="lesson-section">
+              ${renderLessonReference(sl.completeReference)}
+            </section>
 
-          <!-- K. COMPLETE REFERENCE (EXPANDABLE DEEP DIVE) -->
-          <div id="sec-reference" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>📚 K. Complete Linguistic Reference</span>
-            </div>
-            ${renderLessonReference(sl.completeReference)}
-          </div>
+            <!-- L. WHAT TO REMEMBER & SELF-TEST -->
+            <section id="sec-remember" class="lesson-section">
+              <div class="lesson-section-head">
+                <h2 class="lesson-section-title"><span class="lesson-section-kicker">L</span>What to remember</h2>
+                <button type="button" class="btn btn-sec btn--sm" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">Listen to summary</button>
+              </div>
+              <div class="lesson-takeaway-box">
+                <ul class="lesson-takeaway-list">
+                  ${sl.whatToRemember.map((item) => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="lesson-group-title">Quick self-test (tap to reveal Ukrainian)</div>
+              <div class="lesson-group-note">Say the phrase aloud before revealing the answer.</div>
+              <div class="lesson-recall-stack">
+                ${m.activeRecall
+                  .map(
+                    (ar) => `
+                    <details class="lesson-recall-card">
+                      <summary>How do you say “${escapeHtmlSafe(ar.promptEn)}”? <span class="hint">· Hint: ${escapeHtmlSafe(ar.hint)}</span></summary>
+                      <div class="lesson-recall-answer">
+                        <span class="lesson-recall-uk">${escapeHtmlSafe(ar.answerUk)}</span>
+                        <button type="button" class="btn btn-sec btn--sm" onclick="inspectCourseWord('${escapeSingleQuotes(ar.answerUk)}')">Listen &amp; word forms</button>
+                      </div>
+                    </details>
+                  `
+                  )
+                  .join('')}
+              </div>
+            </section>
 
-          <!-- L. WHAT TO REMEMBER & ACTIVE RECALL -->
-          <div id="sec-remember" class="vc-section-block">
-            <div class="vc-section-heading">
-              <span>📌 L. What to Remember & Active Recall</span>
-              <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">🔊 Listen Summary</button>
-            </div>
-            <div style="background:var(--accent-container); color:var(--accent-on-container); padding:13px 15px; border-radius:var(--radius-md); margin-bottom:12px;">
-              <ul style="margin:0 0 0 18px; padding:0; font-size:13.5px; font-weight:600;">
-                ${sl.whatToRemember.map((item) => `<li style="margin-bottom:5px;">${item}</li>`).join('')}
-              </ul>
-            </div>
+            ${modSwitcherHtml}
+          </article>
 
-            <div style="font-weight:800; font-size:14px; color:var(--text); margin-bottom:8px;">⚡ Self-Test Flashcards (Tap to Reveal Ukrainian):</div>
-            <div style="display:grid; gap:8px; margin-bottom:14px;">
-              ${m.activeRecall
-                .map(
-                  (ar) => `
-                <details style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-                  <summary style="cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text);">❓ How do you say "${ar.promptEn}" in Ukrainian? <span style="color:var(--muted); font-weight:500; font-size:12px;">(Hint: ${ar.hint})</span></summary>
-                  <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                    <b style="color:var(--success); font-size:15px;">✅ ${ar.answerUk}</b>
-                    <button type="button" class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="inspectCourseWord('${escapeSingleQuotes(ar.answerUk)}')">🔊 Hear & Inspect</button>
-                  </div>
-                </details>
-              `
-                )
-                .join('')}
-            </div>
-
-            <button class="btn" style="width:100%;" onclick="selectCourseStage(1)">Continue to Stage 2 — Knowledge Check (${m.cfu.length} Questions) →</button>
-            ${modNavFooter}
-          </div>
+          <aside class="lesson-toc-aside" aria-label="On this page">
+            <div class="lesson-toc-heading">On this page</div>
+            ${tocLinksHtml}
+          </aside>
         </div>
       `;
     } else {
       box.innerHTML = `
-        <div style="line-height:1.65; font-size:14.5px;">
-          <div style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
-              <b style="color:var(--accent); font-size:15px;">🎯 Learning Objectives & Overview</b>
-              <button class="btn btn-warn" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseOverview('${m.id}')">🗣️ Listen to Overview</button>
+        <article class="lesson-flow-col" id="lesson-flow-article">
+          <section id="sec-learn" class="lesson-section lesson-section--first">
+            <div class="lesson-section-head">
+              <h2 class="lesson-section-title">What you’ll learn</h2>
+              <button type="button" class="btn btn-sec btn--sm" onclick="speakCourseOverview('${escapeSingleQuotes(m.id)}')">Listen to overview</button>
             </div>
-            <ul style="margin:0 0 10px 18px; padding:0; color:var(--text); font-size:13.5px;">
-              ${m.objectives.map((obj) => `<li style="margin-bottom:4px;">${obj}</li>`).join('')}
+            <p class="lesson-muted-prose">${escapeHtmlSafe(m.summary)}</p>
+            <ul class="lesson-objectives-list">
+              ${m.objectives.map((obj) => `<li>${obj}</li>`).join('')}
             </ul>
-            <p style="margin:0; color:var(--text-secondary); font-size:14px;">${m.summary}</p>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:14px 0 8px 0;">
-            <h3 style="font-size:16px; margin:0; color:var(--text);">Step-by-Step Core Concepts:</h3>
-            <button class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakAllCourseRules('${m.id}')">🔊 Listen to All Concepts</button>
-          </div>
-          ${m.rules
-            .map(
-              (r, idx) =>
-                `<div style="padding:12px 14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); margin-bottom:8px; font-size:13.8px; cursor:pointer;" onclick="speakCourseRule('${m.id}', ${idx})">
-                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-                    <div style="flex:1;">${r}</div>
-                    <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); speakCourseRule('${m.id}', ${idx})">Listen</button>
-                  </div>
-                </div>`
-            )
-            .join('')}
-
-          <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">Worked Examples (Tap to Hear Ukrainian Audio):</h3>
-          ${m.examples
-            .map(
-              (ex) => `
-            <div class="example-chip" onclick="speakUkrainian('${escapeSingleQuotes(ex.uk)}')">
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
-                <div style="flex:1;">
-                  <div style="font-weight:800; font-size:15.5px; color:var(--text);">🔊 ${ex.uk}</div>
-                  <div style="color:var(--text-secondary); font-size:13px; margin-top:3px;">${ex.en}</div>
-                </div>
-                <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; flex-shrink:0;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeSingleQuotes(`${ex.uk} ${ex.en}`)}', 'uk')">🗣️ UK + EN</button>
-              </div>
+          </section>
+          <section class="lesson-section">
+            <div class="lesson-section-head">
+              <h2 class="lesson-section-title">Core rules</h2>
+              <button type="button" class="btn btn-sec btn--sm" onclick="speakAllCourseRules('${escapeSingleQuotes(m.id)}')">Listen to all</button>
             </div>
-          `
-            )
-            .join('')}
-
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin:18px 0 8px 0;">
-            <h3 style="font-size:16px; margin:0; color:var(--text);">💬 Real-Life Dialogue: ${m.dialogue.title}</h3>
-            <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="speakCourseDialogue('${m.id}')">🔊 Listen to Dialogue</button>
-          </div>
-          <div style="background:var(--surface-2); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
-            ${m.dialogue.lines
+            ${m.rules
               .map(
-                (line) => `
-              <div style="padding:8px 10px; border-radius:var(--radius-sm); background:var(--surface-1); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-subtle);" onclick="speakUkrainian('${escapeSingleQuotes(line.uk)}')">
-                <div style="font-size:12px; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.03em;">${line.speaker}</div>
-                <div style="font-weight:700; font-size:15px; color:var(--text); margin-top:2px;">🔊 ${line.uk}</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-top:2px;">${line.en}</div>
-              </div>
-            `
-              )
-              .join('')}
-          </div>
-
-          <h3 style="font-size:16px; margin:16px 0 8px 0; color:var(--text);">⚡ Quick Active Recall Check (Tap to Reveal):</h3>
-          <div style="display:grid; gap:8px; margin-bottom:14px;">
-            ${m.activeRecall
-              .map(
-                (ar) => `
-              <details style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
-                <summary style="cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text);">❓ ${ar.promptEn} <span style="color:var(--muted); font-weight:500; font-size:12px;">(Hint: ${ar.hint})</span></summary>
-                <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; gap:8px;">
-                  <b style="color:var(--success); font-size:15px;">✅ ${ar.answerUk}</b>
-                  <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px;" onclick="speakUkrainian('${escapeSingleQuotes(ar.answerUk)}')">🔊 Hear</button>
+                (r, idx) => `
+                <div class="question-card" onclick="speakCourseRule('${escapeSingleQuotes(m.id)}', ${idx})">
+                  <div>${r}</div>
                 </div>
-              </details>
-            `
+              `
               )
               .join('')}
-          </div>
-
-          <div style="background:var(--accent-container); color:var(--accent-on-container); padding:12px 14px; border-radius:var(--radius-md); font-size:13.5px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-            <div style="flex:1;"><b>📌 Key Takeaway:</b> ${m.reviewSummary}</div>
-            <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px; flex-shrink:0;" onclick="playBilingualOpenAI('${escapeSingleQuotes(m.reviewSummary)}', 'en')">🔊 Listen</button>
-          </div>
-
-          <button class="btn" style="width:100%;" onclick="selectCourseStage(1)">Next: Stage 2 — Knowledge Check →</button>
-          ${modNavFooter}
-        </div>`;
+          </section>
+          ${modSwitcherHtml}
+        </article>
+      `;
     }
   } else if (activeStage === 1) {
     box.innerHTML = renderStage2CheckView(m);
   } else if (activeStage === 2) {
     box.innerHTML = renderStage3PracticeView(m);
   } else if (activeStage === 3) {
+    const existingRanks = new Set(db.cards.map((c) => c.rank));
+    const vocabStatus = computeModuleVocabReviewStatus(
+      m.vocab.map(([uk]) => uk),
+      FREQ_6000_DB,
+      existingRanks
+    );
+    const modFlow = getModFlowRecord(m.id);
+
     box.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-        <p style="margin:0; font-size:13.5px; color:var(--text-secondary);">Tap any vocabulary word from <b>${m.id} (${m.title})</b> to hear its Ukrainian pronunciation or inspect its 7-case forms:</p>
-        <button type="button" class="btn btn-success" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="addModuleVocabToFSRS('${m.id}')">+ Add Module Words to FSRS Deck</button>
+      <div class="course-words-head">
+        <div class="flex-1-min">
+          <h2 class="card-heading">Words from Module ${escapeHtmlSafe(m.id)}</h2>
+          <p class="section-subtitle section-subtitle--tight">Tap any Ukrainian word to hear native pronunciation or open its word forms in the side panel.</p>
+          ${
+            modFlow.lastWordsFeedback
+              ? `<div class="course-words-feedback">${escapeHtmlSafe(modFlow.lastWordsFeedback)}</div>`
+              : ''
+          }
+        </div>
+        <div class="cluster">
+          <button
+            type="button"
+            id="add-module-words-btn"
+            class="btn ${vocabStatus.allAdded ? 'btn-sec' : ''}"
+            onclick="addModuleVocabToFSRS('${escapeSingleQuotes(m.id)}')"
+          >${escapeHtmlSafe(vocabStatus.buttonLabel)}</button>
+          ${
+            vocabStatus.inDeckRanks.length > 0
+              ? `<button type="button" class="btn btn-sec" onclick="switchTab('review')">Review now →</button>`
+              : ''
+          }
+        </div>
       </div>
-      ${m.vocab
-        .map(([uk, pos, en, exUk, exEn], idx) => {
-          const p = generateUkrainianPhonetics(uk);
-          const tempItem: VocabItem = {
-            rank: idx + 1,
-            ru: uk,
-            pos,
-            en,
-            level: m.level === 'A0' ? 'A1' : m.level,
-            exampleUk: exUk || `${uk}`,
-            exampleEn: exEn || `${en}`,
-            exUk: exUk || `${uk}`,
-            exEn: exEn || `${en}`,
-          };
-          const gram = generateGrammarBreakdown(tempItem);
-          return `
-          <div class="freq-row" onclick="inspectCourseWord('${escapeSingleQuotes(uk)}')" style="cursor:pointer;">
-            <div style="flex:1; min-width:190px;">
-              <span class="tag">${pos}</span>
-              <b style="font-size:17px; color:var(--text); margin-left:4px;">🔊 ${uk}</b>
-              <span style="color:var(--accent); font-family:ui-monospace, SFMono-Regular, monospace; font-size:13.5px; margin-left:6px;">${p.ipa}</span>
-              <div style="color:var(--success); font-weight:700; font-size:14px; margin-top:2px;">${en} <span style="color:var(--text-secondary); font-weight:500; font-size:12.5px;">(Sounds like: ${p.plainGuide})</span></div>
-              ${
-                exUk
-                  ? `<div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')" style="color:var(--text-secondary); font-size:12.5px; margin-top:4px; padding:4px 8px; background:var(--surface-2); border-radius:var(--radius-xs); display:inline-block; border:1px solid var(--border-subtle);" title="Tap to hear Ukrainian example sentence"><b>🔊 Example:</b> <span style="color:var(--text); font-weight:600;">${exUk}</span> — <i>${exEn || ''}</i></div>`
-                  : ''
-              }
-            </div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); inspectCourseWord('${escapeSingleQuotes(uk)}')">Word forms</button>
-              ${
-                exUk
-                  ? `<button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Example</button>`
-                  : ''
-              }
-              <button type="button" class="btn btn-warn" style="min-height:36px; padding:6px 12px; font-size:12px;" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeSingleQuotes(gram.spokenSummary)}', 'en')">🗣️ Explain</button>
-            </div>
-          </div>`;
-        })
-        .join('')}
-      <button class="btn" style="width:100%; margin-top:12px;" onclick="selectCourseStage(4)">Start Stage 5 — Module Mastery Exam (${m.exam.length} Questions) →</button>
+
+      <div class="course-word-list">
+        ${m.vocab
+          .map(([uk, pos, en, exUk, exEn], idx) => {
+            const p = generateUkrainianPhonetics(uk);
+            const tempItem: VocabItem = {
+              rank: idx + 1,
+              ru: uk,
+              pos,
+              en,
+              level: m.level === 'A0' ? 'A1' : m.level,
+              exampleUk: exUk || `${uk}`,
+              exampleEn: exEn || `${en}`,
+              exUk: exUk || `${uk}`,
+              exEn: exEn || `${en}`,
+            };
+            const gram = generateGrammarBreakdown(tempItem);
+            return `
+              <div class="course-word-row" onclick="inspectCourseWord('${escapeSingleQuotes(uk)}')">
+                <div class="course-word-main">
+                  <div class="course-word-top">
+                    <span class="course-word-headword">${escapeHtmlSafe(uk)}</span>
+                    <span class="course-word-ipa">${escapeHtmlSafe(p.ipa)}</span>
+                    <span class="course-word-pos">${escapeHtmlSafe(pos)}</span>
+                  </div>
+                  <div class="course-word-gloss">
+                    ${escapeHtmlSafe(en)}
+                    <span class="course-word-sound"> · sounds like ${escapeHtmlSafe(p.plainGuide)}</span>
+                  </div>
+                  ${
+                    exUk
+                      ? `<div class="course-word-example" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')">
+                          <span class="course-word-example-uk">${escapeHtmlSafe(exUk)}</span>
+                          ${exEn ? ` — <span>${escapeHtmlSafe(exEn)}</span>` : ''}
+                        </div>`
+                      : ''
+                  }
+                </div>
+                <div class="cluster">
+                  <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(uk)}')">Listen</button>
+                  <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); inspectCourseWord('${escapeSingleQuotes(uk)}')">Word forms</button>
+                  <button type="button" class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); playBilingualOpenAI('${escapeSingleQuotes(gram.spokenSummary)}', 'en')">Explain</button>
+                </div>
+              </div>
+            `;
+          })
+          .join('')}
+      </div>
     `;
   } else {
-    box.innerHTML = renderStage5ExamView(m);
+    box.innerHTML = renderStage5ExamView(m, nextMod);
+  }
+
+  const stickyBarEl = document.getElementById('course-sticky-bar');
+  if (stickyBarEl) {
+    stickyBarEl.innerHTML = renderStickyStepBarHtml();
+  }
+
+  syncCourseMeterWidths(document.getElementById('tab-course'));
+  if (activeStage === 0) {
+    scheduleLessonScrollspySync();
   }
 }
 
@@ -2427,38 +4199,29 @@ function renderQuestionJumpStrip(
             : 0;
       const isCurrent = attempt.currentIndex === idx;
 
-      let bg = 'var(--surface-1)';
-      let color = 'var(--text-secondary)';
-      let border = isCurrent ? '2px solid var(--accent)' : '1px solid var(--border-subtle)';
+      let stateClass = '';
       let suffix = '';
 
       if (isAnswered) {
         if (revealCorrectness) {
           if (sel === ans) {
-            bg = 'var(--success-container)';
-            color = 'var(--success-on-container)';
+            stateClass = 'is-correct';
             suffix = '✓';
           } else {
-            bg = 'var(--danger-container, #fee2e2)';
-            color = 'var(--danger, #dc2626)';
+            stateClass = 'is-wrong';
             suffix = '✗';
           }
         } else {
-          bg = 'var(--accent-container)';
-          color = 'var(--accent-on-container)';
+          stateClass = 'is-answered';
           suffix = '•';
         }
       }
 
-      return `<button type="button" onclick="jumpToAssessmentQuestion('${modId}', '${stageKey}', ${idx})" style="min-width:34px; height:28px; padding:0 6px; border-radius:var(--radius-xs); font-size:11.5px; font-weight:800; cursor:pointer; background:${bg}; color:${color}; border:${border};">${idx + 1}${suffix}</button>`;
+      return `<button type="button" class="q-jump-btn ${isCurrent ? 'is-current' : ''} ${stateClass}" onclick="jumpToAssessmentQuestion('${escapeSingleQuotes(modId)}', '${stageKey}', ${idx})">${idx + 1}${suffix}</button>`;
     })
     .join('');
 
-  return `
-    <div style="display:flex; flex-wrap:wrap; gap:5px; max-height:132px; overflow-y:auto; padding:8px; background:var(--surface-1); border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-top:8px;">
-      ${buttons}
-    </div>
-  `;
+  return `<div class="q-jump-strip" aria-label="Question navigator">${buttons}</div>`;
 }
 
 function renderInlineKnowledgeCheckSection(
@@ -2481,33 +4244,31 @@ function renderInlineKnowledgeCheckSection(
     });
 
   return `
-    <div class="vc-section-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <span>✏️ I. Practice It Right Now (Quick Interactive Checks — ${checks.length} Questions)</span>
-      <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
-        Answered: ${stats.answered} / ${stats.total} • Correct: ${stats.correct} / ${stats.total}
-      </span>
+    <div class="lesson-section-head">
+      <h2 class="lesson-section-title"><span class="lesson-section-kicker">I</span>Quick check (${checks.length} questions)</h2>
+      <span class="assessment-score-readout">${stats.answered} of ${stats.total} answered · ${stats.correct} correct</span>
     </div>
-    <div style="background:var(--surface-2); padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="stage-pill ${attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'all')">All (${stats.total})</button>
-          <button type="button" class="stage-pill ${attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'unanswered')">Unanswered (${stats.unanswered})</button>
-          <button type="button" class="stage-pill ${attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'incorrect')">Missed (${stats.incorrect})</button>
+    <div class="assessment-panel">
+      <div class="assessment-controls">
+        <div class="cluster">
+          <button type="button" class="stage-pill ${attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'inlineChecks', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'inlineChecks', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'inlineChecks', 'incorrect')">Missed (${stats.incorrect})</button>
         </div>
         ${
           pendingResetConfirmKey === resetKey
-            ? `<div style="display:flex; gap:6px; align-items:center;">
-                <span style="font-size:12px; color:var(--danger); font-weight:700;">Clear all ${stats.answered} answers?</span>
-                <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'inlineChecks')">Yes, Reset</button>
-                <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>
+            ? `<div class="cluster">
+                <span class="hint">Clear ${stats.answered} answers?</span>
+                <button type="button" class="btn btn-warn btn--sm" onclick="confirmResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'inlineChecks')">Yes, clear</button>
+                <button type="button" class="btn btn-sec btn--sm" onclick="cancelResetAssessmentStage()">Cancel</button>
               </div>`
-            : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'inlineChecks')">🔄 Reset Checks</button>`
+            : `<button type="button" class="btn btn--ghost btn--sm" onclick="requestResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'inlineChecks')">Reset checks</button>`
         }
       </div>
     </div>
     ${
       visibleIndices.length === 0
-        ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:16px; font-weight:700; color:var(--text-secondary);">No questions match the current filter (${attempt.filterMode}). <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'inlineChecks', 'all')">Show All ${stats.total} Questions</button></div>`
+        ? `<div class="question-card"><span class="hint">No questions match this filter.</span> <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'inlineChecks', 'all')">Show all ${stats.total}</button></div>`
         : visibleIndices
             .map((idx) =>
               renderKnowledgeCheck(
@@ -2531,14 +4292,19 @@ function renderStage2CheckView(m: CourseModule): string {
   const focusKey = `${m.id}:cfu`;
   const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
   const resetKey = `${m.id}:cfu`;
-  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, questions.length - 1));
+  const curIdx = Math.min(
+    Math.max(0, attempt.currentIndex || 0),
+    Math.max(0, questions.length - 1)
+  );
   attempt.currentIndex = curIdx;
 
   let visibleIndices = questions.map((_, idx) => idx);
   if (isSingleFocus) {
     visibleIndices = [curIdx];
   } else if (attempt.filterMode === 'unanswered') {
-    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+    visibleIndices = visibleIndices.filter(
+      (idx) => typeof attempt.selectedOptions[idx] !== 'number'
+    );
   } else if (attempt.filterMode === 'incorrect') {
     visibleIndices = visibleIndices.filter(
       (idx) =>
@@ -2548,35 +4314,35 @@ function renderStage2CheckView(m: CourseModule): string {
   }
 
   const headerHtml = `
-    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div class="assessment-panel">
+      <div class="assessment-top">
         <div>
-          <b style="font-size:15px; color:var(--text);">Stage 2 — Knowledge Check (${stats.total} Questions)</b>
-          <div style="font-size:12.5px; color:var(--text-secondary);">Question ${curIdx + 1} of ${stats.total} • Answered: <b>${stats.answered}/${stats.total}</b> • Unanswered: <b>${stats.unanswered}</b></div>
+          <div class="assessment-title">Check your understanding · Module ${escapeHtmlSafe(m.id)}</div>
+          <div class="assessment-sub">Question ${curIdx + 1} of ${stats.total} · ${stats.answered} answered · ${stats.unanswered} remaining</div>
         </div>
-        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
-          Correct: ${stats.correct} / ${stats.total} (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
+        <span class="assessment-score-readout">
+          ${stats.correct} / ${stats.total} correct (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
         </span>
       </div>
-      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
-        <div style="height:100%; width:${stats.percentAnswered}%; background:var(--accent); transition:width 0.2s ease;"></div>
+      <div class="course-meter" aria-hidden="true">
+        <div class="course-meter-fill" data-meter-pct="${stats.percentAnswered}"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'all')">All (${stats.total})</button>
-          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'cfu')">Single Focus (${curIdx + 1}/${stats.total})</button>
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'unanswered')">Unanswered (${stats.unanswered})</button>
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'cfu', 'incorrect')">Missed (${stats.incorrect})</button>
+      <div class="assessment-controls">
+        <div class="cluster">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'cfu', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${escapeSingleQuotes(m.id)}', 'cfu')">One by one (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'cfu', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'cfu', 'incorrect')">Missed (${stats.incorrect})</button>
         </div>
-        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'cfu', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'cfu', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+        <div class="cluster">
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'cfu', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'cfu', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
           ${
             pendingResetConfirmKey === resetKey
-              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset ${stats.answered} answers?</span>
-                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'cfu')">Confirm Reset</button>
-                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
-              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'cfu')">🔄 Reset</button>`
+              ? `<span class="hint">Reset ${stats.answered} answers?</span>
+                 <button type="button" class="btn btn-warn btn--sm" onclick="confirmResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'cfu')">Confirm reset</button>
+                 <button type="button" class="btn btn-sec btn--sm" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn--ghost btn--sm" onclick="requestResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'cfu')">Reset</button>`
           }
         </div>
       </div>
@@ -2586,7 +4352,7 @@ function renderStage2CheckView(m: CourseModule): string {
 
   const cardsHtml =
     visibleIndices.length === 0
-      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No questions match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'cfu', 'all')">Show All ${stats.total} Questions</button></div>`
+      ? `<div class="question-card"><span class="hint">No questions match this filter.</span> <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'cfu', 'all')">Show all ${stats.total} questions</button></div>`
       : visibleIndices
           .map((idx) => {
             const c = questions[idx];
@@ -2597,17 +4363,16 @@ function renderStage2CheckView(m: CourseModule): string {
 
             const textBoxHtml =
               c.inputMode === 'text'
-                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                ? `<div class="question-text-entry">
                     <input
                       type="text"
                       id="cfu-text-input-${m.id}-${idx}"
                       class="input-box"
-                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
-                      placeholder="${escapeSingleQuotes(c.hintUk ? `Type answer (Hint: ${c.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      placeholder="${escapeSingleQuotes(c.hintUk ? `Type answer (Hint: ${c.hintUk})…` : 'Type your Ukrainian answer…')}"
                       value="${escapeSingleQuotes(savedText)}"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'cfu', ${idx});}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'cfu', ${idx});}"
                     />
-                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'cfu', ${idx})">✍️ Check Typed Answer</button>
+                    <button type="button" class="btn btn-sec btn--sm" onclick="submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'cfu', ${idx})">Check typed answer</button>
                   </div>`
                 : '';
 
@@ -2621,17 +4386,18 @@ function renderStage2CheckView(m: CourseModule): string {
               audioUk: c.audioUk,
             });
 
+            const metaBits = [
+              `Question ${idx + 1} of ${stats.total}`,
+              c.topic || '',
+            ].filter(Boolean);
+
             return `
-              <div class="card" id="cfu-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Check ${idx + 1} of ${stats.total}</span>
-                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                    ${c.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${c.topic}</span>` : ''}
-                    ${c.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${c.difficultyTier}/5</span>` : ''}
-                    ${c.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">🔊 Audio</button>` : ''}
-                  </div>
+              <div class="question-card" id="cfu-card-${m.id}-${idx}">
+                <div class="question-card-head">
+                  <span>${metaBits.map((b) => escapeHtmlSafe(b)).join(' · ')}</span>
+                  ${c.audioUk ? `<button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">Listen</button>` : ''}
                 </div>
-                <div style="font-weight:700; margin-bottom:8px;">Check ${idx + 1}: ${c.q}</div>
+                <div class="question-prompt">${c.q}</div>
                 ${textBoxHtml}
                 ${c.opts
                   .map((opt, oIdx) => {
@@ -2642,16 +4408,14 @@ function renderStage2CheckView(m: CourseModule): string {
                           ? 'wrong'
                           : ''
                       : '';
-                    return `
-                      <button class="option-btn ${stateClass}" onclick="handleCourseOptionTap(this, ${oIdx === c.ans}, 'cfu-exp-${idx}', '${m.id}:cfu:${idx}', ${oIdx})">${opt}</button>
-                    `;
+                    return `<button type="button" class="option-btn ${stateClass}" onclick="handleCourseOptionTap(this, ${oIdx === c.ans}, 'cfu-exp-${idx}', '${escapeSingleQuotes(m.id)}:cfu:${idx}', ${oIdx})">${opt}</button>`;
                   })
                   .join('')}
-                <div id="cfu-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:13px;">
+                <div id="cfu-exp-${idx}" class="${hasSaved ? '' : 'hidden '}question-feedback">
                   <div id="cfu-exp-body-${idx}">${feedbackHtml}</div>
-                  <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
-                    ${c.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">🔊 Hear Ukrainian</button>` : ''}
-                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(c.exp)}', 'en')">🗣️ Hear Explanation</button>
+                  <div class="question-feedback-actions">
+                    ${c.audioUk ? `<button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(c.audioUk)}')">Hear Ukrainian</button>` : ''}
+                    <button type="button" class="btn btn--ghost btn--sm" onclick="playBilingualOpenAI('${escapeSingleQuotes(c.exp)}', 'en')">Hear explanation</button>
                   </div>
                 </div>
               </div>
@@ -2659,11 +4423,7 @@ function renderStage2CheckView(m: CourseModule): string {
           })
           .join('');
 
-  return (
-    headerHtml +
-    cardsHtml +
-    `<button class="btn" style="width:100%;" onclick="selectCourseStage(2)">Next: Stage 3 — Guided Practice Drills (${m.practice.length} Questions) →</button>`
-  );
+  return headerHtml + cardsHtml;
 }
 
 function renderStage3PracticeView(m: CourseModule): string {
@@ -2673,14 +4433,19 @@ function renderStage3PracticeView(m: CourseModule): string {
   const focusKey = `${m.id}:practice`;
   const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
   const resetKey = `${m.id}:practice`;
-  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, drills.length - 1));
+  const curIdx = Math.min(
+    Math.max(0, attempt.currentIndex || 0),
+    Math.max(0, drills.length - 1)
+  );
   attempt.currentIndex = curIdx;
 
   let visibleIndices = drills.map((_, idx) => idx);
   if (isSingleFocus) {
     visibleIndices = [curIdx];
   } else if (attempt.filterMode === 'unanswered') {
-    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+    visibleIndices = visibleIndices.filter(
+      (idx) => typeof attempt.selectedOptions[idx] !== 'number'
+    );
   } else if (attempt.filterMode === 'incorrect') {
     visibleIndices = visibleIndices.filter(
       (idx) =>
@@ -2690,35 +4455,35 @@ function renderStage3PracticeView(m: CourseModule): string {
   }
 
   const headerHtml = `
-    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div class="assessment-panel">
+      <div class="assessment-top">
         <div>
-          <b style="font-size:15px; color:var(--text);">Stage 3 — Guided Practice Drills (${stats.total} Questions)</b>
-          <div style="font-size:12.5px; color:var(--text-secondary);">Question ${curIdx + 1} of ${stats.total} • Answered: <b>${stats.answered}/${stats.total}</b> • Unanswered: <b>${stats.unanswered}</b></div>
+          <div class="assessment-title">Practice drills · Module ${escapeHtmlSafe(m.id)}</div>
+          <div class="assessment-sub">Drill ${curIdx + 1} of ${stats.total} · ${stats.answered} practiced · ${stats.unanswered} remaining</div>
         </div>
-        <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">
-          Correct: ${stats.correct} / ${stats.total} (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
+        <span class="assessment-score-readout">
+          ${stats.correct} / ${stats.total} correct (${stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0}%)
         </span>
       </div>
-      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
-        <div style="height:100%; width:${stats.percentAnswered}%; background:var(--accent); transition:width 0.2s ease;"></div>
+      <div class="course-meter" aria-hidden="true">
+        <div class="course-meter-fill" data-meter-pct="${stats.percentAnswered}"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'all')">All (${stats.total})</button>
-          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'practice')">Single Focus (${curIdx + 1}/${stats.total})</button>
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'unanswered')">Unanswered (${stats.unanswered})</button>
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'practice', 'incorrect')">Missed (${stats.incorrect})</button>
+      <div class="assessment-controls">
+        <div class="cluster">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'practice', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${escapeSingleQuotes(m.id)}', 'practice')">One by one (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'practice', 'unanswered')">Unanswered (${stats.unanswered})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'practice', 'incorrect')">Missed (${stats.incorrect})</button>
         </div>
-        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'practice', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'practice', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+        <div class="cluster">
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'practice', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'practice', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
           ${
             pendingResetConfirmKey === resetKey
-              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset ${stats.answered} answers?</span>
-                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'practice')">Confirm Reset</button>
-                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
-              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'practice')">🔄 Reset</button>`
+              ? `<span class="hint">Reset ${stats.answered} drills?</span>
+                 <button type="button" class="btn btn-warn btn--sm" onclick="confirmResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'practice')">Confirm reset</button>
+                 <button type="button" class="btn btn-sec btn--sm" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn--ghost btn--sm" onclick="requestResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'practice')">Reset</button>`
           }
         </div>
       </div>
@@ -2728,7 +4493,7 @@ function renderStage3PracticeView(m: CourseModule): string {
 
   const cardsHtml =
     visibleIndices.length === 0
-      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No practice drills match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'practice', 'all')">Show All ${stats.total} Drills</button></div>`
+      ? `<div class="question-card"><span class="hint">No practice drills match this filter.</span> <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'practice', 'all')">Show all ${stats.total} drills</button></div>`
       : visibleIndices
           .map((idx) => {
             const p = drills[idx];
@@ -2739,17 +4504,16 @@ function renderStage3PracticeView(m: CourseModule): string {
 
             const textBoxHtml =
               p.inputMode === 'text'
-                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                ? `<div class="question-text-entry">
                     <input
                       type="text"
                       id="prac-text-input-${m.id}-${idx}"
                       class="input-box"
-                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
-                      placeholder="${escapeSingleQuotes(p.hintUk ? `Type answer (Hint: ${p.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      placeholder="${escapeSingleQuotes(p.hintUk ? `Type answer (Hint: ${p.hintUk})…` : 'Type your Ukrainian answer…')}"
                       value="${escapeSingleQuotes(savedText)}"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'practice', ${idx});}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'practice', ${idx});}"
                     />
-                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'practice', ${idx})">✍️ Check Typed Answer</button>
+                    <button type="button" class="btn btn-sec btn--sm" onclick="submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'practice', ${idx})">Check typed answer</button>
                   </div>`
                 : '';
 
@@ -2763,17 +4527,18 @@ function renderStage3PracticeView(m: CourseModule): string {
               audioUk: p.audioUk,
             });
 
+            const metaBits = [
+              `Practice ${idx + 1} of ${stats.total}`,
+              p.topic || '',
+            ].filter(Boolean);
+
             return `
-              <div class="card" id="prac-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Practice ${idx + 1} of ${stats.total}</span>
-                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                    ${p.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${p.topic}</span>` : ''}
-                    ${p.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${p.difficultyTier}/5</span>` : ''}
-                    ${p.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 Audio</button>` : ''}
-                  </div>
+              <div class="question-card" id="prac-card-${m.id}-${idx}">
+                <div class="question-card-head">
+                  <span>${metaBits.map((b) => escapeHtmlSafe(b)).join(' · ')}</span>
+                  ${p.audioUk ? `<button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">Listen</button>` : ''}
                 </div>
-                <div style="font-weight:700; margin-bottom:8px;">Practice ${idx + 1}: ${p.prompt}</div>
+                <div class="question-prompt">${p.prompt}</div>
                 ${textBoxHtml}
                 ${p.opts
                   .map((opt, oIdx) => {
@@ -2784,15 +4549,13 @@ function renderStage3PracticeView(m: CourseModule): string {
                           ? 'wrong'
                           : ''
                       : '';
-                    return `
-                      <button class="option-btn ${stateClass}" onclick="handlePracticeOptionTap(this, ${oIdx === p.ans}, 'prac-exp-${idx}', '${m.id}:prac:${idx}', '${escapeSingleQuotes(p.audioUk)}', ${oIdx})">${opt}</button>
-                    `;
+                    return `<button type="button" class="option-btn ${stateClass}" onclick="handlePracticeOptionTap(this, ${oIdx === p.ans}, 'prac-exp-${idx}', '${escapeSingleQuotes(m.id)}:prac:${idx}', '${escapeSingleQuotes(p.audioUk)}', ${oIdx})">${opt}</button>`;
                   })
                   .join('')}
-                <div id="prac-exp-${idx}" class="${hasSaved ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid var(--border-strong); border-radius:var(--radius-sm); font-size:13px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                    <div style="font-weight:700; color:var(--accent); cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 ${p.audioUk}</div>
-                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(`${p.audioUk}. ${p.exp}`)}', 'uk')">🗣️ Hear Explanation</button>
+                <div id="prac-exp-${idx}" class="${hasSaved ? '' : 'hidden '}question-feedback">
+                  <div class="question-feedback-actions">
+                    <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(p.audioUk)}')">🔊 ${escapeHtmlSafe(p.audioUk)}</button>
+                    <button type="button" class="btn btn--ghost btn--sm" onclick="playBilingualOpenAI('${escapeSingleQuotes(`${p.audioUk}. ${p.exp}`)}', 'uk')">Hear explanation</button>
                   </div>
                   <div id="prac-exp-body-${idx}">${feedbackHtml}</div>
                 </div>
@@ -2801,125 +4564,179 @@ function renderStage3PracticeView(m: CourseModule): string {
           })
           .join('');
 
-  return (
-    headerHtml +
-    cardsHtml +
-    `<button class="btn" style="width:100%;" onclick="selectCourseStage(3)">Next: Stage 4 — Essential Vocabulary (${m.vocab.length} Words) →</button>`
-  );
+  return headerHtml + cardsHtml;
 }
 
-function renderStage5ExamView(m: CourseModule): string {
+function renderStage5ExamView(
+  m: CourseModule,
+  nextMod: CourseModule | null
+): string {
   const attempt = getStageAttempt(m.id, 'exam');
   const examQuestions = m.exam as EnrichedCourseQuestion[];
   const stats = computeStageStats(examQuestions, attempt);
-  const scoreSummary = calculateExamScore(examQuestions, attempt.selectedOptions);
+  const scoreSummary = calculateExamScore(
+    examQuestions,
+    attempt.selectedOptions
+  );
   const isSubmitted = Boolean(attempt.submitted);
-  const isPassed = db.passedMods.includes(m.id) || (isSubmitted && scoreSummary.passed);
+  const isPassed =
+    db.passedMods.includes(m.id) || (isSubmitted && scoreSummary.passed);
   const focusKey = `${m.id}:exam`;
   const isSingleFocus = Boolean(singleFocusModeByKey[focusKey]);
   const resetKey = `${m.id}:exam`;
-  const curIdx = Math.min(Math.max(0, attempt.currentIndex || 0), Math.max(0, examQuestions.length - 1));
+  const curIdx = Math.min(
+    Math.max(0, attempt.currentIndex || 0),
+    Math.max(0, examQuestions.length - 1)
+  );
   attempt.currentIndex = curIdx;
 
   let visibleIndices = examQuestions.map((_, idx) => idx);
   if (isSingleFocus) {
     visibleIndices = [curIdx];
   } else if (attempt.filterMode === 'unanswered') {
-    visibleIndices = visibleIndices.filter((idx) => typeof attempt.selectedOptions[idx] !== 'number');
+    visibleIndices = visibleIndices.filter(
+      (idx) => typeof attempt.selectedOptions[idx] !== 'number'
+    );
   } else if (attempt.filterMode === 'incorrect' && isSubmitted) {
     visibleIndices = visibleIndices.filter(
       (idx) => attempt.selectedOptions[idx] !== examQuestions[idx].ans
     );
   }
 
+  const existingRanks = new Set(db.cards.map((c) => c.rank));
+  const vocabStatus = computeModuleVocabReviewStatus(
+    m.vocab.map(([uk]) => uk),
+    FREQ_6000_DB,
+    existingRanks
+  );
+  const modFlow = getModFlowRecord(m.id);
+
+  const celebrationHtml =
+    isSubmitted && scoreSummary.passed
+      ? `
+      <section class="module-celebration-card" aria-label="Module completed">
+        <div>
+          <div class="module-celebration-kicker">Module ${escapeHtmlSafe(m.id)} completed · ${escapeHtmlSafe(formatPlainLevelTitle(m.level))}</div>
+          <h2 class="module-celebration-title">Віта́ємо! You completed ${escapeHtmlSafe(m.title)}.</h2>
+          <p class="module-celebration-sub">
+            Your module words are queued in your daily reviews so you keep what you learned today as you move forward.
+          </p>
+        </div>
+        <div class="module-celebration-stats">
+          <div class="module-celebration-stat">
+            <div class="module-celebration-val">${scoreSummary.percentage}%</div>
+            <div class="module-celebration-lbl">Exam score (${scoreSummary.correctCount}/${scoreSummary.totalQuestions})</div>
+          </div>
+          <div class="module-celebration-stat">
+            <div class="module-celebration-val">${
+              modFlow.celebrationAddedCount && modFlow.celebrationAddedCount > 0
+                ? `+${modFlow.celebrationAddedCount} added`
+                : `${vocabStatus.inDeckRanks.length} in deck`
+            }</div>
+            <div class="module-celebration-lbl">Module words in Review</div>
+          </div>
+          <div class="module-celebration-stat">
+            <div class="module-celebration-val">${db.passedMods.length} / ${COURSE_MODULES.length}</div>
+            <div class="module-celebration-lbl">Course modules completed</div>
+          </div>
+        </div>
+        <div class="module-celebration-actions">
+          ${
+            nextMod
+              ? `<button type="button" class="btn" onclick="selectCourseModule('${escapeSingleQuotes(nextMod.id)}')">Start next module: ${escapeHtmlSafe(nextMod.id)} · ${escapeHtmlSafe(nextMod.title)} →</button>`
+              : `<button type="button" class="btn" onclick="switchTab('today')">Return to Today →</button>`
+          }
+          <button type="button" class="btn btn-sec" onclick="switchTab('review')">Review now</button>
+          <button type="button" class="btn btn--ghost btn--sm" onclick="toggleCourseSyllabusDrawer(true)">View module map</button>
+        </div>
+      </section>
+    `
+      : '';
+
   const submitConfirmBanner =
     pendingExamSubmitModId === m.id && !isSubmitted
-      ? `<div style="margin-top:10px; padding:12px; background:var(--surface-1); border:2px solid var(--accent); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-          <div style="font-size:13px; font-weight:700; color:var(--text);">
-            ⚠️ You have <b>${stats.unanswered} unanswered question(s)</b> out of ${stats.total}. Submit now and grade all ${stats.total} questions?
+      ? `<div class="exam-confirm-banner">
+          <div>
+            You have <b>${stats.unanswered} unanswered ${stats.unanswered === 1 ? 'question' : 'questions'}</b> out of ${stats.total}. Grade your exam now?
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-success" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="submitModuleExam('${m.id}', true)">✅ Confirm & Grade Exam</button>
-            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'unanswered')">🔍 Review Unanswered (${stats.unanswered})</button>
-            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12.5px;" onclick="cancelSubmitModuleExam()">Cancel</button>
+          <div class="cluster">
+            <button type="button" class="btn btn--sm" onclick="submitModuleExam('${escapeSingleQuotes(m.id)}', true)">Confirm &amp; grade exam</button>
+            <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'unanswered')">Review unanswered (${stats.unanswered})</button>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="cancelSubmitModuleExam()">Cancel</button>
           </div>
         </div>`
       : '';
 
-  const postSubmitSummaryBanner = isSubmitted
-    ? `<div style="margin-top:10px; padding:12px 14px; background:${scoreSummary.passed ? 'var(--success-container)' : 'var(--surface-1)'}; color:${scoreSummary.passed ? 'var(--success-on-container)' : 'var(--text)'}; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div>
-          <div style="font-size:15px; font-weight:800;">
-            ${scoreSummary.passed ? '🏆 Module Exam Passed & Mastered!' : '📋 Exam Completed — Review Missed Questions Below'}
+  const missedBanner =
+    isSubmitted && !scoreSummary.passed
+      ? `<div class="exam-confirm-banner">
+          <div>
+            <b>Scored ${scoreSummary.percentage}% (${scoreSummary.correctCount}/${scoreSummary.totalQuestions}).</b> You need 80% (${scoreSummary.passThreshold}/${scoreSummary.totalQuestions}) to complete Module ${escapeHtmlSafe(m.id)}. Review the missed items below, then try again when ready.
           </div>
-          <div style="font-size:13px; margin-top:2px;">
-            Final Score: <b>${scoreSummary.correctCount} / ${scoreSummary.totalQuestions} (${scoreSummary.percentage}%)</b> • Required for Mastery: <b>${scoreSummary.passThreshold} / ${scoreSummary.totalQuestions} (80%)</b> • Missed/Unanswered: <b>${scoreSummary.totalQuestions - scoreSummary.correctCount}</b>
+          <div class="cluster">
+            <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'incorrect')">Show missed (${scoreSummary.totalQuestions - scoreSummary.correctCount})</button>
+            <button type="button" class="btn btn--sm" onclick="confirmResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'exam')">Try exam again</button>
           </div>
-        </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'incorrect')">🔍 Review Incorrect Only (${scoreSummary.totalQuestions - scoreSummary.correctCount})</button>
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:12px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">Show All (${scoreSummary.totalQuestions})</button>
-        </div>
-      </div>`
-    : '';
+        </div>`
+      : '';
 
   const headerHtml = `
-    <div style="background:var(--surface-2); padding:12px 14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-bottom:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+    <div class="assessment-panel">
+      <div class="assessment-top">
         <div>
-          <b style="font-size:15px; color:var(--text);">Stage 5 — Module ${m.id} Mastery Exam (${stats.total} Questions)</b>
-          <div style="font-size:12.5px; color:var(--text-secondary);">
-            Answer at least <b>${scoreSummary.passThreshold} / ${stats.total} (80%)</b> to master <b>Module ${m.id}</b> • Question ${curIdx + 1} of ${stats.total} • Answered: <b id="exam-answered-count">${stats.answered}/${stats.total}</b> (Unanswered: <b id="exam-unanswered-count">${stats.unanswered}</b>)
+          <div class="assessment-title">Module ${escapeHtmlSafe(m.id)} exam (${stats.total} questions)</div>
+          <div class="assessment-sub">
+            Score 80% (${scoreSummary.passThreshold}/${stats.total}) to complete Module ${escapeHtmlSafe(m.id)} · Answered <b id="exam-answered-count">${stats.answered}/${stats.total}</b> · Remaining <b id="exam-unanswered-count">${stats.unanswered}</b>
           </div>
         </div>
-        <span class="tag" id="exam-score-pill" style="background:${isPassed ? 'var(--success-container)' : 'var(--accent-container)'}; color:${isPassed ? 'var(--success-on-container)' : 'var(--accent-on-container)'}; font-weight:800;">
+        <span class="assessment-score-readout ${isPassed ? 'assessment-score-readout--passed' : ''}" id="exam-score-pill">
           ${
             isSubmitted
-              ? `Score: ${scoreSummary.correctCount} / ${stats.total} (${scoreSummary.percentage}%) ${isPassed ? '• ✓ Mastered' : ''}`
-              : `Answered: ${stats.answered} / ${stats.total} ${isPassed ? '• ✓ Mastered' : '• In Progress'}`
+              ? `Score: ${scoreSummary.correctCount}/${stats.total} (${scoreSummary.percentage}%)${isPassed ? ' · Completed' : ''}`
+              : `${stats.answered}/${stats.total} answered${isPassed ? ' · Completed' : ''}`
           }
         </span>
       </div>
-      <div style="height:7px; background:var(--surface-1); border-radius:999px; overflow:hidden; margin-bottom:10px;">
-        <div id="exam-progress-fill" style="height:100%; width:${stats.percentAnswered}%; background:${isSubmitted && scoreSummary.passed ? 'var(--success)' : 'var(--accent)'}; transition:width 0.2s ease;"></div>
+      <div class="course-meter" aria-hidden="true">
+        <div id="exam-progress-fill" class="course-meter-fill ${isSubmitted && scoreSummary.passed ? 'course-meter-fill--success' : ''}" data-meter-pct="${stats.percentAnswered}"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">All (${stats.total})</button>
-          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${m.id}', 'exam')">Single Focus (${curIdx + 1}/${stats.total})</button>
-          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'unanswered')">Unanswered (${stats.unanswered})</button>
+      <div class="assessment-controls">
+        <div class="cluster">
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'all' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'all')">All (${stats.total})</button>
+          <button type="button" class="stage-pill ${isSingleFocus ? 'active' : ''}" onclick="toggleAssessmentSingleFocus('${escapeSingleQuotes(m.id)}', 'exam')">One by one (${curIdx + 1}/${stats.total})</button>
+          <button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'unanswered' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'unanswered')">Unanswered (${stats.unanswered})</button>
           ${
             isSubmitted
-              ? `<button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${m.id}', 'exam', 'incorrect')">Missed (${stats.total - scoreSummary.correctCount})</button>`
+              ? `<button type="button" class="stage-pill ${!isSingleFocus && attempt.filterMode === 'incorrect' ? 'active' : ''}" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'incorrect')">Missed (${stats.total - scoreSummary.correctCount})</button>`
               : ''
           }
         </div>
-        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'exam', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
-          <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px;" onclick="stepAssessmentQuestion('${m.id}', 'exam', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
+        <div class="cluster">
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'exam', -1)" ${curIdx <= 0 ? 'disabled' : ''}>← Prev</button>
+          <button type="button" class="btn btn-sec btn--sm" onclick="stepAssessmentQuestion('${escapeSingleQuotes(m.id)}', 'exam', 1)" ${curIdx >= stats.total - 1 ? 'disabled' : ''}>Next →</button>
           ${
             !isSubmitted
-              ? `<button type="button" class="btn btn-success" style="min-height:32px; padding:4px 12px; font-size:12px;" onclick="submitModuleExam('${m.id}', false)">✅ Submit Exam (${stats.answered}/${stats.total})</button>`
+              ? `<button type="button" class="btn btn--sm" onclick="submitModuleExam('${escapeSingleQuotes(m.id)}', false)">Finish &amp; grade (${stats.answered}/${stats.total})</button>`
               : ''
           }
           ${
             pendingResetConfirmKey === resetKey
-              ? `<span style="font-size:12px; color:var(--danger); font-weight:700;">Reset entire ${stats.total}-question exam attempt?</span>
-                 <button type="button" class="btn btn-warn" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="confirmResetAssessmentStage('${m.id}', 'exam')">Yes, Reset Exam</button>
-                 <button type="button" class="btn btn-sec" style="min-height:28px; padding:3px 10px; font-size:11.5px;" onclick="cancelResetAssessmentStage()">Cancel</button>`
-              : `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="requestResetAssessmentStage('${m.id}', 'exam')">🔄 ${isSubmitted ? 'Retake Exam' : 'Reset Exam'}</button>`
+              ? `<span class="hint">Reset all ${stats.total} exam answers?</span>
+                 <button type="button" class="btn btn-warn btn--sm" onclick="confirmResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'exam')">Yes, reset</button>
+                 <button type="button" class="btn btn-sec btn--sm" onclick="cancelResetAssessmentStage()">Cancel</button>`
+              : `<button type="button" class="btn btn--ghost btn--sm" onclick="requestResetAssessmentStage('${escapeSingleQuotes(m.id)}', 'exam')">${isSubmitted ? 'Retake exam' : 'Reset'}</button>`
           }
         </div>
       </div>
       ${submitConfirmBanner}
-      ${postSubmitSummaryBanner}
+      ${missedBanner}
       ${renderQuestionJumpStrip(m.id, 'exam', examQuestions, attempt, isSubmitted)}
     </div>
   `;
 
   const cardsHtml =
     visibleIndices.length === 0
-      ? `<div class="card" style="background:var(--surface-2); box-shadow:none; text-align:center; padding:18px; font-weight:700; color:var(--text-secondary);">No exam questions match this filter. <button type="button" class="btn btn-sec" style="min-height:30px; padding:4px 10px; font-size:12px; margin-left:8px;" onclick="setAssessmentFilter('${m.id}', 'exam', 'all')">Show All ${stats.total} Questions</button></div>`
+      ? `<div class="question-card"><span class="hint">No exam questions match this filter.</span> <button type="button" class="btn btn-sec btn--sm" onclick="setAssessmentFilter('${escapeSingleQuotes(m.id)}', 'exam', 'all')">Show all ${stats.total} questions</button></div>`
       : visibleIndices
           .map((idx) => {
             const qItem = examQuestions[idx];
@@ -2930,17 +4747,16 @@ function renderStage5ExamView(m: CourseModule): string {
 
             const textBoxHtml =
               qItem.inputMode === 'text' && !isSubmitted
-                ? `<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 10px 0;">
+                ? `<div class="question-text-entry">
                     <input
                       type="text"
                       id="exam-text-input-${m.id}-${idx}"
                       class="input-box"
-                      style="flex:1; min-width:190px; margin:0; padding:8px 11px; font-size:13.5px;"
-                      placeholder="${escapeSingleQuotes(qItem.hintUk ? `Type answer (Hint: ${qItem.hintUk})...` : 'Type your Ukrainian or phonetic answer...')}"
+                      placeholder="${escapeSingleQuotes(qItem.hintUk ? `Type answer (Hint: ${qItem.hintUk})…` : 'Type your Ukrainian answer…')}"
                       value="${escapeSingleQuotes(savedText)}"
-                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${m.id}', 'exam', ${idx});}"
+                      onkeydown="if(event.key==='Enter'){event.preventDefault();submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'exam', ${idx});}"
                     />
-                    <button type="button" class="btn btn-sec" style="min-height:36px; padding:6px 12px; font-size:12.5px;" onclick="submitStageAssessmentText('${m.id}', 'exam', ${idx})">✍️ Record Typed Answer</button>
+                    <button type="button" class="btn btn-sec btn--sm" onclick="submitStageAssessmentText('${escapeSingleQuotes(m.id)}', 'exam', ${idx})">Record answer</button>
                   </div>`
                 : '';
 
@@ -2954,44 +4770,41 @@ function renderStage5ExamView(m: CourseModule): string {
               audioUk: qItem.audioUk,
             });
 
+            const metaBits = [
+              `Question ${idx + 1} of ${stats.total}`,
+              qItem.topic || '',
+            ].filter(Boolean);
+
             return `
-              <div class="card" id="exam-card-${m.id}-${idx}" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                  <span class="tag" style="background:var(--surface-1); color:var(--accent); font-weight:800;">Question ${idx + 1} of ${stats.total}</span>
-                  <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                    ${qItem.topic ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">${qItem.topic}</span>` : ''}
-                    ${qItem.difficultyTier ? `<span class="tag" style="background:var(--surface-1); color:var(--text-secondary); font-size:11px;">Tier ${qItem.difficultyTier}/5</span>` : ''}
-                    ${qItem.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:28px; padding:2px 8px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">🔊 Audio</button>` : ''}
-                  </div>
+              <div class="question-card" id="exam-card-${m.id}-${idx}">
+                <div class="question-card-head">
+                  <span>${metaBits.map((b) => escapeHtmlSafe(b)).join(' · ')}</span>
+                  ${qItem.audioUk ? `<button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">Listen</button>` : ''}
                 </div>
-                <div style="font-weight:700; margin-bottom:8px;">Question ${idx + 1}: ${qItem.q}</div>
+                <div class="question-prompt">${qItem.q}</div>
                 ${textBoxHtml}
                 ${qItem.opts
                   .map((opt, oIdx) => {
                     let stateClass = '';
-                    let extraStyle = '';
                     if (isSubmitted) {
                       if (oIdx === qItem.ans) stateClass = 'correct';
                       else if (hasSaved && oIdx === savedSel) stateClass = 'wrong';
                     } else if (hasSaved && oIdx === savedSel) {
-                      extraStyle =
-                        'border:2px solid var(--accent); background:var(--accent-container); color:var(--accent-on-container); font-weight:800;';
+                      stateClass = 'selected-pending';
                     }
-                    return `
-                      <button class="option-btn ${stateClass}" style="${extraStyle}" onclick="handleExamAnswer(this, ${oIdx === qItem.ans}, '${m.id}', ${idx}, 'exam-exp-${idx}', ${oIdx})">${opt}</button>
-                    `;
+                    return `<button type="button" class="option-btn ${stateClass}" onclick="handleExamAnswer(this, ${oIdx === qItem.ans}, '${escapeSingleQuotes(m.id)}', ${idx}, 'exam-exp-${idx}', ${oIdx})">${opt}</button>`;
                   })
                   .join('')}
-                <div id="exam-exp-${idx}" class="${isSubmitted ? '' : 'hidden'}" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid ${isCorrect ? 'var(--success)' : 'var(--danger, #dc2626)'}; border-radius:var(--radius-sm); font-size:13px;">
+                <div id="exam-exp-${idx}" class="${isSubmitted ? '' : 'hidden '}question-feedback">
                   ${
                     !hasSaved && isSubmitted
-                      ? `<div style="margin-bottom:5px; color:var(--danger, #dc2626); font-weight:700;">⚠️ Unanswered Question</div>`
+                      ? `<div class="hint">Unanswered question</div>`
                       : ''
                   }
                   <div id="exam-exp-body-${idx}">${feedbackHtml}</div>
-                  <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
-                    ${qItem.audioUk ? `<button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">🔊 Hear Ukrainian</button>` : ''}
-                    <button type="button" class="btn btn-warn" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="playBilingualOpenAI('${escapeSingleQuotes(qItem.exp)}', 'en')">🗣️ Hear Explanation</button>
+                  <div class="question-feedback-actions">
+                    ${qItem.audioUk ? `<button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(qItem.audioUk)}')">Hear Ukrainian</button>` : ''}
+                    <button type="button" class="btn btn--ghost btn--sm" onclick="playBilingualOpenAI('${escapeSingleQuotes(qItem.exp)}', 'en')">Hear explanation</button>
                   </div>
                 </div>
               </div>
@@ -2999,16 +4812,28 @@ function renderStage5ExamView(m: CourseModule): string {
           })
           .join('');
 
-  const footerSubmitHtml = !isSubmitted
-    ? `<div style="margin-top:14px; padding:14px; background:var(--surface-2); border-radius:var(--radius-md); border:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div style="font-size:13.5px; color:var(--text);">
-          Answered <b>${stats.answered} of ${stats.total}</b> questions (${stats.unanswered} remaining). Ready to grade your Module ${m.id} Exam?
+  if (isSubmitted && scoreSummary.passed) {
+    const missedCount = scoreSummary.totalQuestions - scoreSummary.correctCount;
+    const shouldAutoOpenReview = attempt.filterMode === 'incorrect' || isSingleFocus;
+    return `
+      ${celebrationHtml}
+      <details class="lesson-expandable" id="exam-graded-review-details" ${shouldAutoOpenReview ? 'open' : ''}>
+        <summary>
+          <div>
+            <div class="lesson-expandable-title">Review graded exam answers (${scoreSummary.correctCount}/${scoreSummary.totalQuestions} correct)</div>
+            <div class="lesson-expandable-sub">${missedCount === 0 ? 'Perfect score — inspect explanations anytime' : `${missedCount} missed ${missedCount === 1 ? 'question' : 'questions'} with explanations`}</div>
+          </div>
+          <span class="lesson-expandable-toggle">answers</span>
+        </summary>
+        <div class="lesson-expandable-body">
+          ${headerHtml}
+          ${cardsHtml}
         </div>
-        <button type="button" class="btn btn-success" style="min-height:40px; padding:8px 18px; font-size:14px;" onclick="submitModuleExam('${m.id}', false)">✅ Submit & Grade Module ${m.id} Exam (${stats.answered}/${stats.total})</button>
-      </div>`
-    : '';
+      </details>
+    `;
+  }
 
-  return headerHtml + cardsHtml + footerSubmitHtml;
+  return headerHtml + cardsHtml;
 }
 
 export function setAssessmentFilter(
@@ -3083,7 +4908,10 @@ export function stepAssessmentQuestion(
           ? m.exam.length
           : m.structuredLesson?.embeddedChecks.length || 0;
   const attempt = getStageAttempt(modId, stageKey);
-  const nextIdx = Math.min(Math.max(0, (attempt.currentIndex || 0) + delta), Math.max(0, total - 1));
+  const nextIdx = Math.min(
+    Math.max(0, (attempt.currentIndex || 0) + delta),
+    Math.max(0, total - 1)
+  );
   jumpToAssessmentQuestion(modId, stageKey, nextIdx);
 }
 
@@ -3131,7 +4959,8 @@ export function handleInlineCheckOption(
   optIdx: number
 ): void {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
-  const checks = (m.structuredLesson?.embeddedChecks || []) as EnrichedInlineCheck[];
+  const checks = (m.structuredLesson?.embeddedChecks ||
+    []) as EnrichedInlineCheck[];
   const kc = checks[qIdx];
   if (!kc) return;
 
@@ -3143,13 +4972,21 @@ export function handleInlineCheckOption(
 
   const expId = `vc-kc-exp-${modId}-${kc.id}`;
   const quizKey = `${modId}:inline-kc:${kc.id}`;
-  handlePracticeOptionTap(btnEl, isCorrect, expId, quizKey, kc.audioUk || '', optIdx);
+  handlePracticeOptionTap(
+    btnEl,
+    isCorrect,
+    expId,
+    quizKey,
+    kc.audioUk || '',
+    optIdx
+  );
   renderActiveModule();
 }
 
 export function submitInlineCheckText(modId: string, qIdx: number): void {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
-  const checks = (m.structuredLesson?.embeddedChecks || []) as EnrichedInlineCheck[];
+  const checks = (m.structuredLesson?.embeddedChecks ||
+    []) as EnrichedInlineCheck[];
   const kc = checks[qIdx];
   if (!kc) return;
 
@@ -3196,7 +5033,8 @@ export function submitStageAssessmentText(
   qIdx: number
 ): void {
   const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
-  const prefix = stageKey === 'cfu' ? 'cfu' : stageKey === 'practice' ? 'prac' : 'exam';
+  const prefix =
+    stageKey === 'cfu' ? 'cfu' : stageKey === 'practice' ? 'prac' : 'exam';
   const inputEl = document.getElementById(
     `${prefix}-text-input-${modId}-${qIdx}`
   ) as HTMLInputElement | null;
@@ -3256,14 +5094,17 @@ export function handleCourseOptionTap(
   quizKey?: string,
   optIdx?: number
 ): void {
+  let targetModId: string | null = null;
   if (quizKey) {
     const parts = quizKey.split(':');
     if (parts.length >= 3) {
       const [modId, kind, rawIdx] = parts;
+      targetModId = modId;
       const qIdx = Number(rawIdx);
       if (!Number.isNaN(qIdx) && (kind === 'cfu' || kind === 'prac')) {
         const stageKey = kind === 'cfu' ? 'cfu' : 'practice';
-        const m = COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
+        const m =
+          COURSE_MODULES.find((x) => x.id === modId) || COURSE_MODULES[0];
         const items =
           stageKey === 'cfu'
             ? (m.cfu as EnrichedCourseQuestion[])
@@ -3306,6 +5147,7 @@ export function handleCourseOptionTap(
     if (quizKey && !completedQuizKeys.has(quizKey)) {
       completedQuizKeys.add(quizKey);
       db.xp += 10;
+      recordDailyStudyActivity(0.5);
       saveDB();
     }
   } else {
@@ -3315,6 +5157,15 @@ export function handleCourseOptionTap(
   if (expId) {
     const expEl = document.getElementById(expId);
     if (expEl) expEl.classList.remove('hidden');
+  }
+
+  if (targetModId && targetModId === activeModId) {
+    const m =
+      COURSE_MODULES.find((x) => x.id === activeModId) || COURSE_MODULES[0];
+    const stageBar = document.getElementById('stage-bar');
+    if (stageBar) stageBar.innerHTML = renderStepHeaderHtml(m);
+    const stickyBarEl = document.getElementById('course-sticky-bar');
+    if (stickyBarEl) stickyBarEl.innerHTML = renderStickyStepBarHtml();
   }
 }
 
@@ -3369,33 +5220,30 @@ export function handleExamAnswer(
   // During an active unsubmitted exam attempt, do NOT reveal right/wrong or explanations early.
   if (!attempt.submitted) {
     triggerHaptic('light');
-    const cardEl = btnEl.closest('.card');
+    const cardEl = btnEl.closest('.question-card, .card');
     if (cardEl) {
-      const allBtns = cardEl.querySelectorAll('.option-btn');
-      allBtns.forEach((b) => {
-        (b as HTMLElement).style.border = '';
-        (b as HTMLElement).style.background = '';
-        (b as HTMLElement).style.color = '';
-        (b as HTMLElement).style.fontWeight = '';
+      cardEl.querySelectorAll('.option-btn').forEach((b) => {
+        b.classList.remove('selected-pending');
       });
     }
-    btnEl.style.border = '2px solid var(--accent)';
-    btnEl.style.background = 'var(--accent-container)';
-    btnEl.style.color = 'var(--accent-on-container)';
-    btnEl.style.fontWeight = '800';
+    btnEl.classList.add('selected-pending');
 
     const stats = computeStageStats(m.exam, attempt);
     const ansCountEl = document.getElementById('exam-answered-count');
-    if (ansCountEl) ansCountEl.innerText = `${stats.answered}/${stats.total}`;
+    if (ansCountEl) ansCountEl.textContent = `${stats.answered}/${stats.total}`;
     const unansCountEl = document.getElementById('exam-unanswered-count');
-    if (unansCountEl) unansCountEl.innerText = `${stats.unanswered}`;
+    if (unansCountEl) unansCountEl.textContent = `${stats.unanswered}`;
     const fillEl = document.getElementById('exam-progress-fill');
     if (fillEl) fillEl.style.width = `${stats.percentAnswered}%`;
     const scorePill = document.getElementById('exam-score-pill');
     if (scorePill) {
       const isPassed = db.passedMods.includes(modId);
-      scorePill.innerText = `Answered: ${stats.answered} / ${m.exam.length} ${isPassed ? '• ✓ Mastered' : '• In Progress'}`;
+      scorePill.textContent = `${stats.answered}/${m.exam.length} answered${isPassed ? ' · Completed' : ''}`;
     }
+    const stageBar = document.getElementById('stage-bar');
+    if (stageBar) stageBar.innerHTML = renderStepHeaderHtml(m);
+    const stickyBarEl = document.getElementById('course-sticky-bar');
+    if (stickyBarEl) stickyBarEl.innerHTML = renderStickyStepBarHtml();
     return;
   }
 
@@ -3463,14 +5311,40 @@ export function submitModuleExam(modId: string, forceConfirm = false): void {
   const scoreSummary = calculateExamScore(m.exam, attempt.selectedOptions);
   attempt.lastScore = scoreSummary.correctCount;
 
-  if (scoreSummary.passed && !db.passedMods.includes(modId)) {
-    db.passedMods.push(modId);
+  if (scoreSummary.passed) {
+    if (!db.passedMods.includes(modId)) {
+      db.passedMods.push(modId);
+    }
+    const { addedCount } = addMissingModuleRanksToDeck(modId);
+    const modFlow = getModFlowRecord(modId);
+    modFlow.lessonCompleted = true;
+    modFlow.wordsVisited = true;
+    modFlow.celebrationAddedCount = addedCount;
+    saveCourseFlowMap();
+
+    if (addedCount > 0) {
+      db.xp += addedCount * 2;
+      renderAnkiStage();
+      renderEn2UkStage();
+      renderCorrectionStage();
+      renderSrsCatalog6000();
+    }
+    recordDailyStudyActivity(5);
     renderCourseSyllabus();
+  } else {
+    recordDailyStudyActivity(2);
   }
 
   persistAssessmentStore();
   saveDB();
+  syncSubnavAndBadgesUI();
   renderActiveModule();
+  refreshTodayIfVisible();
+
+  const mainScroll = document.getElementById('main-scroll-container');
+  if (mainScroll) {
+    mainScroll.scrollTop = 0;
+  }
 }
 
 // ============================================================================
@@ -3523,84 +5397,178 @@ export function toggleReaderTranslations(): void {
   initReader();
 }
 
+let activeReaderSheetContext: { rawWord: string; passageId: string } | null =
+  null;
+const customSavedReaderWords = new Set<string>();
+
+export function closeReaderWordSheet(): void {
+  const sheet = document.getElementById('reader-word-sheet');
+  const wasOpen = Boolean(sheet?.classList.contains('is-open'));
+  document
+    .getElementById('reader-word-sheet-backdrop')
+    ?.classList.remove('is-open');
+  sheet?.classList.remove('is-open');
+  if (wasOpen) {
+    releaseFocusTrap('reader-word-sheet');
+  }
+}
+
+export function openFullInspectorFromReaderSheet(): void {
+  if (!activeReaderSheetContext) {
+    closeReaderWordSheet();
+    openInspectorSheet();
+    return;
+  }
+  const { rawWord, passageId } = activeReaderSheetContext;
+  const passage =
+    READER_PASSAGES.find((p) => p.id === passageId) || READER_PASSAGES[0];
+  const deckSet = new Set(db.cards.map((c) => c.rank));
+  const resolved = resolveReaderWordLookup(
+    rawWord,
+    passage,
+    FREQ_6000_DB,
+    deckSet
+  );
+  closeReaderWordSheet();
+  if (resolved.matchedRank !== null) {
+    inspectWordDeep(resolved.matchedRank, false, true);
+  } else {
+    inspectCourseWord(resolved.lemmaUk);
+  }
+}
+
+export function addReaderSheetWordToReviews(): void {
+  if (!activeReaderSheetContext) return;
+  const { rawWord, passageId } = activeReaderSheetContext;
+  const passage =
+    READER_PASSAGES.find((p) => p.id === passageId) || READER_PASSAGES[0];
+  const deckSet = new Set(db.cards.map((c) => c.rank));
+  const resolved = resolveReaderWordLookup(
+    rawWord,
+    passage,
+    FREQ_6000_DB,
+    deckSet
+  );
+
+  if (resolved.matchedRank !== null) {
+    addSingleWordFrom6000(resolved.matchedRank);
+  } else {
+    triggerHaptic('heavy');
+    addWordByUkToFSRS(resolved.lemmaUk);
+    customSavedReaderWords.add(normalizeUkLookupKey(resolved.lemmaUk));
+  }
+  openReaderWordSheet(rawWord, passageId, false);
+}
+
+export function openReaderWordSheet(
+  rawWord: string,
+  passageId: string,
+  playAudio = true
+): void {
+  activeReaderSheetContext = { rawWord, passageId };
+  const passage =
+    READER_PASSAGES.find((p) => p.id === passageId) || READER_PASSAGES[0];
+  const deckSet = new Set(db.cards.map((c) => c.rank));
+  const resolved = resolveReaderWordLookup(
+    rawWord,
+    passage,
+    FREQ_6000_DB,
+    deckSet
+  );
+  const isSaved =
+    resolved.inReviews ||
+    customSavedReaderWords.has(normalizeUkLookupKey(resolved.lemmaUk));
+
+  const matchedItem =
+    resolved.matchedRank !== null
+      ? FREQ_6000_DB[resolved.matchedRank - 1]
+      : undefined;
+  const synthItem: VocabItem = matchedItem || {
+    rank: 1,
+    ru: resolved.lemmaUk,
+    pos: resolved.synthPos,
+    en: resolved.englishMeaning,
+    level: 'A2',
+    exUk: resolved.surfaceUk,
+    exEn: resolved.contextNote,
+  };
+
+  const phon = generateUkrainianPhonetics(resolved.surfaceUk);
+  const gram = generateGrammarBreakdown(synthItem);
+
+  // Keep side Word forms panel synced in background if user opens it
+  if (matchedItem) {
+    inspectWordDeep(matchedItem.rank, false, false);
+  }
+
+  const sheetBody = document.getElementById('reader-word-sheet-body');
+  if (sheetBody) {
+    sheetBody.innerHTML = `
+      <div class="reader-sheet-top">
+        <div>
+          <div class="reader-meta-line">
+            <span class="reader-meta-level">${escapeHtml(resolved.levelInfo.label)}</span>
+            <span aria-hidden="true">·</span>
+            <span>${escapeHtml(resolved.posLabel)}</span>
+            ${
+              normalizeUkLookupKey(resolved.lemmaUk) !==
+              normalizeUkLookupKey(resolved.surfaceUk)
+                ? `<span aria-hidden="true">·</span><span>Dictionary form: <strong class="word">${escapeHtml(resolved.lemmaUk)}</strong></span>`
+                : ''
+            }
+          </div>
+          <div class="reader-sheet-word-uk" onclick="speakUkrainian('${escapeSingleQuotes(resolved.surfaceUk)}')">${escapeHtml(resolved.surfaceUk)}</div>
+          <div class="reader-sheet-phonetics">
+            Sounds like <strong class="reader-sheet-guide">${escapeHtml(phon.plainGuide)}</strong>
+            <span aria-hidden="true">·</span>
+            <span class="reader-sheet-ipa">${escapeHtml(phon.ipa)}</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-sec btn--sm" onclick="closeReaderWordSheet()" aria-label="Close word details">Close</button>
+      </div>
+
+      <div class="reader-sheet-meaning">${escapeHtml(resolved.englishMeaning)}</div>
+      ${
+        resolved.contextNote
+          ? `<div class="reader-sheet-note">${escapeHtml(resolved.contextNote)}</div>`
+          : ''
+      }
+
+      <div class="reader-sheet-actions">
+        <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(resolved.surfaceUk)}')">Listen</button>
+        <button type="button" id="reader-sheet-add-review-btn" class="btn ${isSaved ? 'btn-sec' : ''}" onclick="addReaderSheetWordToReviews()" ${isSaved ? 'disabled' : ''}>
+          ${isSaved ? '✓ In your reviews' : '+ Add to reviews'}
+        </button>
+        <button type="button" class="btn btn-sec" onclick="openFullInspectorFromReaderSheet()">Full Word forms</button>
+      </div>
+
+      <div class="reader-sheet-forms">
+        <div class="reader-sheet-forms-title">Word forms · ${escapeHtml(formatCleanSummaryTag(gram.summaryTag))}</div>
+        ${gram.tableHtml}
+      </div>
+    `;
+  }
+
+  document
+    .getElementById('reader-word-sheet-backdrop')
+    ?.classList.add('is-open');
+  const sheetEl = document.getElementById('reader-word-sheet');
+  sheetEl?.classList.add('is-open');
+  if (sheetEl) {
+    trapFocusInModal('reader-word-sheet');
+  }
+
+  if (playAudio) {
+    speakUkrainian(resolved.surfaceUk);
+  }
+}
+
 export function inspectReaderWord(
   rawWord: string,
   passageId: string
 ): void {
   triggerHaptic('light');
-  const cleanLower = rawWord
-    .replace(/[«»"“”.,!?;:—()]/g, '')
-    .replace(/\u0301/g, '')
-    .toLowerCase()
-    .trim();
-
-  const passage =
-    READER_PASSAGES.find((p) => p.id === passageId) || READER_PASSAGES[0];
-  const rawGloss = passage.glossary[cleanLower];
-  const gloss =
-    typeof rawGloss === 'string'
-      ? {
-          surface: rawWord,
-          lemma: rawWord,
-          pos: 'NOUN',
-          en: rawGloss,
-          note: rawGloss,
-        }
-      : rawGloss;
-
-  // Look up matching lemma or surface form in FREQ_6000_DB
-  const targetLemma = gloss
-    ? gloss.lemma.replace(/\u0301/g, '').toLowerCase()
-    : cleanLower;
-
-  const matchedVocab =
-    FREQ_6000_DB.find(
-      (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === targetLemma
-    ) ||
-    FREQ_6000_DB.find(
-      (w) => w.ru.replace(/\u0301/g, '').toLowerCase() === cleanLower
-    );
-
-  if (matchedVocab) {
-    inspectWordDeep(matchedVocab.rank, false, true);
-  } else if (gloss) {
-    const synthItem: VocabItem = {
-      rank: 1,
-      ru: gloss.lemma,
-      pos: gloss.pos.toUpperCase().includes('VERB')
-        ? 'VERB'
-        : gloss.pos.toUpperCase().includes('ADJ')
-          ? 'ADJ'
-          : 'NOUN',
-      en: gloss.en,
-      level: 'A2',
-      exUk: rawWord,
-      exEn: gloss.note,
-    };
-    const phon = generateUkrainianPhonetics(gloss.surface);
-    const gram = generateGrammarBreakdown(synthItem);
-    const inspectorBody = document.getElementById('inspector-body');
-    if (inspectorBody) {
-      inspectorBody.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container);">Reader Token • ${gloss.pos}</span>
-        </div>
-        <div style="font-size:28px; font-weight:800; color:var(--text); margin-top:8px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(gloss.surface)}')">🔊 ${gloss.surface}</div>
-        <div style="font-size:13.5px; color:var(--text-secondary);">Dictionary form (lemma): <b>${gloss.lemma}</b> • Sounds like: <b>${phon.plainGuide}</b> <span style="color:var(--accent); font-family:ui-monospace, monospace;">${phon.ipa}</span></div>
-        <div style="font-size:19px; font-weight:800; color:var(--success); margin:6px 0;">${gloss.en}</div>
-        <div style="font-size:13px; color:var(--text); margin-bottom:10px;"><b>Context Note:</b> ${gloss.note}</div>
-        ${gram.tableHtml}
-      `;
-    }
-    if (window.innerWidth <= 960) {
-      openInspectorSheet();
-    } else {
-      document.getElementById('grammar-inspector')?.classList.remove('desktop-collapsed');
-      document.getElementById('top-inspector-toggle-btn')?.classList.add('inspector-active');
-    }
-  }
-
-  speakUkrainian(rawWord);
+  openReaderWordSheet(rawWord, passageId, true);
 }
 
 function tokenizeSentenceHtml(sentenceUk: string, passageId: string): string {
@@ -3612,7 +5580,7 @@ function tokenizeSentenceHtml(sentenceUk: string, passageId: string): string {
       if (!match) return part;
       const [, leading, core, trailing] = match;
       if (!/[а-яА-ЯіїєґІЇЄҐ]/.test(core)) return part;
-      return `${leading}<span class="word-token" onclick="inspectReaderWord('${escapeSingleQuotes(core)}', '${passageId}')">${core}</span>${trailing}`;
+      return `${leading}<button type="button" class="word-token" onclick="inspectReaderWord('${escapeSingleQuotes(core)}', '${passageId}')">${core}</button>${trailing}`;
     })
     .join('');
 }
@@ -3623,14 +5591,35 @@ export function initReader(): void {
 
   const passage: ReaderPassage =
     READER_PASSAGES.find((p) => p.id === activePassageId) || READER_PASSAGES[0];
+  const passageLevelInfo = formatPlainLevelBadge(passage.level);
+  const passageReadMeta = estimateStoryReadingMeta(passage.sentences);
+  const rawGenre = passage.genre || '';
+  const cleanTopic = rawGenre.includes('•')
+    ? rawGenre.split('•').slice(1).join('·').trim()
+    : rawGenre;
 
   const readerLevels: Array<{ id: string; label: string }> = [
-    { id: 'A0', label: `A0 (${READER_PASSAGES.filter((p) => p.level === 'A0').length})` },
-    { id: 'A1', label: `A1 (${READER_PASSAGES.filter((p) => p.level === 'A1').length})` },
-    { id: 'A2', label: `A2 (${READER_PASSAGES.filter((p) => p.level === 'A2').length})` },
-    { id: 'B1', label: `B1 (${READER_PASSAGES.filter((p) => p.level === 'B1').length})` },
-    { id: 'B2–C1', label: `B2–C1 (${READER_PASSAGES.filter((p) => p.level === 'B2–C1').length})` },
-    { id: 'ALL', label: `All (${READER_PASSAGES.length})` },
+    { id: 'ALL', label: `All stories (${READER_PASSAGES.length})` },
+    {
+      id: 'A0',
+      label: `Level A0 · First steps (${READER_PASSAGES.filter((p) => p.level === 'A0').length})`,
+    },
+    {
+      id: 'A1',
+      label: `Level A1 · Beginner (${READER_PASSAGES.filter((p) => p.level === 'A1').length})`,
+    },
+    {
+      id: 'A2',
+      label: `Level A2 · Elementary (${READER_PASSAGES.filter((p) => p.level === 'A2').length})`,
+    },
+    {
+      id: 'B1',
+      label: `Level B1 · Intermediate (${READER_PASSAGES.filter((p) => p.level === 'B1').length})`,
+    },
+    {
+      id: 'B2–C1',
+      label: `Level B2–C1 · Advanced (${READER_PASSAGES.filter((p) => p.level === 'B2–C1').length})`,
+    },
   ];
 
   const visiblePassages =
@@ -3639,118 +5628,134 @@ export function initReader(): void {
       : READER_PASSAGES.filter((p) => p.level === activeReaderLevelFilter);
 
   const selectorHtml = `
-    <div style="margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--border-subtle);">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:700; margin:0;">CEFR ${passage.level} · ${passage.genre}</span>
-          <span style="font-size:12.5px; color:var(--text-secondary); font-weight:500;">${READER_PASSAGES.length} graded passages available</span>
-        </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="toggleReaderTranslations()">
-            ${showReaderTranslations ? 'Hide English Translations' : 'Show English Translations'}
-          </button>
-          <button type="button" class="btn btn-sec" style="min-height:34px; padding:4px 12px; font-size:12px;" onclick="toggleReaderStoryDrawer()">
-            ${showReaderStoryDrawer ? 'Close Story Library' : `Choose Another Story (${READER_PASSAGES.length})`}
-          </button>
-        </div>
+    <div class="reader-toolbar">
+      <div class="reader-meta-line">
+        <span class="reader-meta-level">${escapeHtml(passageLevelInfo.label)}</span>
+        <span class="reader-meta-code">(${escapeHtml(passageLevelInfo.code)})</span>
+        ${cleanTopic ? `<span aria-hidden="true">·</span><span>${escapeHtml(cleanTopic)}</span>` : ''}
+        <span aria-hidden="true">·</span>
+        <span>${passageReadMeta.readTimeLabel}</span>
+        <span aria-hidden="true">·</span>
+        <span>${passageReadMeta.sentenceCount} sentences</span>
       </div>
-
-      ${
-        showReaderStoryDrawer
-          ? `
-        <div style="margin-top:14px; padding:14px; background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
-          <div class="stage-bar" id="reader-level-filter-bar" style="display:flex; flex-wrap:wrap; gap:6px; width:100%; margin-bottom:10px; overflow:visible;">
-            ${readerLevels
-              .map(
-                (lvl) => `
-              <button class="stage-pill ${activeReaderLevelFilter === lvl.id ? 'active' : ''}" onclick="filterReaderByLevel('${lvl.id}')">
-                ${lvl.label}
-              </button>
-            `
-              )
-              .join('')}
-          </div>
-          <div class="reader-passage-grid">
-            ${visiblePassages
-              .map((p) => {
-                const isAct = p.id === passage.id;
-                const genreStr = p.genre || '';
-                const shortTopic = genreStr.split('•')[1]?.trim() || genreStr;
-                return `
-                <button type="button" class="reader-passage-card ${isAct ? 'active' : ''}" onclick="selectReaderPassage('${p.id}')">
-                  <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:6px; margin-bottom:4px;">
-                    <span class="tag" style="margin:0; font-size:10.5px; padding:2px 6px; background:${isAct ? 'var(--accent)' : 'var(--accent-container)'}; color:${isAct ? '#fff' : 'var(--accent-on-container)'}; font-weight:700;">${p.level}</span>
-                    <span style="font-size:10.5px; color:var(--muted); font-weight:600; text-align:right;">${shortTopic}</span>
-                  </div>
-                  <div style="font-weight:700; font-size:13.5px; color:var(--text); line-height:1.3;">${p.titleUk}</div>
-                  <div style="font-size:12px; color:var(--text-secondary); line-height:1.3; margin-top:2px;">${p.titleEn}</div>
-                </button>
-              `;
-              })
-              .join('')}
-          </div>
-        </div>
-      `
-          : ''
-      }
-    </div>
-  `;
-
-  const headerHtml = `
-    <div style="margin-bottom:16px;">
-      <h2 style="margin:0 0 4px 0; font-size:22px; font-weight:800; color:var(--text); letter-spacing:-0.02em;">${passage.titleUk}</h2>
-      <div style="font-size:14.5px; font-weight:600; color:var(--text-secondary);">${passage.titleEn}</div>
-      <p style="font-size:13.5px; color:var(--muted); margin:6px 0 0 0; line-height:1.5;">${passage.summaryEn}</p>
-    </div>
-  `;
-
-  const sentencesHtml = passage.sentences
-    .map(
-      (s) => `
-      <div style="padding:14px 16px; background:var(--surface-2); border-radius:var(--radius-md); margin-bottom:10px; border:1px solid var(--border-subtle);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
-          <div style="font-size:18.5px; font-weight:600; line-height:1.8; color:var(--text); flex:1;">
-            ${tokenizeSentenceHtml(s.uk, passage.id)}
-          </div>
-          <button class="btn btn-sec" style="min-height:32px; padding:4px 10px; font-size:12px; flex-shrink:0;" onclick="speakUkrainian('${escapeSingleQuotes(s.uk)}')" title="Listen to sentence">Play</button>
-        </div>
-        ${
-          showReaderTranslations
-            ? `<div style="font-size:13.5px; color:var(--text-secondary); margin-top:8px; line-height:1.5; border-top:1px solid var(--border-subtle); padding-top:8px;">${s.en}</div>`
-            : ''
-        }
+      <div class="cluster">
+        <button type="button" class="btn btn-sec btn--sm" onclick="toggleReaderTranslations()">
+          ${showReaderTranslations ? 'Hide English' : 'Show English'}
+        </button>
+        <button type="button" class="btn btn-sec btn--sm" aria-expanded="${showReaderStoryDrawer ? 'true' : 'false'}" onclick="toggleReaderStoryDrawer()">
+          ${showReaderStoryDrawer ? 'Close story library' : `Choose story (${READER_PASSAGES.length})`}
+        </button>
       </div>
-    `
-    )
-    .join('');
+    </div>
 
-  const questionsHtml = `
-    <div style="margin-top:22px; padding-top:16px; border-top:1px solid var(--border-subtle);">
-      <h3 style="font-size:16px; font-weight:800; margin:0 0 12px 0; color:var(--text);">Reading Comprehension Check</h3>
-      ${passage.questions
-        .map(
-          (qItem, idx) => `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px; line-height:1.5;">
-          <div style="font-weight:700; font-size:14px; margin-bottom:8px;">${idx + 1}. ${qItem.q}</div>
-          ${qItem.opts
+    ${
+      showReaderStoryDrawer
+        ? `
+      <div class="reader-library-drawer" id="reader-library-drawer">
+        <div class="reader-library-head">
+          <div>
+            <strong class="card-heading--flush">Graded Ukrainian story library</strong>
+            <div class="hint">Pick a story at your comfortable reading level from A0 to C1.</div>
+          </div>
+          <button type="button" class="btn btn-sec btn--sm" onclick="toggleReaderStoryDrawer()">Done</button>
+        </div>
+        <div class="stage-bar" id="reader-level-filter-bar" role="tablist" aria-label="Filter stories by level">
+          ${readerLevels
             .map(
-              (opt, oIdx) => `
-            <button class="option-btn" onclick="handleCourseOptionTap(this, ${oIdx === qItem.ans}, 'reader-exp-${passage.id}-${idx}', 'reader:${passage.id}:${idx}')">${opt}</button>
+              (lvl) => `
+            <button type="button" class="stage-pill ${activeReaderLevelFilter === lvl.id ? 'active' : ''}" onclick="filterReaderByLevel('${lvl.id}')">
+              ${escapeHtml(lvl.label)}
+            </button>
           `
             )
             .join('')}
-          <div id="reader-exp-${passage.id}-${idx}" class="hidden" style="margin-top:8px; padding:11px 13px; background:var(--success-container); color:var(--success-on-container); border:1px solid rgba(21, 128, 61, 0.22); border-radius:var(--radius-sm); font-size:13px;">
-            <b>Why:</b> ${qItem.exp}
-          </div>
         </div>
-      `
-        )
-        .join('')}
-    </div>
+        <div class="reader-passage-grid">
+          ${visiblePassages
+            .map((p) => {
+              const isAct = p.id === passage.id;
+              const pLevel = formatPlainLevelBadge(p.level);
+              const pMeta = estimateStoryReadingMeta(p.sentences);
+              const genreStr = p.genre || '';
+              const shortTopic = genreStr.split('•')[1]?.trim() || genreStr;
+              return `
+              <button type="button" class="reader-passage-card ${isAct ? 'active' : ''}" onclick="selectReaderPassage('${p.id}')">
+                <div class="reader-story-card-kicker">
+                  <span class="reader-story-card-level">${escapeHtml(pLevel.label)}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>${pMeta.readTimeLabel}</span>
+                </div>
+                <div class="reader-story-card-uk">${escapeHtml(p.titleUk || p.title || '')}</div>
+                <div class="reader-story-card-en">${escapeHtml(p.titleEn || p.subtitle || '')}</div>
+                ${shortTopic ? `<div class="reader-story-card-topic">${escapeHtml(shortTopic)} · ${pMeta.sentenceCount} sentences</div>` : ''}
+              </button>
+            `;
+            })
+            .join('')}
+        </div>
+      </div>
+    `
+        : ''
+    }
   `;
 
-  container.innerHTML =
-    selectorHtml + headerHtml + sentencesHtml + questionsHtml;
+  const articleHtml = `
+    <article class="reader-article">
+      <header class="reader-story-head">
+        <h2 class="reader-story-title-uk">${escapeHtml(passage.titleUk || passage.title || '')}</h2>
+        <div class="reader-story-title-en">${escapeHtml(passage.titleEn || passage.subtitle || '')}</div>
+        ${passage.summaryEn ? `<p class="reader-story-summary">${escapeHtml(passage.summaryEn)}</p>` : ''}
+        <div class="reader-tap-hint">Tap any dotted Ukrainian word for its translation, audio, case forms, and to save it to your reviews.</div>
+      </header>
+
+      <div class="reader-prose-flow">
+        ${passage.sentences
+          .map(
+            (s) => `
+          <div class="reader-sentence-row">
+            <div class="reader-sentence-main">
+              <div class="reader-sentence-uk">
+                ${tokenizeSentenceHtml(s.uk, passage.id)}
+              </div>
+              <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(s.uk)}')" aria-label="Listen to sentence">Listen</button>
+            </div>
+            ${
+              showReaderTranslations
+                ? `<div class="reader-sentence-en">${escapeHtml(s.en)}</div>`
+                : ''
+            }
+          </div>
+        `
+          )
+          .join('')}
+      </div>
+
+      <section class="reader-check-section" aria-label="Reading comprehension check">
+        <h3 class="reader-check-heading">Check your understanding</h3>
+        ${passage.questions
+          .map(
+            (qItem, idx) => `
+          <div class="reader-question-block">
+            <div class="reader-question-prompt">${idx + 1}. ${escapeHtml(qItem.q)}</div>
+            ${qItem.opts
+              .map(
+                (opt, oIdx) => `
+              <button type="button" class="option-btn" onclick="handleCourseOptionTap(this, ${oIdx === qItem.ans}, 'reader-exp-${passage.id}-${idx}', 'reader:${passage.id}:${idx}')">${escapeHtml(opt)}</button>
+            `
+              )
+              .join('')}
+            <div id="reader-exp-${passage.id}-${idx}" class="reader-question-exp hidden">
+              <strong>Why:</strong> ${escapeHtml(qItem.exp)}
+            </div>
+          </div>
+        `
+          )
+          .join('')}
+      </section>
+    </article>
+  `;
+
+  container.innerHTML = selectorHtml + articleHtml;
 }
 
 export function speakStory(): void {
@@ -3795,6 +5800,20 @@ export function selectVocabMode(
   triggerHaptic('light');
   activeVocabMode = mode;
   renderEverydayVocabTab();
+}
+
+export function clearVocabTopicSearch(): void {
+  const searchEl = document.getElementById(
+    'vocab-search-input'
+  ) as HTMLInputElement | null;
+  if (searchEl) searchEl.value = '';
+  renderEverydayVocabWorkspace();
+}
+
+export function practiceActiveTopicInReview(): void {
+  triggerHaptic('light');
+  selectReviewTopicCategory(activeVocabCategoryId);
+  selectReviewMode('topics');
 }
 
 export function speakCategoryGuide(): void {
@@ -3842,9 +5861,9 @@ export function checkVocabActiveRecall(
   fbEl.classList.remove('hidden');
   if (result.isCorrect) {
     triggerHaptic('heavy');
-    fbEl.style.border = '1px solid rgba(21, 128, 61, 0.25)';
-    fbEl.innerHTML = `<div style="color:var(--success); font-weight:700;">${result.feedbackMessage}</div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(exampleUk)}')">Example: <b>${exampleUk}</b></div>`;
+    fbEl.className = 'identify-feedback-banner identify-feedback-banner--right';
+    fbEl.innerHTML = `<span class="identify-feedback-icon" aria-hidden="true">✓</span><div><strong>Right</strong> — ${escapeHtml(result.feedbackMessage)}
+      <div class="topic-feedback-ex" onclick="speakUkrainian('${escapeSingleQuotes(exampleUk)}')">Example: <strong class="word">${escapeHtml(exampleUk)}</strong></div></div>`;
     speakUkrainian(expectedUk);
     const quizKey = `vocab-recall:${expectedUk}`;
     if (!completedQuizKeys.has(quizKey)) {
@@ -3855,9 +5874,9 @@ export function checkVocabActiveRecall(
     }
   } else {
     triggerHaptic('light');
-    fbEl.style.border = '1px solid rgba(185, 28, 28, 0.25)';
-    fbEl.innerHTML = `<div style="color:var(--danger); font-weight:700;">${result.feedbackMessage}</div>
-      <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px; margin-top:6px;" onclick="speakUkrainian('${escapeSingleQuotes(expectedUk)}')">Hear Correct Form</button>`;
+    fbEl.className = 'identify-feedback-banner identify-feedback-banner--wrong';
+    fbEl.innerHTML = `<span class="identify-feedback-icon" aria-hidden="true">✗</span><div><strong>Not quite</strong> — ${escapeHtml(result.feedbackMessage)}
+      <div class="topic-feedback-actions"><button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(expectedUk)}')">Listen to answer</button></div></div>`;
   }
 }
 
@@ -3925,14 +5944,14 @@ export function renderEverydayVocabTab(): void {
       | 'grammar';
     label: string;
   }> = [
-    { id: 'browse', label: '1. Browse & FSRS Cards' },
-    { id: 'uk2en', label: '2. UK → EN Recognition' },
-    { id: 'en2uk', label: '3. EN → UK Active Recall' },
-    { id: 'fillblank', label: '4. Fill in the Blank' },
-    { id: 'sentence', label: '5. Build Sentence' },
-    { id: 'listening', label: '6. Listening Lab' },
-    { id: 'context', label: '7. Context Selection' },
-    { id: 'grammar', label: '8. Grammar-Aware Practice' },
+    { id: 'browse', label: 'Browse words' },
+    { id: 'uk2en', label: 'UK → EN' },
+    { id: 'en2uk', label: 'EN → UK' },
+    { id: 'fillblank', label: 'Fill in the blank' },
+    { id: 'sentence', label: 'Build sentence' },
+    { id: 'listening', label: 'Listening' },
+    { id: 'context', label: 'Context choice' },
+    { id: 'grammar', label: 'Word forms in context' },
   ];
 
   modeBar.innerHTML = modes
@@ -3955,7 +5974,8 @@ export function renderEverydayVocabWorkspace(): void {
   const searchEl = document.getElementById(
     'vocab-search-input'
   ) as HTMLInputElement | null;
-  const query = (searchEl?.value || '').trim().toLowerCase();
+  const rawQuery = (searchEl?.value || '').trim();
+  const query = rawQuery.toLowerCase().replace(/\u0301/g, '');
 
   const rawItems = getCategoryVocabItems(cat.id);
   const items = query
@@ -3967,47 +5987,77 @@ export function renderEverydayVocabWorkspace(): void {
       )
     : rawItems;
 
+  const inReviewsCount = rawItems.filter((w) =>
+    db.cards.some((c) => c.rank === w.rank)
+  ).length;
+
   const headerBanner = `
-    <div style="background:var(--surface-2); padding:14px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <div>
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">${cat.icon} ${cat.title}</span>
-          <span class="tag" style="margin-left:6px;">${items.length} Curated Words</span>
+    <div class="topic-overview-bar">
+      <div class="topic-overview-top">
+        <div class="topic-overview-meta">
+          <span class="topic-overview-title">${cat.icon} ${escapeHtml(cat.title)}</span>
+          <span aria-hidden="true">·</span>
+          <span>${rawItems.length} curated words</span>
+          <span aria-hidden="true">·</span>
+          <span>${inReviewsCount} in your reviews</span>
         </div>
-        <button type="button" class="btn btn-warn" style="min-height:32px; padding:4px 10px; font-size:11.5px;" onclick="speakCategoryGuide()">🗣️ Audio Tip</button>
+        <button type="button" class="btn btn-sec btn--sm" onclick="speakCategoryGuide()">Listen to topic guide</button>
       </div>
-      <p style="margin:6px 0; font-size:13.5px; color:var(--text-secondary);">${cat.description}</p>
-      <div style="font-size:13px; color:var(--text); padding:9px 12px; background:var(--surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-sm);">
-        <b>Ukrainian Grammar &amp; Usage Note:</b> ${cat.grammarTip}
+      <p class="topic-overview-desc">${escapeHtml(cat.description)}</p>
+      <div class="topic-grammar-note">
+        <strong>Usage tip:</strong> ${escapeHtml(cat.grammarTip)}
       </div>
     </div>
   `;
+
+  if (
+    query &&
+    items.length === 0 &&
+    (activeVocabMode === 'browse' ||
+      activeVocabMode === 'uk2en' ||
+      activeVocabMode === 'en2uk' ||
+      activeVocabMode === 'listening')
+  ) {
+    box.innerHTML =
+      headerBanner +
+      `
+      <div class="empty-state-box">
+        <h3 class="empty-state-title">No words in ${escapeHtml(cat.title)} match “${escapeHtml(rawQuery)}”</h3>
+        <p class="empty-state-desc">Try searching in Ukrainian or English without punctuation, or clear the filter to view all ${rawItems.length} words in this topic.</p>
+        <div class="empty-state-actions">
+          <button type="button" class="btn btn-sec btn--sm" onclick="clearVocabTopicSearch()">Clear filter</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
 
   if (activeVocabMode === 'browse') {
     const rowsHtml = items
       .map((w) => {
         const inDeck = db.cards.some((c) => c.rank === w.rank);
         const phon = generateUkrainianPhonetics(w.ru);
+        const lvlInfo = formatPlainLevelBadge(w.level);
         const exUk = w.exampleUk || w.exUk || w.ru;
         const exEn = w.exampleEn || w.exEn || w.en;
         return `
-        <div class="freq-row" onclick="inspectWordDeep(${w.rank}, true, true)" style="cursor:pointer;">
-          <div style="flex:1; min-width:200px;">
-            <span class="tag">#${w.rank} • ${w.level} • ${w.pos}</span>
-            <b style="font-size:17.5px; color:var(--text); margin-left:6px;">🔊 ${w.ru}</b>
-            <span style="color:var(--accent); font-family:ui-monospace, monospace; font-size:13px; margin-left:6px;">${phon.ipa}</span>
-            <div style="color:var(--success); font-weight:700; font-size:14px; margin-top:2px;">${w.en} <span style="color:var(--text-secondary); font-weight:500; font-size:12px;">(Sounds like: ${phon.plainGuide})</span></div>
-            <div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')" style="color:var(--text-secondary); font-size:12.5px; margin-top:4px; padding:4px 8px; background:var(--surface-2); border-radius:var(--radius-xs); display:inline-block; border:1px solid var(--border-subtle);">
-              <b>🔊 Context:</b> <span style="color:var(--text); font-weight:600;">${exUk}</span> — <i>${exEn}</i>
+        <div class="freq-row freq-row--interactive" onclick="inspectWordDeep(${w.rank}, true, true)">
+          <div class="freq-row-main">
+            <div class="freq-row-head">
+              <span class="word freq-row-uk">${w.ru}</span>
+              <span class="freq-row-ipa">${phon.ipa}</span>
+              <span class="hint">#${w.rank} · ${lvlInfo.label} · ${w.pos}</span>
+            </div>
+            <div class="freq-row-en--strong">${w.en} <span class="hint">· Sounds like ${phon.plainGuide}</span></div>
+            <div onclick="event.stopPropagation(); speakUkrainian('${escapeSingleQuotes(exUk)}')" class="hint freq-row-ex">
+              <span class="word freq-row-ex-uk">${exUk}</span> — ${exEn}
             </div>
           </div>
-          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-            <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 10px; font-size:12px;" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Word forms</button>
-            ${
-              inDeck
-                ? `<span class="tag" style="background:var(--success-container); color:var(--success-on-container); font-weight:800;">✓ In FSRS</span>`
-                : `<button type="button" class="btn btn-success" style="min-height:34px; padding:5px 10px; font-size:12px;" onclick="event.stopPropagation(); addSingleWordFrom6000(${w.rank}); renderEverydayVocabWorkspace();">+ Add FSRS</button>`
-            }
+          <div class="freq-row-actions">
+            <button type="button" class="btn btn-sec btn--sm" onclick="event.stopPropagation(); inspectWordDeep(${w.rank}, true, true)">Word forms</button>
+            <button type="button" class="btn ${inDeck ? 'btn-sec' : ''} btn--sm" onclick="event.stopPropagation(); addSingleWordFrom6000(${w.rank}); renderEverydayVocabWorkspace();" ${inDeck ? 'disabled' : ''}>
+              ${inDeck ? '✓ In reviews' : '+ Add to reviews'}
+            </button>
           </div>
         </div>
       `;
@@ -4034,10 +6084,10 @@ export function renderEverydayVocabWorkspace(): void {
         opts[ansIdx] = temp;
         const exUk = w.exampleUk || w.exUk || w.ru;
         return `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <div style="font-weight:800; font-size:17px; cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">${idx + 1}. 🔊 ${w.ru} <span class="tag">${w.pos}</span></div>
-            <button type="button" class="btn btn-sec" style="min-height:30px; padding:3px 10px; font-size:11.5px;" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">🔊 Hear</button>
+        <div class="card card--flat topic-drill-card">
+          <div class="topic-drill-header">
+            <div class="topic-drill-title-uk" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">${idx + 1}. <span class="word">${w.ru}</span> <span class="hint">· ${w.pos}</span></div>
+            <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">Listen</button>
           </div>
           ${opts
             .map(
@@ -4046,9 +6096,9 @@ export function renderEverydayVocabWorkspace(): void {
           `
             )
             .join('')}
-          <div id="uk2en-exp-${idx}" class="hidden" style="margin-top:8px; padding:11px 13px; background:var(--surface-1); border:1px solid rgba(21, 128, 61, 0.25); border-radius:var(--radius-sm); font-size:13px;">
-            <b>✅ Meaning:</b> ${w.ru} = <b>${w.en}</b>.<br>
-            <span style="cursor:pointer;" onclick="speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Example: <b>${exUk}</b> (${w.exampleEn || w.exEn || ''})</span>
+          <div id="uk2en-exp-${idx}" class="reader-question-exp hidden">
+            <strong>Meaning:</strong> <span class="word">${w.ru}</span> = <strong>${w.en}</strong>.<br>
+            <span class="topic-clickable-ex" onclick="speakUkrainian('${escapeSingleQuotes(exUk)}')">Example: <strong class="word">${exUk}</strong> (${w.exampleEn || w.exEn || ''})</span>
           </div>
         </div>
       `;
@@ -4064,19 +6114,19 @@ export function renderEverydayVocabWorkspace(): void {
       .map((w, idx) => {
         const exUk = w.exampleUk || w.exUk || w.ru;
         return `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="font-weight:700; font-size:14.5px; margin-bottom:6px;">
-            ${idx + 1}. Type the Ukrainian word for: <b style="color:var(--accent); font-size:16px;">"${w.en}"</b> <span class="tag">${w.pos}</span>
+        <div class="card card--flat topic-drill-card">
+          <div class="topic-drill-prompt">
+            ${idx + 1}. Type the Ukrainian word for <strong class="text-accent-strong">“${w.en}”</strong> <span class="hint">· ${w.pos}</span>
           </div>
-          <div style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">
-            Capitalization and stress marks are optional; apostrophes (' / ’) are normalized automatically.
+          <div class="hint topic-drill-hint">
+            Stress marks and capitalization are optional; apostrophes (' / ’) are matched automatically.
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <input id="voc-recall-in-${idx}" type="text" class="input-box" style="flex:1; min-width:180px;" placeholder="Type in Ukrainian..." onkeydown="if(event.key==='Enter') checkVocabActiveRecall('voc-recall-in-${idx}', 'voc-recall-fb-${idx}', '${escapeSingleQuotes(w.ru)}', '${escapeSingleQuotes(exUk)}')">
-            <button type="button" class="btn" onclick="checkVocabActiveRecall('voc-recall-in-${idx}', 'voc-recall-fb-${idx}', '${escapeSingleQuotes(w.ru)}', '${escapeSingleQuotes(exUk)}')">Check Answer</button>
-            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">🔊 Audio Hint</button>
+          <div class="topic-drill-input-row">
+            <input id="voc-recall-in-${idx}" type="text" class="input-box topic-drill-input" placeholder="Type in Ukrainian…" onkeydown="if(event.key==='Enter') checkVocabActiveRecall('voc-recall-in-${idx}', 'voc-recall-fb-${idx}', '${escapeSingleQuotes(w.ru)}', '${escapeSingleQuotes(exUk)}')">
+            <button type="button" class="btn" onclick="checkVocabActiveRecall('voc-recall-in-${idx}', 'voc-recall-fb-${idx}', '${escapeSingleQuotes(w.ru)}', '${escapeSingleQuotes(exUk)}')">Check</button>
+            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">Listen hint</button>
           </div>
-          <div id="voc-recall-fb-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px;"></div>
+          <div id="voc-recall-fb-${idx}" class="hidden topic-drill-feedback"></div>
         </div>
       `;
       })
@@ -4099,19 +6149,19 @@ export function renderEverydayVocabWorkspace(): void {
         const correctIdx = rotated.indexOf(fb.answerUk);
         const fullSentence = fb.sentenceWithBlank.replace('___', fb.answerUk);
         return `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="font-weight:800; font-size:15.5px; margin-bottom:4px;">${idx + 1}. ${fb.sentenceWithBlank}</div>
-          <div style="font-size:13px; color:var(--text-secondary); margin-bottom:6px;"><i>"${fb.englishTranslation}"</i> • <span style="color:var(--accent);">${fb.grammarHint}</span></div>
+        <div class="card card--flat topic-drill-card">
+          <div class="word topic-drill-sentence">${idx + 1}. ${fb.sentenceWithBlank}</div>
+          <div class="hint topic-drill-hint">“${fb.englishTranslation}” · <span class="text-accent-strong">${fb.grammarHint}</span></div>
           ${rotated
             .map(
               (opt, oIdx) => `
-            <button type="button" class="option-btn" onclick="handlePracticeOptionTap(this, ${oIdx === correctIdx}, 'fb-exp-${idx}', 'fb:${fb.id}', '${escapeSingleQuotes(fullSentence)}')">${opt}</button>
+            <button type="button" class="option-btn" onclick="handlePracticeOptionTap(this, ${oIdx === correctIdx}, 'fb-exp-${idx}', 'fb:${fb.id}', '${escapeSingleQuotes(fullSentence)}')"><span class="word">${opt}</span></button>
           `
             )
             .join('')}
-          <div id="fb-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-            <b>✅ Complete Sentence:</b> <span style="cursor:pointer; font-weight:700;" onclick="speakUkrainian('${escapeSingleQuotes(fullSentence)}')">🔊 ${fullSentence}</span><br>
-            <b>💡 Why:</b> ${fb.grammarHint}
+          <div id="fb-exp-${idx}" class="reader-question-exp hidden">
+            <strong>Complete sentence:</strong> <span class="word word--clickable-strong" onclick="speakUkrainian('${escapeSingleQuotes(fullSentence)}')">${fullSentence}</span><br>
+            <strong>Why:</strong> ${fb.grammarHint}
           </div>
         </div>
       `;
@@ -4131,28 +6181,28 @@ export function renderEverydayVocabWorkspace(): void {
       .map((sc, idx) => {
         const chosen = activeSentenceBuilderState.get(sc.id) || [];
         return `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="font-weight:700; font-size:14.5px; margin-bottom:6px;">${idx + 1}. Build the Ukrainian sentence for: <b style="color:var(--accent);">"${sc.promptEn}"</b></div>
-          <div style="min-height:42px; padding:10px; background:var(--surface-1); border:1px dashed var(--border-strong); border-radius:var(--radius-sm); margin-bottom:8px; font-weight:800; font-size:15.5px; color:var(--text);">
-            ${chosen.length > 0 ? chosen.join(' ') : '<span style="color:var(--muted); font-weight:500; font-size:13px;">Tap word tiles below in order...</span>'}
+        <div class="card card--flat topic-drill-card">
+          <div class="topic-drill-prompt">${idx + 1}. Build the Ukrainian sentence for: <strong class="text-accent-strong">“${sc.promptEn}”</strong></div>
+          <div class="review-tile-well topic-tile-well">
+            ${chosen.length > 0 ? chosen.join(' ') : '<span class="hint">Tap word tiles below in order…</span>'}
           </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+          <div class="topic-tile-bank">
             ${sc.scrambledWords
               .map(
                 (w) => `
-              <button type="button" class="btn btn-sec" style="min-height:34px; padding:5px 12px; font-size:13.5px;" onclick="addSentenceTile('${sc.id}', '${escapeSingleQuotes(w)}')">${w}</button>
+              <button type="button" class="btn btn-sec btn--sm" onclick="addSentenceTile('${sc.id}', '${escapeSingleQuotes(w)}')"><span class="word">${w}</span></button>
             `
               )
               .join('')}
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="btn" onclick="checkSentenceBuilder('${sc.id}', '${escapeSingleQuotes(sc.targetUk)}', 'sc-exp-${idx}')">Check Sentence</button>
-            <button type="button" class="btn btn-sec" onclick="resetSentenceBuilder('${sc.id}')">Reset Tiles</button>
-            <button type="button" class="btn btn-warn" onclick="speakUkrainian('${escapeSingleQuotes(sc.targetUk)}')">🔊 Hear Target</button>
+          <div class="topic-drill-input-row">
+            <button type="button" class="btn" onclick="checkSentenceBuilder('${sc.id}', '${escapeSingleQuotes(sc.targetUk)}', 'sc-exp-${idx}')">Check sentence</button>
+            <button type="button" class="btn btn-sec" onclick="resetSentenceBuilder('${sc.id}')">Reset tiles</button>
+            <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(sc.targetUk)}')">Listen to target</button>
           </div>
-          <div id="sc-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-            <b>✅ Target Sentence:</b> <span style="cursor:pointer; font-weight:800;" onclick="speakUkrainian('${escapeSingleQuotes(sc.targetUk)}')">🔊 ${sc.targetUk}</span><br>
-            <b>💡 Contrastive Grammar Note:</b> ${sc.grammarExplanation}
+          <div id="sc-exp-${idx}" class="reader-question-exp hidden">
+            <strong>Target sentence:</strong> <span class="word word--clickable-strong" onclick="speakUkrainian('${escapeSingleQuotes(sc.targetUk)}')">${sc.targetUk}</span><br>
+            <strong>Grammar note:</strong> ${sc.grammarExplanation}
           </div>
         </div>
       `;
@@ -4180,12 +6230,12 @@ export function renderEverydayVocabWorkspace(): void {
         opts[ansIdx] = tmp;
         const exUk = w.exampleUk || w.exUk || w.ru;
         return `
-        <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            <div style="font-weight:700; font-size:14.5px;">${idx + 1}. Tap to listen, then choose the matching Ukrainian word:</div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="btn" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">🔊 Play Word Audio</button>
-              <button type="button" class="btn btn-sec" onclick="speakUkrainian('${escapeSingleQuotes(exUk)}')">🔊 Play Example</button>
+        <div class="card card--flat topic-drill-card">
+          <div class="topic-drill-header">
+            <div class="topic-drill-prompt">${idx + 1}. Listen first, then pick the matching Ukrainian word:</div>
+            <div class="freq-row-actions">
+              <button type="button" class="btn btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(w.ru)}')">Play word</button>
+              <button type="button" class="btn btn-sec btn--sm" onclick="speakUkrainian('${escapeSingleQuotes(exUk)}')">Play example</button>
             </div>
           </div>
           ${opts
@@ -4195,8 +6245,8 @@ export function renderEverydayVocabWorkspace(): void {
           `
             )
             .join('')}
-          <div id="listen-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-            <b>✅ Spoken Word:</b> <b>${w.ru}</b> (${w.en}) • <i>${exUk}</i>
+          <div id="listen-exp-${idx}" class="reader-question-exp hidden">
+            <strong>Spoken word:</strong> <strong class="word">${w.ru}</strong> (${w.en}) · <span class="word">${exUk}</span>
           </div>
         </div>
       `;
@@ -4214,18 +6264,18 @@ export function renderEverydayVocabWorkspace(): void {
     const html = pool
       .map(
         (cc, idx) => `
-      <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-        <div style="font-size:13px; font-weight:700; color:var(--accent); margin-bottom:4px;">Situation ${idx + 1}: ${cc.situationEn}</div>
-        <div style="font-weight:800; font-size:16px; margin-bottom:8px;">${cc.sentenceUk}</div>
+      <div class="card card--flat topic-drill-card">
+        <div class="hint topic-drill-situation">Situation ${idx + 1}: ${cc.situationEn}</div>
+        <div class="word topic-drill-sentence">${cc.sentenceUk}</div>
         ${cc.options
           .map(
             (opt, oIdx) => `
-          <button type="button" class="option-btn" onclick="handleCourseOptionTap(this, ${oIdx === cc.correctIndex}, 'ctx-exp-${idx}', 'ctx:${cc.id}')">${opt}</button>
+          <button type="button" class="option-btn" onclick="handleCourseOptionTap(this, ${oIdx === cc.correctIndex}, 'ctx-exp-${idx}', 'ctx:${cc.id}')"><span class="word">${opt}</span></button>
         `
           )
           .join('')}
-        <div id="ctx-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-          <b>💡 Contrastive Usage Explanation:</b> ${cc.explanation}
+        <div id="ctx-exp-${idx}" class="reader-question-exp hidden">
+          <strong>Why this fits:</strong> ${cc.explanation}
         </div>
       </div>
     `
@@ -4235,7 +6285,7 @@ export function renderEverydayVocabWorkspace(): void {
     return;
   }
 
-  // Mode 8: Grammar-Aware Vocabulary Practice
+  // Mode 8: Word forms in context
   const catGram = GRAMMAR_AWARE_EXERCISES.filter(
     (g) => g.categoryId === cat.id
   );
@@ -4244,23 +6294,22 @@ export function renderEverydayVocabWorkspace(): void {
     .map((ga, idx) => {
       const fullSentence = ga.promptUk.replace('___', ga.answerUk);
       return `
-      <div class="card" style="background:var(--surface-2); box-shadow:none; margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
-          <span class="tag" style="background:var(--accent-container); color:var(--accent-on-container); font-weight:800;">Base word: ${ga.baseWordUk}</span>
-          <span class="tag">${ga.targetGrammarForm}</span>
+      <div class="card card--flat topic-drill-card">
+        <div class="hint">
+          Base word: <strong class="word text-strong-ink">${ga.baseWordUk}</strong> (${ga.baseWordEn}) · ${ga.targetGrammarForm}
         </div>
-        <div style="font-weight:800; font-size:16px; margin:6px 0 4px 0;">${idx + 1}. ${ga.promptUk}</div>
-        <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;"><i>"${ga.promptEn}"</i> (${ga.baseWordEn})</div>
+        <div class="word topic-drill-sentence">${idx + 1}. ${ga.promptUk}</div>
+        <div class="hint topic-drill-hint">“${ga.promptEn}”</div>
         ${ga.options
           .map(
             (opt) => `
-          <button type="button" class="option-btn" onclick="handlePracticeOptionTap(this, ${opt === ga.answerUk}, 'ga-exp-${idx}', 'ga:${ga.id}', '${escapeSingleQuotes(fullSentence)}')">${opt}</button>
+          <button type="button" class="option-btn" onclick="handlePracticeOptionTap(this, ${opt === ga.answerUk}, 'ga-exp-${idx}', 'ga:${ga.id}', '${escapeSingleQuotes(fullSentence)}')"><span class="word">${opt}</span></button>
         `
           )
           .join('')}
-        <div id="ga-exp-${idx}" class="hidden" style="margin-top:8px; padding:10px; background:var(--surface-1); border-radius:var(--radius-sm); font-size:13px; border-left:4px solid var(--success);">
-          <b>✅ Inflected Form in Context:</b> <span style="cursor:pointer; font-weight:800;" onclick="speakUkrainian('${escapeSingleQuotes(fullSentence)}')">🔊 ${fullSentence}</span><br>
-          <b>💡 Why:</b> ${ga.explanation}
+        <div id="ga-exp-${idx}" class="reader-question-exp hidden">
+          <strong>In context:</strong> <span class="word word--clickable-strong" onclick="speakUkrainian('${escapeSingleQuotes(fullSentence)}')">${fullSentence}</span><br>
+          <strong>Why:</strong> ${ga.explanation}
         </div>
       </div>
     `;
@@ -4491,7 +6540,9 @@ function recordDailyStudyActivity(minutesDelta: number): void {
 function syncDailyGoalButtonsUI(): void {
   document.querySelectorAll('[data-daily-goal-opt]').forEach((btn) => {
     const val = Number(btn.getAttribute('data-daily-goal-opt'));
-    btn.classList.toggle('active', val === dailyGoalTracker.dailyGoalMinutes);
+    const isAct = val === dailyGoalTracker.dailyGoalMinutes;
+    btn.classList.toggle('active', isAct);
+    btn.setAttribute('aria-pressed', isAct ? 'true' : 'false');
   });
 }
 
@@ -4503,6 +6554,7 @@ export function setDailyGoalMinutes(minutes: number): void {
   saveDailyGoalTracker();
   saveOnboardingState();
   syncDailyGoalButtonsUI();
+  renderActiveReviewWorkspace();
   renderTodayTab();
   updateSidebarStats();
 }
@@ -4662,12 +6714,15 @@ function getReviewSummaryCounts(): ReviewSummaryCounts {
   ).length;
   const totalDueNow = srsDue + en2ukDue + corrDue;
 
-  const dailyNewCap = dailyGoalTracker.dailyGoalMinutes;
-  const srsNewRaw = db.cards.filter((c) => c.state === 'new').length;
-  const srsNewAllowance = Math.min(dailyNewCap, srsNewRaw);
+  const remAllowance = getActiveRemainingNewAllowance();
+  const mixedSel = buildMixedActionableQueue(
+    { srs: db.cards, en2uk: db.en2ukCards, correction: db.corrCards },
+    now,
+    remAllowance
+  );
+  const srsNewAllowance = mixedSel.pacedNewCount;
 
-  const totalActionable =
-    totalDueNow > 0 ? totalDueNow : srsNewAllowance;
+  const totalActionable = mixedSel.items.length;
   const estimatedMinutes =
     totalActionable > 0
       ? Math.max(1, Math.ceil(totalActionable * 0.25))
@@ -4692,6 +6747,7 @@ function getReviewSummaryCounts(): ReviewSummaryCounts {
 
 export function continueCurrentCourseModule(): void {
   triggerHaptic('light');
+  isCourseSyllabusOpen = false;
   const sectionToRestore = onboardingState.lastSectionId;
   const shouldScrollSection =
     activeStage === 0 &&
@@ -4720,8 +6776,7 @@ export function openCourseLevelFromToday(levelCode: string): void {
 
 export function startRecommendedReviewFromToday(): void {
   triggerHaptic('light');
-  const counts = getReviewSummaryCounts();
-  switchTab(counts.recommendedDeck);
+  selectReviewMode('mixed');
 }
 
 export function openSuggestedStoryFromToday(passageId: string): void {
@@ -5222,7 +7277,6 @@ const WORKSPACE_BREADCRUMBS: Record<string, string> = {
 };
 
 let activeCanonicalTab: CanonicalTabId = 'today';
-let lastReviewSubTab: 'srs' | 'en2uk' | 'correction' = 'srs';
 let lastExploreSubTab: 'reader' | 'identify' | 'vocab' = 'reader';
 let lastSpeakSubTab: 'speak' | 'phonetics' = 'speak';
 let lexiconExploreMode = false;
@@ -5237,6 +7291,12 @@ function getDestinationForTab(tab: CanonicalTabId): TopDestinationId {
   return 'speak';
 }
 
+function getCanonicalSectionForReviewMode(mode: ReviewModeId): CanonicalTabId {
+  if (mode === 'en2uk') return 'en2uk';
+  if (mode === 'correction') return 'correction';
+  return 'srs';
+}
+
 function resolveCanonicalTab(rawTab: string): CanonicalTabId {
   const clean = String(rawTab || '').trim().toLowerCase();
   const currentDest = getDestinationForTab(activeCanonicalTab);
@@ -5249,9 +7309,18 @@ function resolveCanonicalTab(rawTab: string): CanonicalTabId {
     lexiconExploreMode = false;
     return 'course';
   }
-  if (clean === 'review') {
+  if (clean === 'review' || clean === 'mixed') {
     lexiconExploreMode = false;
-    return currentDest === 'review' ? 'srs' : lastReviewSubTab;
+    if (clean === 'mixed') {
+      activeReviewMode = 'mixed';
+      reviewPrefs.preferredMode = 'mixed';
+      saveReviewPrefs();
+    } else if (currentDest === 'review') {
+      activeReviewMode = 'mixed';
+    } else {
+      activeReviewMode = reviewPrefs.preferredMode || 'mixed';
+    }
+    return getCanonicalSectionForReviewMode(activeReviewMode);
   }
   if (clean === 'explore') {
     if (currentDest === 'explore') {
@@ -5278,7 +7347,9 @@ function resolveCanonicalTab(rawTab: string): CanonicalTabId {
   }
   if (clean === 'srs' || clean === 'en2uk' || clean === 'correction') {
     lexiconExploreMode = false;
-    lastReviewSubTab = clean;
+    activeReviewMode = clean;
+    reviewPrefs.preferredMode = clean;
+    saveReviewPrefs();
     return clean;
   }
   if (clean === 'reader' || clean === 'identify' || clean === 'vocab') {
@@ -5291,9 +7362,14 @@ function resolveCanonicalTab(rawTab: string): CanonicalTabId {
 
 function computeHashForTab(tab: CanonicalTabId): string {
   if (tab === 'today') return '#/today';
-  if (tab === 'course') return `#/learn/${activeModId}`;
+  if (tab === 'course') {
+    return isCourseSyllabusOpen ? '#/learn/map' : `#/learn/${activeModId}`;
+  }
   if (tab === 'srs') {
-    return lexiconExploreMode ? '#/explore/lexicon' : '#/review/srs';
+    if (lexiconExploreMode) return '#/explore/lexicon';
+    if (activeReviewMode === 'mixed') return '#/review';
+    if (activeReviewMode === 'topics') return '#/review/topics';
+    return '#/review/srs';
   }
   if (tab === 'en2uk') return '#/review/en2uk';
   if (tab === 'correction') return '#/review/correction';
@@ -5328,23 +7404,13 @@ function syncHashForCurrentView(
 
 function syncSubnavAndBadgesUI(): void {
   if (typeof document === 'undefined') return;
-  const counts = getReviewSummaryCounts();
   const now = Date.now();
-  const srsActionable =
-    counts.srsDue > 0
-      ? counts.srsDue
-      : Math.min(
-          dailyGoalTracker.dailyGoalMinutes,
-          db.cards.filter((c) => c.state === 'new').length
-        );
-  const en2ukActionable =
-    counts.en2ukDue > 0
-      ? counts.en2ukDue
-      : db.en2ukCards.filter((c) => c.due <= now && c.state !== 'new').length;
-  const corrActionable =
-    counts.corrDue > 0
-      ? counts.corrDue
-      : db.corrCards.filter((c) => c.due <= now && c.state !== 'new').length;
+  const remAllowance = getActiveRemainingNewAllowance();
+  const counts = getReviewSummaryCounts();
+
+  const srsSel = selectDeckActionableQueue(db.cards, now, remAllowance);
+  const en2ukSel = selectDeckActionableQueue(db.en2ukCards, now, remAllowance);
+  const corrSel = selectDeckActionableQueue(db.corrCards, now, remAllowance);
 
   const badgeEl = document.getElementById('nav-review-badge');
   if (badgeEl) {
@@ -5353,12 +7419,14 @@ function syncSubnavAndBadgesUI(): void {
     badgeEl.classList.toggle('hidden', badgeTotal <= 0);
   }
 
+  const mixedSubEl = document.getElementById('subnav-mixed-due');
   const srsSubEl = document.getElementById('subnav-srs-due');
   const en2ukSubEl = document.getElementById('subnav-en2uk-due');
   const corrSubEl = document.getElementById('subnav-corr-due');
-  if (srsSubEl) srsSubEl.textContent = String(srsActionable);
-  if (en2ukSubEl) en2ukSubEl.textContent = String(en2ukActionable);
-  if (corrSubEl) corrSubEl.textContent = String(corrActionable);
+  if (mixedSubEl) mixedSubEl.textContent = String(counts.totalActionable);
+  if (srsSubEl) srsSubEl.textContent = String(srsSel.queue.length);
+  if (en2ukSubEl) en2ukSubEl.textContent = String(en2ukSel.queue.length);
+  if (corrSubEl) corrSubEl.textContent = String(corrSel.queue.length);
 
   const dest = getDestinationForTab(activeCanonicalTab);
   const reviewSubnav = document.getElementById('review-subnav');
@@ -5370,12 +7438,20 @@ function syncSubnavAndBadgesUI(): void {
   speakSubnav?.classList.toggle('hidden', dest !== 'speak');
 
   document.querySelectorAll('.subnav-btn').forEach((btn) => {
+    const reviewModeAttr = btn.getAttribute('data-review-mode');
     const subtab = btn.getAttribute('data-subtab');
     const isLexBtn =
       btn.getAttribute('onclick')?.includes('openLexiconFromExplore') || false;
-    const isActive = lexiconExploreMode
-      ? isLexBtn
-      : Boolean(subtab && subtab === activeCanonicalTab);
+
+    let isActive = false;
+    if (dest === 'review' && reviewModeAttr) {
+      isActive = reviewModeAttr === activeReviewMode;
+    } else if (lexiconExploreMode) {
+      isActive = isLexBtn;
+    } else if (!reviewModeAttr) {
+      isActive = Boolean(subtab && subtab === activeCanonicalTab);
+    }
+
     btn.classList.toggle('active', isActive);
     if (isActive) {
       btn.setAttribute('aria-selected', 'true');
@@ -5383,6 +7459,60 @@ function syncSubnavAndBadgesUI(): void {
       btn.removeAttribute('aria-selected');
     }
   });
+
+  syncReviewControlsUI();
+}
+
+export function selectReviewMode(
+  mode: ReviewModeId,
+  options?: { skipHashUpdate?: boolean }
+): void {
+  triggerHaptic('light');
+  lexiconExploreMode = false;
+  if (activeReviewSession.completed) {
+    activeReviewSession = createFreshSessionTracker(0);
+  }
+  activeReviewMode = mode;
+  reviewPrefs.preferredMode = mode;
+  saveReviewPrefs();
+
+  ankiFlipped = false;
+  en2ukFlipped = false;
+  corrFlipped = false;
+  mixedFlipped = false;
+  topicDrillRevealed = false;
+  topicDrillChosenOptionIdx = null;
+  topicDrillBuiltTiles = [];
+  lastAutoSpokenCardKey = '';
+
+  ensureDailyGoalNewCardsSeeded();
+  const targetCanonical = getCanonicalSectionForReviewMode(mode);
+  activeCanonicalTab = targetCanonical;
+
+  ALL_TAB_SECTION_IDS.forEach((t) => {
+    const el = document.getElementById('tab-' + t);
+    if (el) el.classList.add('hidden');
+  });
+  document.getElementById('tab-' + targetCanonical)?.classList.remove('hidden');
+
+  document.querySelectorAll('.nav-btn').forEach((b) => {
+    const isRev = b.getAttribute('data-nav-dest') === 'review';
+    b.classList.toggle('active', isRev);
+    if (isRev) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+
+  renderActiveReviewWorkspace();
+  syncSubnavAndBadgesUI();
+  syncMultilingualTrackUI();
+  syncReviewSrsVsLexiconDOM();
+
+  if (!options?.skipHashUpdate) {
+    syncHashForCurrentView(targetCanonical);
+  }
+
+  const mainEl = document.getElementById('main-scroll-container');
+  if (mainEl) mainEl.scrollTop = 0;
 }
 
 export function switchTab(
@@ -5393,6 +7523,16 @@ export function switchTab(
   triggerHaptic('light');
   const canonical = resolveCanonicalTab(tab);
   activeCanonicalTab = canonical;
+  const dest = getDestinationForTab(canonical);
+
+  if (dest === 'review') {
+    if (activeReviewSession.completed) {
+      activeReviewSession = createFreshSessionTracker(0);
+    }
+    ensureDailyGoalNewCardsSeeded();
+  } else {
+    closeReviewAdvancedMenu();
+  }
 
   ALL_TAB_SECTION_IDS.forEach((t) => {
     const el = document.getElementById('tab-' + t);
@@ -5400,7 +7540,6 @@ export function switchTab(
   });
   document.getElementById('tab-' + canonical)?.classList.remove('hidden');
 
-  const dest = getDestinationForTab(canonical);
   document.querySelectorAll('.nav-btn').forEach((b) => {
     b.classList.remove('active');
     b.removeAttribute('aria-current');
@@ -5425,8 +7564,12 @@ export function switchTab(
       WORKSPACE_BREADCRUMBS[canonical] || 'Ukrainian Workspace';
   }
 
+  closeReaderWordSheet();
+
   if (canonical === 'today') {
     renderTodayTab();
+  } else if (dest === 'review') {
+    renderActiveReviewWorkspace();
   } else if (canonical === 'vocab') {
     renderEverydayVocabTab();
   } else if (canonical === 'identify') {
@@ -5437,6 +7580,13 @@ export function switchTab(
 
   syncSubnavAndBadgesUI();
   syncMultilingualTrackUI();
+  syncReviewSrsVsLexiconDOM();
+  if (canonical === 'course') {
+    syncCourseDrawerAndWorkspaceDOM();
+    if (activeStage === 0 && !isCourseSyllabusOpen) {
+      scheduleLessonScrollspySync();
+    }
+  }
 
   if (!options?.skipHashUpdate) {
     syncHashForCurrentView(canonical);
@@ -5460,6 +7610,8 @@ export function openLexiconFromExplore(options?: {
     if (el) el.classList.add('hidden');
   });
   document.getElementById('tab-srs')?.classList.remove('hidden');
+  syncReviewSrsVsLexiconDOM();
+  renderSrsCatalog6000();
 
   document.querySelectorAll('.nav-btn').forEach((b) => {
     const isExplore = b.getAttribute('data-nav-dest') === 'explore';
@@ -5470,17 +7622,14 @@ export function openLexiconFromExplore(options?: {
 
   syncSubnavAndBadgesUI();
   syncMultilingualTrackUI();
+  syncReviewSrsVsLexiconDOM();
 
   if (!options?.skipHashUpdate) {
     syncHashForCurrentView('srs');
   }
 
-  requestAnimationFrame(() => {
-    const lexEl = document.getElementById('lexicon-6000-card');
-    if (lexEl) {
-      lexEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
+  const mainEl = document.getElementById('main-scroll-container');
+  if (mainEl) mainEl.scrollTop = 0;
 }
 
 function syncRouteFromHash(isInitialBoot = false): void {
@@ -5510,12 +7659,19 @@ function syncRouteFromHash(isInitialBoot = false): void {
   const subLower = sub.toLowerCase();
 
   if (head === 'learn' || head === 'course') {
+    if (subLower === 'map') {
+      switchTab('course', undefined, { skipHashUpdate: true });
+      toggleCourseSyllabusDrawer(true, { skipHashUpdate: true });
+      currentRenderedHash = window.location.hash;
+      return;
+    }
+    isCourseSyllabusOpen = false;
     if (sub) {
       const matchedMod = COURSE_MODULES.find(
         (m) => m.id.toLowerCase() === subLower
       );
       if (matchedMod && matchedMod.id !== activeModId) {
-        selectCourseModule(matchedMod.id);
+        selectCourseModule(matchedMod.id, { skipHashUpdate: true });
       }
     }
     switchTab('course', undefined, { skipHashUpdate: true });
@@ -5524,12 +7680,16 @@ function syncRouteFromHash(isInitialBoot = false): void {
   }
 
   if (head === 'review') {
-    if (subLower === 'en2uk' || subLower === 'recall') {
-      switchTab('en2uk', undefined, { skipHashUpdate: true });
+    if (subLower === 'srs' || subLower === 'uk2en') {
+      selectReviewMode('srs', { skipHashUpdate: true });
+    } else if (subLower === 'en2uk' || subLower === 'recall') {
+      selectReviewMode('en2uk', { skipHashUpdate: true });
     } else if (subLower === 'correction' || subLower === 'sentences') {
-      switchTab('correction', undefined, { skipHashUpdate: true });
+      selectReviewMode('correction', { skipHashUpdate: true });
+    } else if (subLower === 'topics') {
+      selectReviewMode('topics', { skipHashUpdate: true });
     } else {
-      switchTab('srs', undefined, { skipHashUpdate: true });
+      selectReviewMode('mixed', { skipHashUpdate: true });
     }
     currentRenderedHash = window.location.hash;
     return;
@@ -5565,19 +7725,14 @@ function syncRouteFromHash(isInitialBoot = false): void {
 }
 
 function addWordByUkToFSRS(uk: string): boolean {
-  const cleanTarget = uk.replace(/\u0301/g, '').toLowerCase().trim();
-  const matched = FREQ_6000_DB.find(
-    (w) => w.ru.replace(/\u0301/g, '').toLowerCase().trim() === cleanTarget
-  );
+  const cleanTarget = normalizeUkLookupKey(uk);
+  const headCandidate = cleanTarget.split('/')[0]?.trim() || cleanTarget;
+  const matched =
+    FREQ_6000_DB.find((w) => normalizeUkLookupKey(w.ru) === cleanTarget) ||
+    FREQ_6000_DB.find((w) => normalizeUkLookupKey(w.ru) === headCandidate);
   const rank = matched ? matched.rank : 1;
   if (!db.cards.some((c) => c.rank === rank)) {
-    db.cards.push(createCardRecord(rank));
-    db.xp += 3;
-    saveDB();
-    renderAnkiStage();
-    renderEn2UkStage();
-    renderCorrectionStage();
-    renderSrsCatalog6000();
+    addSingleWordFrom6000(rank);
     return true;
   }
   return false;
@@ -5671,6 +7826,8 @@ declare global {
     submitModuleExam: typeof submitModuleExam;
     selectVocabCategory: typeof selectVocabCategory;
     selectVocabMode: typeof selectVocabMode;
+    clearVocabTopicSearch: typeof clearVocabTopicSearch;
+    practiceActiveTopicInReview: typeof practiceActiveTopicInReview;
     speakCategoryGuide: typeof speakCategoryGuide;
     addCategoryToFSRS: typeof addCategoryToFSRS;
     checkVocabActiveRecall: typeof checkVocabActiveRecall;
@@ -5679,9 +7836,15 @@ declare global {
     checkSentenceBuilder: typeof checkSentenceBuilder;
     renderEverydayVocabTab: typeof renderEverydayVocabTab;
     renderEverydayVocabWorkspace: typeof renderEverydayVocabWorkspace;
+    clearLexiconSearch: typeof clearLexiconSearch;
+    clearPhoneticsSearch: typeof clearPhoneticsSearch;
     filterReaderByLevel: typeof filterReaderByLevel;
     selectReaderPassage: typeof selectReaderPassage;
     toggleReaderTranslations: typeof toggleReaderTranslations;
+    openReaderWordSheet: typeof openReaderWordSheet;
+    closeReaderWordSheet: typeof closeReaderWordSheet;
+    addReaderSheetWordToReviews: typeof addReaderSheetWordToReviews;
+    openFullInspectorFromReaderSheet: typeof openFullInspectorFromReaderSheet;
     inspectReaderWord: typeof inspectReaderWord;
     initReader: typeof initReader;
     speakStory: typeof speakStory;
@@ -5843,6 +8006,26 @@ declare global {
     handleCmsIdentifyCheckScene: typeof handleCmsIdentifyCheckScene;
     handleCmsIdentifyPublishScene: typeof handleCmsIdentifyPublishScene;
     handleCmsIdentifyPreviewInLearnerApp: typeof handleCmsIdentifyPreviewInLearnerApp;
+    handleCourseStickyBack: typeof handleCourseStickyBack;
+    trapFocusInModal: typeof trapFocusInModal;
+    releaseFocusTrap: typeof releaseFocusTrap;
+    handleCourseStickyPrimary: typeof handleCourseStickyPrimary;
+    selectReviewMode: typeof selectReviewMode;
+    toggleReviewAutoAudio: typeof toggleReviewAutoAudio;
+    setReviewAutoPlayAudio: typeof setReviewAutoPlayAudio;
+    toggleReviewFocusMode: typeof toggleReviewFocusMode;
+    finishActiveReviewSession: typeof finishActiveReviewSession;
+    unlockBonusNewCards: typeof unlockBonusNewCards;
+    closeReviewAdvancedMenu: typeof closeReviewAdvancedMenu;
+    flipMixedCard: typeof flipMixedCard;
+    gradeMixedCard: typeof gradeMixedCard;
+    selectReviewTopicSubMode: typeof selectReviewTopicSubMode;
+    selectReviewTopicCategory: typeof selectReviewTopicCategory;
+    answerReviewTopicMc: typeof answerReviewTopicMc;
+    addReviewTopicTile: typeof addReviewTopicTile;
+    resetReviewTopicTiles: typeof resetReviewTopicTiles;
+    revealReviewTopicCard: typeof revealReviewTopicCard;
+    gradeReviewTopicCard: typeof gradeReviewTopicCard;
     currentInspectedRank: number;
     srsCatPage: number;
     phonPage: number;
@@ -5912,8 +8095,28 @@ if (typeof window !== 'undefined') {
   window.submitStageAssessmentText = submitStageAssessmentText;
   window.cancelSubmitModuleExam = cancelSubmitModuleExam;
   window.submitModuleExam = submitModuleExam;
+  window.handleCourseStickyBack = handleCourseStickyBack;
+  window.handleCourseStickyPrimary = handleCourseStickyPrimary;
+  window.selectReviewMode = selectReviewMode;
+  window.toggleReviewAutoAudio = toggleReviewAutoAudio;
+  window.setReviewAutoPlayAudio = setReviewAutoPlayAudio;
+  window.toggleReviewFocusMode = toggleReviewFocusMode;
+  window.finishActiveReviewSession = finishActiveReviewSession;
+  window.unlockBonusNewCards = unlockBonusNewCards;
+  window.closeReviewAdvancedMenu = closeReviewAdvancedMenu;
+  window.flipMixedCard = flipMixedCard;
+  window.gradeMixedCard = gradeMixedCard;
+  window.selectReviewTopicSubMode = selectReviewTopicSubMode;
+  window.selectReviewTopicCategory = selectReviewTopicCategory;
+  window.answerReviewTopicMc = answerReviewTopicMc;
+  window.addReviewTopicTile = addReviewTopicTile;
+  window.resetReviewTopicTiles = resetReviewTopicTiles;
+  window.revealReviewTopicCard = revealReviewTopicCard;
+  window.gradeReviewTopicCard = gradeReviewTopicCard;
   window.selectVocabCategory = selectVocabCategory;
   window.selectVocabMode = selectVocabMode;
+  window.clearVocabTopicSearch = clearVocabTopicSearch;
+  window.practiceActiveTopicInReview = practiceActiveTopicInReview;
   window.speakCategoryGuide = speakCategoryGuide;
   window.addCategoryToFSRS = addCategoryToFSRS;
   window.checkVocabActiveRecall = checkVocabActiveRecall;
@@ -5922,9 +8125,15 @@ if (typeof window !== 'undefined') {
   window.checkSentenceBuilder = checkSentenceBuilder;
   window.renderEverydayVocabTab = renderEverydayVocabTab;
   window.renderEverydayVocabWorkspace = renderEverydayVocabWorkspace;
+  window.clearLexiconSearch = clearLexiconSearch;
+  window.clearPhoneticsSearch = clearPhoneticsSearch;
   window.filterReaderByLevel = filterReaderByLevel;
   window.selectReaderPassage = selectReaderPassage;
   window.toggleReaderTranslations = toggleReaderTranslations;
+  window.openReaderWordSheet = openReaderWordSheet;
+  window.closeReaderWordSheet = closeReaderWordSheet;
+  window.addReaderSheetWordToReviews = addReaderSheetWordToReviews;
+  window.openFullInspectorFromReaderSheet = openFullInspectorFromReaderSheet;
   window.inspectReaderWord = inspectReaderWord;
   window.initReader = initReader;
   window.speakStory = speakStory;
@@ -6090,6 +8299,8 @@ if (typeof window !== 'undefined') {
   window.handleCmsIdentifyCheckScene = handleCmsIdentifyCheckScene;
   window.handleCmsIdentifyPublishScene = handleCmsIdentifyPublishScene;
   window.handleCmsIdentifyPreviewInLearnerApp = handleCmsIdentifyPreviewInLearnerApp;
+  window.trapFocusInModal = trapFocusInModal;
+  window.releaseFocusTrap = releaseFocusTrap;
 
   Object.defineProperty(window, 'currentInspectedRank', {
     get: () => currentInspectedRank,
@@ -6122,10 +8333,15 @@ if (typeof window !== 'undefined') {
   renderPhonetics6000();
   renderCourseSyllabus();
   renderActiveModule();
+  initCourseScrollspyListener();
   registerOnCourseTrackChanged(() => {
+    syncCourseDrawerAndWorkspaceDOM();
+    syncReviewSrsVsLexiconDOM();
     renderTodayTab();
   });
   syncMultilingualTrackUI();
+  syncCourseDrawerAndWorkspaceDOM();
+  syncReviewSrsVsLexiconDOM();
   renderEverydayVocabTab();
   registerIdentifyHooks({
     triggerHaptic: (t) => triggerHaptic(t === 'heavy' ? 'heavy' : 'light'),
@@ -6155,6 +8371,8 @@ if (typeof window !== 'undefined') {
     FREQ_6000_DB.find((w) => w.ru === 'кни́жка')?.rank || 1;
   inspectWordDeep(initialBookWord, false, false);
   updateSidebarStats();
+  isReviewBootReady = true;
+  syncReviewControlsUI();
   syncRouteFromHash(true);
   bootCmsStudioRouteIfRequested();
 
@@ -6164,6 +8382,8 @@ if (typeof window !== 'undefined') {
 
   window.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
+      closeReaderWordSheet();
+      closeReviewAdvancedMenu();
       closeSettingsModal();
       closeVoiceModal();
       closeLanguageSelectorModal();
@@ -6172,6 +8392,12 @@ if (typeof window !== 'undefined') {
       const dockerModal = document.getElementById('lango-docker-zip-modal');
       if (dockerModal && !dockerModal.classList.contains('hidden')) {
         dockerModal.classList.add('hidden');
+        releaseFocusTrap('lango-docker-zip-modal');
+      }
+      if (reviewPrefs.focusDimChrome && isUserCurrentlyViewingReview()) {
+        reviewPrefs.focusDimChrome = false;
+        saveReviewPrefs();
+        syncReviewControlsUI();
       }
       return;
     }
@@ -6189,37 +8415,127 @@ if (typeof window !== 'undefined') {
 
     if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-    const srsVisible = !document
-      .getElementById('tab-srs')
-      ?.classList.contains('hidden');
-    const en2ukVisible = !document
-      .getElementById('tab-en2uk')
-      ?.classList.contains('hidden');
-    const corrVisible = !document
-      .getElementById('tab-correction')
-      ?.classList.contains('hidden');
+    const inReview = isUserCurrentlyViewingReview();
     const identifyVisible = !document
       .getElementById('tab-identify')
       ?.classList.contains('hidden');
 
-    if (e.code === 'Space' && srsVisible && !ankiFlipped && currentAnkiCard) {
+    if (
+      inReview &&
+      !activeReviewSession.completed &&
+      (e.key === 'r' || e.key === 'R')
+    ) {
       e.preventDefault();
-      flipAnkiCard();
+      if (activeReviewMode === 'mixed' && currentMixedEntry) {
+        const item = FREQ_6000_DB[currentMixedEntry.card.rank - 1];
+        if (item) {
+          if (currentMixedEntry.deck === 'correction' && mixedFlipped) {
+            void speakUkrainian(generateSentenceCorrection(item).rightRu);
+          } else {
+            void speakUkrainian(item.ru);
+          }
+        }
+      } else if (activeReviewMode === 'srs' && currentAnkiCard) {
+        const item = FREQ_6000_DB[currentAnkiCard.rank - 1];
+        if (item) void speakUkrainian(item.ru);
+      } else if (
+        activeReviewMode === 'en2uk' &&
+        en2ukFlipped &&
+        currentEn2UkCard
+      ) {
+        const item = FREQ_6000_DB[currentEn2UkCard.rank - 1];
+        if (item) void speakUkrainian(item.ru);
+      } else if (
+        activeReviewMode === 'correction' &&
+        corrFlipped &&
+        currentCorrCard
+      ) {
+        const item = FREQ_6000_DB[currentCorrCard.rank - 1];
+        if (item) void speakUkrainian(generateSentenceCorrection(item).rightRu);
+      } else if (activeReviewMode === 'topics' && currentTopicDrillItem) {
+        void speakUkrainian(currentTopicDrillItem.audioUk);
+      }
       return;
+    }
+
+    if (e.code === 'Space' && inReview && !activeReviewSession.completed) {
+      if (activeReviewMode === 'mixed' && !mixedFlipped && currentMixedEntry) {
+        e.preventDefault();
+        flipMixedCard();
+        return;
+      }
+      if (activeReviewMode === 'srs' && !ankiFlipped && currentAnkiCard) {
+        e.preventDefault();
+        flipAnkiCard();
+        return;
+      }
+      if (activeReviewMode === 'en2uk' && !en2ukFlipped && currentEn2UkCard) {
+        e.preventDefault();
+        flipEn2UkCard();
+        return;
+      }
+      if (
+        activeReviewMode === 'correction' &&
+        !corrFlipped &&
+        currentCorrCard
+      ) {
+        e.preventDefault();
+        flipCorrectionCard();
+        return;
+      }
+      if (
+        activeReviewMode === 'topics' &&
+        !topicDrillRevealed &&
+        currentTopicDrillItem
+      ) {
+        e.preventDefault();
+        revealReviewTopicCard();
+        return;
+      }
     }
 
     if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
       const g = Number(e.key) as 1 | 2 | 3 | 4;
-      if (srsVisible && ankiFlipped && currentAnkiCard) {
-        e.preventDefault();
-        gradeAnkiCard(g);
-      } else if (en2ukVisible && en2ukFlipped && currentEn2UkCard) {
-        e.preventDefault();
-        gradeEn2UkCard(g);
-      } else if (corrVisible && corrFlipped && currentCorrCard) {
-        e.preventDefault();
-        gradeCorrectionCard(g);
-      } else if (identifyVisible) {
+      if (inReview && !activeReviewSession.completed) {
+        if (activeReviewMode === 'mixed' && mixedFlipped && currentMixedEntry) {
+          e.preventDefault();
+          gradeMixedCard(g);
+          return;
+        }
+        if (activeReviewMode === 'srs' && ankiFlipped && currentAnkiCard) {
+          e.preventDefault();
+          gradeAnkiCard(g);
+          return;
+        }
+        if (activeReviewMode === 'en2uk' && en2ukFlipped && currentEn2UkCard) {
+          e.preventDefault();
+          gradeEn2UkCard(g);
+          return;
+        }
+        if (
+          activeReviewMode === 'correction' &&
+          corrFlipped &&
+          currentCorrCard
+        ) {
+          e.preventDefault();
+          gradeCorrectionCard(g);
+          return;
+        }
+        if (activeReviewMode === 'topics' && currentTopicDrillItem) {
+          e.preventDefault();
+          if (topicDrillRevealed) {
+            gradeReviewTopicCard(g);
+          } else if (
+            currentTopicDrillItem.options &&
+            g - 1 < currentTopicDrillItem.options.length
+          ) {
+            answerReviewTopicMc(g - 1);
+          }
+          return;
+        }
+      }
+
+      if (identifyVisible) {
         const mcBtns = document.querySelectorAll<HTMLButtonElement>(
           '#tab-identify .identify-options-grid .option-btn:not(:disabled)'
         );

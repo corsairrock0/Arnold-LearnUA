@@ -1,0 +1,73 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution Identifier: ux-restructure-phase-004 (Phase 4 of 6 — Unified Review Session UX)
+- Scope Executed: Completed and verified Phase 4 ONLY of the 6-phase UX restructure for "Learn Ukrainian by Lango" (stopping cleanly after Phase 4 before Phase 5).
+- Core Outcome: Unified all spaced-repetition and vocabulary exercise flows (`UK→EN`, `EN→UK`, `Sentences`, and `Topic drills` across all 27 everyday categories) into one calm, distraction-free Review workspace (`#/review`, `#/review/mixed`, `#/review/srs`, `#/review/en2uk`, `#/review/correction`, `#/review/topics`) defaulting to `Mixed (recommended)`. Replaced bulk `+25 / +100` header overload with daily-goal-driven new card pacing (`10 / 20 / 30` new cards/day synced with `slovo_ua_daily_goal_v1`), moved bulk frequency additions into a tucked-away `Advanced` menu, added `Lora` editorial card typography with tap/`Space` reveal and synced `Auto-audio` toggle, implemented 4 plain-language grading buttons (`Again · 1m`, `Hard · <N>d`, `Good · <N>d`, `Easy · <N>d`) with `1–4` keyboard shortcuts, added dimmed/full-focus chrome controls, and built a calm end-of-session summary screen.
+- Non-Destructive Preservation: Zero changes made to curriculum, vocabulary, assessment, Identify scene data, or FSRS scheduling math (`applyFSRSGrade` / `getNextIntervals`). All existing `localStorage` keys (`slovo_ua_6000_anki_v1`, `slovo_ua_theme_mode`, `slovo_openai_hd_cfg`, `slovo_ua_onboarding_v1`, `slovo_ua_daily_goal_v1`, `slovo_ua_course_flow_v1`) and all legacy `<section id="tab-*">` / `switchTab()` contracts remain 100% intact.
+
+2. CHANGES COMPLETED
+- Unified Review Segmented Mode Bar & Routing (`#review-subnav` in `index.html`, `src/main.ts`):
+  - Unified 5 modes in `#review-subnav`: `Mixed (recommended)` (default at `#/review` and `#/review/mixed`, interleaving due & daily-goal new cards across `UK→EN`, `EN→UK`, and `Sentences` with distinct new-card ranks), `UK→EN` (`#/review/srs`), `EN→UK` (`#/review/en2uk`), `Sentences` (`#/review/correction`), and `Topic drills` (`#/review/topics`).
+  - Integrated 6 `Topic drills` sub-modes inside Review (`Mixed topic drills`, `Fill in the blank`, `Context choice`, `Word forms`, `Listening`, `Build sentence`) filterable across all 27 everyday categories, feeding completed drills directly into the learner's spaced-repetition deck.
+  - Isolated the `6,000-word lexicon` (`#lexicon-6000-card`) via `#tab-srs.is-lexicon-mode` (`syncReviewSrsVsLexiconDOM()`) so active Review sessions remain a clean single-card workspace while `#/explore/lexicon` (`openLexiconFromExplore()`) displays the full searchable 6,000-word catalog.
+- Distraction-Free Full-Height Card Chrome (`index.html`, `src/main.ts`):
+  - Added automatic desktop sidebar dimming (`.app-shell.review-chrome-dimmed`, restoring `opacity: 1` on hover/focus) during active review, plus a `Full focus` toggle (`#review-focus-btn`, `.app-shell.review-chrome-hidden`, `body.review-mobile-focus`) with `Escape` to exit.
+- Editorial Card Surface, Tap/Space Reveal & Synced Auto-Play Audio (`index.html`, `src/main.ts`):
+  - Styled review cards (`.review-stage-card`) with large `Lora` Ukrainian typography (`.review-uk-hero`, `.review-sentence-hero`), pronunciation sound guides + IPA, contextual `Word forms` launcher, and full tap-card or `Space` (`Enter` in typing fields) answer reveal; `R` replays Ukrainian audio.
+  - Added `autoPlayAudio` preference (`slovo_ua_review_prefs_v1`, default `true`) guarded by `isUserCurrentlyViewingReview()` so background boot on `#/today` never triggers audio, synced bi-directionally between `#review-auto-audio-btn` in Review and `Review auto-play audio` (`[data-review-audio-opt="on"|"off"]`) in Settings (`#lango-settings-modal`).
+- 4 Plain-Language Grading Buttons & Keyboard Shortcuts (`src/reviewSessionHelpers.ts`, `src/main.ts`, `index.html`):
+  - Replaced legacy labels with 4 plain-language interval buttons and `1–4` keyboard shortcuts (`1`: `Again · 1m` / `Review again soon`; `2`: `Hard · <N>d` / `Took effort`; `3`: `Good · <N>d` / `Remembered`; `4`: `Easy · <N>d` / `Effortless`), responsive in a 4-column desktop row and a spacious 2×2 grid on mobile (`<= 680px`) with non-overlapping card flow.
+- Daily-Goal-Driven New Card Pacing & Tucked-Away `Advanced` Menu (`src/reviewSessionHelpers.ts`, `src/main.ts`, `index.html`):
+  - Mapped the learner's daily study goal (`10 / 20 / 30 min`) to a matching daily new-word cap (`10 / 20 / 30` new cards/day) with automatic seeding (`ensureDailyGoalNewCardsSeeded()`) and due-first + short-interval learning rescue (`selectDeckActionableQueue()`).
+  - Removed prominent `+25 / +100` header buttons from `#tab-srs`, `#tab-en2uk`, and `#tab-correction`, tucking bulk additions (`+ Add next 25 frequency words`, `+ Add next 100 frequency words`) and `Browse 6,000-word lexicon →` inside `<details id="review-advanced-menu"><summary>Advanced</summary>...</details>`.
+- Calm End-of-Session Summary Screen (`src/reviewSessionHelpers.ts`, `src/main.ts`, `index.html`):
+  - Built `.review-summary-card` rendered automatically when today's queue completes or when clicking `Finish session` (`#review-finish-btn`), displaying tabular metrics (`Cards reviewed`, `Remembered cleanly %`, `New words today`, `+XP / ~min added`), `Again / Hard / Good / Easy` breakdown, and direct actions (`Continue course →`, `+ Study 5 bonus new words`, `Practice Topic drills` / `Practice Mixed cards`, `Back to Today`).
+  - Preserved `activeReviewSession` across mode switches within an active session so multi-mode study tallies accurately in the Session Summary.
+
+3. FILES CREATED OR MODIFIED
+- Created:
+  - `src/reviewSessionHelpers.ts` (Pure TypeScript helpers for daily-goal new card pacing, due-first + short-interval queue selection, distinct-rank Mixed queue interleaving, 4 plain-language interval button specs, and session summary metrics)
+  - `src/__tests__/reviewSessionHelpers.test.ts` (5 unit tests covering daily-goal caps, interval labels & `1–4` shortcuts, queue prioritization, Mixed interleaving, and session summary computation)
+  - `reports/identify/ux-restructure-phase-004.txt` (Immutable Phase 4 execution report)
+- Modified:
+  - `index.html` (Added Phase 4 `.review-*` CSS rules, `#tab-srs.is-lexicon-mode` isolation, 2×2 mobile `.anki-grade-bar` & static mobile `.anki-action-sticky`, unified `#review-subnav` with `Mixed (recommended)` / `Topic drills` / `Auto-audio` / `Full focus` / `Finish session` / `Advanced`, refactored `#tab-srs` / `#tab-en2uk` / `#tab-correction` with 0 inline `style=` attributes, and added `Review auto-play audio` setting row)
+  - `src/main.ts` (Wired `slovo_ua_review_prefs_v1`, `selectReviewMode`, `Mixed` & `Topic drills` stages, refactored `UK→EN` / `EN→UK` / `Sentences` stages, synced `#/review/*` & `#/explore/lexicon` routes, synced `Today` review counts with daily-goal pacing, and bound `Space` / `1–4` / `R` / `Escape` keyboard shortcuts)
+  - `reports/identify/REPORT_INDEX.md` (Appended Order 16 entry and updated Current Latest Source Report pointer)
+  - `src/identifyVisualBatchProgress.json` (Updated `reportingStandard.latestSourceReportFile` to `reports/identify/ux-restructure-phase-004.txt`; all scene/hotspot counts untouched)
+  - `reports/identify/LATEST_REPORT.txt` (Mirrored latest persisted report after verification)
+
+4. VALIDATION RESULTS
+- TypeScript Lint (`lint_applet` / `npm run lint`): PASS (`0` errors)
+- Production Build (`compile_applet` / `npm run build`): PASS (`0` errors)
+- Automated Unit & Integration Test Suite (`npx tsx --test src/__tests__/*.test.ts`): PASS (`109 / 109` tests passing, `0` failures — 104 existing tests + 5 new Phase 4 tests in `reviewSessionHelpers.test.ts`)
+- Inline Style & Textbook Citation Audit:
+  - `index.html` inline `style=` count: `0`
+  - Forbidden textbook references (`Pugh`, `Press`, `Routledge`, `§`): `0`
+- Real-Browser Playwright QA (`1440x900` Desktop Light & Dark + `390x844` Mobile Light & Dark):
+  - Verified `#/today` → `Start review (~5 min)` → `#/review` (`Mixed (recommended)` active, `Card 1 of 20 · 20 new left today`, `.app-shell.review-chrome-dimmed` active, `#lexicon-6000-card` hidden).
+  - Verified `Space` reveal, 4 plain-language interval buttons (`Again · 1m`, `Hard · 1d`, `Good · 1d`, `Easy · 4d` with `1–4` shortcuts), keyboard `3` grading advancing to `Card 2 of 20 · 19 new left today` with `#review-finish-btn` (`Finish session`) visible.
+  - Verified `Full focus` toggle + `Escape` exit, bi-directional `Auto-audio` sync with Settings modal, mode switching across `UK→EN`, `EN→UK`, `Sentences`, and `Topic drills` (27 categories), `Advanced` menu → `Browse 6,000-word lexicon` (`#/explore/lexicon`), Session Summary card, and 2×2 mobile grade buttons (`59px` height, `0px` horizontal overflow, `0` console/page errors).
+- Errors Encountered During Execution: Caught and fixed 3 layout nuances during Playwright visual inspection (`--space-7` -> `--space-8` padding token on `.review-summary-card`, `#tab-srs.is-lexicon-mode` sync after `syncMultilingualTrackUI()`, and 2×2 non-overlapping mobile `.anki-grade-bar` at `<= 680px`); re-verified clean (`0` errors).
+
+5. PERSISTENT CHECKPOINT
+- Authoritative Identify Checkpoint (`src/identifyVisualBatchProgress.json`):
+  - `lastBatchNumber`: `10` (unchanged)
+  - `activeCoherentScenesTotalCount`: `67` (`1,075` approved hotspots; unchanged)
+  - `reportingStandard.latestSourceReportFile`: `reports/identify/ux-restructure-phase-004.txt`
+- Persisted Report Files:
+  - `reports/identify/ux-restructure-phase-004.txt`
+  - `reports/identify/REPORT_INDEX.md` (Order `16`)
+  - `reports/identify/LATEST_REPORT.txt`
+- Learner Storage Compatibility:
+  - Existing keys preserved untouched (`slovo_ua_6000_anki_v1`, `slovo_ua_theme_mode`, `slovo_openai_hd_cfg`, `slovo_ua_onboarding_v1`, `slovo_ua_daily_goal_v1`, `slovo_ua_course_flow_v1`).
+  - Additive Phase 4 key: `slovo_ua_review_prefs_v1` (stores preferred review mode, daily new-card introduction counter/date, bonus allowance, auto-play audio toggle, and full-focus preference).
+
+6. REMAINING WORK
+- Phase 5 of 6 (`ux-restructure-phase-005`): Explore (`Reader` ~65ch comfortable reading column + tap-word bottom sheet with translation, audio, case forms & `"Add to reviews"` + grade level badge on each story card; `Pictures` scene controls tidy-up & clear right/wrong feedback states; `Sounds & Script` polish) + app-wide plain-language microcopy & encouraging empty states.
+- Phase 6 of 6 (`ux-restructure-phase-006`): Final accessibility (`WCAG AA`, focus rings, `aria-current`, 44px touch targets), dark-mode contrast audit, responsive QA pass, and cleanup of remaining inline `style="…"` attributes in TypeScript template strings.
+
+7. NEXT EXECUTION
+- Proceed to **Phase 5 of 6 (`ux-restructure-phase-005`)**: Redesign Explore (`Reader` comfortable ~65ch column + tap-a-word bottom sheet + story grade level badges, `Pictures` scene controls & right/wrong feedback styling, `Topics` browser & `Sounds & Script` polish) and complete the app-wide plain-language microcopy & empty-state pass.

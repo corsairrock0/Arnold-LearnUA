@@ -1,0 +1,70 @@
+LANGO — EXECUTION REPORT
+==================================================
+STATUS: COMPLETE
+
+1. EXECUTION SUMMARY
+- Execution Identifier: ux-restructure-phase-005 (Phase 5 of 6 — Explore: Stories, Pictures, Topics & 6,000-Word Lexicon; Speak: Sounds & Script & AI Conversation; App-Wide Plain-Language Microcopy & Empty States)
+- Completed Phase 5 of the 6-phase "Learn Ukrainian by Lango" Editorial Notebook UX/UI restructure while keeping all curriculum, vocabulary, assessment, Identify scene/coordinate data, FSRS scheduling engines, and existing localStorage keys/data shapes 100% untouched.
+- Redesigned Explore -> Stories (#tab-reader, #/explore/reader) with plain-language grade badges ("Level A0 · First steps" through "Level B2–C1 · Advanced", keeping the CEFR code as a quiet label), estimated reading time and sentence counts on every story card, a comfortable ~65ch reading column (650px on 1440px desktop) with Lora Ukrainian tokens larger than surrounding English, and a contextual tap-a-word bottom sheet (#reader-word-sheet) featuring pronunciation guide + IPA, English meaning, context note, Listen, + Add to reviews ("✓ In your reviews"), compact 7-case / verb forms table, and Full Word forms launcher.
+- Tidied Explore -> Pictures (#tab-identify, #/explore/identify) controls into a clean two-row .identify-control-strip with unboxed progress metadata separated by "·", a compact .identify-zoom-bar (−, 100%, +, Fit, Reset, Outlines), dual-coded right/wrong/revealed feedback banners (.identify-feedback-banner--right|--wrong|--revealed with ✓ / ✗ / !), and plain-language actions ("Word forms", "+ Add to reviews"), preserving all 67 approved scenes, 1,075 verified hotspots, normalized coordinates, zoom/pan synchronizer, full-screen viewer, and admin preview intact.
+- Refined Explore -> Topics (#tab-vocab), 6,000-word lexicon (#lexicon-6000-card), Speak -> Sounds & Script (#tab-phonetics), and Speak -> AI Conversation (#tab-speak) with plain, encouraging second-person microcopy ("Your level", "Word forms", "+ Add to reviews", "Practice in Review →") and actionable .empty-state-box empty states when filters match zero items.
+- Fixed two visual critique issues and one dark-mode transition flash discovered during Playwright inspection: prevented derivational stem false-matches (e.g. "Украї́ни" -> "Украї́на" never matching "україніст"), deduplicated repeated POS segments in Word forms headers, pinned the mobile sheet Close button top-right without wrapping, and added atomic html.theme-switching + color-scheme support for instant light/dark switches.
+
+2. CHANGES COMPLETED
+- Pure Reader & Level Helper Module (src/exploreReaderHelpers.ts & src/__tests__/exploreReaderHelpers.test.ts):
+  - Implemented formatPlainLevelBadge(), formatCleanSummaryTag(), estimateStoryReadingMeta(), normalizeUkLookupKey(), and resolveReaderWordLookup().
+  - Restricted non-glossary inflection-stem fallbacks to authentic Ukrainian dictionary endings ('', 'а', 'я', 'о', 'е', 'і', 'и', 'ь', 'ий', 'ій', 'ти', 'тися') and skipped stem guessing whenever the passage glossary already provides an authoritative lemma.
+  - Added 6 deterministic Node unit tests covering level labels, reading-time math, apostrophe/stress normalization, glossary + 6,000-word rank lookup, derivational stem guard ("Украї́ни" / "україніст"), and summary tag deduplication.
+- Stories Reader & Tap-a-Word Bottom Sheet (index.html, src/main.ts):
+  - Styled .reader-article (~65ch measure), .reader-story-grid cards with plain-language grade badges, and root-level #reader-word-sheet + #reader-word-sheet-backdrop (visibility-gated when closed, Escape & backdrop dismissal, 0px mobile overflow).
+  - Implemented openReaderWordSheet(), closeReaderWordSheet(), addReaderSheetWordToReviews(), and openFullInspectorFromReaderSheet().
+- Pictures Visual Vocabulary Controls & Feedback (src/identifyView.ts, index.html):
+  - Replaced crowded scene controls and diagnostic labels with .identify-control-strip, .identify-zoom-bar, calm scene layout switcher copy, and dual-coded .identify-feedback-banner--right / --wrong / --revealed banners.
+  - Added clearIdentifyCategorySearch() and .empty-state-box recovery when topic search matches 0 categories.
+- Topics, 6,000-Word Lexicon & Speak Plain-Language Polish (src/main.ts, src/aiConversationView.ts, index.html):
+  - Replaced remaining learner-facing "FSRS", "7-Case", and raw "CEFR" labels with plain-language equivalents across Topics, Lexicon, Sounds & Script, and AI Conversation ("Your level", "Session words (save to your reviews)", "Word forms", "+ Add to reviews").
+  - Added actionable .empty-state-box states with one-click filter reset across Stories, Pictures, Topics, 6,000-word lexicon, Sounds & Script, and AI Conversation scenarios.
+  - Added color-scheme: light/dark and atomic html.theme-switching transition suppression in applyColorTheme() so switching themes never flashes light button surfaces against dark backgrounds.
+
+3. FILES CREATED OR MODIFIED
+- Created: src/exploreReaderHelpers.ts
+- Created: src/__tests__/exploreReaderHelpers.test.ts
+- Modified: index.html (0 inline style="..." attributes; added Reader ~65ch layout, #reader-word-sheet, .identify-control-strip, .identify-zoom-bar, .identify-feedback-banner variants, .empty-state-box, .topic-overview-bar, color-scheme & html.theme-switching rules)
+- Modified: src/main.ts (Reader story library & tap-a-word sheet handlers, plain-language microcopy & empty states across Stories/Topics/Lexicon/Sounds, headless speechSynthesis zero-voice guard, atomic applyColorTheme transition guard)
+- Modified: src/identifyView.ts (tidied .identify-control-strip & .identify-zoom-bar, dual-coded right/wrong/revealed feedback banners, plain-language microcopy, category filter empty state)
+- Modified: src/aiConversationView.ts (plain-language "Your level", "Word forms", "+ Add to reviews", "Session words (save to your reviews)", scenario filter empty state)
+- Created: reports/identify/ux-restructure-phase-005.txt
+- Modified: reports/identify/REPORT_INDEX.md
+- Modified: src/identifyVisualBatchProgress.json (reportingStandard.latestSourceReportFile updated; all batch/scene data untouched)
+- Modified: reports/identify/LATEST_REPORT.txt
+
+4. VALIDATION RESULTS
+- Unit & Integration Tests (npx --yes tsx --test src/__tests__/*.test.ts): 115 / 115 PASS (0 failures across all suites, including 6 new exploreReaderHelpers tests, 5 reviewSessionHelpers tests, 4 courseFlowHelpers tests, 11 core slovo tests, and 89 multilingual/CMS regression tests).
+- TypeScript Check (npm run lint / tsc --noEmit): PASS (0 errors).
+- Production Applet Build (compile_applet / npm run build): SUCCEEDED.
+- Inline Styles & Jargon Audit:
+  - grep -c 'style=' index.html -> 0 inline style attributes.
+  - Learner-facing "FSRS", "7-Case Inspector", and "CEFR A0..C1" jargon across index.html, src/main.ts, src/identifyView.ts, and src/aiConversationView.ts -> 0 matches.
+  - Textbook citation check -> 0 matches.
+- Real Browser Verification (Playwright Headless Chromium at 1440x900 Desktop & 390x844 Mobile, Light & Dark Modes):
+  - Stories (#/explore/reader): .reader-article width = 650px (~65ch); tapping "Украї́ни" opened #reader-word-sheet with "Dictionary form: Украї́на", Feminine Noun 7-case table ("Украї́ною"), "+ Add to reviews" -> "✓ In your reviews", and Escape close; mobile Close button aligned top-right (closeTopDelta: 0px).
+  - Pictures (#/explore/identify): verified wrong (.identify-feedback-banner--wrong) and right (.identify-feedback-banner--right) feedback states, Word forms & + Add to reviews buttons, and crisp Dark Mode surface/text contrast (oklch(0.205 0.014 260) / oklch(0.965 0.005 85)).
+  - Empty States & Speak (#/explore/vocab, #/explore/lexicon, #/speak/phonetics, #/speak): verified 0-match .empty-state-box recovery and AI Conversation "Your level" studio layout.
+  - Mobile Horizontal Overflow (390x844 across #/explore/reader, #/explore/identify, #/explore/vocab, #/explore/lexicon, #/speak/phonetics, #/speak): 0px on every route; 0 console errors and 0 warnings.
+- Errors Encountered During Execution:
+  - Initial Reader stem fallback matched "україніст" for "Украї́ни" and mobile sheet header wrapped Close onto a second line; dark-mode theme toggle briefly lagged 150ms on button backgrounds. All three issues were fixed and re-verified in Round 2.
+
+5. PERSISTENT CHECKPOINT
+- Authoritative Checkpoint File: src/identifyVisualBatchProgress.json
+- lastBatchNumber: 10 (unchanged)
+- cumulativeProgress.batchesCompleted: 10 (unchanged)
+- Approved & Playable Identify Scenes: 67 scenes / 1,075 verified hotspots (unchanged)
+- Preserved Learner Storage Keys: slovo_ua_6000_anki_v1, slovo_ua_en2uk_anki_v1, slovo_ua_corr_anki_v1, slovo_ua_course_done_v1, slovo_ua_course_assessments_v1, slovo_ua_everyday_vocab_v1, slovo_ua_identify_v1, slovo_ua_theme_mode, slovo_ua_onboarding_v1, slovo_ua_daily_activity_v1, slovo_ua_last_course_pos_v1, slovo_ua_review_prefs_v1
+- Latest Persisted Source Report: reports/identify/ux-restructure-phase-005.txt
+- Latest Report Mirror: reports/identify/LATEST_REPORT.txt
+
+6. REMAINING WORK
+- Phase 6 of 6 (ux-restructure-phase-006): Final WCAG AA contrast & dark-mode audit across all destinations, keyboard navigation & modal/sheet focus-trapping pass, 44px mobile touch-target & 360px/768px/1280px+ responsive sweep, and cleanup of remaining inline style="..." attributes in TypeScript template strings.
+
+7. NEXT EXECUTION
+- Proceed to Phase 6 of 6 (ux-restructure-phase-006): Execute the final accessibility, focus-trap, dark-mode contrast, responsive viewport (360px / 768px / 1280px+), and TypeScript template inline-style cleanup pass, run full validation, and persist reports/identify/ux-restructure-phase-006.txt.
